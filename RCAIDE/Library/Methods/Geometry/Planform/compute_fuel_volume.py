@@ -2,28 +2,16 @@
 # 
 # 
 # Created:  Jul 2024, M. Clarke 
-# Modified: Aug 2025, S. Shekar
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-import RCAIDE 
-from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  compute_naca_4series  
-from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments 
-from RCAIDE.Framework.Core import Units
-import matplotlib.pyplot as plt
-
-# python imports 
-import numpy as np   
-from scipy.interpolate import interp1d
-from shapely.geometry import Polygon, Point
-from copy import  deepcopy
-import os 
+# Modified: Aug 2025, S. Shekar 
+# ---------------------------------------------------------------------------------------
+# Imports
+# ---------------------------------------------------------------------------------------
+import RCAIDE
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_volume 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_fuel_volume(vehicle, update_max_fuel=True):
+def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = False):
     """
     Computes the total fuel volume and mass for all fuel tanks in a vehicle.
 
@@ -41,8 +29,6 @@ def compute_fuel_volume(vehicle, update_max_fuel=True):
                 Collection of wing objects for volume calculations
             - fuselages : list
                 Collection of fuselage objects for volume calculations
-    update_max_fuel : bool, optional
-        Currently unused (default: True)
 
     Returns
     -------
@@ -81,19 +67,28 @@ def compute_fuel_volume(vehicle, update_max_fuel=True):
     --------
     Vehicle : RCAIDE.Vehicle
     """
-    wings     = vehicle.wings
-    fuselages = vehicle.fuselages
-    
+    wings             = vehicle.wings
+    fuselages         = vehicle.fuselages 
+    total_fuel_volume = 0    
     for network in vehicle.networks: 
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks: 
-                try:
-                    compute_fuel_volume = fuel_tank.compute_volume
-                except Exception as e:
-                    pass
-                else:
-                    # if no error getting the method, run it normally
-                    compute_fuel_volume(wings, fuselages)
+         for source in  network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel_tank =  source     
+                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag 
+                if compute_fuel_volume:
+                    fuel_tank.compute_volume(wings, fuselages,  network.sources)
+                total_fuel_volume += fuel_tank.volume_properties.net_volume 
+    
+    if compute_fuel_volume:
+        vehicle.volume_properties.max_fuel = total_fuel_volume
 
-                vehicle.total_fuel_volume += fuel_tank.fuel_volume
-                vehicle.total_fuel_mass   += fuel_tank.mass_properties.fuel
+    if update_max_fuel:
+        total_fuel_mass = sum(
+            source.volume_properties.net_volume * source.fuel.density
+            for network in vehicle.networks
+            for source in network.sources
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)
+        )
+        vehicle.mass_properties.max_fuel = total_fuel_mass
+
+    return

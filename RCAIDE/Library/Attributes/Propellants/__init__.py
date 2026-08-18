@@ -11,10 +11,6 @@ for various propellant types categorized as follows:
     - Jet_A1 : International spec aviation kerosene
     - JP7 : Advanced high thermal stability jet fuel
 
-**Rocket Propellants**
-    - Rocket_LH2 : Rocket-grade liquid hydrogen
-    - Rocket_RP1 : Rocket-grade kerosene
-
 **Cryogenic Fuels**
     - Liquid_Hydrogen : LH2 for aviation applications
     - Liquid_Natural_Gas : LNG fuel properties
@@ -58,8 +54,6 @@ from .Propane              import Propane
 from .Ethane               import Ethane
 from .Ethanol              import Ethanol
 from .Liquid_Hydrogen      import Liquid_Hydrogen
-from .Rocket_LH2           import Rocket_LH2
-from .Rocket_RP1           import Rocket_RP1
 from .Butanol		       import Butanol
 from .Propanol	     	   import Propanol
 from .Alkane_Mixture	   import Alkane_Mixture

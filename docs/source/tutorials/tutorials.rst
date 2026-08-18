@@ -3,28 +3,41 @@
 Tutorials
 =========
 
-Below are a series of tutorials to guide you through various aspects of RCAIDE. Click on any section to learn more.
+Step-by-step guides and worked examples covering mission simulation, vehicle performance, optimization, and discipline analysis. Each tutorial is self-contained and includes downloadable source code.
+
+Video Tutorials
+---------------
+
+The LEADS Research Group publishes video walkthroughs on YouTube covering installation, vehicle setup, mission simulation, and optimization.
 
 .. raw:: html
 
-   <div class="box" style="padding: 25px; background: linear-gradient(145deg, #1a1f36, #2d3555); color: white; border-radius: 12px; text-align: center;">
-     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-       <a href="missions.html" class="section-link" style="color: white; text-decoration: none; display: inline-block; padding: 10px 20px; font-size: 1.2em; border: 1px solid white; border-radius: 8px; transition: transform 0.2s;">
-         🚀 Mission Simulations
-       </a>
-       <a href="optimization.html" class="section-link" style="color: white; text-decoration: none; display: inline-block; padding: 10px 20px; font-size: 1.2em; border: 1px solid white; border-radius: 8px; transition: transform 0.2s;">
-         🔧 Optimization
-       </a>
-       <a href="performance.html" class="section-link" style="color: white; text-decoration: none; display: inline-block; padding: 10px 20px; font-size: 1.2em; border: 1px solid white; border-radius: 8px; transition: transform 0.2s;">
-         📈 Performance
-       </a>
-     </div>
+   <div style="position: relative; padding-bottom: 50%; height: 0; border-radius: 10px; overflow: hidden; margin: 16px 0 8px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+     <iframe
+       style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+       src="https://www.youtube.com/embed/gAX3PwHcyKw?list=PLwhk70038ayzOTLejw_j9gXlWu8ozFqtX"
+       title="RCAIDE Tutorial Playlist"
+       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+       allowfullscreen>
+     </iframe>
    </div>
+   <p style="text-align: center; margin-bottom: 32px;">
+     <a href="https://www.youtube.com/playlist?list=PLwhk70038ayzOTLejw_j9gXlWu8ozFqtX" target="_blank" style="color: #7dd3fc;">
+       View full playlist on YouTube →
+     </a>
+   </p>
+
+Written Tutorials
+-----------------
+
+Browse tutorials by category:
 
 .. toctree::
    :maxdepth: 2
-   :hidden:
 
    missions
-   optimization
    performance
+   analysis
+   simulation
+   legacy_optimization
+   airfoils_and_polars

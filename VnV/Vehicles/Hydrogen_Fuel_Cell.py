@@ -8,66 +8,83 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core  import Units ,  Data 
- 
-# python imports 
-import numpy as np 
+from RCAIDE.Framework.Core  import Units ,  Data
+from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common import design_fuel_cell
+
+# python imports
+import numpy as np
 from copy import deepcopy
 import os
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
-def vehicle_setup(fuel_cell_model):  
+def vehicle_setup(fuel_cell_model):
 
-    vehicle                       = RCAIDE.Vehicle() 
-    vehicle.tag                   = 'hydrogen_fuel_cell'   
+    vehicle                       = RCAIDE.Vehicle()
+    vehicle.tag                   = 'hydrogen_fuel_cell'
     vehicle.reference_area        = 1
-  
+
     # mass properties
-    vehicle.mass_properties.takeoff         = 1 * Units.kg 
-    vehicle.mass_properties.max_takeoff     = 1 * Units.kg 
-         
-    net                              = RCAIDE.Framework.Networks.Fuel_Cell()  
+    vehicle.mass_properties.takeoff         = 1 * Units.kg
+    vehicle.mass_properties.max_takeoff     = 1 * Units.kg
+    vehicle.mass_properties.operating_empty = 1 * Units.kg
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Bus and Crogenic Line 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()  
-    if fuel_cell_model == 'PEM': 
-        bus.fuel_cell_stack_electric_configuration =  "Series"
-        bus.identical_fuel_cell_stacks             = False
-        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
-        bus.fuel_cell_stacks.append(fuel_cell_stack)  
+    net                              = RCAIDE.Framework.Networks.Electric()
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Bus and Cryogenic Line
+    #------------------------------------------------------------------------------------------------------------------------------------
+    bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+
+    fuel_line               = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+
+    fuel_cell_stacks = []
+    if fuel_cell_model == 'PEM':
+        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell()
+        fuel_cell_stacks.append(fuel_cell_stack)
     if fuel_cell_model == 'Larminie':
-        bus.fuel_cell_stack_electric_configuration =  "Parallel"
-        
-        fuel_cell_stack_1 = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()  
-        bus.fuel_cell_stacks.append(fuel_cell_stack_1)
+        fuel_cell_stack_1 = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()
+        fuel_cell_stack_1.tag = 'fuel_cell_stack_1'
+        fuel_cell_stack_1.power_split_ratio = 0.5
+        fuel_cell_stacks.append(fuel_cell_stack_1)
 
-        fuel_cell_stack_2 = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()  
-        bus.fuel_cell_stacks.append(fuel_cell_stack_2)
-        
-    bus.initialize_bus_properties()
+        fuel_cell_stack_2 = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()
+        fuel_cell_stack_2.tag = 'fuel_cell_stack_2'
+        fuel_cell_stack_2.power_split_ratio = 0.5
+        fuel_cell_stacks.append(fuel_cell_stack_2)
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    for stack in fuel_cell_stacks:
+        design_fuel_cell(stack)
+        # linked to both the fuel line (hydrogen supply) and the electrical bus (power extraction)
+        stack.assigned_distributors = [[fuel_line.tag, bus.tag]]
+        net.converters.append(stack)
+
+    bus_nominal_voltage = fuel_cell_stacks[0].voltage
+
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 50. # Watts
-    bus.avionics                 = avionics
-    
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Crogenic Tank
-    #------------------------------------------------------------------------------------------------------------------------------------       
-    cryogenic_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()  
-    bus.fuel_tanks.append(cryogenic_tank)     
+    #------------------------------------------------------------------------------------------------------------------------------------
+    avionics                       = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.power_draw            = 50. # Watts
+    avionics.assigned_distributors = [[bus.tag]]
+    net.systems.append(avionics)
 
-    # append bus   
-    net.busses.append(bus)
-    
-    # append network 
-    vehicle.append_energy_network(net) 
-  
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Cryogenic Tank
+    #------------------------------------------------------------------------------------------------------------------------------------
+    cryogenic_tank                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
+    cryogenic_tank.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    cryogenic_tank.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(cryogenic_tank)
+
+    # append bus and fuel line
+    net.distributors.append(bus)
+    net.distributors.append(fuel_line)
+
+    # append network
+    vehicle.append_energy_network(net)
+
     return vehicle
 
 # ---------------------------------------------------------------------

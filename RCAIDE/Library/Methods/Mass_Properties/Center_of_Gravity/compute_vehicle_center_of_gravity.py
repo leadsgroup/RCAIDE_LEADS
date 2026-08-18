@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Stability/Center_of_Gravity/compute_vehicle_center_of_gravity.py 
+# RCAIDE/Library/Methods/Mass_Properties/Center_of_Gravity/compute_vehicle_center_of_gravity.py 
 # 
 # Created:  Jul 2023, M. Clarke 
 
@@ -6,21 +6,18 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-# RCAIDE imports   
-import RCAIDE 
-from RCAIDE.Library.Components import Component   
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.mass_and_intertia_functions import * 
-from RCAIDE.Library.Methods.Geometry.Planform import compute_span_location_from_chord_length
-from RCAIDE.Library.Methods.Geometry.Planform import compute_chord_length_from_span_location   
+# RCAIDE imports      
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_component_center_of_gravity import compute_component_center_of_gravity 
 
 # package imports 
 import numpy as np  
+import pandas as pd
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Computer Aircraft Center of Gravity
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_vehicle_center_of_gravity(vehicle, nose_load = 0.06, update_CG=True): 
-    ''' Computes the moment of intertia of aircraft 
+def compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df, overwrite_center_of_gravity=True,segment=None,verbose=True,include_payload = True, include_fuel = True): 
+    ''' Computes the moment of inertia of aircraft 
     
     Source:
     Simplified Mass and Inertial Estimates for Aircraft with Components of Constant Density
@@ -39,131 +36,62 @@ def compute_vehicle_center_of_gravity(vehicle, nose_load = 0.06, update_CG=True)
     I                 - mass moment of inertia matrix    [kg-m^2]
     
     '''
+    if verbose:
+        print("\n\n=== COMPONENT CENTER OF GRAVITY BREAKDOWN REPORT ===" )    
+        print("Component \t \t \t Mass \t \t C.G. Location [[x,y,z]]" )    
      
-    C =  RCAIDE.Library.Components
-
-    length_scale = 1.
-    nose_length  = 0.
-      
-    if len(vehicle.fuselages) == 0.:
-        for wing in vehicle.wings:
-            if isinstance(wing,C.Wings.Main_Wing):
-                if isinstance(wing,C.Wings.Blended_Wing_Body): 
-                    length       = wing.chords.root
-                    length_scale = length 
-                b = wing.chords.root
-                if b>length_scale:
-                    length_scale = b
-                    nose_length  = 0.25*b
-    else:
-        for fuse in vehicle.fuselages:
-            nose   = fuse.lengths.nose
-            length = fuse.lengths.total
-            if length > length_scale:
-                length_scale = length
-                nose_length  = nose     
-
-    #---------------------------------------------------------------------------------        
-    # Fuselages (the frame only)
-    #-------------------------------------------------------------------------------- 
-    for fuse in vehicle.fuselages:
-        fuse.mass_properties.center_of_gravity[0][0] = .45*fuse.lengths.total
-    
-    #---------------------------------------------------------------------------------        
-    # Wings
-    #---------------------------------------------------------------------------------
-    for wing in vehicle.wings:  
-        if isinstance(wing,C.Wings.Main_Wing) or isinstance(wing,C.Wings.Blended_Wing_Body):
-            wing.mass_properties.center_of_gravity[0][0] = .05*wing.chords.mean_aerodynamic +wing.aerodynamic_center[0]           
-            
-        elif isinstance(wing,C.Wings.Horizontal_Tail):
-            chord_length_h_tail_35_percent_semi_span  = compute_chord_length_from_span_location(wing,.35*wing.spans.projected*.5)
-            h_tail_35_percent_semi_span_offset        = np.tan(wing.sweeps.quarter_chord)*.35*.5*wing.spans.projected   
-            wing.mass_properties.center_of_gravity[0][0] = .3*chord_length_h_tail_35_percent_semi_span + \
-                                                                          h_tail_35_percent_semi_span_offset            
-
-        elif isinstance(wing,C.Wings.Vertical_Tail):
-            chord_length_v_tail_35_percent_semi_span  = compute_chord_length_from_span_location(wing,.35*wing.spans.projected)
-            v_tail_35_percent_semi_span_offset        = np.tan(wing.sweeps.quarter_chord)*.35*.5*wing.spans.projected
-            wing.mass_properties.center_of_gravity[0][0] = .3*chord_length_v_tail_35_percent_semi_span + \
-                                                                        v_tail_35_percent_semi_span_offset
-        else:
-            span_location_mac = compute_span_location_from_chord_length(wing, wing.chords.mean_aerodynamic)
-            mac_le_offset     = np.tan(wing.sweeps.leading_edge)*span_location_mac 
-            wing.mass_properties.center_of_gravity[0][0] = .3*wing.chords.mean_aerodynamic + mac_le_offset
-
-    #---------------------------------------------------------------------------------
-    # Landing Gear 
-    #--------------------------------------------------------------------------------- 
-    for landing_gear in vehicle.landing_gears:
-        if isinstance(landing_gear, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-            if landing_gear.origin[0][0] == 0:  
-                landing_gear.origin[0][0]   = 0.51 * length_scale
-                landing_gear.mass_properties.center_of_gravity[0][0]  = 0.0 
-        elif isinstance(landing_gear, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
-            if landing_gear.origin[0][0] == 0: 
-                landing_gear.origin[0][0]   = 0.25*nose_length 
-                landing_gear.mass_properties.center_of_gravity[0][0]  = 0.0  
-            
-    #---------------------------------------------------------------------------------
-    # Cabin (Includes Systems,Operating Items)
-    #---------------------------------------------------------------------------------
-    for fuselage in vehicle.fuselages:
-        for cabin in fuselage.cabins:
-            cabin.origin[0][0] = fuselage.lengths.nose 
-            num_seats  = cabin.number_of_passengers
-            cabin_mass = cabin.mass_properties.mass
-            if len(cabin.layout_of_passenger_accommodations) == 0:
-                cabin.mass_properties.center_of_gravity[0][0] = 0.51 * length_scale
-            else:
-                pass
-                # LOPA       = cabin.layout_of_passenger_accommodations.object_coordinates
-                # point_mass = cabin_mass/num_seats
-                # cg_x       = (LOPA[:,2]*point_mass)/cabin_mass
-                # cg_y       = (LOPA[:,3]*point_mass)/cabin_mass
-                # cg_z       = (LOPA[:,4]*point_mass)/cabin_mass  
-                # cabin.mass_properties.center_of_gravity = [[cg_x, cg_y, cg_z]] 
-            
-    # for wing in  vehicle.wings:
-    #     if isinstance(wing, C.Wings.Blended_Wing_Body):
-    #         for cabin in wing.cabins:
-    #             cabin.origin[0][0] = wing.lengths.nose 
-    #             num_seats  = cabin.number_of_passengers
-    #             cabin_mass = cabin.mass_properties.mass
-    #             if len(cabin.layout_of_passenger_accommodations) == 0:
-    #                 cabin.mass_properties.center_of_gravity[0][0] = 0.51 * length_scale
-    #             else:
-                    # LOPA       = cabin.layout_of_passenger_accommodations.object_coordinates
-                    # point_mass = cabin_mass/num_seats
-                    # cg_x       = (LOPA[:,2]*point_mass)/cabin_mass
-                    # cg_y       = (LOPA[:,3]*point_mass)/cabin_mass
-                    # cg_z       = (LOPA[:,4]*point_mass)/cabin_mass  
-                    # cabin.mass_properties.center_of_gravity = [[cg_x, cg_y, cg_z]] 
-
-    #---------------------------------------------------------------------------------
-    # Cargo Bays 
-    #---------------------------------------------------------------------------------
-    for cargo_bay in vehicle.cargo_bays:
-        if cargo_bay.origin[0][0] == 0: 
-            cargo_bay.origin[0][0] = 0.51 * length_scale  
-        cargo_bay.mass_properties.center_of_gravity = [[cargo_bay.length / 2 ,0,cargo_bay.height / 2 ]]        
-    
-    #---------------------------------------------------------------------------------
-    # Finally, compute aircraft center of gravity  
-    #---------------------------------------------------------------------------------     
-    # compute total aircraft center of grabity 
-    total_moment = np.array([[0.0,0.0,0.0]])
-    total_mass   = 0
-
+    # --------------------------------------------------------------------------------------
+    # Center of Gravity at Operating Empty Weight 
+    # --------------------------------------------------------------------------------------
+    OEW_moment      = np.array([[0.0,0.0,0.0]])
+    OEW_mass        = np.array([0.0])
     for key in vehicle.keys():
-        item = vehicle[key]
-        if isinstance(item,Component.Container):
-            Moment, Mass  = sum_moment(item)
-            if Mass != 0: 
-                total_moment += Moment
-                total_mass   += Mass         
+        item = vehicle[key]  
+        OEW_mass,OEW_moment = compute_component_center_of_gravity(centre_of_gravity_df,item,vehicle,OEW_mass,OEW_moment,None,False,False,False)    
     
-    if update_CG and total_mass != 0.0:
-        vehicle.mass_properties.center_of_gravity = total_moment/total_mass 
+    # center of gravity
+    OEW_CG = OEW_moment / OEW_mass
+    OEW_mass_percentage = (OEW_mass[0] / vehicle.mass_properties.operating_empty) * 100
      
-    return vehicle.mass_properties.center_of_gravity, total_mass 
+    # --------------------------------------------------------------------------------------    
+    # Mission Center of Gravity 
+    # --------------------------------------------------------------------------------------
+    mission_moment = np.array([[0.0,0.0,0.0]])
+    dummy_pd = pd.DataFrame(columns=[
+        "Component",
+        "Mass (kg)",
+        "CG x (m)",
+        "CG y (m)",
+        "CG z (m)"
+        ])
+    mission_mass   = np.array([0.0])                
+    for key in vehicle.keys():
+        item = vehicle[key]  
+        mission_mass,mission_moment = compute_component_center_of_gravity(dummy_pd,item,vehicle,mission_mass,mission_moment,segment,verbose,include_payload,include_fuel)    
+    
+    # print center of gravity 
+    CG = mission_moment /mission_mass 
+    centre_of_gravity_df = centre_of_gravity_df[centre_of_gravity_df["Mass (kg)"] != 0].reset_index(drop=True)
+    if verbose:
+        print('\n*************** Center of Gravity *************** ')
+        print('OEW Center of Gravity            : ', OEW_CG) 
+        print('% Mass used in OEW CG calculation: ', round(OEW_mass_percentage,2), '%')  
+        print('Mission Center of Gravity        : ', CG)   
+    centre_of_gravity_df.loc[len(centre_of_gravity_df)] = [
+                'Operating_Empty',
+                round(OEW_mass[0], 2),
+                OEW_CG[0][0],
+                OEW_CG[0][1],
+                OEW_CG[0][2],
+            ]
+                  
+    if segment != None:         
+        ones_row  = segment.state.ones_row  
+        segment.state.conditions.weights.vehicle.global_center_of_gravity = CG * ones_row(1)
+            
+    if overwrite_center_of_gravity and (mission_mass != 0.0):
+        vehicle.mass_properties.center_of_gravity = CG.tolist()
+        vehicle.mass_properties.operating_empty_center_of_gravity = OEW_CG.tolist()
+        vehicle.mass_properties.OEW_CG_mass_percentage = round(OEW_mass_percentage, 2)
+
+    return vehicle.mass_properties.center_of_gravity, mission_mass, mission_moment, centre_of_gravity_df

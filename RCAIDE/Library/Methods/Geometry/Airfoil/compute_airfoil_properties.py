@@ -156,7 +156,7 @@ def compute_extended_polars(airfoil_cl,airfoil_cd,airfoil_aoa,AoA_sweep_deg,geom
     ACL1                    = airfoil_aoa[idx_aoa_max_prestall_cl] * Units.degrees
 
     # computing approximate lift curve slope
-    linear_idxs             = [int(np.where(airfoil_aoa==0)[0]),int(np.where(airfoil_aoa==4)[0])]
+    linear_idxs             = [np.where(airfoil_aoa==0.)[0][0],np.where(airfoil_aoa==4.)[0][0]]
     cl_range                = airfoil_cl[linear_idxs]
     aoa_range               = airfoil_aoa[linear_idxs] * Units.degrees
     S1                      = (cl_range[1]-cl_range[0])/(aoa_range[1]-aoa_range[0])

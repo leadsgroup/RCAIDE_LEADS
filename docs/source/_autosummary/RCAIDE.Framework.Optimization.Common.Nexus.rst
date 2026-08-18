@@ -1,9 +1,9 @@
-RCAIDE.Framework.Optimization.Common.Nexus
+RCAIDE.Framework.Optimization.Nexus
 
 Nexus
 =====
 
-.. automodule:: RCAIDE.Framework.Optimization.Common.Nexus
+.. automodule:: RCAIDE.Framework.Optimization.Nexus
 
    
    

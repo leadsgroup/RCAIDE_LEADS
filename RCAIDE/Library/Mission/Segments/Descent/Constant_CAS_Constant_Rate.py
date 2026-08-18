@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------  
 def initialize_conditions(segment):
     """
-    Initializes conditions for constant calibrated airspeed descent at fixed rate
+    Initializes conditions for constant calibrated air speed descent at fixed rate
 
     Parameters
     ----------
@@ -27,7 +27,7 @@ def initialize_conditions(segment):
             - descent_rate : float
                 Rate of descent [m/s]
             - calibrated_air_speed : float
-                Calibrated airspeed to maintain [m/s]
+                Calibrated air speed to maintain [m/s]
             - altitude_start : float
                 Initial altitude [m]
             - altitude_end : float
@@ -52,25 +52,25 @@ def initialize_conditions(segment):
     Notes
     -----
     This function sets up the initial conditions for a descent segment with constant
-    calibrated airspeed (CAS) and constant descent rate. It handles the conversion
-    between CAS and true airspeed accounting for pressure and density variations
+    calibrated air speed (CAS) and constant descent rate. It handles the conversion
+    between CAS and true air speed accounting for pressure and density variations
     with altitude. Updates segment conditions directly with velocity_vector [m/s], altitude [m],
     and position_vector [m].
 
     **Calculation Process**
         1. Discretize altitude profile
         2. Get atmospheric properties at each altitude
-        3. Convert CAS to true airspeed using:
+        3. Convert CAS to true air speed using:
             - Pressure ratio (δ)
             - Compressibility effects
-            - Equivalent airspeed (EAS) conversion
+            - Equivalent air speed (EAS) conversion
         4. Decompose velocity into components using:
             - Fixed descent rate
             - Sideslip angle
-            - Computed true airspeed
+            - Computed true air speed
 
     **Major Assumptions**
-        * Constant calibrated airspeed
+        * Constant calibrated air speed
         * Constant descent rate
         * Standard atmosphere model with temperature deviation
         * Small angle approximations
@@ -89,7 +89,7 @@ def initialize_conditions(segment):
     altf         = segment.altitude_end
     beta         = segment.sideslip_angle
     t_nondim     = segment.state.numerics.dimensionless.control_points
-    conditions   = segment.state.conditions  
+    conditions   = segment.state.conditions
 
     # check for initial altitude
     if alt0 is None:
@@ -99,8 +99,8 @@ def initialize_conditions(segment):
     # discretize on altitude
     alt = t_nondim * (altf-alt0) + alt0
     
-    # determine airspeed from calibrated airspeed
-    RCAIDE.Library.Mission.Common.Update.atmosphere(segment) # get density for airspeed
+    # determine air speed from calibrated air speed
+    RCAIDE.Library.Mission.Common.Update.atmosphere(segment) # get density for air speed
 
     alt_data = segment.analyses.atmosphere.compute_values(alt,segment.temperature_deviation)
     density  = alt_data.density[:,0]  
@@ -111,7 +111,7 @@ def initialize_conditions(segment):
     
 
     if cas is None:
-        if not segment.state.initials: raise AttributeError('initial equivalent airspeed not set')
+        if not segment.state.initials: raise AttributeError('initial equivalent air speed not set')
         air_speed =  np.linalg.norm(segment.state.initials.conditions.frames.inertial.velocity_vector[-1,:])    
     else:  
         kcas  = cas / Units.knots

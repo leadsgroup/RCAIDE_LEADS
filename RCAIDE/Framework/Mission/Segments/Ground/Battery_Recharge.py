@@ -50,15 +50,12 @@ class Battery_Recharge(Evaluate):
         self.cooling_time                  = 0.0 * Units.hr
          
         initialize                         = self.process.initialize  
-        initialize.conditions              = Ground.Battery_Charge_Discharge.initialize_conditions  
-        converge                           = self.process.converge 
-        converge.solver                    = skip 
-        iterate                            = self.process.iterate 
-        iterate.unknowns.mission           = skip
+        initialize.conditions              = Ground.Battery_Charge_Discharge.initialize_conditions
+        iterate                            = self.process.iterate  
         iterate.conditions.aerodynamics    = skip
         iterate.conditions.stability       = skip  
         post_process                       = self.process.post_process  
-        post_process.noise                 = skip
+        post_process.aeroacoustics         = skip
         post_process.emissions             = skip
         
         return

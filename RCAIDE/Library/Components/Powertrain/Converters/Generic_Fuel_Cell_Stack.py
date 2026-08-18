@@ -1,23 +1,27 @@
-# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Cells/Generic_Fuel_Cell.py
+# RCAIDE/Library/Components/Powertrain/Converters/Generic_Fuel_Cell.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core                                     import Units, Data
-from RCAIDE.Library.Components                                 import Component    
-from RCAIDE.Library.Attributes.Gases                           import Air  
+from RCAIDE.Framework.Core                                     import Units, Data 
+from .Converter                                                import Converter
+from RCAIDE.Library.Attributes.Gases                           import Air   
+from RCAIDE.Library.Components                                 import Component     
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_fuel_cell_performance import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.append_fuel_cell_conditions   import *
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_cuboid_center_of_gravity import compute_cuboid_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cuboid_moment_of_inertia import compute_cuboid_moment_of_inertia
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Generic_Fuel_Cell
 # ----------------------------------------------------------------------------------------------------------------------    
-class Generic_Fuel_Cell_Stack(Component):
+class Generic_Fuel_Cell_Stack(Converter):
     """This is a fuel cell component.
     
     Assumptions:
@@ -44,12 +48,18 @@ class Generic_Fuel_Cell_Stack(Component):
         Properties Used:
         None
         """           
-        self.tag                                        = 'fuel_cell'     
+        self.tag                                        = 'fuel_cell'
+        self.provides_domain                            = 'electrical'
+        self.identical_converters                       = True
         self.mass_properties.mass                       = 1.0
         self.energy_density                             = 0.0
-        self.current_energy                             = 0.0
         self.current_capacitor_charge                   = 0.0
         self.capacity                                   = 0.0
+        self.power_split_ratio                          = 1.0    # fraction of the electrical demand this stack supplies, for multiple stacks sharing a bus
+        self.electrical_efficiency                      = 1.0    # DC-DC/inverter efficiency between the stack and the bus
+        self.design_voltage                             = None
+        self.design_power                               = None
+        self.specific_power                             = None
             
         self.length                                     = 0.0
         self.width                                      = 0.0
@@ -60,7 +70,7 @@ class Generic_Fuel_Cell_Stack(Component):
                      
         self.fuel_cell                                  = Data()  
         self.fuel_cell.propellant                       = RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen()
-        self.fuel_cell.oxidizer                         = Air()
+        self.fuel_cell.oxidizer                         = RCAIDE.Library.Attributes.Gases.Air()
         self.fuel_cell.efficiency                       = .65                                 # normal fuel cell operating efficiency at sea level
         self.fuel_cell.specific_power                   = 2080                                # specific power of fuel cell [W/kg]; default is Nissan 2011 level
         self.fuel_cell.mass_density                     = 1203.208556                         # take default as specs from Nissan 2011 fuel cell      
@@ -80,22 +90,34 @@ class Generic_Fuel_Cell_Stack(Component):
         self.fuel_cell.n                                = 8E-3                                 # constant in mass-transfer overvoltage equation
         self.fuel_cell.ideal_voltage                    = 1.48
         self.fuel_cell.wall_thickness                   = .0022224                             # thickness of cell wall in meters  
-        self.fuel_cell.cell_density                     =1988.                                 # cell density in kg/m^3
-        self.fuel_cell.porosity_coefficient             =.6                                    # porosity coefficient  
+        self.fuel_cell.cell_density                     = 1988.                                 # cell density in kg/m^3
+        self.fuel_cell.porosity_coefficient             = .6                                    # porosity coefficient  
 
         self.electrical_configuration                   = Data()
         self.electrical_configuration.series            = 1
         self.electrical_configuration.parallel          = 1   
         
-        self.geometrtic_configuration                   = Data() 
-        self.geometrtic_configuration.normal_count      = 1
-        self.geometrtic_configuration.parallel_count    = 1
-        self.geometrtic_configuration.normal_spacing    = 0.02
-        self.geometrtic_configuration.stacking_rows     = 3
-        self.geometrtic_configuration.parallel_spacing  = 0.02
-        
-         
-    def energy_calc(self,state,bus,coolant_lines, t_idx, delta_t): 
+        self.geometric_configuration                   = Data() 
+        self.geometric_configuration.normal_count      = 1
+        self.geometric_configuration.parallel_count    = 1
+        self.geometric_configuration.normal_spacing    = 0.02
+        self.geometric_configuration.stacking_rows     = 3
+        self.geometric_configuration.parallel_spacing  = 0.02     
+          
+    def initialize(self, network):
+        """
+        Sizes this stack via design_fuel_cell(). Runs automatically once per mission
+        (RCAIDE.Library.Mission.Common.Pre_Process.energy calls initialize() on every
+        converter before the mission's weight buildup runs), so vehicle scripts don't
+        need to call design_fuel_cell() themselves -- matching how Battery_Pack.initialize()
+        already auto-sizes battery packs. A deferred import avoids a circular import,
+        since design_fuel_cell references this class by its RCAIDE.Library.Components path.
+        """
+        from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.design_fuel_cell import design_fuel_cell
+        design_fuel_cell(self)
+        return
+
+    def compute_performance(self,state,network):
         """Computes the state of the NMC battery cell.
            
         Assumptions:
@@ -114,19 +136,51 @@ class Generic_Fuel_Cell_Stack(Component):
             None
         """                  
         
-        stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,coolant_lines, t_idx,delta_t) 
-        
-        return stored_results_flag, stored_battery_tag 
+        inputs, outputs, stored_results_flag, stored_converter_tag = compute_fuel_cell_performance(self, state, network)
 
-    def append_operating_conditions(self,segment,bus):  
-        append_fuel_cell_conditions(self,segment,bus)  
+        return inputs, outputs, stored_results_flag, stored_converter_tag
+
+    def append_operating_conditions(self, segment):
+        append_fuel_cell_conditions(self, segment)
+        return
+
+    def reuse_stored_data(self, state, network, stored_conveter_tag):
+        inputs, outputs = reuse_stored_fuel_cell_data(self, state, network, stored_conveter_tag)
+        return inputs, outputs
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for a fuel cell.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2
+ 
+        """
+        _ , _ = compute_cuboid_moment_of_inertia(self, self.length, self.width, self.height, 0, 0, 0, center_of_gravity)
+                
         return
     
-    def append_fuel_cell_segment_conditions(self,bus, conditions, segment):
-        append_fuel_cell_segment_conditions(self,bus, conditions, segment)
-        return 
 
-    def reuse_stored_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag):
-        reuse_stored_fuel_cell_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag)
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for a fuel cell.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2 
+        """
+        _  = compute_cuboid_center_of_gravity(self, self.length) 
         return     
-    

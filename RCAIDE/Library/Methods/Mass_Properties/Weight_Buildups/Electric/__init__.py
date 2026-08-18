@@ -8,5 +8,6 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 from . import Common
+from . import Drone
 from . import General_Aviation
 from . import VTOL

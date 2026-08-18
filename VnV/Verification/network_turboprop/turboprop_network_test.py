@@ -21,15 +21,24 @@ from   copy  import deepcopy
 import os
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from   ATR_72    import vehicle_setup as vehicle_setup
 from   ATR_72    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
 
     # vehicle data
@@ -54,16 +63,14 @@ def main():
     thrust     = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].thrust[3][0]
     throttle   = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].throttle[3][0]  
     
-    #print values for resetting regression
-    show_vals = True
-    if show_vals:
-        data = [thrust, throttle]
-        for val in data:
-            print(val)
+    #print values for resetting regression 
+    data = [thrust, throttle]
+    for val in data:
+        print(val)
     
     # Truth values
-    thrust_truth     = 22861.017885465255
-    throttle_truth   = 0.6237716652008404
+    thrust_truth     = 22849.679172145035
+    throttle_truth   = 0.6234622840471041
     
     # Store errors 
     error = Data()
@@ -78,6 +85,10 @@ def main():
     
     # plt the old results
     plot_mission(results)   
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 def analyses_setup(configs):
@@ -96,41 +107,36 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+
+    # remove landing gear for regression
+    vehicle.landing_gears  = Components.Landing_Gear.Landing_Gear.Container()     
+    analyses.vehicle = vehicle
     
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights
-    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
-    weights.settings.update_mass_properties         = False
-    weights.settings.update_center_of_gravity       = False
-    weights.settings.update_moment_of_inertia       = False
-    
-    # remove landing gear for regression
-    vehicle.landing_gears  = Components.Landing_Gear.Landing_Gear.Container() 
-    weights.vehicle = vehicle
+    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()  
     analyses.append(weights)
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle                              = vehicle 
+    aerodynamics            = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------
     #  Emissions
-    emissions = RCAIDE.Framework.Analyses.Emissions.Emission_Index_Correlation_Method()
-    emissions.vehicle = vehicle          
+    emissions = RCAIDE.Framework.Analyses.Emissions.Emission_Index_Correlation_Method() 
     analyses.append(emissions)
   
     # ------------------------------------------------------------------
     #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
     
     # ------------------------------------------------------------------
@@ -141,7 +147,6 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
     
     # done!
@@ -176,7 +181,7 @@ def mission_setup(analyses):
     base_segment.state.numerics.discretization_method     = RCAIDE.Library.Methods.Utilities.Chebyshev.chebyshev_data
     
     # VSTALL Calculation  
-    vehicle        = analyses.base.aerodynamics.vehicle
+    vehicle        = analyses.base.vehicle
     vehicle_mass   = vehicle.mass_properties.max_takeoff
     reference_area = vehicle.reference_area 
     Vstall         = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)
@@ -199,7 +204,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)   
     

@@ -11,6 +11,7 @@ from   RCAIDE.Library.Methods.Powertrain            import setup_operating_condi
 from   RCAIDE.Library.Methods.Powertrain.Converters import Motor
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 #----------------------------------------------------------------------
 #   Reference Values
@@ -22,6 +23,7 @@ import numpy as np
 #   Main
 # ----------------------------------------------------------------------
 def main(): 
+    ti = time.time()
 
     motor_voltage       = np.linspace(0, 610, 20) # [V]
     motor_rpm_vector    = []                      # [rpm]
@@ -43,10 +45,13 @@ def main():
     motor.mu_0                  = 1.256637061e-6  # [N/A**2] permeability of free space
     motor.mu_r                  = 1005            # [N/A**2] relative permeability of the magnetic material 
 
+    distributor      = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    motor.assigned_distributors = [[distributor.tag]]
+
     for i in range(len(motor_voltage)):
 
-        # set up default operating conditions 
-        operating_state  = setup_operating_conditions(motor) 
+        # set up default operating conditions
+        operating_state  = setup_operating_conditions(motor,distributor)
         
         # Assign conditions to the motor
         motor_conditions = operating_state.conditions.energy.converters[motor.tag]
@@ -60,7 +65,7 @@ def main():
         # Extract results
         motor_rpm_vector.append(motor_conditions.outputs.omega[0][0]*(60/(2*np.pi))) # [rpm]
         motor_torque_vector.append(motor_conditions.outputs.torque[0][0])            # [Nm]
-        motor_power_vector.append(motor_conditions.outputs.power[0][0]/1000)         # [W]
+        motor_power_vector.append(motor_conditions.outputs.power.mechanical[0][0]/1000)         # [W]
 
     # Literature values
     x_cont_pow = [0,504.2283298097251,1003.6997885835095,1503.1712473572939,2002.6427061310778,2502.1141649048623,3006.3424947145872,3505.8139534883717,3795.9830866807606,3895.877378435517,4005.2854122621557]  
@@ -74,6 +79,11 @@ def main():
     print("\nError in Power [%]:", error)
     assert error < 10
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
+    return
 def plot_power_and_torque(x_cont_pow, y_cont_pow, motor_rpm_vector, motor_power_vector, x_cont_tq, y_cont_tq, motor_torque_vector):
     
     fig, ax1 = plt.subplots(figsize=(10, 5))

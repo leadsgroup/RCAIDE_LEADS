@@ -88,16 +88,17 @@ class Results(Conditions):
         self.frames.inertial.total_force_vector                                = ones_3col * 0
         self.frames.inertial.total_moment_vector                               = ones_3col * 0
         self.frames.inertial.time                                              = ones_1col * 0
+        self.frames.inertial.climb_rate                                        = ones_1col * 0
         self.frames.inertial.aircraft_range                                    = ones_1col * 0
 
                                                                                
         # body conditions                                                      
         self.frames.body                                                       = Conditions()        
         self.frames.body.inertial_rotations                                    = ones_3col * 0
-        self.frames.body.thrust_force_vector                                   = ones_3col * 0
+        self.frames.body.total_force_vector                                   = ones_3col * 0
         self.frames.body.moment_vector                                         = ones_3col * 0
         self.frames.body.velocity_vector                                       = ones_3col * 0
-        self.frames.body.thrust_moment_vector                                  = ones_3col * 0 
+        self.frames.body.total_moment_vector                                  = ones_3col * 0 
         self.frames.body.transform_to_inertial                                 = np.empty([0,0,0])
                                                                                
         # wind frame conditions                                                
@@ -158,20 +159,24 @@ class Results(Conditions):
                                                                                
         # aerodynamic coefficients                                             
         self.aerodynamics.coefficients                                         = Conditions()
-        self.aerodynamics.coefficients.surface_pressure                        = None
+        self.aerodynamics.coefficients.differential_surface_pressure           = None
         self.aerodynamics.coefficients.lift                                    = Conditions()
         self.aerodynamics.coefficients.lift.total                              = ones_1col * 0   
         self.aerodynamics.coefficients.lift.inviscid                           = Conditions()
-        self.aerodynamics.coefficients.lift.inviscid.total                     = ones_1col * 0   
-        self.aerodynamics.coefficients.lift.inviscid.wings                     = Conditions()  
+        self.aerodynamics.coefficients.lift.inviscid.total                     = ones_1col * 0  
+        self.aerodynamics.coefficients.lift.spanwise                           = None
         self.aerodynamics.coefficients.drag                                    = Conditions()  
         self.aerodynamics.coefficients.drag.total                              = ones_1col * 0   
         self.aerodynamics.coefficients.drag.parasite                           = Conditions()
         self.aerodynamics.coefficients.drag.miscellaneous                      = Conditions()
         self.aerodynamics.coefficients.drag.compressible                       = Conditions() 
+        self.aerodynamics.coefficients.drag.compressible.total                 = ones_1col * 0  
+        self.aerodynamics.coefficients.drag.compressible.wave                  = Conditions() 
+        self.aerodynamics.coefficients.drag.compressible.wave.total            = ones_1col * 0  
+        self.aerodynamics.coefficients.drag.compressible.wave.volume           = ones_1col * 0  
+        self.aerodynamics.coefficients.drag.compressible.wave.lift             = ones_1col * 0  
         self.aerodynamics.coefficients.drag.induced                            = Conditions()
-        self.aerodynamics.coefficients.drag.induced.total                      = ones_1col * 0  
-        self.aerodynamics.coefficients.drag.induced.wings                      = Conditions() 
+        self.aerodynamics.coefficients.drag.induced.total                      = ones_1col * 0   
         self.aerodynamics.coefficients.drag.induced.viscous                    = ones_1col * 0 
         self.aerodynamics.coefficients.drag.induced.inviscid                   = ones_1col * 0 
         self.aerodynamics.coefficients.drag.induced.efficiency_factor          = ones_1col * 0 
@@ -183,6 +188,7 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag.form.total                         = ones_1col * 0
         self.aerodynamics.coefficients.drag.trim                               = Conditions()
         self.aerodynamics.coefficients.drag.trim.total                         = ones_1col * 0
+        self.aerodynamics.spanwise_induced_angle                               = None
         self.aerodynamics.coefficients.drag.windmilling                        = Conditions()
         self.aerodynamics.coefficients.drag.windmilling.total                  = ones_1col * 0
         self.aerodynamics.coefficients.drag.asymmetry_trim                     = Conditions()
@@ -196,6 +202,7 @@ class Results(Conditions):
 
         self.control_surfaces.aileron                                          = Conditions()
         self.control_surfaces.aileron.deflection                               = ones_1col * 0 
+        self.control_surfaces.aileron.hinge_moment                             = ones_1col * 0  
         self.control_surfaces.aileron.static_stability                         = Conditions()
         self.control_surfaces.aileron.static_stability.coefficients            = Conditions()          
         self.control_surfaces.aileron.static_stability.coefficients.X          = ones_1col * 0           
@@ -208,7 +215,8 @@ class Results(Conditions):
         self.control_surfaces.aileron.static_stability.coefficients.e          = ones_1col * 0
         
         self.control_surfaces.elevator                                         = Conditions()
-        self.control_surfaces.elevator.deflection                              = ones_1col * 0 
+        self.control_surfaces.elevator.deflection                              = ones_1col * 0
+        self.control_surfaces.elevator.hinge_moment                            = ones_1col * 0  
         self.control_surfaces.elevator.static_stability                        = Conditions()
         self.control_surfaces.elevator.static_stability.coefficients           = Conditions()          
         self.control_surfaces.elevator.static_stability.coefficients.lift      = ones_1col * 0       
@@ -222,6 +230,7 @@ class Results(Conditions):
         
         self.control_surfaces.rudder                                           = Conditions()
         self.control_surfaces.rudder.deflection                                = ones_1col * 0 
+        self.control_surfaces.rudder.hinge_moment                              = ones_1col * 0 
         self.control_surfaces.rudder.static_stability                          = Conditions()
         self.control_surfaces.rudder.static_stability.coefficients             = Conditions()          
         self.control_surfaces.rudder.static_stability.coefficients.X           = ones_1col * 0          
@@ -234,6 +243,7 @@ class Results(Conditions):
         
         self.control_surfaces.flap                                             = Conditions()
         self.control_surfaces.flap.deflection                                  = ones_1col * 0 
+        self.control_surfaces.flap.hinge_moment                                = ones_1col * 0 
         self.control_surfaces.flap.static_stability                            = Conditions()
         self.control_surfaces.flap.static_stability.coefficients               = Conditions()           
         self.control_surfaces.flap.static_stability.coefficients.X             = ones_1col * 0           
@@ -246,6 +256,7 @@ class Results(Conditions):
         
         self.control_surfaces.slat                                             = Conditions()
         self.control_surfaces.slat.deflection                                  = ones_1col * 0 
+        self.control_surfaces.slat.hinge_moment                                = ones_1col * 0 
         self.control_surfaces.slat.static_stability                            = Conditions()
         self.control_surfaces.slat.static_stability.coefficients               = Conditions()          
         self.control_surfaces.slat.static_stability.coefficients.X             = ones_1col * 0          
@@ -262,21 +273,11 @@ class Results(Conditions):
         # ----------------------------------------------------------------------------------------------------------------------
         # Stability 
         # ----------------------------------------------------------------------------------------------------------------------  
-        self.stability                                                         = Conditions()
         self.static_stability                                                  = Conditions()
  
         self.static_stability.forces                                           = Conditions()
         self.static_stability.forces.lift                                      = ones_1col * 0
-        self.static_stability.forces.drag                                      = ones_1col * 0
-        self.static_stability.forces.X                                         = ones_1col * 0
-        self.static_stability.forces.Y                                         = ones_1col * 0
-        self.static_stability.forces.Z                                         = ones_1col * 0
-                                                                               
-        self.static_stability.moments                                          = Conditions()
-        self.static_stability.moments.L                                        = ones_1col * 0
-        self.static_stability.moments.M                                        = ones_1col * 0
-        self.static_stability.moments.N                                        = ones_1col * 0
-                                                                               
+        self.static_stability.forces.drag                                      = ones_1col * 0  
         self.static_stability.static_margin                                    = ones_1col * 0
         self.static_stability.neutral_point                                    = ones_1col * 0
         self.static_stability.spiral_criteria                                  = ones_1col * 0 
@@ -305,6 +306,11 @@ class Results(Conditions):
         self.static_stability.derivatives.Clift_delta_r                        = ones_1col * 0
         self.static_stability.derivatives.Clift_delta_f                        = ones_1col * 0
         self.static_stability.derivatives.Clift_delta_s                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_a                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_e                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_r                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_f                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_s                        = ones_1col * 0
         self.static_stability.derivatives.Cdrag_induced_alpha                  = ones_1col * 0
         self.static_stability.derivatives.Cdrag_induced_beta                   = ones_1col * 0
         self.static_stability.derivatives.Cdrag_induced_delta_a                = ones_1col * 0
@@ -416,38 +422,86 @@ class Results(Conditions):
         # ----------------------------------------------------------------------------------------------------------------------         
         # Freestream 
         # ----------------------------------------------------------------------------------------------------------------------    
-        self.emissions                                       = Conditions()         
+        self.emissions                                                = Conditions()       
+        self.emissions.mass                                           = Conditions()    
+        self.emissions.index                                          = Conditions()    
+        self.emissions.gCO2e                                          =  ones_1col * 0  
+        self.emissions.cumulative_gCO2e                               =  ones_1col * 0 
+    
         
         # ----------------------------------------------------------------------------------------------------------------------         
         # Noise
         # ----------------------------------------------------------------------------------------------------------------------       
-        self.noise                                            = Conditions() 
-        self.noise.converters                                 = Conditions() 
-        self.noise.propulsors                                 = Conditions() 
-        self.noise.modulators                                 = Conditions() 
+        self.aeroacoustics                                            = Conditions() 
+        self.aeroacoustics.converters                                 = Conditions() 
+        self.aeroacoustics.propulsors                                 = Conditions() 
+        self.aeroacoustics.modulators                                 = Conditions() 
 
         # ----------------------------------------------------------------------------------------------------------------------         
         # Energy
         # ---------------------------------------------------------------------------------------------------------------------- 
+
         self.energy                                           = Conditions()  
-        self.energy.converters                                = Conditions()
+        self.energy.converters                                = Conditions() 
         self.energy.propulsors                                = Conditions()
         self.energy.modulators                                = Conditions()
-        self.energy.busses                                    = Conditions()
-        self.energy.fuel_lines                                = Conditions()
-        self.energy.coolant_lines                             = Conditions()
-        self.energy.thrust_force_vector                       = ones_3col * 0
-        self.energy.thrust_moment_vector                      = ones_3col * 0
-        self.energy.power                                     = ones_1col * 0 
-        self.energy.fuel_consumption                          = ones_1col * 0
+        self.energy.sources                                   = Conditions()
+        self.energy.distributors                              = Conditions()
+        self.energy.systems                                   = Conditions()
+        self.energy.total_force_vector                        = ones_3col * 0
+        self.energy.total_moment_vector                       = ones_3col * 0 
+        self.energy.fuel_consumption                          = ones_1col * 0      
         self.energy.cumulative_fuel_consumption               = ones_1col * 0
-        self.energy.hybrid_power_split_ratio                  = ones_1col * 0 
-        self.energy.battery_fuel_cell_power_split_ratio       = ones_1col * 0 
+        self.energy.inputs                                    = Conditions()
+        self.energy.inputs.power                              = Conditions()  
+        self.energy.inputs.power.propulsive                   = ones_1col * 0 
+        self.energy.inputs.power.mechanical                   = ones_1col * 0 
+        self.energy.inputs.power.electrical                   = ones_1col * 0 
+        self.energy.inputs.power.chemical                     = ones_1col * 0 
+        self.energy.inputs.power.pneumatic                    = ones_1col * 0 
+        self.energy.inputs.power.hydraulic                    = ones_1col * 0 
+        self.energy.inputs.power.thermal                      = ones_1col * 0 
+        self.energy.outputs                                   = Conditions()
+        self.energy.outputs.power                             = Conditions()  
+        self.energy.outputs.power.propulsive                  = ones_1col * 0 
+        self.energy.outputs.power.mechanical                  = ones_1col * 0 
+        self.energy.outputs.power.electrical                  = ones_1col * 0 
+        self.energy.outputs.power.chemical                    = ones_1col * 0 
+        self.energy.outputs.power.pneumatic                   = ones_1col * 0 
+        self.energy.outputs.power.hydraulic                   = ones_1col * 0 
+        self.energy.outputs.power.thermal                     = ones_1col * 0 
+        self.energy.hybrid_power_split_ratio                  = ones_1col * 0
+        self.energy.battery_fuel_cell_power_split_ratio       = Conditions()
+        self.energy.recharging                                = False
         
         # ----------------------------------------------------------------------------------------------------------------------         
         # Weights 
         # ----------------------------------------------------------------------------------------------------------------------     
         self.weights                                          = Conditions() 
-        self.weights.total_mass                               = ones_1col * 0 
-        self.weights.center_of_gravity                        = ones_3col * 0   
-        self.weights.vehicle_mass_rate                        = ones_1col * 0
+        self.weights.vehicle                                  = Conditions() 
+        self.weights.vehicle.mass                             = ones_1col * 0   
+        self.weights.vehicle.global_center_of_gravity         = ones_3col * 0 
+        self.weights.vehicle.mass_rate                        = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Ixx           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Ixy           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Ixz           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Iyx           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Iyy           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Iyz           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Izx           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Izy           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Izz           = ones_1col * 0 
+        self.weights.components                               = Conditions() 
+        self.weights.components.mass                          = Conditions() 
+        self.weights.components.global_center_of_gravity      = Conditions() 
+        self.weights.components.symmetry_flag                 = Conditions()
+        self.weights.components.mass_rate                     = Conditions() 
+        self.weights.components.moments_of_inertia_Ixx        = Conditions() 
+        self.weights.components.moments_of_inertia_Ixy        = Conditions() 
+        self.weights.components.moments_of_inertia_Ixz        = Conditions() 
+        self.weights.components.moments_of_inertia_Iyx        = Conditions() 
+        self.weights.components.moments_of_inertia_Iyy        = Conditions() 
+        self.weights.components.moments_of_inertia_Iyz        = Conditions() 
+        self.weights.components.moments_of_inertia_Izx        = Conditions() 
+        self.weights.components.moments_of_inertia_Izy        = Conditions() 
+        self.weights.components.moments_of_inertia_Izz        = Conditions() 

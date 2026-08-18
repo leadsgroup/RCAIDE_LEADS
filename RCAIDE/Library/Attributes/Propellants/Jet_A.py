@@ -30,6 +30,12 @@ class Jet_A(Propellant):
         Energy density in J/m³ (35276.4e6)
     lower_heating_value : float
         Lower heating value in J/kg (43.24e6)
+    molecular_weight : float
+        Average molecular weight in g/mol (160)
+    hydrogen_mass_fraction : float
+        Mass fraction of hydrogen content (0.1348)
+    carbon_mass_fraction : float
+        Mass fraction of carbon content (0.8637)
     max_mass_fraction : Data
         Maximum fuel-to-oxidizer mass ratios
             - Air : float
@@ -130,10 +136,13 @@ class Jet_A(Propellant):
         self.lower_heating_value           = 43.24e6                        # J/kg 
         self.heat_of_vaporization          = 300000                         # J/kg
         self.stoichiometric_fuel_air_ratio = 0.068
+        self.kinematic_viscosity           = 2.1e-6
         self.max_mass_fraction             = Data({'Air' : 0.0633,'O2' : 0.3022})   # kg propellant / kg oxidizer
-   
-        self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
-        self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
+        self.gravimetric_efficiency        = 1.0                      # [-] Gravimetric efficiency
+        self.molecular_weight              = 160     # [g/mol] average molecular weight
+        self.hydrogen_mass_fraction        = 0.1348  # [-] mass fraction of hydrogen content
+        self.carbon_mass_fraction          = 0.8637  # [-] mass fraction of carbon content
+
         self.temperature                   = 0         # [K] Temperature of fuel
         self.pressure                      = 0         # [Pa] Pressure of fuel
         self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
@@ -150,9 +159,9 @@ class Jet_A(Propellant):
         self.emission_indices.CO2         = 3.16    # kg/kg
         self.emission_indices.CO          = 0.00201 # kg/kg
         self.emission_indices.H2O         = 1.23    # kg/kg  
-        self.emission_indices.SO2         = 0.0012  # kg/kg
-        self.emission_indices.NOx         = 0.01514 # kg/kg
-        self.emission_indices.Soot        = 0.0012  # kg/kg
+        self.emission_indices.SO2         = 0.0012   # kg/kg  (2 × ~600 ppm sulfur content)
+        self.emission_indices.NOx         = 0.01514  # kg/kg
+        self.emission_indices.Soot        = 0.000025 # kg/kg  (0.025 g/kg, Lee et al. 2021 Table 2)
         
         self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
         self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Cargo_Bays/__init__.py
+# RCAIDE/Library/Components/Cargo_Bays/__init__.py
 # 
 
 """

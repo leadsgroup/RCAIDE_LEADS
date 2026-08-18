@@ -7,7 +7,6 @@ Mission segemtn for analyzing aircraft performance in untrimmed flight condition
 See Also
 --------
 RCAIDE.Library.Mission.Segments.Cruise
-RCAIDE.Library.Mission.Segments.Transition
 RCAIDE.Library.Mission.Segments.Climb
 """
 

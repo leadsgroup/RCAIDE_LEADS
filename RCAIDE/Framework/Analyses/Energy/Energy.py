@@ -9,10 +9,11 @@
 # RCAIDE imports
 from RCAIDE.Framework.Core     import Data
 from RCAIDE.Framework.Analyses import Analysis 
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  ANALYSIS
-# ----------------------------------------------------------------------------------------------------------------------  -Energy
+# ----------------------------------------------------------------------------------------------------------------------   
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Energy Analysis
@@ -31,8 +32,9 @@ class Energy(Analysis):
         """        
         self.tag      = 'energy'
         self.vehicle  = Data()
+        self.verbose  = True
         
-    def evaluate(self,state): 
+    def evaluate(self,unknowns,segment,network):
         """Evaluate the thrust produced by the energy network.
     
         Assumptions:
@@ -46,10 +48,27 @@ class Energy(Analysis):
 
         Returns:
             results : results of the thrust evaluation method. 
-        """ 
-            
-        networks = self.vehicle.networks
-        cg       = self.vehicle.mass_properties.center_of_gravity
-        networks.evaluate(state,cg)
-        return  
+        """  
+        vehicle = segment.analyses.vehicle
+        state   = segment.state
+
+        # Pack the unknowns to pass through the network
+        if isinstance(unknowns,np.ndarray):
+            state.unknowns.network.unpack_array(unknowns)
+
+        network.evaluate(state, vehicle)
+
+        if 'electrical_power' in state.unknowns.network:
+            state.residuals.network['electrical_power'] = state.conditions.energy.net_electrical_power
+
+        # Unpack Residuals
+        residual_keys = list(state.residuals.network.keys())
+        residual_keys.remove('tag')
+        network_res = Data()
+        full_ures_vals = Data()
+        for res in residual_keys:
+            network_res[res] = state.residuals.network[res]
+            full_ures_vals[res] = network_res[res]
+
+        return  full_ures_vals.pack_array()
     

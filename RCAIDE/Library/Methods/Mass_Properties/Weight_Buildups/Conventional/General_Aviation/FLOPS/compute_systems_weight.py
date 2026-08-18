@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/compute_systems_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/compute_systems_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -10,6 +10,7 @@
 # RCAIDE
 import  RCAIDE 
 from RCAIDE.Framework.Core    import Units, Data 
+from RCAIDE.Library.Components import Component
 
 # python imports 
 import  numpy as  np
@@ -155,15 +156,12 @@ def compute_systems_weight(vehicle):
     FNEW = 0
     FNEF = 0 
     for network in  vehicle.networks:
-        for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or\
-               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
-               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop): 
-                NENG += 1 
-                if propulsor.wing_mounted: 
-                    FNEW += 1  
-                else:
-                    FNEF += 1              
+        for propulsor in network.propulsors: 
+            NENG += 1 
+            if propulsor.wing_mounted: 
+                FNEW += 1  
+            else:
+                FNEF += 1              
             
     VMAX     = vehicle.flight_envelope.design_mach_number
     SFLAP    = 0
@@ -194,7 +192,7 @@ def compute_systems_weight(vehicle):
             XL  = fuselage.lengths.total / Units.ft
             WF  = fuselage.width / Units.ft
     FPAREA      = XL * WF
-    NPASS       = vehicle.passengers
+    NPASS       = vehicle.number_of_passengers
 
     
     NFLCR = 1 
@@ -215,12 +213,46 @@ def compute_systems_weight(vehicle):
 
     XLP     = 0.25 * XL # Assumption that pax cabin is 25% of fuselage length
     DF      = ref_fuselage.heights.maximum / Units.ft # D stands for depth
-    WFURN   = 127 * NFLCR +  44 * vehicle.passengers \
+    WFURN   = 127 * NFLCR +  44 * vehicle.number_of_passengers \
                 + 2.6 * XLP * (WF + DF) * NFUSE  # furnishing weight
 
     WAC     = (3.2 * (FPAREA * DF) ** 0.6 + 9 * NPASS ** 0.83) * VMAX + 0.075 * WAVONC  # ac weight
 
+    Systems = RCAIDE.Library.Components.Powertrain.Systems
 
+    for network in  vehicle.networks: 
+        for system in network.systems: 
+            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:  
+                if isinstance(system, Systems.Avionics):
+                    system.mass_properties.mass = WAVONC * Units.lbs
+                elif isinstance(system, Systems.Flight_Controls):
+                    system.mass_properties.mass = WSC * Units.lbs
+                elif isinstance(system, Systems.Electrical):
+                    system.mass_properties.mass = WELEC * Units.lbs
+                elif isinstance(system, Systems.Hydraulics):
+                    system.mass_properties.mass = WHYD * Units.lbs
+                elif isinstance(system, Systems.Environmental_Controls):
+                    system.mass_properties.mass = WAC * Units.lbs
+                elif isinstance(system, Systems.Furnishings):
+                    system.mass_properties.mass = WFURN * Units.lbs
+                elif isinstance(system, Systems.Instruments):
+                    system.mass_properties.mass = WIN * Units.lbs
+                system.mass_properties.calculated_flag = True
+            else:
+                if isinstance(system, Systems.Avionics):
+                    WAVONC = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Flight_Controls):
+                    WSC    = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Electrical):
+                    WELEC  = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Hydraulics):
+                    WHYD   = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Environmental_Controls):
+                    WAC    = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Furnishings):
+                    WFURN  = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Instruments):
+                    WIN    = system.mass_properties.mass / Units.lbs
 
     output                     = Data()
     output.W_flight_control    = WSC * Units.lbs
@@ -230,7 +262,7 @@ def compute_systems_weight(vehicle):
     output.W_apu               = 0.0
     output.W_anti_ice          = 0.0
     output.W_electrical        = WELEC * Units.lbs
-    output.W_ac                = 0.0
+    output.W_ac                = WAC * Units.lbs
     output.W_furnish           = WFURN * Units.lbs
-    output.total               = (WSC  + WIN + WHYD + WELEC + WAVONC + WFURN + WAC ) * Units.lbs
+    output.total               = (WSC + WIN + WHYD + WELEC + WAVONC + WFURN + WAC) * Units.lbs
     return output

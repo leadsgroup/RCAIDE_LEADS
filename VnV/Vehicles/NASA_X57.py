@@ -45,7 +45,7 @@ def vehicle_setup(rotor_type):
     vehicle.flight_envelope.design_mach_number        = 0.228
     
     vehicle.reference_area                            = 14.76
-    vehicle.passengers                                = 4
+    vehicle.number_of_passengers                      = 1
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "commuter"
     
@@ -62,7 +62,7 @@ def vehicle_setup(rotor_type):
     main_gear.wheels                         = 4   
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -99,7 +99,7 @@ def vehicle_setup(rotor_type):
     wing.origin                           = [[2.93, 0., 1.01]]
     wing.aerodynamic_center               = [3., 0., 1.01] 
     wing.vertical                         = False
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0  
@@ -184,7 +184,7 @@ def vehicle_setup(rotor_type):
     wing.aerodynamic_center               = [7.8, 0., 0.25] 
     wing.vertical                         = False
     wing.winglet_fraction                 = 0.0  
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = False 
     wing.dynamic_pressure_ratio           = 0.9
 
@@ -211,7 +211,7 @@ def vehicle_setup(rotor_type):
     wing.origin                           = [[6.75 ,0, 0.623]]
     wing.aerodynamic_center               = [0.508 ,0,0]  
     wing.vertical                         = True 
-    wing.symmetric                        = False
+    wing.xz_plane_symmetric               = False
     wing.t_tail                           = False
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0
@@ -374,16 +374,19 @@ def vehicle_setup(rotor_type):
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    battery_pack                                            = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     bat.tag                                                = 'li_ion_battery'
-    bat.electrical_configuration.series                    = 30   
-    bat.electrical_configuration.parallel                  = 40
-    bat.geometrtic_configuration.normal_count              = 30
-    bat.geometrtic_configuration.parallel_count            = 40
-     
-    for _ in range(8):
-        bus.battery_modules.append(deepcopy(bat))      
-    bus.initialize_bus_properties()      
+    bat.electrical_configuration.series                    = 30
+    bat.electrical_configuration.parallel                  = 12
+    bat.geometric_configuration.normal_count              = 30
+    bat.geometric_configuration.parallel_count            = 12
+
+    for _ in range(16):
+        battery_pack.append_module(deepcopy(bat))
+    battery_pack.assigned_distributors = [[bus.tag]]
+    net.sources.append(battery_pack)
+    battery_pack.initialize(net)
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
@@ -395,7 +398,7 @@ def vehicle_setup(rotor_type):
     esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95 
-    esc.bus_voltage                                  = bus.voltage   
+    esc.nominal_voltage                              = battery_pack.voltage
     starboard_propulsor.electronic_speed_controller  = esc   
 
     # ##########################################################   Nacelles  ############################################################    
@@ -470,7 +473,7 @@ def vehicle_setup(rotor_type):
         propeller.hub_radius                             = 10.     * Units.inches 
         propeller.cruise.design_freestream_velocity      = 175.*Units['mph']   
         propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
-        propeller.cruise.design_Cl                       = 0.7 
+        propeller.cruise.design_lift_coefficient                       = 0.7 
         propeller.cruise.design_altitude                 = 30. * Units.feet 
         propeller.cruise.design_thrust                   = 6000   
         propeller.clockwise_rotation                     = False
@@ -492,7 +495,7 @@ def vehicle_setup(rotor_type):
         motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
-        motor.nominal_voltage                            = bus.voltage * 0.5  
+        motor.nominal_voltage                            = battery_pack.voltage * 0.5
         motor.no_load_current                            = 1.0
         starboard_propulsor.motor                        = motor   
     
@@ -515,7 +518,7 @@ def vehicle_setup(rotor_type):
         motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
         motor.efficiency                                 = 0.98
         motor.origin                                     = [[2.,  2.5, 0.95]]
-        motor.nominal_voltage                            = bus.voltage 
+        motor.nominal_voltage                            = battery_pack.voltage
         motor.no_load_current                            = 1
         motor.rotor_radius                               = propeller.tip_radius
         motor.design_torque                              = 629.5930446195773
@@ -563,16 +566,18 @@ def vehicle_setup(rotor_type):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
-    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 30. # Watts
-    bus.avionics                 = avionics   
- 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to bus       
-    bus.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
- 
+    avionics                       = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.power_draw            = 30. # Watts
+    avionics.assigned_distributors = [[bus.tag]]
+    net.systems.append(avionics)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Assign propulsors to bus
+    starboard_propulsor.assigned_distributors = [[bus.tag]]
+    port_propulsor.assigned_distributors      = [[bus.tag]]
+
     # append bus   
-    net.busses.append(bus)
+    net.distributors.append(bus)
     
     vehicle.append_energy_network(net)
 

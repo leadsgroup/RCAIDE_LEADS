@@ -48,7 +48,7 @@ class Perfluoroalkoxy(Solid):
             IEEE Transactions on Transportation Electrification (2024).
         """
         self.electrical_permittivity    = 2.1 
-        self.dielectric_strength_range  = [7E7, 8E7]  # [V/m] 
+        self.dielectric_strength        = 7E7 #[7E7, 8E7]  # [V/m] 
         self.density                    = 2150
         self.thermal_conductivity       = 0.19
         self.melting_point              = 578

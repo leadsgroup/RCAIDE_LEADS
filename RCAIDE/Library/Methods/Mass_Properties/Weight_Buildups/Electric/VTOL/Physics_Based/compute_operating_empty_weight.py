@@ -12,6 +12,7 @@ import RCAIDE
 from RCAIDE.Framework.Core                                          import Units, Data 
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based as EVTOL
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common as EVTOL_Common
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
 
 # package imports 
 import numpy as np
@@ -44,24 +45,18 @@ def compute_operating_empty_weight(vehicle,settings = None):
         Output data dictionary has the following book-keeping hierarchical structure:
 
             Output
-                Total.
-                    Empty.
-                        Structural.
-                            Fuselage
-                            Wings
-                            Landing Gear
-                            Rotors
-                            Hubs
-                        Seats
-                        Battery
-                        Motors
-                        Servo
-                    Systems.
-                        Avionics
-                        ECS               - Environmental Control System
-                        BRS               - Ballistic Recovery System
-                        Wiring            - Aircraft Electronic Wiring
-                    Payload
+                empty.
+                    propulsion.
+                        total, engines, thrust_reversers, miscellaneous, fuel_system, battery, motors
+                    structural.
+                        total, wings, fuselage, empennage, landing_gear, nacelle, booms, paint
+                    systems.
+                        total, control_systems, apu, electrical, avionics, hydraulics, furnishings, air_conditioner, instruments
+                payload.
+                    total, passengers, baggage, cargo
+                operational_items.
+                    total, misc, flight_crew, flight_attendants, passenger_service
+                empty.total, zero_fuel_weight, max_takeoff
     """
 
     diff        = 100
@@ -92,7 +87,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
         weight.wiring                           = 0.0
         weight.wings                            = Data()
         weight.wings_total                      = 0.0
-        weight.thermal_management_system       = Data()
+        weight.thermal_management_system        = Data()
         
         #-------------------------------------------------------------------------------
         # Default Values
@@ -106,11 +101,17 @@ def compute_operating_empty_weight(vehicle,settings = None):
         #-------------------------------------------------------------------------------
         # Fixed Weights
         #-------------------------------------------------------------------------------
-        weight.seats        = vehicle.passengers * 15.   * Units.kg
-        weight.passengers   = vehicle.passengers * 70.   * Units.kg
+    
+        #-------------------------------------------------------------------------------             
+        # Payload Weight
+        #-------------------------------------------------------------------------------  
+        payload = compute_payload_weight(vehicle, W_passenger=70.* Units.kg, W_baggage=0 * Units.lbs) 
+        
+        weight.seats        = vehicle.number_of_passengers * 15.   * Units.kg
+        weight.passengers   = payload.passengers
         weight.avionics     = 15.                        * Units.kg
         weight.landing_gear = MTOW * 0.02                * Units.kg
-        weight.ECS          = vehicle.passengers * 7.    * Units.kg
+        weight.ECS          = vehicle.number_of_passengers * 7.    * Units.kg
 
         # Determine length scale
         length_scale = 1.
@@ -136,39 +137,38 @@ def compute_operating_empty_weight(vehicle,settings = None):
         maxVTip                = 0
         eta                    = 0
         for network in vehicle.networks:
-
+            for system in network.systems:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
+                    weight.avionics += system.mass_properties.mass * Units.kg
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls:
+                    system.mass_properties.mass = weight.ECS
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical:
+                    system.mass_properties.mass = weight.wiring
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Furnishings:
+                    system.mass_properties.mass = weight.seats
+         
             #-------------------------------------------------------------------------------
             # Powertain 
             #-------------------------------------------------------------------------------            
-            for bus in network.busses:
+            for source in network.sources:
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                    weight.battery += source.mass_properties.mass * Units.kg
 
-                #-------------------------------------------------------------------------------
-                # Avionics Weight
-                #-------------------------------------------------------------------------------
-                if bus.avionics.origin[0][0] == 0:
-                    bus.avionics.origin[0][0]                          = 0.4 * nose_length
-                bus.avionics.mass_properties.center_of_gravity[0][0]   = 0.0
-                weight.avionics += bus.avionics.mass_properties.mass
+            for converter in network.converters:
+                if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
+                    weight.fuel_cell += converter.mass_properties.mass * Units.kg
 
-                for modules in bus.battery_modules:
-                    weight.battery += modules.mass_properties.mass * Units.kg
+            # Servo, Hub and BRS Weights
+            lift_rotor_hub_weight   = 4.   * Units.kg
+            prop_hub_weight         = 4.   * Units.kg
+            lift_rotor_BRS_weight   = 16.  * Units.kg
 
-                for fuel_cell in bus.fuel_cell_stacks:
-                    weight.fuel_cell += fuel_cell.mass_properties.mass * Units.kg
+            # Rotor Weight
+            number_of_propellers    = 0.0
+            number_of_lift_rotors   = 0.0
+            total_number_of_rotors  = 0.0
+            lift_rotor_servo_weight = 0.0
 
-                # Servo, Hub and BRS Weights
-                lift_rotor_hub_weight   = 4.   * Units.kg
-                prop_hub_weight         = 4.   * Units.kg
-                lift_rotor_BRS_weight   = 16.  * Units.kg
-
-                # Rotor Weight
-                number_of_propellers    = 0.0
-                number_of_lift_rotors   = 0.0
-                total_number_of_rotors  = 0.0
-                lift_rotor_servo_weight = 0.0
-
-
-    
             #-------------------------------------------------------------------------------
             # Propulsors
             #-------------------------------------------------------------------------------
@@ -221,23 +221,28 @@ def compute_operating_empty_weight(vehicle,settings = None):
             if number_of_lift_rotors == 1: # this assumes that the vehicle is an electric helicopter with a tail rotor
                 maxLiftOmega   = maxVTip/rTip_ref
                 maxLiftTorque  = maxLiftPower / maxLiftOmega
-                for bus in network.busses:
-                    tailrotor = next(iter(bus.lift_rotors))
-                    weight.tail_rotor  = EVTOL_Common.compute_rotor_weight(tailrotor, 1.5*maxLiftTorque/(1.25*rTip_ref))*0.2 * Units.kg
-                    weight.rotors     += weight.tail_rotor
+                for propulsor in network.propulsors:
+                    if isinstance(propulsor.rotor, RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor):
+                        tailrotor = propulsor.rotor
+                        weight.tail_rotor  = EVTOL_Common.compute_rotor_weight(tailrotor, 1.5*maxLiftTorque/(1.25*rTip_ref))*0.2 * Units.kg
+                        weight.rotors     += weight.tail_rotor
+                        break
 
             #-------------------------------------------------------------------------------
             # Thermal Management System Weight
             #-------------------------------------------------------------------------------
-            tms_weight = 0.0 
-            for coolant_line in network.coolant_lines:
+            tms_weight = 0.0
+            coolant_lines = [d for d in network.distributors if isinstance(d, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line)]
+            for coolant_line in coolant_lines:
                 weight.thermal_management_system.battery_module = Data()  # Add container for battery module
-                for i, battery_module in enumerate(coolant_line.battery_modules):
-                    module_key = f'module_{i+1}'  # Create unique key for each module
-                    weight.thermal_management_system.battery_module[module_key] = 0.0  # Initialize weight
-                    for HAS in battery_module:
-                        weight.thermal_management_system.battery_module[module_key] = HAS.mass_properties.mass
-                        tms_weight +=  HAS.mass_properties.mass
+                for source in network.sources:
+                    if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                        for i, battery_module in enumerate(source.modules):
+                            HAS = battery_module.heat_acquisition_system
+                            if HAS is not None and battery_module.assigned_distributors is not None and coolant_line.tag in battery_module.assigned_distributors[0]:
+                                module_key = f'module_{i+1}'  # Create unique key for each module
+                                weight.thermal_management_system.battery_module[module_key] = HAS.mass_properties.mass
+                                tms_weight +=  HAS.mass_properties.mass
 
                 for tag, item in coolant_line.items():
                     if tag == 'heat_exchangers':
@@ -274,16 +279,12 @@ def compute_operating_empty_weight(vehicle,settings = None):
 
         #-------------------------------------------------------------------------------
         # Landing Gear Weight
-        #-------------------------------------------------------------------------------
-        main_landing_gear =  False
+        #------------------------------------------------------------------------------- 
         for LG in vehicle.landing_gears:
             if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-                LG.mass_properties.mass =  weight.landing_gear
-                main_landing_gear = True
-        if main_landing_gear == False:
-            main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-            main_gear.mass_properties.mass =  weight.landing_gear
-            vehicle.landing_gears.append(main_gear)
+                LG.mass_properties.mass =  2 / 3 *  weight.landing_gear 
+            if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
+                LG.mass_properties.mass = 1 / 3 *  weight.landing_gear 
 
         #-------------------------------------------------------------------------------
         # Fuselage  Weight
@@ -291,7 +292,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
         for fuse in  vehicle.fuselages:
             fuselage_weight = EVTOL.compute_fuselage_weight(fuse, maxSpan, MTOW )
             fuse.mass_properties.center_of_gravity[0][0] = .45*fuse.lengths.total
-            fuse.mass_properties.mass                    =  fuselage_weight + weight.passengers + weight.seats + weight.wiring + weight.BRS
+            fuse.mass_properties.mass                    =  fuselage_weight
             weight.fuselage += fuselage_weight
 
         #-------------------------------------------------------------------------------
@@ -307,69 +308,74 @@ def compute_operating_empty_weight(vehicle,settings = None):
         #-------------------------------------------------------------------------------
         output                                            = Data()
         output.empty                                      = Data()
+
+        # structural
         output.empty.structural                           = Data()
-        output.empty.structural.booms                     = miscelleneous_weight_factor *weight.booms
-        output.empty.structural.fusleage                  = miscelleneous_weight_factor *weight.fuselage
-        output.empty.structural.landing_gear              = miscelleneous_weight_factor *weight.landing_gear
-        output.empty.structural.wings                     = miscelleneous_weight_factor *weight.wings_total
-        output.empty.structural.total                     = weight.booms + weight.fuselage + weight.landing_gear +weight.wings_total
+        output.empty.structural.wings                     = miscelleneous_weight_factor * weight.wings_total
+        output.empty.structural.fuselage                  = miscelleneous_weight_factor * weight.fuselage
+        output.empty.structural.empennage                 = 0.0
+        output.empty.structural.landing_gear              = miscelleneous_weight_factor * weight.landing_gear
+        output.empty.structural.nacelle                   = 0.0
+        output.empty.structural.booms                     = miscelleneous_weight_factor * weight.booms
+        output.empty.structural.paint                     = 0.0
+        output.empty.structural.total                     = (output.empty.structural.wings + output.empty.structural.fuselage
+                                                            + output.empty.structural.empennage + output.empty.structural.landing_gear
+                                                            + output.empty.structural.nacelle + output.empty.structural.booms
+                                                            + output.empty.structural.paint)
 
+        # propulsion
         output.empty.propulsion                           = Data()
-        output.empty.propulsion.motors                    = miscelleneous_weight_factor *weight.motors
-        output.empty.propulsion.rotors                    = miscelleneous_weight_factor *weight.rotors
-        output.empty.propulsion.hubs                      = miscelleneous_weight_factor *weight.hubs
-        output.empty.propulsion.servos                    = miscelleneous_weight_factor *weight.servos
-        output.empty.propulsion.wiring                    = miscelleneous_weight_factor *weight.wiring
-        output.empty.propulsion.battery                   = miscelleneous_weight_factor *weight.battery
-        output.empty.propulsion.fuel_cell                 = miscelleneous_weight_factor *weight.fuel_cell
-        output.empty.propulsion.TMS                       = miscelleneous_weight_factor *weight.thermal_management_system.total
-        output.empty.propulsion.total                     = weight.rotors + weight.hubs  +  weight.fuel_cell  +  weight.battery +  weight.motors +   weight.wiring +   weight.servos +  weight.thermal_management_system.total
+        output.empty.propulsion.engines                   = miscelleneous_weight_factor * weight.rotors 
+        output.empty.propulsion.thrust_reversers          = 0.0
+        output.empty.propulsion.miscellaneous             = miscelleneous_weight_factor * (weight.BRS + weight.fuel_cell)
+        output.empty.propulsion.fuel_system               = 0.0
+        output.empty.propulsion.fuel_tanks                = 0.0
+        output.empty.propulsion.electrical_cabling        = miscelleneous_weight_factor * weight.wiring
+        output.empty.propulsion.thermal_management        = miscelleneous_weight_factor * weight.thermal_management_system.total
+        output.empty.propulsion.battery                   = miscelleneous_weight_factor * weight.battery
+        output.empty.propulsion.motors                    = miscelleneous_weight_factor * (weight.motors+ weight.servos + weight.hubs)
+        output.empty.propulsion.total                     = (output.empty.propulsion.engines + output.empty.propulsion.thrust_reversers
+                                                            + output.empty.propulsion.miscellaneous + output.empty.propulsion.fuel_system
+                                                            + output.empty.propulsion.electrical_cabling + output.empty.propulsion.thermal_management
+                                                            + output.empty.propulsion.battery + output.empty.propulsion.motors)
 
+        # systems
         output.empty.systems                              = Data()
-        output.empty.systems.environmental_control_system = miscelleneous_weight_factor * weight.ECS
+        output.empty.systems.control_systems              = 0.0
+        output.empty.systems.apu                          = 0.0
+        output.empty.systems.electrical                   = 0.0
         output.empty.systems.avionics                     = miscelleneous_weight_factor * weight.avionics
-        output.empty.systems.seats                        = miscelleneous_weight_factor * weight.seats
-        output.empty.systems.balistic_recovery_system     = miscelleneous_weight_factor * weight.BRS
-        output.empty.systems.total                        = weight.ECS + weight.avionics +   weight.BRS +  weight.seats
+        output.empty.systems.hydraulics                   = 0.0
+        output.empty.systems.furnishings                  = miscelleneous_weight_factor * weight.seats
+        output.empty.systems.air_conditioner              = miscelleneous_weight_factor * weight.ECS
+        output.empty.systems.instruments                  = 0.0
+        output.empty.systems.total                        = (output.empty.systems.control_systems + output.empty.systems.apu
+                                                            + output.empty.systems.electrical + output.empty.systems.avionics
+                                                            + output.empty.systems.hydraulics + output.empty.systems.furnishings
+                                                            + output.empty.systems.air_conditioner + output.empty.systems.instruments)
 
-        output.empty.total        = output.empty.systems.total +  output.empty.propulsion.total +  output.empty.structural.total
-        output.payload            = Data()
-        output.payload.total      = weight.passengers + weight.payload
-        output.payload.passengers = weight.passengers
-        output.payload.payload    = weight.payload
+        # payload
+        output.payload                  = Data()
+        output.payload.passengers       = weight.passengers
+        output.payload.baggage          = 0.0
+        output.payload.cargo            = weight.payload
+        output.payload.total            = output.payload.passengers + output.payload.baggage + output.payload.cargo
+
+        # operational items
+        output.operational_items                      = Data()
+        output.operational_items.misc                 = 0.0
+        output.operational_items.flight_crew          = 0.0
+        output.operational_items.flight_attendants    = 0.0
+        output.operational_items.passenger_service    = 0.0
+        output.operational_items.total                = (output.operational_items.misc + output.operational_items.flight_crew
+                                                        + output.operational_items.flight_attendants + output.operational_items.passenger_service)
+
+        # total weight
+        output.empty.total        = output.empty.systems.total + output.empty.propulsion.total + output.empty.structural.total + output.operational_items.total
         output.zero_fuel_weight   = output.empty.total + output.payload.total
-        output.fuel               = 0
-        output.total              = output.empty.total + output.payload.total 
-
-        output.operational_items = Data()
-        output.operational_items.total = 0
+        output.max_takeoff        = output.empty.total + output.payload.total
         
-        # check if cargo bays defined in aircraft, if none, define one 
-        if len(vehicle.cargo_bays) == 0: 
-            cargo_bay =  RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-            vehicle.cargo_bays.append(cargo_bay) 
-        
-        ##-------------------------------------------------------------------------------   
-        # Cabin
-        ##------------------------------------------------------------------------------- 
-        for fuselage in vehicle.fuselages:
-            if len(fuselage.cabins) == 0:                
-                cabin =  RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-                cabin.mass_properties.mass = output.empty.systems.total  +  output.payload.passengers
-                fuselage.append_cabin(cabin)
-            else: 
-                for cabin in fuselage.cabins:
-                    cabin.mass_properties.mass = (output.payload.passengers + output.empty.systems.total) * (cabin.number_of_passengers / fuselage.number_of_passengers )              
-                 
-        total_volume =  0
-        for cargo_bay in vehicle.cargo_bays:
-            total_volume += (cargo_bay.length * cargo_bay.width * cargo_bay.height)
-        
-        for cargo_bay in vehicle.cargo_bays:
-            cargo_bay_volume = (cargo_bay.length * cargo_bay.width * cargo_bay.height)
-            cargo_bay.mass_properties.mass         = (weight.payload) * (cargo_bay_volume / total_volume)        
-
-        diff = MTOW -output.total
+        diff = MTOW - output.max_takeoff
         MTOW -= diff
         iterations     += 1 
     
@@ -377,8 +383,6 @@ def compute_operating_empty_weight(vehicle,settings = None):
             print('Weight convergence failed!')
             return output 
         
-    print('Converged MTOW = ' + str(round(MTOW)) + ' kg')
-
     return output
 
 

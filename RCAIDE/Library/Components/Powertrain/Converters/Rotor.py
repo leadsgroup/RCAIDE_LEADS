@@ -9,7 +9,7 @@
 
  # RCAIDE imports 
 from RCAIDE.Framework.Core                              import Data , Units, Container
-from RCAIDE.Library.Components                          import Component  
+from RCAIDE.Library.Components.Powertrain.Converters    import Converter  
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions import  append_rotor_conditions
 
 # package imports
@@ -19,7 +19,7 @@ import scipy as sp
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Rotor(Component):
+class Rotor(Converter):
     """
     A generalized rotor component model serving as the base class for various rotary propulsion devices.
 
@@ -70,7 +70,7 @@ class Rotor(Component):
     vtk_airfoil_points : int
         Number of points for VTK airfoil visualization. Default is 40.
         
-    Airfoils : Airfoil_Container
+    airfoils : Airfoil_Container
         Container for blade airfoil definitions. Default is empty container.
         
     airfoil_polar_stations : ndarray
@@ -198,14 +198,14 @@ class Rotor(Component):
         self.cruise.design_power_coefficient   = 0.01 
         self.cruise.design_thrust_coefficient  = 0.01
         self.cruise.design_torque_coefficient  = 0.005
-        self.cruise.design_Cl                  = 0.7 
+        self.cruise.design_lift_coefficient    = 0.7 
         self.cruise.design_efficiency          = 0.86  
         self.cruise.design_angular_velocity    = None
         self.cruise.design_tip_mach            = None
         self.cruise.design_acoustics           = None
         self.cruise.design_performance         = None
         self.cruise.design_SPL_dBA             = None
-        self.cruise.design_blade_pitch_command       = 0.0     
+        self.cruise.design_blade_pitch_command = 0.0     
 
         # operating conditions 
         self.induced_power_factor              = 1.48        # accounts for interference effects
@@ -226,18 +226,19 @@ class Rotor(Component):
  
         # blade optimization parameters     
         self.optimization_parameters                                    = Data() 
-        self.optimization_parameters.tip_mach_range                     = [0.3,0.7] 
+        self.optimization_parameters.tip_mach_range                     = [0.1,0.6] 
         self.optimization_parameters.multiobjective_aeroacoustic_weight = 1.0
         self.optimization_parameters.multiobjective_performance_weight  = 1.0
         self.optimization_parameters.multiobjective_acoustic_weight     = 1.0
-        self.optimization_parameters.noise_evaluation_angle             = 135 * Units.degrees 
+        self.optimization_parameters.noise_evaluation_angle             = 135 * Units.degrees
+        self.optimization_parameters.noise_evaluation_distance          = 20
         self.optimization_parameters.tolerance                          = 1E-4
         self.optimization_parameters.ideal_SPL_dBA                      = 30
         self.optimization_parameters.ideal_efficiency                   = 1.0     
         self.optimization_parameters.ideal_figure_of_merit              = 1.0
 
-    def append_operating_conditions(rotor,segment,energy_conditions,noise_conditions=None): 
-        append_rotor_conditions(rotor,segment,energy_conditions,noise_conditions)
+    def append_operating_conditions(rotor,segment): 
+        append_rotor_conditions(rotor,segment)
         return        
          
     def append_airfoil(self,airfoil):
@@ -378,9 +379,9 @@ class Rotor(Component):
         cpts       = len(np.atleast_1d(commanded_thrust_vector))
         rots       = np.array(self.orientation_euler_angles) * 1.
         rots       = np.repeat(rots[None,:], cpts, axis=0) 
-        rots[:,1] += commanded_thrust_vector[:,0] 
+        rots[:,1] += commanded_thrust_vector[:,0]
         
-        vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_rotvec(rots).as_matrix()
+        vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()
 
         # GO from the propeller vehicle frame to the propeller velocity frame: rot 2
         prop_vec_2_prop_vel = self.vec_to_vel()

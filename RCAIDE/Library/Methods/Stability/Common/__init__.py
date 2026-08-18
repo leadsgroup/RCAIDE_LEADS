@@ -6,4 +6,4 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from .compute_dynamic_flight_modes                   import  compute_dynamic_flight_modes 
+from .compute_dynamic_flight_modes                  import  compute_dynamic_flight_modes  

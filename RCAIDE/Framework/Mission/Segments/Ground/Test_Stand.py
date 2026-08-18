@@ -9,9 +9,8 @@
 
 # RCAIDE imports 
 from RCAIDE.Framework.Mission.Segments.Evaluate       import Evaluate
-from RCAIDE.Framework.Core                            import Units, Data 
-from RCAIDE.Library.Mission.Segments                  import Ground  
-from RCAIDE.Library.Mission.Common                    import Residuals , Unpack_Unknowns, Update
+from RCAIDE.Framework.Core                            import Units 
+from RCAIDE.Library.Mission.Segments                  import Ground   
 from RCAIDE.Library.Methods.skip                      import skip 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -54,9 +53,9 @@ class Test_Stand(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission Unknowns and Residuals
         # -------------------------------------------------------------------------------------------------------------- 
-        ones_row                                  = self.state.ones_row
-        self.state.residuals.final_velocity_error = ones_row(1) * 0  
-        self.state.unknowns.ground_velocity       = ones_row(1) * 0   
+        ones_row                                          = self.state.ones_row
+        self.state.residuals.mission.final_velocity_error = ones_row(1) * 0  
+        self.state.unknowns.mission.ground_velocity       = ones_row(1) * 0   
 
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
@@ -66,11 +65,11 @@ class Test_Stand(Evaluate):
         converge                           = self.process.converge 
         converge.solver                    = skip 
         iterate                            = self.process.iterate 
-        iterate.unknowns.mission           = skip
+        iterate.unknowns.mission.mission   = skip
         iterate.conditions.aerodynamics    = skip
         iterate.conditions.stability       = skip  
         post_process                       = self.process.post_process  
-        post_process.noise                 = skip      
+        post_process.aeroacoustics         = skip      
         
         return
 

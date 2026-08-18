@@ -90,9 +90,19 @@ def initialize_conditions(segment):
     if alt0 is None:
         if not segment.state.initials: raise AttributeError('initial altitude not set')
         alt0 = -1.0 * segment.state.initials.conditions.frames.inertial.position_vector[-1,2]
-    
-    # pack conditions   
-    conditions.freestream.altitude[:,0]   = -alts 
+
+    # seed altitude unknown on first call so the solver starts from a physical guess
+    if not getattr(segment, '_altitude_initialized', False):
+        alt_end = segment.altitude_end
+        t = segment.state.numerics.dimensionless.control_points[:,0]
+        init_alt = alt0 + (alt_end - alt0) * t
+        segment.state.unknowns.mission.altitude[:,0] = init_alt
+        conditions.frames.inertial.position_vector[:,2] = -init_alt
+        alts = conditions.frames.inertial.position_vector[:,2]
+        segment._altitude_initialized = True
+
+    # pack conditions
+    conditions.freestream.altitude[:,0]   = -alts
 
     # check for initial velocity
     if mach_number is None: 
@@ -118,24 +128,13 @@ def initialize_conditions(segment):
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Residual Total Forces
 # ----------------------------------------------------------------------------------------------------------------------  
-def residual_total_forces(segment):
+def residual_altitude(segment):
     
-    # Unpack results
-    FT      = segment.state.conditions.frames.inertial.total_force_vector
-    a       = segment.state.conditions.frames.inertial.acceleration_vector
-    m       = segment.state.conditions.weights.total_mass    
-    alt_in  = segment.state.unknowns.altitude[:,0] 
-    alt_out = segment.state.conditions.freestream.altitude[:,0] 
+    # Unpack results    
+    alt_in  = segment.state.unknowns.mission.altitude[:,0]
+    alt_out = segment.state.conditions.freestream.altitude[:,0]
     
-    # Residual in X and Z, as well as a residual on the guess altitude
-    if segment.flight_dynamics.force_x: 
-        segment.state.residuals.force_x[:,0] = FT[:,0]/m[:,0] - a[:,0]
-    if segment.flight_dynamics.force_y: 
-        segment.state.residuals.force_y[:,0] = FT[:,1]/m[:,0] - a[:,1]       
-    if segment.flight_dynamics.force_z: 
-        segment.state.residuals.force_z[:,0] = FT[:,2]/m[:,0] - a[:,2]    
-          
-    segment.state.residuals.altitude[:,0] = (alt_in - alt_out)/alt_out[-1]
+    segment.state.residuals.mission.altitude[:,0] = (alt_in - alt_out)/alt_out[-1]
 
     return    
 

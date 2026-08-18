@@ -2,7 +2,7 @@
 # 
 
 """
-This module provides a common method for modeling and analyzing fuel cell stacks in aircraft powertrain systems. It includes functionality for computing stack properties based on individual cell characteristics and stack configuration.
+This module provides a common method for sizing fuel cell stacks in aircraft powertrain systems. It includes functionality for computing stack properties based on individual cell characteristics and stack configuration.
 
 See Also
 --------
@@ -14,4 +14,4 @@ RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .compute_stack_properties       import compute_stack_properties
+from .design_fuel_cell       import design_fuel_cell

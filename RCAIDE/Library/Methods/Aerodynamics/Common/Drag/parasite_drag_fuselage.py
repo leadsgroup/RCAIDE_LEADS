@@ -155,7 +155,7 @@ def parasite_drag_fuselage(state,settings,fuselage):
     
     # skin friction coefficient
     cf_fus, k_comp, k_reyn = compressible_turbulent_flat_plate(Re_fus,Mach,T)       
-    d_d = float(d_fus)/float(l_fus) 
+    d_d = d_fus/l_fus
  
     if np.all((Mach<=1.0) == True): 
         # compute form factor for cylindrical bodies 

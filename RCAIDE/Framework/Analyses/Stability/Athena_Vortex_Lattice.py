@@ -60,12 +60,12 @@ class Athena_Vortex_Lattice(Stability):
                    
          
 
-    def initialize(self):
+    def initialize(self, vehicle):
         pass
         return 
     
          
-    def evaluate(self,state):
+    def evaluate(self,state, vehicle):
         """The default evaluate function.
 
         Assumptions:

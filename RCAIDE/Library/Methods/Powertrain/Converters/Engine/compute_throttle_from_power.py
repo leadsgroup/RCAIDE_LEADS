@@ -29,16 +29,16 @@ def compute_throttle_from_power(engine,conditions):
                 Altitude below which power remains constant [m]
             - power_specific_fuel_consumption : float
                 Power specific fuel consumption [kg/(W·s)]
-    engine_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Engine operating conditions with:
-            - power : numpy.ndarray
-                Required power output [W]
     conditions : RCAIDE.Framework.Mission.Common.Conditions
         Flight conditions with:
             - freestream.altitude : numpy.ndarray
                 Current altitude [m]
             - freestream.delta_ISA : numpy.ndarray
                 Temperature offset from standard atmosphere [K]
+            - energy.converters[engine.tag] : RCAIDE.Framework.Mission.Common.Conditions
+                Engine operating conditions, with:
+                    - power.propulsive : numpy.ndarray
+                        Required power output [W]
 
     Returns
     -------
@@ -92,7 +92,7 @@ def compute_throttle_from_power(engine,conditions):
     engine_conditions = conditions.energy.converters[engine.tag] 
     PSLS              = engine.sea_level_power
     h_flat            = engine.flat_rate_altitude
-    P                 = engine_conditions.power*1.0
+    P                 = engine_conditions.power.propulsive*1.0
     PSFC              = engine.power_specific_fuel_consumption
     
     altitude_virtual = altitude - h_flat        
@@ -115,11 +115,11 @@ def compute_throttle_from_power(engine,conditions):
     # Compute fuel flow rate
     SFC             = PSFC* Units['lb/hp/hr']
     a               = np.zeros_like(altitude)
-    fuel_flow_rate  = np.fmax(P*SFC,a)
+    m_dot_fuel      = np.fmax(P*SFC,a)
     
     # Store outputs 
     engine_conditions.power_specific_fuel_consumption = PSFC
-    engine_conditions.fuel_flow_rate                  = fuel_flow_rate
+    engine_conditions.fuel_mass_flow_rate             = m_dot_fuel
     engine_conditions.throttle                        = throttle
 
     return

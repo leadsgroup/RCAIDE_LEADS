@@ -50,7 +50,7 @@ def vehicle_setup():
               
     # basic parameters              
     vehicle.reference_area                            = 61.0  
-    vehicle.passengers                                = 72
+    vehicle.number_of_passengers                                = 72
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "short range"  
 
@@ -67,7 +67,7 @@ def vehicle_setup():
     main_gear.wheels                         = 4   
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -102,7 +102,7 @@ def vehicle_setup():
     wing.origin                           = [[11.52756129,0,2.009316366]]  
     wing.aerodynamic_center               = [11.52756129 + 0.25*wing.chords.root ,0,2.009316366]  
     wing.vertical                         = False   
-    wing.symmetric                        = True  
+    wing.xz_plane_symmetric               = True  
     wing.dynamic_pressure_ratio           = 1.0 
  
 
@@ -160,7 +160,7 @@ def vehicle_setup():
     wing.origin                  = [[25.505088,0,5.510942426]]  
     wing.aerodynamic_center      = [25.505088+ 0.25*wing.chords.root,0,2.009316366] 
     wing.vertical                = False  
-    wing.symmetric               = True  
+    wing.xz_plane_symmetric      = True  
     wing.dynamic_pressure_ratio  = 1.0 
 
     # add to vehicle
@@ -188,7 +188,7 @@ def vehicle_setup():
     wing.origin                            = [[17.34807199,0,1.3]]  
     wing.aerodynamic_center                = [17.34807199,0,1.3+ 0.25*wing.chords.root]   
     wing.vertical                          = True  
-    wing.symmetric                         = False  
+    wing.xz_plane_symmetric                = False  
     wing.t_tail                            = True  
     wing.dynamic_pressure_ratio            = 1.0  
  
@@ -466,43 +466,47 @@ def vehicle_setup():
     vehicle.append_component(fuselage)
 
     # ########################################################  Energy Network  #########################################################  
-    net                                         = RCAIDE.Framework.Networks.Hybrid()  
+    net                                         = RCAIDE.Framework.Networks.Network()
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
     bus                                        = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
 
-    #------------------------------------------------------------------------------------------------------------------------------------           
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Battery
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
-    bat_module.electrical_configuration.series             = 20 
-    bat_module.electrical_configuration.parallel           = 210 *  4 
-    bat_module.cell.nominal_capacity                       = 3.8 
-    bat_module.geometrtic_configuration.normal_count       = 42 
-    bat_module.geometrtic_configuration.parallel_count     = 100 *  4 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    battery_pack                                           = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
+    bat_module.electrical_configuration.series             = 20
+    bat_module.electrical_configuration.parallel           = 210 *  4
+    bat_module.cell.nominal_capacity                       = 3.8
+    bat_module.geometric_configuration.normal_count       = 42
+    bat_module.geometric_configuration.parallel_count     = 100 *  4
 
     for _ in range(12):
         bat_copy = deepcopy(bat_module)
-        bus.battery_modules.append(bat_copy)
+        battery_pack.append_module(bat_copy)
 
-    bus.battery_module_electric_configuration = 'Series' 
-    bus.initialize_bus_properties() 
+    battery_pack.battery_module_electric_configuration = 'Series'
+    battery_pack.assigned_distributors                 = [[bus.tag]]
+    net.sources.append(battery_pack)
+    battery_pack.initialize(net)
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 30. # Watts
-    bus.avionics                 = avionics
+    avionics.assigned_distributors = [[bus.tag]]
+    net.systems.append(avionics)
 
-    # append bus   
-    net.busses.append(bus)
+    # append bus
+    net.distributors.append(bus)
   
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
  
@@ -512,14 +516,28 @@ def vehicle_setup():
     starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop()    
     starboard_propulsor.tag                          = 'starboard_propulsor'  
     starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
-    starboard_propulsor.design_altitude              = 25000*Units.ft                                   # [-]         Design Altitude 
-    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts      
-    starboard_propulsor.design_propeller_efficiency  = 0.86
-    starboard_propulsor.design_thrust                = 15000.0 * Units.N                                # [-]         Design Thrust          
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()            
-    starboard_propulsor.design_propeller_efficiency  = 0.83                                             # [-]         Design Propeller Efficiency
-    starboard_propulsor.gearbox.efficiency           = 0.99                                             # [-]         Design Gearbox Efficiency
-    starboard_propulsor.design_angular_velocity      = 3000.0 * Units.rpm
+    starboard_propulsor.gearbox.efficiency           = 0.99                                             
+    starboard_propulsor.design_thrust                = 15000.0 * Units.N 
+    starboard_propulsor.design_altitude              = 25000*Units.ft                                
+    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts
+    starboard_propulsor.length                       = 2.0
+    starboard_propulsor.diameter                     = 0.60
+
+     #Propeller Design              
+    propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller()   
+    propeller.tag                                    = 'starboard_propulsor_propeller' 
+    propeller.origin                                 = [[9.1,4.219315295, 1.616135105 ]]
+    propeller.active                                 = True          
+    propeller.tip_radius                             = 2.8/2
+    propeller.hub_radius                             = 0.1 
+    propeller.number_of_blades                       = 3   
+    propeller.design_efficiency                      = 0.83      
+    propeller.design_angular_velocity                = 3000.0 * Units.rpm        
+    propeller.design_thrust                          = starboard_propulsor.design_thrust              
+    propeller.design_altitude                        = starboard_propulsor.design_altitude                                        
+    propeller.design_freestream_velocity             = starboard_propulsor.design_freestream_velocity                                                               
+    starboard_propulsor.propeller                    = propeller     
     
     # Ram inlet 
     ram                                              = RCAIDE.Library.Components.Powertrain.Converters.Ram()
@@ -533,18 +551,18 @@ def vehicle_setup():
     inlet_nozzle.compressibility_effects             = False
     starboard_propulsor.inlet_nozzle                 = inlet_nozzle
                                                      
-    # compressor                        
-    compressor                                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
-    compressor.tag                                   = 'lpc'                   
-    compressor.pressure_ratio                        = 10 
-    compressor.motor                                 = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
-    compressor.motor.tag                             =  "starboard_propulsor_compressor_motor"
-    compressor.motor.efficiency                      = 0.98 
-    compressor.motor.nominal_voltage                 = bus.voltage *  0.7
-    compressor.motor.no_load_current                 = 1 
-    compressor.motor.efficiency                      = 0.98 
-    compressor.motor.no_load_current                 = 1 
+    # compressor
+    compressor                                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
+    compressor.tag                                   = 'lpc'
+    compressor.pressure_ratio                        = 10
     starboard_propulsor.compressor                   = compressor
+
+    # integrated drive motor (compressor-shaft assist), same convention as Turbofan
+    starboard_propulsor.integrated_drive_motor                    = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
+    starboard_propulsor.integrated_drive_motor.tag                =  "starboard_propulsor_compressor_motor"
+    starboard_propulsor.integrated_drive_motor.efficiency          = 0.98
+    starboard_propulsor.integrated_drive_motor.nominal_voltage     = battery_pack.voltage *  0.7
+    starboard_propulsor.integrated_drive_motor.no_load_current     = 1
     
     # combustor      
     combustor                                        = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
@@ -652,9 +670,17 @@ def vehicle_setup():
 
     starboard_propulsor.nacelle =  nacelle
     
-    net.propulsors.append(starboard_propulsor)  
-    
-    net.converters.append(starboard_propulsor.compressor.motor)    
+    net.propulsors.append(starboard_propulsor)
+
+    # The compressor's motor-assist power is computed inline inside
+    # compute_turboprop_performance (via hybrid_power_split_ratio), so the motor is
+    # not separately registered as a network converter. The propulsor itself must still
+    # be assigned to the bus (not just fuel_line) so its electrical draw is routed onto
+    # the bus's demand accumulator -- otherwise the battery (which reads that accumulator
+    # to size its own output) never sees the motor's draw at all. This does not double
+    # count net_electrical_power, which accumulates once per propulsor unconditionally.
+    starboard_propulsor.assigned_distributors    = [[fuel_line.tag, bus.tag]]
+    starboard_propulsor.integrated_drive_motor.assigned_distributors = [[bus.tag]]
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Port Propulsor
@@ -662,18 +688,17 @@ def vehicle_setup():
     # update names of components 
     port_propulsor                                  = deepcopy(starboard_propulsor) 
     port_propulsor.tag                              = 'port_propulsor'  
-    port_propulsor.compressor.motor.tag             =  "port_propulsor_compressor_motor"    
+    port_propulsor.integrated_drive_motor.tag       =  "port_propulsor_compressor_motor"
     port_propulsor.origin                           = [[ 9.559106394 ,-4.219315295, 1.616135105]]  
     port_propulsor.nacelle.tag                      = 'port_propulsor_nacelle' 
     port_propulsor.nacelle.origin                   = [[8.941625295,-4.219315295, 1.616135105 ]]
+    port_propulsor.propeller.tag                    = 'port_propulsor_propeller' 
+    port_propulsor.propeller.origin                 = [[9.1,-4.219315295, 1.616135105 ]]
          
-    # append propulsor to distribution line 
+    # append propulsor to distribution line
     net.propulsors.append(port_propulsor)
 
-    net.converters.append(port_propulsor.compressor.motor)      
-    
-
-    bus.assigned_converters  = [["starboard_propulsor_compressor_motor" ,"port_propulsor_compressor_motor"]]       
+    port_propulsor.assigned_distributors = [[fuel_line.tag, bus.tag]]
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
@@ -684,18 +709,14 @@ def vehicle_setup():
     fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()   
     fuel_tank.fuel.mass_properties.mass              = vehicle.mass_properties.max_fuel
     fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
-    fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center
-    fuel_tank.internal_volume                        = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center  
     
-    # apend fuel tank to dataclass of fuel tanks on fuel line 
-    fuel_line.fuel_tanks.append(fuel_tank) 
+    fuel_tank.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line    
-    fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
-    
-    # Append fuel line to Network      
-    net.fuel_lines.append(fuel_line)   
+    # Append fuel line to Network
+    fuel_line.working_fluid = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    net.distributors.append(fuel_line)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)     

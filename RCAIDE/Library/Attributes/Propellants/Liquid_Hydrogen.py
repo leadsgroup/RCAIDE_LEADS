@@ -8,7 +8,6 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
-from pylab import fill
 from .Propellant import Propellant 
 
 import os
@@ -77,25 +76,44 @@ class Liquid_Hydrogen(Propellant):
             http://arc.uta.edu/publications/td_files/Kristen%20Roberts%20MS.pdf 
         """ 
         
-        self.tag                           = 'Liquid_H2' 
-        self.reactant                      = 'O2' 
+        self.tag                           = 'Liquid_H2'
+        self.cryogenic                     = True
+        self.reactant                      = 'O2'
         self.density                       = 70.85                            # [kg/m^3]
-        self.specific_energy               = 141.86e6                         # [J/kg] 
-        self.energy_density                = 8491.0e6                         # [J/m^3] 
-        self.gravimetric_efficiency        = .3
-        self.stoichiometric_fuel_to_air    = 0.029411 
+        self.specific_energy               = 120e6  # [J/kg] Considering the lower heating value https://ntrs.nasa.gov/api/citations/20020085127/downloads/20020085127.pdf
+        self.lower_heating_value           = 120e6                              # J/kg
+        self.kinematic_viscosity           = 1.9e-7                           # [m^2/s] liquid hydrogen near its boiling point (~20 K)
+        self.energy_density                = 8491.0e6                         # [J/m^3]
+        self.stoichiometric_fuel_to_air    = 0.029411
         self.temperatures.autoignition     = 845.15                           # [K]  
         self.stoichiometric_fuel_air_ratio = 0.029411         # [-] Stoichiometric Fuel to Air ratio
         self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
-        self.temperature                   = 0         # [K] Temperature of fuel
+        self.temperature                   = 20         # [K] Temperature of fuel
         self.pressure                      = 0         # [Pa] Pressure of fuel
         self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''       
 
-        self.materials_properties = self.liquid_hydrogen_properties()
+        self.emission_indices.Production  = 0.0      # kg/kg 
+        self.emission_indices.CO2         = 0.0      # kg/kg
+        self.emission_indices.CO          = 0.0      # kg/kg
+        self.emission_indices.H2O         = 8.21     # kg/kg  
+        self.emission_indices.SO2         = 0.0      # kg/kg
+        self.emission_indices.NOx         = 0.0539   # kg/kg
+        self.emission_indices.Soot        = 0.0      # kg/kg
+        
+        self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
+        self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
+        self.global_warming_potential_100.SO2       = -226  # CO2e/kg  
+        self.global_warming_potential_100.NOx       = 52    # CO2e/kg  
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
+        self.global_warming_potential_100.Soot      = 1166  # CO2e/kg    
+        self.global_warming_potential_100.Contrails = 11 #  kg/CO2e/km
+        
+        self.materials_properties = self.cryogen_properties()
 
-    def liquid_hydrogen_properties(self, T, prop_name):
+    def cryogen_properties(self, T, prop_name):
         """
             Return interpolated liquid hydrogen property value at a given temperature.
 

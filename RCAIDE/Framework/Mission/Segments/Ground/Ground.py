@@ -76,8 +76,8 @@ class Ground(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission Specific Unknowns and Residuals 
         # --------------------------------------------------------------------------------------------------------------       
-        iterate.unknowns.mission           = Unpack_Unknowns.ground
-        iterate.residuals.flight_dynamics  = Residuals.flight_dynamics
+        iterate.unknowns.mission.mission           = Unpack_Unknowns.ground
+        iterate.residuals.mission.flight_dynamics  = Residuals.flight_dynamics
         
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 

@@ -10,23 +10,20 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import  Data  
-from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform  
-
-
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
  
 # Pacakge imports 
 import numpy as np  
-import os, sys
+import os, sys 
 
 #------------------------------------------------------------------------------
 # aircraft_aerodynamic_analysis
 #------------------------------------------------------------------------------  
-def aircraft_aerodynamic_analysis(analyses            = None, 
+def aircraft_aerodynamic_analysis(analyses                         = None,
                                   angle_of_attacks                 = None,
                                   mach_numbers                     = None,
                                   non_dimensional_reynolds_numbers = None,
-                                  temperatures                     = None,
-                                  update_fuselage_properties       = True, 
+                                  temperatures                     = None, 
                                   overwrite_reference              = True,  
                                   altitude = None ):
     """
@@ -77,51 +74,12 @@ def aircraft_aerodynamic_analysis(analyses            = None,
     RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976
     """
 
-    #------------------------------------------------------------------------  
+    if not isinstance(analyses, RCAIDE.Framework.Analyses.Analysis.Container):
+        raise AttributeError('RCAIDE analyses must be defined')
+    #------------------------------------------------------------------------
     # Preprocess Geometry
-    #------------------------------------------------------------------------     
-    vehicle =  analyses.vehicle
-    
-
-    # update fuselage properties
-    total_length = 0
-    A_fuselage   = 0  
-    for fuselage in vehicle.fuselages: 
-        fuselage_planform(fuselage) 
-        total_length = np.maximum(total_length, fuselage.lengths.total)
-        A_fuselage   = np.maximum(A_fuselage,fuselage.areas.front_projected)
-             
-    # update landing gear properties 
-    for landing_gear in  vehicle.landing_gears:
-        if (landing_gear.number_of_gear_types_in_tandem != None) and  (landing_gear.number_of_wheels_in_gear_type != None):
-            landing_gear.wheels = landing_gear.number_of_gear_types_in_tandem * landing_gear.number_of_wheels_in_gear_type
-            if landing_gear.symmetric:
-                landing_gear.wheels *= 2
-    
-    # update wing properties
-    Amax_wing =  0
-    for wing in vehicle.wings: 
-        #  Blended Wing Body 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
-            bwb_wing_planform(wing)
-            if overwrite_reference:
-                vehicle.reference_area = wing.areas.reference 
-        # All other wing surfaces 
-        else: 
-            wing_planform(wing) 
-            if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) and overwrite_reference:
-                vehicle.reference_area = wing.areas.reference 
-        
-        # total length 
-        total_length = np.maximum(total_length, wing.chords.root)                         
-        
-        # max cross sectional area 
-        A_wing    = wing.spans.projected * wing.thickness_to_chord * wing.chords.mean_geometric
-        Amax_wing = np.maximum(Amax_wing,A_wing)
-         
-
-    vehicle.maximum_cross_sectional_area  = Amax_wing + A_fuselage
-    vehicle.length                        = total_length
+    #------------------------------------------------------------------------
+    geometry_preprocess_routine(analyses)
     
     #------------------------------------------------------------------------  
     # Check size of arrays 
@@ -135,8 +93,7 @@ def aircraft_aerodynamic_analysis(analyses            = None,
     dim_Mach  = len(mach_numbers[:, 0] )
     
     if dim_Mach != dim_AoA:
-        raise ValueError("Angle of attack and Mach number range must same dimension")
-    
+        raise ValueError("Angle of attack and Mach number range must same dimension") 
 
     #------------------------------------------------------------------------
     # setup flight conditions
@@ -195,38 +152,67 @@ def aircraft_aerodynamic_analysis(analyses            = None,
     state.conditions.static_stability.yaw_rate         = angle_of_attacks *0 
     state.conditions.frames.wind.transform_to_inertial = np.tile( np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) , ( ctrl_pts,  1, 1)  ) 
     state.conditions.expand_rows(ctrl_pts)
+    state.conditions.control_surfaces = Data()
+    analyses.aerodynamics.aileron_flag   = False
+    analyses.aerodynamics.rudder_flag    = False
+    analyses.aerodynamics.elevator_flag  = False
+    analyses.aerodynamics.flap_flag      = False
+    analyses.aerodynamics.slat_flag      = False
+
+    for wing in analyses.vehicle.wings: 
+        for control_surface in wing.control_surfaces: 
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
+                analyses.aerodynamics.aileron_flag  = True 
+                state.conditions.control_surfaces.aileron = Data()
+                state.conditions.control_surfaces.aileron.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
+                state.conditions.control_surfaces.aileron.static_stability = Data()
+                state.conditions.control_surfaces.aileron.static_stability.coefficients = Data()
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator:
+                analyses.aerodynamics.elevator_flag = True 
+                state.conditions.control_surfaces.elevator = Data()
+                state.conditions.control_surfaces.elevator.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
+                state.conditions.control_surfaces.elevator.static_stability = Data()
+                state.conditions.control_surfaces.elevator.static_stability.coefficients = Data()
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:
+                analyses.aerodynamics.rudder_flag   = True
+                state.conditions.control_surfaces.rudder = Data()
+                state.conditions.control_surfaces.rudder.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
+                state.conditions.control_surfaces.rudder.static_stability = Data()
+                state.conditions.control_surfaces.rudder.static_stability.coefficients = Data()
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
+                analyses.aerodynamics.flap_flag      = True
+                state.conditions.control_surfaces.flap = Data()
+                state.conditions.control_surfaces.flap.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
+                state.conditions.control_surfaces.flap.static_stability = Data()
+                state.conditions.control_surfaces.flap.static_stability.coefficients = Data() 
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
+                analyses.aerodynamics.slat_flag      = True
+                state.conditions.control_surfaces.slat = Data()
+                state.conditions.control_surfaces.slat.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
+                state.conditions.control_surfaces.slat.static_stability = Data()
+                state.conditions.control_surfaces.slat.static_stability.coefficients = Data() 
   
-    state.analyses  =  Data()
-    state.analyses = analyses 
-    state.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "aerodynamic_training_data.pkl" )   
-    state.analyses.aerodynamics.initialize()         
-     
+    state.analyses  = analyses
+    state.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "aerodynamic_training_data.pkl" )
+    state.analyses.aerodynamics.initialize(state.analyses.vehicle)
     state.conditions.freestream.mach_number                 = mach_numbers
     state.conditions.freestream.velocity                    = V
     state.conditions.freestream.reynolds_number             = non_dimensional_reynolds_numbers
     state.conditions.frames.inertial.velocity_vector        = np.tile(np.array([[0, 0, 0]]), ( ctrl_pts,  1))
-    state.conditions.frames.inertial.velocity_vector[:,0]   = V[:,0] 
+    state.conditions.frames.inertial.velocity_vector[:,0]   = V[:,0]   
     
- 
-    # ---------------------------------------------------------------------------------------
-    # Evaluate With Surrogate
-    # ---------------------------------------------------------------------------------------  
-    _                 = state.analyses.aerodynamics.evaluate(state)   
-    results = Data(
-        Mach                             = mach_numbers, 
-        alpha                            = angle_of_attacks, 
-        lift_coefficient                 = state.conditions.aerodynamics.coefficients.lift.total, 
-        drag_coefficient                 = state.conditions.aerodynamics.coefficients.drag.total,
-        parasite_drag_coefficient        = state.conditions.aerodynamics.coefficients.drag.parasite.total,
-        form_drag_coefficient            = state.conditions.aerodynamics.coefficients.drag.form.total,
-        wave_drag_coefficient            = state.conditions.aerodynamics.coefficients.drag.wave.total,
-        induced_drag_coefficient         = state.conditions.aerodynamics.coefficients.drag.induced.total,
-        miscellaneous_drag_coefficient   = state.conditions.aerodynamics.coefficients.drag.miscellaneous.total,
-        compressibility_drag_coefficient = state.conditions.aerodynamics.coefficients.drag.compressible.total,
-        cooling_drag_coefficient         = state.conditions.aerodynamics.coefficients.drag.cooling.total,
-        trim_drag_coefficient            = state.conditions.aerodynamics.coefficients.drag.trim.total,
-        moment_coefficient               = state.conditions.static_stability.coefficients.M, 
+    _                 = state.analyses.aerodynamics.evaluate(state,state.analyses.vehicle) 
+    
+    results = Data( 
+        freestream        = state.conditions.freestream, 
+        aerodynamics      = state.conditions.aerodynamics,  
+        static_stability  = state.conditions.static_stability, 
+        dynamic_stability = state.conditions.dynamic_stability, 
+    )
+    
+    if type(state.analyses.aerodynamics) == RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method:
+        results.vortex_distribution =  state.analyses.aerodynamics.settings.vortex_distribution
         
-    )  
-          
-    return results  
+        
+    return results
+ 

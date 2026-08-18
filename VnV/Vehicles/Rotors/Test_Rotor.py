@@ -6,8 +6,8 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor import design_lift_rotor
-from RCAIDE.load    import load as load_rotor
-from RCAIDE.save    import save as save_rotor  
+from RCAIDE.Input_Output import load as load_rotor
+from RCAIDE.Input_Output import save as save_rotor
  
 import os
 import numpy as np 
@@ -51,7 +51,7 @@ def Test_Rotor(new_regression=True):
     lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     
     
-    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..' + separator + '..' + separator + 'Verification' + separator + 'propulsion'))
+    test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..' + separator + '..' + separator + 'Verification' + separator + 'powertrain'))
     
     if new_regression:
         design_lift_rotor(lift_rotor)
@@ -61,7 +61,7 @@ def Test_Rotor(new_regression=True):
         design_lift_rotor(regression_lift_rotor, iterations=2)
         loaded_lift_rotor = load_rotor(os.path.join(test_dir, 'test_rotor.res'))
         
-        for key,item in lift_rotor.items():
+        for key,item in lift_rotor.items(): 
             lift_rotor[key] = loaded_lift_rotor[key] 
     
     return lift_rotor

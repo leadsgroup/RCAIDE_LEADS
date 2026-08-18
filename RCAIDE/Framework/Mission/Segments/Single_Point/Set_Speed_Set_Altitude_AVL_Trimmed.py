@@ -59,19 +59,20 @@ class Set_Speed_Set_Altitude_AVL_Trimmed(Segment):
         
         # conditions
         self.temperature_deviation                   = 0.0
-        self.sideslip_angle                          = 0.0 
+        self.sideslip_angle                          = 0.0
+        self.crosswind_speed                         = 0.0
         self.angle_of_attack                         = None
-        self.trim_lift_coefficient                   = None        
+        self.lift_coefficient                        = None        
         self.bank_angle                              = 0.0 
         self.linear_acceleration_x                   = 0.
         self.linear_acceleration_y                   = 0.  
         self.linear_acceleration_z                   = 0.  
         self.roll_rate                               = 0.
-        self.pitch_rate                              = 0.  
-        self.yaw_rate                                = 0.  
-        self.state.numerics.number_of_control_points = 1
+        self.pitch_rate                              = 0.
+        self.yaw_rate                                = 0.
         self.hybrid_power_split_ratio                = None
-        self.battery_fuel_cell_power_split_ratio     = None 
+        self.battery_fuel_cell_power_split_ratio     = None
+        self.state.numerics.number_of_control_points = 1
         self.state.conditions.update(Results())
         
         # ---------------------------------------------------------------
@@ -100,8 +101,8 @@ class Set_Speed_Set_Altitude_AVL_Trimmed(Segment):
         
         
         # Unpack Unknowns
-        iterate.unknowns                   = Process()
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation  
+        iterate.unknowns.mission                 = Process()
+        iterate.unknowns.mission.mission         = Common.Unpack_Unknowns.orientation
         
         # Update Conditions
         iterate.conditions = Process()
@@ -121,16 +122,18 @@ class Set_Speed_Set_Altitude_AVL_Trimmed(Segment):
         iterate.conditions.moments               = Common.Update.moments
         iterate.conditions.planet_position       = skip
 
-        # Solve Residuals  
-        iterate.residuals.flight_dynamics        = Common.Residuals.flight_dynamics
+        # Solve Residuals
+        iterate.residuals.mission          = Process()
+        iterate.residuals.network          = Process()
+        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
 
-        # --------------------------------------------------------------  
-        #  Post Process   
+        # --------------------------------------------------------------
+        #  Post Process
         # -------------------------------------------------------------- 
         post_process                    = self.process.post_process   
         post_process.inertial_position  = skip
         post_process.energy             = skip
-        post_process.noise              = Common.Update.noise
+        post_process.aeroacoustics      = Common.Update.aeroacoustics
         post_process.emissions          = skip 
                 
         return

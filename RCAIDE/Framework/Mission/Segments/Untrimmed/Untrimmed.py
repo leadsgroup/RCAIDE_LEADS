@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports  
-from RCAIDE.Framework.Core import Units
+from RCAIDE.Framework.Core import Units, Data
 from RCAIDE.Framework.Mission.Segments         import Segment
 from RCAIDE.Framework.Mission.Common.Results   import Results
 from RCAIDE.Library.Mission                    import Common ,Solver,  Segments
@@ -62,20 +62,26 @@ class Untrimmed(Segment):
         # --------------------------------------------------------------
         
         # conditions
-        self.temperature_deviation                   = 0.0
-        self.sideslip_angle                          = 0.0 
-        self.angle_of_attack                         = 1.0 *  Units.degree
-        self.bank_angle                              = 0.0 
-        self.linear_acceleration_x                   = 0.
-        self.linear_acceleration_y                   = 0.  
-        self.linear_acceleration_z                   = 0. # note that down is positive
-        self.roll_rate                               = 0.
-        self.pitch_rate                              = 0.
-        self.hybrid_power_split_ratio                = None
-        self.battery_fuel_cell_power_split_ratio     = None 
-        self.yaw_rate                                = 0.  
-        self.state.numerics.number_of_control_points = 2     
-        self.trim_lift_coefficient                   = None
+        self.temperature_deviation                            = 0.0
+        self.sideslip_angle                                   = 0.0 
+        self.crosswind_speed                                  = 0.0
+        self.angle_of_attack                                  = 1.0 *  Units.degree
+        self.bank_angle                                       = 0.0 
+        self.linear_acceleration_x                            = 0.
+        self.linear_acceleration_y                            = 0.  
+        self.linear_acceleration_z                            = 0. # note that down is positive
+        self.roll_rate                                        = 0.
+        self.pitch_rate                                       = 0.
+        self.hybrid_power_split_ratio                         = None
+        self.battery_fuel_cell_power_split_ratio              = None
+        self.initial_battery_conditions                       = Data()
+        self.initial_battery_conditions.state_of_charge       = 1.0
+        self.initial_battery_conditions.cell_temperature      = None
+        self.initial_battery_conditions.charge_throughput     = None
+        self.initial_battery_conditions.increment_battery_age = False
+        self.yaw_rate                                         = 0.
+        self.state.numerics.number_of_control_points          = 2     
+        self.lift_coefficient                                 = None
         self.state.conditions.update(Results())
         
         # ---------------------------------------------------------------
@@ -97,14 +103,14 @@ class Untrimmed(Segment):
         iterate                            = self.process.iterate 
         iterate.initials                   = Process()
         iterate.initials.time              = Common.Initialize.time
-        iterate.initials.weights           = Common.Initialize.weights
-        iterate.initials.energy            = skip
+        iterate.initials.weights           = Common.Initialize.weights 
+        iterate.initials.energy            = Common.Initialize.energy
         iterate.initials.inertial_position = Common.Initialize.inertial_position
         iterate.initials.planet_position   = Common.Initialize.planet_position
         
         
         # Unpack Unknowns
-        iterate.unknowns                   = Process()
+        iterate.unknowns.mission.mission                   = Process()
         
         # Update Conditions
         iterate.conditions = Process()
@@ -115,7 +121,8 @@ class Untrimmed(Segment):
         iterate.conditions.altitude              = Common.Update.altitude
         iterate.conditions.atmosphere            = Common.Update.atmosphere
         iterate.conditions.gravity               = Common.Update.gravity
-        iterate.conditions.freestream            = Common.Update.freestream 
+        iterate.conditions.freestream            = Common.Update.freestream
+        iterate.conditions.network               = Common.Update.network
         iterate.conditions.thrust                = Common.Update.thrust
         iterate.conditions.aerodynamics          = Common.Update.aerodynamics
         iterate.conditions.stability             = Common.Update.stability
@@ -125,9 +132,9 @@ class Untrimmed(Segment):
         iterate.conditions.planet_position       = skip
 
         # Solve Residuals 
-        iterate.unknowns.controls                = Common.Unpack_Unknowns.control_surfaces
-        iterate.unknowns.mission                 = Common.Unpack_Unknowns.orientation  
-        iterate.residuals.flight_dynamics        = Common.Residuals.flight_dynamics
+        iterate.unknowns.mission.controls                = Common.Unpack_Unknowns.control_surfaces
+        iterate.unknowns.mission.mission                 = Common.Unpack_Unknowns.orientation  
+        iterate.residuals.mission.flight_dynamics        = Common.Residuals.flight_dynamics
 
         # --------------------------------------------------------------  
         #  Post Process   
@@ -135,7 +142,7 @@ class Untrimmed(Segment):
         post_process                    = self.process.post_process   
         post_process.inertial_position  = skip
         post_process.energy             = skip
-        post_process.noise              = Common.Update.noise
+        post_process.aeroacoustics      = Common.Update.aeroacoustics
         post_process.emissions          = skip
         
         return 

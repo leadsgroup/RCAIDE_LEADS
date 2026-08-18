@@ -32,6 +32,8 @@ Planform
 
    compute_chord_length_from_span_location
    compute_fuel_volume
+   compute_segment_centroid
+   compute_segment_volume
    compute_span_location_from_chord_length
    convert_sweep
    fuselage_planform

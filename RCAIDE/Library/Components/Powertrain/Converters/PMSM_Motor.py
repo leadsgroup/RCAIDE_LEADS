@@ -10,6 +10,8 @@
 from RCAIDE.Framework.Core import Data
 from .Converter  import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions import  append_motor_conditions
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_cylinder_center_of_gravity  import compute_cylinder_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cylinder_moment_of_inertia  import compute_cylinder_moment_of_inertia
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PMSM_Motor  
@@ -105,6 +107,9 @@ class PMSM_Motor(Converter):
         """
         """           
         self.tag                           = 'PMSM_motor' 
+        self.diameter                      = 0.0
+        self.length                        = 0.0
+        
         # Input data from Datasheet      
         self.speed_constant                = 6.56                        # [rpm/V]        speed constant
         self.stator_inner_diameter         = 0.16                        # [m]            stator inner diameter
@@ -139,11 +144,42 @@ class PMSM_Motor(Converter):
         self.velocity_of_fluid             = 0.005                       # [m/s]          velocity of the fluid
         self.Taylor_number                 = 20                          # [-]            Taylor number 
         self.axial_gap_to_radius_of_rotor  = 0.01                     # [-]            ratio of the axial gap to the radius of the rotor 
-        self.inverse_calculation           = False
+        self.reverse_mode_computation      = False
         self.Conduction_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
         self.Convection_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
         
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
-        append_motor_conditions(self,segment,energy_conditions)
+    def append_operating_conditions(self,segment): 
+        append_motor_conditions(self,segment)
+        return
+
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the motor.
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
+        """
+        _ , _ = compute_cylinder_moment_of_inertia(self,outer_length=self.length,outer_radius=self.diameter/2,center_of_gravity= center_of_gravity) 
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the motor.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
+            Implementation of the moment of inertia calculation
+        """
+        _  = compute_cylinder_center_of_gravity(self, length=self.length) 
         return
     

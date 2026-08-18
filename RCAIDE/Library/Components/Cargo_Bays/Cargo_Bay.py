@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Cargo_Bays/Cargo_Bay.py
+# RCAIDE/Library/Components/Cargo_Bays/Cargo_Bay.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -9,6 +9,8 @@
 # RCAIDE imports   
 from RCAIDE.Library.Components  import Component   
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity import compute_cargo_bay_center_of_gravity
+
 
 import  numpy as  np
 
@@ -16,8 +18,7 @@ import  numpy as  np
 #  Cargo_Bay
 # ----------------------------------------------------------------------------------------------------------------------              
 class Cargo_Bay(Component):
-    """
-     
+    """Base class for a cargo bay     
     """          
     def __defaults__(self):
         """This sets the default power draw.
@@ -37,32 +38,34 @@ class Cargo_Bay(Component):
         Properties Used:
         N/A
         """             
-        self.tag        = 'cargo_bay'
-        self.length     = 1.0
-        self.width      = 1.0
-        self.height     = 1.0 
-        self.density    = 0.0
-        self.cargo      = Component() 
-        self.baggage    = Component() 
-        self.power_draw = 0.0  
-
-    def compute_moment_of_inertia(self, mass,length,width,height, center_of_gravity=[[0, 0, 0]], fuel_flag=False): 
+        self.tag           = 'cargo_bay'
+        self.length        = 1.0
+        self.width         = 1.0
+        self.height        = 1.0 
+        self.density       = 0.0 
+        self.power_draw    = 0.0
+        
+    def compute_center_of_gravity(self,vehicle): 
         """
-        Computes the moment of inertia tensor for the wing.
+        Computes the center of gravity for the  cargo bay.
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
+        """
+        _ = compute_cargo_bay_center_of_gravity(self)
+        return
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the cargo bay.
 
         Parameters
-        ----------
-        mass : float
-            Wing mass
+        ---------- 
         center_of_gravity : list, optional
             Reference point coordinates, defaults to [[0, 0, 0]]
-        fuel_flag : bool, optional
-            Flag to include fuel mass, defaults to False
-
-        Returns
-        -------
-        ndarray
-            3x3 moment of inertia tensor
+            
         """ 
-        I = compute_cuboid_moment_of_inertia(self.origin, mass,length,width,height, length_inner = 0, width_inner = 0, height_inner = 0, center_of_gravity = np.array([[0,0,0]]))  
-        return I      
+        _,_ = compute_cuboid_moment_of_inertia(self,self.length,self.width,self.height, inner_length = 0, inner_width = 0, inner_height = 0, center_of_gravity = np.array([[0,0,0]]))  
+        return       

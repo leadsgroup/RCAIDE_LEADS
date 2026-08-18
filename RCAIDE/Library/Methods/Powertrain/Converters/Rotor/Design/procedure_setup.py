@@ -10,7 +10,7 @@
 # RCAIDE Imports 
 import RCAIDE 
 from RCAIDE.Framework.Core                                                        import Units  
-from RCAIDE.Library.Methods.Noise.Frequency_Domain_Buildup.Rotor                  import compute_rotor_noise 
+from RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor    import compute_rotor_noise 
 from RCAIDE.Framework.Analyses.Process                                            import Process    
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import compute_rotor_performance 
 
@@ -238,7 +238,7 @@ def run_rotor_hover(nexus):
     conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]])  
     segment.state.conditions                            = conditions
      
-    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
+    rotor.append_operating_conditions(segment)
     
     rotor_conditions                            = segment.state.conditions.energy.converters[rotor.tag]     
     rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.hover.design_tip_mach)/rotor.tip_radius 
@@ -262,24 +262,24 @@ def run_rotor_hover(nexus):
     # microphone locations             
     ctrl_pts                                         = 1 
     theta                                            = rotor.optimization_parameters.noise_evaluation_angle 
-    S_hover                                          = np.maximum(altitude[0],20*Units.feet)  
+    S_hover                                          = np.maximum(altitude[0],rotor.optimization_parameters.noise_evaluation_distance)  
     mic_positions_hover                              = np.array([[0.0 , S_hover*np.sin(theta)  ,S_hover*np.cos(theta)]])      
     
  
     # Run noise model    
-    conditions.noise.relative_microphone_locations   = np.repeat(mic_positions_hover[ np.newaxis,:,: ],1,axis=0)
+    conditions.aeroacoustics.relative_microphone_locations   = np.repeat(mic_positions_hover[ np.newaxis,:,: ],1,axis=0)
     conditions.aerodynamics.angles.alpha             = np.ones((ctrl_pts,1))* 0. * Units.degrees 
     segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 
     segment.state.conditions                         = conditions
     segment.state.conditions.expand_rows(ctrl_pts)  
-    noise                                            = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup() 
+    noise                                            = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based_Frequency_Domain() 
     settings                                         = noise.settings   
-    num_mic                                          = len(conditions.noise.relative_microphone_locations[0])  
-    conditions.noise.number_of_microphones           = num_mic   
+    num_mic                                          = len(conditions.aeroacoustics.relative_microphone_locations[0])  
+    conditions.aeroacoustics.number_of_microphones           = num_mic   
     
     if alpha != 1: 
-        compute_rotor_noise(conditions.noise.relative_microphone_locations,rotor,segment,settings)    
-        nexus.results.hover.mean_SPL   = np.mean(conditions.noise.converters[rotor.tag].SPL_dBA) 
+        compute_rotor_noise(conditions.aeroacoustics.relative_microphone_locations,rotor,segment,settings)    
+        nexus.results.hover.mean_SPL   = np.mean(conditions.aeroacoustics.converters[rotor.tag].SPL_dBA) 
     else: 
         nexus.results.hover.mean_SPL   = 0  
 
@@ -310,7 +310,7 @@ def run_rotor_OEI(nexus):
     conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
     segment.state.conditions                            = conditions
      
-    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
+    rotor.append_operating_conditions(segment)
                 
     rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
     rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.oei.design_tip_mach)/rotor.tip_radius 
@@ -356,7 +356,7 @@ def run_rotor_cruise(nexus):
         conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
         segment.state.conditions                            = conditions
           
-        rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
+        rotor.append_operating_conditions(segment)
             
         rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
         rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.cruise.design_tip_mach)/rotor.tip_radius 
@@ -379,23 +379,23 @@ def run_rotor_cruise(nexus):
         # microphone locations            
         ctrl_pts                                         = 1 
         theta                                            = rotor.optimization_parameters.noise_evaluation_angle 
-        S_cruise                                         = np.maximum(altitude[0],20*Units.feet)  
+        S_cruise                                         = np.maximum(altitude[0],rotor.optimization_parameters.noise_evaluation_distance)  
         mic_positions_cruise                             = np.array([[0.0 ,S_cruise*np.sin(theta)  ,S_cruise*np.cos(theta)]])      
         
         # Run noise model  
-        conditions.noise.relative_microphone_locations   = np.repeat(mic_positions_cruise[ np.newaxis,:,: ],1,axis=0)
+        conditions.aeroacoustics.relative_microphone_locations   = np.repeat(mic_positions_cruise[ np.newaxis,:,: ],1,axis=0)
         conditions.aerodynamics.angles.alpha             = np.ones((ctrl_pts,1))* 0. * Units.degrees 
         segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 
         segment.state.conditions                         = conditions
         segment.state.conditions.expand_rows(ctrl_pts)  
-        noise                                            = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup() 
+        noise                                            = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based_Frequency_Domain() 
         settings                                         = noise.settings   
-        num_mic                                          = len(conditions.noise.relative_microphone_locations[0])  
-        conditions.noise.number_of_microphones           = num_mic    
+        num_mic                                          = len(conditions.aeroacoustics.relative_microphone_locations[0])  
+        conditions.aeroacoustics.number_of_microphones           = num_mic    
         
         if alpha != 1: 
-            compute_rotor_noise(conditions.noise.relative_microphone_locations,rotor,segment,settings)  
-            nexus.results.cruise.mean_SPL   = np.mean(conditions.noise.converters[rotor.tag].SPL_dBA)   
+            compute_rotor_noise(conditions.aeroacoustics.relative_microphone_locations,rotor,segment,settings)  
+            nexus.results.cruise.mean_SPL   = np.mean(conditions.aeroacoustics.converters[rotor.tag].SPL_dBA)   
         else:
             nexus.results.cruise.mean_SPL   = 0  
             
@@ -427,11 +427,11 @@ def post_process(nexus):
     gamma                           = rotor.optimization_parameters.multiobjective_acoustic_weight
     ideal_SPL                       = rotor.optimization_parameters.ideal_SPL_dBA  
     ideal_efficiency                = rotor.optimization_parameters.ideal_efficiency      
-    ideal_FoM                       = rotor.optimization_parameters.ideal_figure_of_merit  
+    ideal_FoM                       = rotor.optimization_parameters.ideal_figure_of_merit
     print_iter                      = nexus.print_iterations  
     mean_CL_hover                   = nexus.results.hover.mean_CL
     omega_hover                     = nexus.results.hover.omega
-    FM_hover                        = nexus.results.hover.figure_of_merit  
+    FM_hover                        = np.nan_to_num(nexus.results.hover.figure_of_merit)  
     
     # q to p ratios 
     summary                                 = nexus.summary 
@@ -489,32 +489,35 @@ def post_process(nexus):
         print("Blade Taper                  : " + str(summary.blade_taper_constraint_1))
         print("Hover RPM                    : " + str(omega_hover/Units.rpm))     
         if rotor.hover.design_thrust == None: 
-            print("Hover Power                  : " + str(nexus.results.hover.power))  
+            print("Hover Power Actual          : " + str(nexus.results.hover.power))  
+            print("Hover Power Design           : " + str( rotor.hover.design_power))  
         if rotor.hover.design_power == None: 
-            print("Hover Thrust                 : " + str(nexus.results.hover.thrust))  
+            print("Hover Thrust Actual          : " + str(nexus.results.hover.thrust))  
+            print("Hover Thrust Design          : " + str(rotor.hover.design_thrust))  
         print("Hover Average SPL            : " + str(nexus.results.hover.mean_SPL))    
-        print("Hover Tip Mach               : " + str(rotor.hover.design_tip_mach)) 
-        print("Hover Thrust/Power Residual  : " + str(summary.hover_thrust_power_residual)) 
+        print("Hover Tip Mach               : " + str(rotor.hover.design_tip_mach))  
         print("Hover Figure of Merit        : " + str(FM_hover))  
         print("Hover Max Sectional Cl       : " + str(summary.max_sectional_cl_hover)) 
         print("Hover Blade CL               : " + str(mean_CL_hover))    
-        print("OEI Thrust                   : " + str(nexus.results.oei.thrust)) 
-        print("OEI Thrust/Power Residual    : " + str(summary.OEI_hover_thrust_power_residual)) 
+        print("OEI Thrust Actual            : " + str(nexus.results.oei.thrust))  
+        print("OEI Thrust Design            : " + str(rotor.oei.design_thrust))  
         print("OEI Tip Mach                 : " + str(rotor_oei.oei.design_tip_mach))  
         print("OEI Collective (deg)         : " + str(rotor_oei.hover.design_blade_pitch_command/Units.degrees)) 
         if nexus.prop_rotor_flag:    
             print("Cruise RPM                   : " + str(nexus.results.cruise.omega/Units.rpm))    
             print("Cruise Collective (deg)      : " + str(rotor_cru.cruise.design_blade_pitch_command/Units.degrees)) 
+            print("Cruise Average SPL           : " + str(nexus.results.cruise.mean_SPL))    
             if rotor_cru.cruise.design_thrust == None:  
-                print("Cruise Power                 : " + str(nexus.results.cruise.power)) 
+                print("Cruise Power Actual          : " + str(nexus.results.cruise.power)) 
+                print("Cruise Power Design          : " + str(rotor.cruise.design_power)) 
             if rotor_cru.cruise.design_power == None:  
-                print("Cruise Thrust                : " + str(nexus.results.cruise.thrust))   
-            print("Cruise Tip Mach              : " + str(rotor_cru.cruise.design_tip_mach))  
-            print("Cruise Thrust/Power Residual : " + str(summary.cruise_thrust_power_residual))
+                print("Cruise Thrust Actual         : " + str(nexus.results.cruise.thrust))   
+                print("Cruise Thrust Design         : " + str(rotor.cruise.design_thrust))  
+            print("Cruise Tip Mach              : " + str(rotor_cru.cruise.design_tip_mach))   
             print("Cruise Efficiency            : " + str(nexus.results.cruise.efficiency)) 
             print("Cruise Max Sectional Cl      : " + str(summary.max_sectional_cl_cruise))  
             print("Cruise Blade CL              : " + str(nexus.results.cruise.mean_CL))  
         print("\n\n") 
 
    
-    return nexus    
+    return nexus  

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Fan.py
+# RCAIDE/Library/Components/Powertrain/Converters/Fan.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Feb 2024, M. Clarke
@@ -86,9 +86,9 @@ class Fan(Converter):
         self.polytropic_efficiency          = 1.0
         self.mechanical_efficiency          = 1.0
         self.pressure_ratio                 = 1.0 
+        self.angular_velocity               = 0.0 
         self.design_angular_velocity        = 3000 *  Units.rpm
 
-
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
-        append_fan_conditions(self,segment,energy_conditions)
+    def append_operating_conditions(self,segment):  
+        append_fan_conditions(self,segment)
         return                                

@@ -16,7 +16,7 @@ import numpy    as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Train Cantera Model 
 # ----------------------------------------------------------------------------------------------------------------------
-def train_CRN_EI_surrogates(emissions): 
+def train_CRN_EI_surrogates(emissions, vehicle): 
     """
     Generates training data for emission index surrogate models using Chemical Reactor Network simulations.
 
@@ -30,7 +30,7 @@ def train_CRN_EI_surrogates(emissions):
                         Array of pressure values to evaluate [Pa]
                     - temperature : ndarray
                         Array of temperature values to evaluate [K]
-                    - air_mass_flowrate : ndarray
+                    - air_mass_flow_rate : ndarray
                         Array of air mass flow rates to evaluate [kg/s]
                     - fuel_to_air_ratio : ndarray
                         Array of fuel-to-air ratios to evaluate [-]
@@ -98,10 +98,8 @@ def train_CRN_EI_surrogates(emissions):
     # unpack data 
     P              = emissions.training.pressure         
     T              = emissions.training.temperature      
-    mdot           = emissions.training.air_mass_flowrate
-    FAR            = emissions.training.fuel_to_air_ratio
-    
-    vehicle        = emissions.vehicle
+    mdot           = emissions.training.air_mass_flow_rate
+    FAR            = emissions.training.fuel_to_air_ratio 
     for network in vehicle.networks:   
         for propulsor in  network.propulsors:
             if  isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \

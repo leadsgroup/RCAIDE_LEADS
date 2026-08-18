@@ -18,19 +18,37 @@ import numpy as np
 import sys 
 import os
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Navion    import vehicle_setup, configs_setup     
+import time
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main(): 
+    ti = time.time()
     
     # vehicle data
     vehicle  = vehicle_setup() 
 
+    # append slat to exercise the Slat branch in evaluate_no_surrogate
+    slat                     = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
+    slat.tag                 = 'slat'
+    slat.span_fraction_start = 0.1
+    slat.span_fraction_end   = 0.7
+    slat.deflection          = 0.0 * Units.degrees
+    slat.chord_fraction      = 0.1
+    vehicle.wings.main_wing.append_control_surface(slat)
+
     # Set up vehicle configs
-    configs  = configs_setup(vehicle)
+    configs  = configs_setup(vehicle) 
 
     # create analyses
     analyses = analyses_setup(configs)
@@ -45,11 +63,15 @@ def main():
     results = missions.base_mission.evaluate() 
 
     CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0][0]
-    CL_true   = 0.5809553607569893
+    CL_true   = 0.7130354497601528
     CL_diff   = np.abs(CL - CL_true)
     print('Error: ',CL_diff)
     assert np.abs(CL_diff/CL_true) < 1e-6
      
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
 # ----------------------------------------------------------------------
 #   Define the Vehicle Analyses
@@ -73,32 +95,33 @@ def base_analysis(vehicle, configs):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle =  vehicle
 
+    # ------------------------------------------------------------------
     #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
-    geometry.settings.update_fuel_volume         = True
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                               = vehicle
-    aerodynamics.settings.use_surrogate                = False 
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics.settings.use_surrogate                 = False 
     analyses.append(aerodynamics) 
 
+    # ------------------------------------------------------------------
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation() 
+    analyses.append(weights) 
 
     # ------------------------------------------------------------------
     #  Stability Analysis
-    stability = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method() 
-    stability.vehicle                               = vehicle
+    stability = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()  
     stability.settings.use_surrogate                = False 
     analyses.append(stability)
     
     # ------------------------------------------------------------------
     #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -109,7 +132,6 @@ def base_analysis(vehicle, configs):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     # done!

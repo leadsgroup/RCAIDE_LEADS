@@ -1,4 +1,4 @@
-# RCAIDE/Framework/Analyses/Mission/Segments/Conditions/Conditions.py
+# RCAIDE/Framework/Mission/Common/Conditions.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -194,7 +194,7 @@ class expanded_array(Data):
             N/A
         """   
         # unpack
-        adjustment = self._adjustment
+        adjustment = int(self._adjustment)
         
         # pack
         self._size = rows

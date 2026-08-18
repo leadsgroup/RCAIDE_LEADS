@@ -1,7 +1,8 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Combustor.py
+# RCAIDE/Library/Components/Powertrain/Converters/Combustor.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Feb 2024, M. Clarke
+# Modified: May 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -10,8 +11,6 @@
 import RCAIDE
 from .Converter  import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor.append_combustor_conditions import  append_combustor_conditions
-from RCAIDE.Library.Attributes.Gases.Air import Air
-
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Combustor
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -165,11 +164,15 @@ class Combustor(Converter):
         self.design_equivalence_ratio_SZ             = 0.61            # [-] Design Equivalence Ratio in Secondary Zone at Maximum Throttle
         self.air_mass_flow_rate_take_off             = 40             # [kg/s] Air mass flow rate at take-off
         self.fuel_to_air_ratio_take_off              = 0.025          # [-] Fuel to air ratio at take-off
-        self.air_data                                = Air()          # [-] Air object
+        self.air_data                                = RCAIDE.Library.Attributes.Gases.Air()         # [-] Air object
         self.fuel_data                               = RCAIDE.Library.Attributes.Propellants.Jet_A1()       # [-] Fuel object
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+        
+    def append_operating_conditions(self,segment):
         """
-        Appends operating conditions to the combustor.
+        Appends operating conditions of the combustor.
         """ 
-        append_combustor_conditions(self,segment,energy_conditions)
+        append_combustor_conditions(self,segment)
         return
+
+
+        

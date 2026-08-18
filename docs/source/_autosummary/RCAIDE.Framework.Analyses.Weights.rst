@@ -30,15 +30,15 @@ Weights
    :template: custom-module-template.rst
    :recursive:
 
-   Conventional
    Conventional_BWB
    Conventional_General_Aviation
    Conventional_Transport
-   Electric
+   Electric_Drone
    Electric_General_Aviation
+   Electric_Transport
    Electric_VTOL
    Hybrid
-   Hydrogen
+   Hydrogen_BWB
    Hydrogen_Transport
    Weights
 

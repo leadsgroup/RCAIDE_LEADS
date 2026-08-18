@@ -13,6 +13,7 @@ from RCAIDE.Framework.Analyses                                 import Process
 from RCAIDE.Library.Methods.Stability                          import Common
 from .Stability                                                import Stability     
 from RCAIDE.Library.Methods.Stability.Vortex_Lattice_Method    import *  
+import  numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice_Method
@@ -61,14 +62,12 @@ class Vortex_Lattice_Method(Stability):
                    
         # correction factors  
         self.settings.use_surrogate                                 = True  
-        self.settings.propeller_wake_model                          = False  
-        self.settings.model_fuselage                                = False    
-        self.settings.number_of_spanwise_vortices                   = 15
-        self.settings.number_of_chordwise_vortices                  = 5
-        self.settings.wing_spanwise_vortices                        = None
-        self.settings.wing_chordwise_vortices                       = None
-        self.settings.fuselage_spanwise_vortices                    = None
-        self.settings.fuselage_chordwise_vortices                   = None  
+        self.settings.propeller_wake_model                          = False
+        self.settings.number_of_spanwise_vortices                   = 30
+        self.settings.number_of_chordwise_vortices                  = 15
+        self.settings.number_of_fuselage_spanwise_vortices          = 4
+        self.settings.number_of_fuselage_chordwise_vortices         = 10 
+        self.settings.model_fuselage                                = True 
         self.settings.spanwise_cosine_spacing                       = True
         self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
@@ -76,9 +75,13 @@ class Vortex_Lattice_Method(Stability):
         self.settings.floating_point_precision                      = np.float32 
         
         # conditions table, used for surrogate model training
-        self.training                                               = Data() 
-        self.training.angle_purtubation                             = 10 * Units.deg          
-        self.training.center_of_gravity_purtubation                 = 0.1   
+        self.training                                               = Data()  
+        self.training.angle_of_attack                               = np.array([-5., -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45., 75.]) * Units.deg 
+        self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])      
+                      
+        self.training.subsonic                                      = None
+        self.training.supersonic                                    = None
+        self.training.transonic                                     = None  
                          
         # blending function                  
         self.hsub_min                                               = 0.85
@@ -91,23 +94,22 @@ class Vortex_Lattice_Method(Stability):
 
         # build the evaluation process
         compute                                                     = Process() 
-        compute.static_stability                                    = None 
+        compute.static_stability                                    = evaluate
         compute.dynamic_stability                                   = Common.compute_dynamic_flight_modes    
         self.process.compute                                        = compute 
 
-    def initialize(self):  
-        use_surrogate   = self.settings.use_surrogate   
-    
-        # build the evaluation process
-        compute   =  self.process.compute                  
-        if use_surrogate == True: 
-            compute.static_stability  = evaluate_surrogate
-        else:
-            compute.static_stability  = evaluate_no_surrogate  
+    def initialize(self, vehicle): 
+        
+        # compute neutral point 
+        if self.settings.compute_neutral_point:
+            print("\n Computing neutral point ...")
+            compute_neutral_point(self, vehicle)  
+        elif vehicle.neutral_point == None:
+            raise AttributeError('Neutral point not defined.')
         return 
     
          
-    def evaluate(self,state):
+    def evaluate(self,state, vehicle):
         """The default evaluate function.
 
         Assumptions:
@@ -126,8 +128,7 @@ class Vortex_Lattice_Method(Stability):
         self.settings
         self.vehicle
         """          
-        settings = self.settings
-        vehicle  = self.vehicle 
+        settings = self.settings 
         results  = self.process.compute(state,settings,vehicle)
         
         return results

@@ -3,7 +3,7 @@
  ---------------------------------------------
  Run case  1:   case_0006_0001
 
- alpha        ->  CL          =   0.0        
+ alpha        ->  alpha       =   -2.0        
  beta         ->  beta        =   0.0
  pb/2V        ->  pb/2V       =   0.0
  qc/2V        ->  qc/2V       =   0.0
@@ -32,10 +32,10 @@
  X_cg      =   2.239696797     m
  Y_cg      =   0     m
  Z_cg      =   -0.131189711     m
- mass      =   0.0     kg
- Ixx       =   164627.7     kg-m^2
- Iyy       =   471262.4     kg-m^2
- Izz       =   554518.7     kg-m^2
+ mass      =   0     kg
+ Ixx       =   1420.8784     kg-m^2
+ Iyy       =   4067.4     kg-m^2
+ Izz       =   4785.974     kg-m^2
  Ixy       =   0.0     kg-m^2
  Iyz       =   0.0     kg-m^2
  Izx       =   0.0     kg-m^2
@@ -49,7 +49,7 @@
  ---------------------------------------------
  Run case  2:   case_0006_0002
 
- alpha        ->  CL          =   0.0        
+ alpha        ->  alpha       =   0.0        
  beta         ->  beta        =   0.0
  pb/2V        ->  pb/2V       =   0.0
  qc/2V        ->  qc/2V       =   0.0
@@ -78,10 +78,10 @@
  X_cg      =   2.239696797     m
  Y_cg      =   0     m
  Z_cg      =   -0.131189711     m
- mass      =   0.0     kg
- Ixx       =   164627.7     kg-m^2
- Iyy       =   471262.4     kg-m^2
- Izz       =   554518.7     kg-m^2
+ mass      =   0     kg
+ Ixx       =   1420.8784     kg-m^2
+ Iyy       =   4067.4     kg-m^2
+ Izz       =   4785.974     kg-m^2
  Ixy       =   0.0     kg-m^2
  Iyz       =   0.0     kg-m^2
  Izx       =   0.0     kg-m^2
@@ -95,7 +95,7 @@
  ---------------------------------------------
  Run case  3:   case_0006_0003
 
- alpha        ->  CL          =   0.0        
+ alpha        ->  alpha       =   2.0        
  beta         ->  beta        =   0.0
  pb/2V        ->  pb/2V       =   0.0
  qc/2V        ->  qc/2V       =   0.0
@@ -124,10 +124,10 @@
  X_cg      =   2.239696797     m
  Y_cg      =   0     m
  Z_cg      =   -0.131189711     m
- mass      =   0.0     kg
- Ixx       =   164627.7     kg-m^2
- Iyy       =   471262.4     kg-m^2
- Izz       =   554518.7     kg-m^2
+ mass      =   0     kg
+ Ixx       =   1420.8784     kg-m^2
+ Iyy       =   4067.4     kg-m^2
+ Izz       =   4785.974     kg-m^2
  Ixy       =   0.0     kg-m^2
  Iyz       =   0.0     kg-m^2
  Izx       =   0.0     kg-m^2
@@ -141,7 +141,7 @@
  ---------------------------------------------
  Run case  4:   case_0006_0004
 
- alpha        ->  CL          =   0.0        
+ alpha        ->  alpha       =   5.0        
  beta         ->  beta        =   0.0
  pb/2V        ->  pb/2V       =   0.0
  qc/2V        ->  qc/2V       =   0.0
@@ -170,10 +170,10 @@
  X_cg      =   2.239696797     m
  Y_cg      =   0     m
  Z_cg      =   -0.131189711     m
- mass      =   0.0     kg
- Ixx       =   164627.7     kg-m^2
- Iyy       =   471262.4     kg-m^2
- Izz       =   554518.7     kg-m^2
+ mass      =   0     kg
+ Ixx       =   1420.8784     kg-m^2
+ Iyy       =   4067.4     kg-m^2
+ Izz       =   4785.974     kg-m^2
  Ixy       =   0.0     kg-m^2
  Iyz       =   0.0     kg-m^2
  Izx       =   0.0     kg-m^2
@@ -187,7 +187,7 @@
  ---------------------------------------------
  Run case  5:   case_0006_0005
 
- alpha        ->  CL          =   0.0        
+ alpha        ->  alpha       =   7.0        
  beta         ->  beta        =   0.0
  pb/2V        ->  pb/2V       =   0.0
  qc/2V        ->  qc/2V       =   0.0
@@ -216,10 +216,10 @@
  X_cg      =   2.239696797     m
  Y_cg      =   0     m
  Z_cg      =   -0.131189711     m
- mass      =   0.0     kg
- Ixx       =   164627.7     kg-m^2
- Iyy       =   471262.4     kg-m^2
- Izz       =   554518.7     kg-m^2
+ mass      =   0     kg
+ Ixx       =   1420.8784     kg-m^2
+ Iyy       =   4067.4     kg-m^2
+ Izz       =   4785.974     kg-m^2
  Ixy       =   0.0     kg-m^2
  Iyz       =   0.0     kg-m^2
  Izx       =   0.0     kg-m^2
@@ -233,7 +233,7 @@
  ---------------------------------------------
  Run case  6:   case_0006_0006
 
- alpha        ->  CL          =   0.0        
+ alpha        ->  alpha       =   10.0        
  beta         ->  beta        =   0.0
  pb/2V        ->  pb/2V       =   0.0
  qc/2V        ->  qc/2V       =   0.0
@@ -262,10 +262,10 @@
  X_cg      =   2.239696797     m
  Y_cg      =   0     m
  Z_cg      =   -0.131189711     m
- mass      =   0.0     kg
- Ixx       =   164627.7     kg-m^2
- Iyy       =   471262.4     kg-m^2
- Izz       =   554518.7     kg-m^2
+ mass      =   0     kg
+ Ixx       =   1420.8784     kg-m^2
+ Iyy       =   4067.4     kg-m^2
+ Izz       =   4785.974     kg-m^2
  Ixy       =   0.0     kg-m^2
  Iyz       =   0.0     kg-m^2
  Izx       =   0.0     kg-m^2

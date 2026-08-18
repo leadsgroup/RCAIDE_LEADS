@@ -43,13 +43,17 @@ class Segment(Analysis):
         self.process                       = Process() 
         self.process.initialize            = Process()
           
-        self.process.converge              = Process()
-        self.process.iterate               = Process()
-        self.process.iterate.unknowns      = Process()
-        self.process.iterate.initials      = Process()
-        self.process.iterate.conditions    = Process()
-        self.process.iterate.residuals     = Process()
-        self.process.post_process          = Process()  
+        self.process.converge                       = Process()
+        self.process.iterate                        = Process()
+        self.process.iterate.unknowns               = Process()
+        self.process.iterate.unknowns.network       = Process()
+        self.process.iterate.unknowns.mission       = Process()
+        self.process.iterate.initials               = Process()
+        self.process.iterate.conditions             = Process()
+        self.process.iterate.residuals              = Process()
+        self.process.iterate.residuals.network      = Process()
+        self.process.iterate.residuals.mission      = Process()
+        self.process.post_process                   = Process()
         
         self.conditions = self.state.conditions 
         
@@ -162,85 +166,122 @@ class Segment(Analysis):
         return self
     
     def flight_dynamics_and_controls(self): 
-        self.flight_dynamics                                             = Data()
-        self.flight_dynamics.force_x                                     = False 
-        self.flight_dynamics.force_y                                     = False 
-        self.flight_dynamics.force_z                                     = False 
-        self.flight_dynamics.moment_x                                    = False 
-        self.flight_dynamics.moment_y                                    = False 
-        self.flight_dynamics.moment_z                                    = False    
+        self.flight_dynamics                                                           = Data()
+        self.flight_dynamics.force_x                                                   = False 
+        self.flight_dynamics.force_y                                                   = False 
+        self.flight_dynamics.force_z                                                   = False 
+        self.flight_dynamics.moment_x                                                  = False 
+        self.flight_dynamics.moment_y                                                  = False 
+        self.flight_dynamics.moment_z                                                  = False   
+        self.flight_dynamics.final_velocity_error                                      = False     
         
-        self.assigned_control_variables                                              = Data() 
+        self.assigned_control_variables                                                = Data() 
+          
+        self.assigned_control_variables.pitch_angle                                     = Data()
+        self.assigned_control_variables.pitch_angle.active                              = False
+        self.assigned_control_variables.pitch_angle.initial_guess_values                = None
+        self.assigned_control_variables.pitch_angle.bounds                              = None
+
+        self.assigned_control_variables.bank_angle                                     = Data()
+        self.assigned_control_variables.bank_angle.active                              = False
+        self.assigned_control_variables.bank_angle.initial_guess_values                = None
+        self.assigned_control_variables.bank_angle.bounds                              = None
+
+        self.assigned_control_variables.sideslip_angle                                 = Data()
+        self.assigned_control_variables.sideslip_angle.active                          = False
+        self.assigned_control_variables.sideslip_angle.initial_guess_values            = None
+        self.assigned_control_variables.sideslip_angle.bounds                          = None
+
+        self.assigned_control_variables.angle_of_attack                                     = Data()
+        self.assigned_control_variables.angle_of_attack.active                              = False
+        self.assigned_control_variables.angle_of_attack.initial_guess_values                = None
+        self.assigned_control_variables.angle_of_attack.bounds                              = None
+
+        self.assigned_control_variables.elapsed_time                                   = Data()
+        self.assigned_control_variables.elapsed_time.active                            = False                 
+        self.assigned_control_variables.elapsed_time.initial_guess_values              = None                
+        self.assigned_control_variables.elapsed_time.bounds                            = None  
+      
+        self.assigned_control_variables.velocity                                       = Data()
+        self.assigned_control_variables.velocity.active                                = False                  
+        self.assigned_control_variables.velocity.initial_guess_values                  = None                
+        self.assigned_control_variables.velocity.bounds                                = None
+
+        self.assigned_control_variables.ground_velocity                                = Data()
+        self.assigned_control_variables.ground_velocity.active                         = False                  
+        self.assigned_control_variables.ground_velocity.initial_guess_values           = None                
+        self.assigned_control_variables.ground_velocity.bounds                         = None        
+          
+        self.assigned_control_variables.acceleration                                   = Data()
+        self.assigned_control_variables.acceleration.active                            = False                 
+        self.assigned_control_variables.acceleration.initial_guess_values              = None                
+        self.assigned_control_variables.acceleration.bounds                            = None
+          
+        self.assigned_control_variables.altitude                                       = Data()
+        self.assigned_control_variables.altitude.active                                = False                 
+        self.assigned_control_variables.altitude.initial_guess_values                  = None                
+        self.assigned_control_variables.altitude.bounds                                = None
+      
+        self.assigned_control_variables.throttle                                       = Data() 
+        self.assigned_control_variables.throttle.active                                = False                
+        self.assigned_control_variables.throttle.assigned_propulsors                   = None       
+        self.assigned_control_variables.throttle.initial_guess_values                  = None     
+        self.assigned_control_variables.throttle.bounds                                = None
+      
+        self.assigned_control_variables.elevator_deflection                            = Data() 
+        self.assigned_control_variables.elevator_deflection.active                     = False      
+        self.assigned_control_variables.elevator_deflection.assigned_surfaces          = None 
+        self.assigned_control_variables.elevator_deflection.initial_guess_values       = None
+        self.assigned_control_variables.elevator_deflection.bounds                     = None
+
+        self.assigned_control_variables.rudder_deflection                              = Data()
+        self.assigned_control_variables.rudder_deflection.active                       = False
+        self.assigned_control_variables.rudder_deflection.assigned_surfaces            = None 
+        self.assigned_control_variables.rudder_deflection.initial_guess_values         = None
+        self.assigned_control_variables.rudder_deflection.bounds                       = None
+  
+        self.assigned_control_variables.flap_deflection                                = Data() 
+        self.assigned_control_variables.flap_deflection.active                         = False          
+        self.assigned_control_variables.flap_deflection.assigned_surfaces              = None 
+        self.assigned_control_variables.flap_deflection.initial_guess_values           = None
+        self.assigned_control_variables.flap_deflection.bounds                         = None
+  
+        self.assigned_control_variables.slat_deflection                                = Data() 
+        self.assigned_control_variables.slat_deflection.active                         = False          
+        self.assigned_control_variables.slat_deflection.assigned_surfaces              = None 
+        self.assigned_control_variables.slat_deflection.initial_guess_values           = None  
+        self.assigned_control_variables.slat_deflection.bounds                         = None            
+      
+        self.assigned_control_variables.aileron_deflection                             = Data() 
+        self.assigned_control_variables.aileron_deflection.active                      = False      
+        self.assigned_control_variables.aileron_deflection.assigned_surfaces           = None 
+        self.assigned_control_variables.aileron_deflection.initial_guess_values        = None
+        self.assigned_control_variables.aileron_deflection.bounds                      = None
+      
+        self.assigned_control_variables.thrust_vector_angle                            = Data() 
+        self.assigned_control_variables.thrust_vector_angle.active                     = False        
+        self.assigned_control_variables.thrust_vector_angle.assigned_propulsors        = None 
+        self.assigned_control_variables.thrust_vector_angle.initial_guess_values       = None 
+        self.assigned_control_variables.thrust_vector_angle.bounds                     = None 
+
+        self.assigned_control_variables.blade_pitch_command                            = Data() 
+        self.assigned_control_variables.blade_pitch_command.active                     = False        
+        self.assigned_control_variables.blade_pitch_command.assigned_rotors            = None 
+        self.assigned_control_variables.blade_pitch_command.initial_guess_values       = None   
+        self.assigned_control_variables.blade_pitch_command.bounds                     = None   
         
-        self.assigned_control_variables.body_angle                                   = Data()
-        self.assigned_control_variables.body_angle.active                            = False               
-        self.assigned_control_variables.body_angle.initial_guess_values              = None
+        self.assigned_control_variables.hybrid_power_split_ratio                                 = Data()
+        self.assigned_control_variables.hybrid_power_split_ratio.active                          = False
+        self.assigned_control_variables.hybrid_power_split_ratio.assigned_networks               = None
+        self.assigned_control_variables.hybrid_power_split_ratio.initial_guess_values            = None
+        self.assigned_control_variables.hybrid_power_split_ratio.bounds                          = None
 
-        self.assigned_control_variables.bank_angle                                   = Data()
-        self.assigned_control_variables.bank_angle.active                            = False 
-        self.assigned_control_variables.bank_angle.initial_guess_values              = None
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio                      = Data()
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio.active               = False
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio.assigned_networks    = None
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio.initial_guess_values = None
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio.bounds               = None
 
-        self.assigned_control_variables.wind_angle                                   = Data()
-        self.assigned_control_variables.wind_angle.active                            = False             
-        self.assigned_control_variables.wind_angle.initial_guess_values              = None   
-
-        self.assigned_control_variables.elapsed_time                                 = Data()
-        self.assigned_control_variables.elapsed_time.active                          = False                 
-        self.assigned_control_variables.elapsed_time.initial_guess_values            = None  
-    
-        self.assigned_control_variables.velocity                                     = Data()
-        self.assigned_control_variables.velocity.active                              = False                  
-        self.assigned_control_variables.velocity.initial_guess_values                = None
-        
-        self.assigned_control_variables.acceleration                                 = Data()
-        self.assigned_control_variables.acceleration.active                          = False                 
-        self.assigned_control_variables.acceleration.initial_guess_values            = None
-        
-        self.assigned_control_variables.altitude                                     = Data()
-        self.assigned_control_variables.altitude.active                              = False                 
-        self.assigned_control_variables.altitude.initial_guess_values                = None
-    
-        self.assigned_control_variables.throttle                                     = Data() 
-        self.assigned_control_variables.throttle.active                              = False                
-        self.assigned_control_variables.throttle.assigned_propulsors                 = None       
-        self.assigned_control_variables.throttle.initial_guess_values                = None
-    
-        self.assigned_control_variables.elevator_deflection                          = Data() 
-        self.assigned_control_variables.elevator_deflection.active                   = False      
-        self.assigned_control_variables.elevator_deflection.assigned_surfaces        = None 
-        self.assigned_control_variables.elevator_deflection.initial_guess_values     = None
-
-        self.assigned_control_variables.rudder_deflection                            = Data()
-        self.assigned_control_variables.rudder_deflection.active                     = False
-        self.assigned_control_variables.rudder_deflection.assigned_surfaces          = None 
-        self.assigned_control_variables.rudder_deflection.initial_guess_values       = None
-
-        self.assigned_control_variables.flap_deflection                              = Data() 
-        self.assigned_control_variables.flap_deflection.active                       = False          
-        self.assigned_control_variables.flap_deflection.assigned_surfaces            = None 
-        self.assigned_control_variables.flap_deflection.initial_guess_values         = None
-
-        self.assigned_control_variables.slat_deflection                              = Data() 
-        self.assigned_control_variables.slat_deflection.active                       = False          
-        self.assigned_control_variables.slat_deflection.assigned_surfaces            = None 
-        self.assigned_control_variables.slat_deflection.initial_guess_values         = None            
-    
-        self.assigned_control_variables.aileron_deflection                           = Data() 
-        self.assigned_control_variables.aileron_deflection.active                    = False      
-        self.assigned_control_variables.aileron_deflection.assigned_surfaces         = None 
-        self.assigned_control_variables.aileron_deflection.initial_guess_values      = None
-    
-        self.assigned_control_variables.thrust_vector_angle                          = Data() 
-        self.assigned_control_variables.thrust_vector_angle.active                   = False        
-        self.assigned_control_variables.thrust_vector_angle.assigned_propulsors      = None 
-        self.assigned_control_variables.thrust_vector_angle.initial_guess_values     = None
-        
-
-        self.assigned_control_variables.rotor_blade_pitch_command                      = Data() 
-        self.assigned_control_variables.rotor_blade_pitch_command.active               = False        
-        self.assigned_control_variables.rotor_blade_pitch_command.assigned_propulsors  = None 
-        self.assigned_control_variables.rotor_blade_pitch_command.initial_guess_values = None        
-        
         return     
            
 # ----------------------------------------------------------------------

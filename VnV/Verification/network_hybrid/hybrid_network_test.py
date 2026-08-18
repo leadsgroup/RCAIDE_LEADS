@@ -18,7 +18,14 @@ import matplotlib.cm as cm
 import os 
 import sys
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles')) 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path) 
 from ATR_72                          import vehicle_setup as conventional_vehicle_setup
 from ATR_72                          import configs_setup as conventional_configs_setup
 from all_electric_ATR_72             import vehicle_setup as all_electric_vehicle_setup
@@ -33,16 +40,16 @@ import time
 def main():
     
     solver_type      = "optimize"
-    solver_objective = None  
+    solver_objective = "energy"
     conventional     = True
     all_electric     = True
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6874510105874949
-    electric_cruise_CL_truth         = 0.6937698994826632
-    series_hybrid_cruise_CL_truth    = 0.6923715992248416
-    parallel_hybrid_cruise_CL_truth  = 0.693442029601161
+    convetional_cruise_CL_truth      = 0.6862139476271975
+    electric_cruise_CL_truth         = 0.7959779766686202
+    series_hybrid_cruise_CL_truth    = 0.6926430839299796
+    parallel_hybrid_cruise_CL_truth  = 0.6921674982040873
 
     error = Data()
     
@@ -54,13 +61,14 @@ def main():
         vehicle  = conventional_vehicle_setup() 
         vehicle.networks.fuel.identical_propulsors = False         
         configs  = conventional_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs, weights_method='conventional') 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         conventional_results  = missions.base_mission.evaluate()
 
-        cruise_CL        = conventional_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]   
-        print("Conventional ATR 72 Cruise CL: " + str(cruise_CL)) 
-        error.conventional_cruise_CL = np.max(np.abs( convetional_cruise_CL_truth  - cruise_CL  )/ convetional_cruise_CL_truth )  
+        assert conventional_results.segments.cruise.state.numerics.mission_solver.converged, "Conventional mission did not converge"
+        cruise_CL        = conventional_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
+        print("Conventional ATR 72 Cruise CL: " + str(cruise_CL))
+        error.conventional_cruise_CL = np.max(np.abs( convetional_cruise_CL_truth  - cruise_CL  )/ convetional_cruise_CL_truth )
         
         plot_data.append(conventional_results)
         powertrain_labels.append("Conventional")
@@ -69,13 +77,14 @@ def main():
         vehicle  = all_electric_vehicle_setup()  
         vehicle.networks.electric.identical_propulsors = False      
         configs  = all_electric_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs,weights_method='electric') 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         electric_results  = missions.base_mission.evaluate()
 
-        cruise_CL        = electric_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]   
-        print("Electric ATR 72 Cruise CL: " + str(cruise_CL))   
-        error.electric_cruise_CL = np.max(np.abs( electric_cruise_CL_truth  - cruise_CL  )/ electric_cruise_CL_truth )  
+        assert electric_results.segments.cruise.state.numerics.mission_solver.converged, "All-Electric mission did not converge"
+        cruise_CL        = electric_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
+        print("Electric ATR 72 Cruise CL: " + str(cruise_CL))
+        error.electric_cruise_CL = np.max(np.abs( electric_cruise_CL_truth  - cruise_CL  )/ electric_cruise_CL_truth )
         
         plot_data.append(electric_results)
         powertrain_labels.append("All-Electric")
@@ -83,13 +92,14 @@ def main():
         print("\n Series Hybrid Powertrain Test") 
         vehicle  = series_hybrid_vehicle_setup() 
         configs  = series_hybrid_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs,weights_method='electric')
         missions = missions_setup(analyses,solver_type,solver_objective)  
         series_hybrid_results  = missions.base_mission.evaluate()
     
+        assert series_hybrid_results.segments.cruise.state.numerics.mission_solver.converged, "Series Hybrid mission did not converge"
         cruise_CL        = series_hybrid_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
         print("Series Hybrid ATR 72 Cruise CL: " + str(cruise_CL))
-        error.series_hybrid_cruise_CL= np.max(np.abs( series_hybrid_cruise_CL_truth  - cruise_CL  )/ series_hybrid_cruise_CL_truth )  
+        error.series_hybrid_cruise_CL= np.max(np.abs( series_hybrid_cruise_CL_truth  - cruise_CL  )/ series_hybrid_cruise_CL_truth )
         
         plot_data.append(series_hybrid_results)
         powertrain_labels.append("Series Hybrid")
@@ -97,10 +107,11 @@ def main():
         print("\n Parallel Hybrid Powertrain Test") 
         vehicle  = parallel_hybrid_vehicle_setup() 
         configs  = parallel_hybrid_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs,weights_method='electric')
         missions = missions_setup(analyses,solver_type,solver_objective)  
         parallel_hybrid_results  = missions.base_mission.evaluate() 
     
+        assert parallel_hybrid_results.segments.cruise.state.numerics.mission_solver.converged, "Parallel Hybrid mission did not converge"
         cruise_CL        = parallel_hybrid_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
         print("Parallel Hybrid ATR 72 Cruise CL: " + str(cruise_CL))
         error.parallel_hybrid_cruise_CL = np.max(np.abs( parallel_hybrid_cruise_CL_truth  - cruise_CL  )/ parallel_hybrid_cruise_CL_truth )
@@ -109,7 +120,7 @@ def main():
         powertrain_labels.append("Parallel Hybrid")
          
 
-    # add remaining networks MATTEO          
+    # add remaining networks           
     print("Elapsed Time", (time.time()-t0)/60)         
 
     print('Errors:')
@@ -125,13 +136,13 @@ def main():
 #   Define the Analyses
 # ----------------------------------------------------------------------
 
-def analyses_setup(configs):
+def analyses_setup(configs,weights_method=None):
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
     # build a base analysis for each config
     for tag,config in configs.items():
-        analysis = base_analysis(config)
+        analysis = base_analysis(config,weights_method)
         analyses[tag] = analysis
 
     return analyses
@@ -140,30 +151,42 @@ def analyses_setup(configs):
 #   Define the Base Analysis
 # ----------------------------------------------------------------------
 
-def base_analysis(vehicle):
+def base_analysis(vehicle,weights_method):
 
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()  
-
+    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle = vehicle
+    
+    # ------------------------------------------------------------------
     #  Geometry
+    # ------------------------------------------------------------------
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     analyses.append(geometry)
+
+    
+    # ------------------------------------------------------------------
+    #  Weights
+    # ------------------------------------------------------------------
+    if weights_method == 'conventional': 
+        weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
+    if weights_method == 'electric': 
+        weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation()
+    analyses.append(weights) 
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------     
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                            = vehicle 
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()   
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------
     #  Energy
     # ------------------------------------------------------------------     
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -176,7 +199,6 @@ def base_analysis(vehicle):
     #  Atmosphere Analysis
     # ------------------------------------------------------------------     
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     # done!
@@ -213,8 +235,8 @@ def mission_setup(analyses,solver_type,solver_objective):
     # unpack Segments module
     Segments = RCAIDE.Framework.Mission.Segments  
     base_segment = Segments.Segment()
-    base_segment.state.numerics.solver.type       = solver_type
-    base_segment.state.numerics.solver.objective  = solver_objective  
+    base_segment.state.numerics.mission_solver.type       = solver_type
+    base_segment.state.numerics.mission_solver.objective  = solver_objective  
         
     # ------------------------------------------------------------------
     #   Cruise Segment: constant Speed, constant altitude
@@ -227,7 +249,7 @@ def mission_setup(analyses,solver_type,solver_objective):
     segment.distance                                      = 100.   * Units.nautical_mile    
     segment.hybrid_power_split_ratio                      = 0.5 
     segment.battery_fuel_cell_power_split_ratio           = 1.0
-    segment.initial_battery_state_of_charge               = 1.0 
+    segment.initial_battery_conditions.state_of_charge    = 1.0
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  
@@ -237,7 +259,7 @@ def mission_setup(analyses,solver_type,solver_objective):
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.7]]
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     mission.append_segment(segment)    
  
       
@@ -298,9 +320,9 @@ def plot_battery_pack_conditions(plot_data,
             # ---------------------------------------------------------------------------
 
             time         = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min 
-            Weight       = results.segments[i].conditions.weights.total_mass[:, 0] * 9.81   
-            mdot         = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]
-            thrust       = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
+            Weight       = results.segments[i].conditions.weights.vehicle.mass[:, 0] * 9.81   
+            mdot         = results.segments[i].conditions.weights.vehicle.mass_rate[:, 0]
+            thrust       = results.segments[i].conditions.frames.body.total_force_vector[:, 0]
             sfc          = (mdot / Units.lb) / (thrust / Units.lbf) * Units.hr    
             cl           = results.segments[i].conditions.aerodynamics.coefficients.lift.total[:,0,None]
             cd           = results.segments[i].conditions.aerodynamics.coefficients.drag.total[:,0,None]
@@ -310,27 +332,18 @@ def plot_battery_pack_conditions(plot_data,
             # Plot battery pack results if any            
             # ---------------------------------------------------------------------------            
             
-            for network in results.segments[0].analyses.energy.vehicle.networks: 
-                busses  = network.busses
-                
-                for  b_i , bus in  enumerate(busses):  
-                    no_modules         = len(bus.battery_modules)   
-                    bus_config         = bus.battery_module_electric_configuration 
-                    battery_module_tag = list(bus.battery_modules.keys())[0]
-                    
-                    battery_conditions  = results.segments[i].conditions.energy.busses['bus'].battery_modules[battery_module_tag] 
-                 
-                    if bus_config == 'Series':
-                        pack_current        = battery_conditions.current[:,0] 
-                        pack_volts          = battery_conditions.voltage_under_load[:,0]   * no_modules                          
-                    elif bus_config  == 'Parallel': 
-                        pack_current        = battery_conditions.current[:,0] * no_modules
-                        pack_volts          = battery_conditions.voltage_under_load[:,0]   
-                        
-                    pack_power          = battery_conditions.power[:,0] * no_modules
-                    pack_energy         = battery_conditions.energy[:,0] * no_modules
-                    pack_SOC            = battery_conditions.cell.state_of_charge[:,0]   
-                    pack_temperature    = battery_conditions.temperature[:,0]   
+            for network in results.segments[0].analyses.vehicle.networks:
+                battery_packs = [s for s in network.sources if isinstance(s, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack)]
+
+                for  b_i , battery_pack in  enumerate(battery_packs):
+                    battery_conditions  = results.segments[i].conditions.energy.sources[battery_pack.tag]
+
+                    pack_volts          = battery_conditions.voltage_under_load[:,0]
+                    pack_power          = battery_conditions.outputs.power.electrical[:,0]
+                    pack_current        = pack_power / pack_volts
+                    pack_energy         = battery_conditions.energy[:,0]
+                    pack_SOC            = battery_conditions.state_of_charge[:,0]
+                    pack_temperature    = battery_conditions.temperature[:,0]
                 
                     if i ==0:                             
                         axis_1_1.plot(time, pack_SOC, color = line_colors[res_i], marker = ps.markers[b_i], linewidth = ps.line_width, label = powertrain_labels[res_i])
@@ -367,7 +380,7 @@ def plot_battery_pack_conditions(plot_data,
             
             axis_2_1.set_ylabel(r'Throttle')
             set_axes(axis_2_1)               
-            for network in results.segments[i].analyses.energy.vehicle.networks:   
+            for network in results.segments[i].analyses.vehicle.networks:   
                 propulsor_tag = list(network.propulsors.keys())[0] 
                 eta = results.segments[i].conditions.energy.propulsors[propulsor_tag].throttle[:,0] 
                 if i ==0:

@@ -10,8 +10,8 @@ import RCAIDE
 from RCAIDE.Framework.Core            import Data, Units     
 from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import * 
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift import *
-from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy 
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 # package imports
 import numpy as np
@@ -19,7 +19,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compute field length required for takeoff
 # ----------------------------------------------------------------------
-def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
+def estimate_take_off_field_length(analyses=None,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
     """
     Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.
 
@@ -90,16 +90,19 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     --------
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag
-    """        
+    """  
+    if analyses is None:
+        raise AttributeError('RCAIDE analyses must be defined')
 
-    # ==============================================
-        # Unpack
-    # ============================================== 
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference
+    # ---------------------------------------------- 
+    # Preprocess Geometry 
+    # ---------------------------------------------- 
+    geometry_preprocess_routine(analyses)
 
+    # ----------------------------------------------
+    # Unpack
+    # ---------------------------------------------- 
+    vehicle         = analyses.vehicle
     atmo            = analyses.atmosphere 
     weight          = vehicle.mass_properties.takeoff
     reference_area  = vehicle.reference_area 
@@ -108,8 +111,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     # ==============================================
     # Computing atmospheric conditions
     # ==============================================
-    atmo_values       = atmo.compute_values(altitude,delta_isa)
-    conditions        = RCAIDE.Framework.Mission.Common.Results() 
+    atmo_values       = atmo.compute_values(altitude,delta_isa) 
     p                 = atmo_values.pressure
     T                 = atmo_values.temperature
     rho               = atmo_values.density
@@ -121,9 +123,8 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     # Determining vehicle maximum lift coefficient
     # ==============================================
     # Condition to CLmax calculation: 90KTAS @ airport
-    state = Data()
-    state.conditions = RCAIDE.Framework.Mission.Common.Results()
-    state.conditions.freestream = Data()
+    state                                         = RCAIDE.Framework.Mission.Common.State()
+    state.conditions                              = RCAIDE.Framework.Mission.Common.Results()  
     state.conditions.freestream.density           = rho
     state.conditions.freestream.velocity          = 90. * Units.knots
     state.conditions.freestream.dynamic_viscosity = mu
@@ -157,46 +158,80 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     atmosphere_sls                                    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data                                         = atmosphere_sls.compute_values(0.0,0.0)
 
-    p                                                 = atmo_data.pressure          
-    T                                                 = atmo_data.temperature       
-    rho                                               = atmo_data.density          
-    a                                                 = atmo_data.speed_of_sound    
-    mu                                                = atmo_data.dynamic_viscosity 
+    p                                                 = atmo_data.pressure
+    T                                                 = atmo_data.temperature
+    rho                                               = atmo_data.density
+    a                                                 = atmo_data.speed_of_sound
+    mu                                                = atmo_data.dynamic_viscosity
+    Cp                                                = atmo_data.constant_pressure_specific_heat
+    gamma                                             = atmo_data.specific_heat
+    k_thermal                                         = atmo_data.thermal_conductivity
+    Pr                                                = atmo_data.prandtl_number
+    nu                                                = atmo_data.kinematic_viscosity
 
-    conditions                                        = RCAIDE.Framework.Mission.Common.Results() 
+    conditions                                        = RCAIDE.Framework.Mission.Common.Results()
     conditions.freestream.altitude                    = np.atleast_1d(0)
     conditions.freestream.mach_number                 = np.atleast_1d(0.01)
     conditions.freestream.pressure                    = np.atleast_1d(p)
     conditions.freestream.temperature                 = np.atleast_1d(T)
     conditions.freestream.density                     = np.atleast_1d(rho)
     conditions.freestream.dynamic_viscosity           = np.atleast_1d(mu)
-    conditions.freestream.gravity                     = np.atleast_2d(planet.sea_level_gravity) 
+    conditions.freestream.kinematic_viscosity         = np.atleast_1d(nu)
+    conditions.freestream.thermal_conductivity        = np.atleast_1d(k_thermal)
+    conditions.freestream.prandtl_number              = np.atleast_1d(Pr)
+    conditions.freestream.gravity                     = np.atleast_2d(planet.sea_level_gravity)
     conditions.freestream.speed_of_sound              = np.atleast_1d(a)
-    conditions.freestream.velocity                    = np.atleast_1d(a*0.01)   
+    conditions.freestream.velocity                    = np.atleast_1d(a*0.01)
+    conditions.freestream.constant_pressure_specific_heat = np.atleast_1d(Cp)
+    conditions.freestream.specific_heat               = np.atleast_1d(gamma)
+    conditions.frames.inertial.position_vector        = np.array([[0, 0, -altitude]])   
  
 
-    analysis                 = RCAIDE.Framework.Analyses.Vehicle() 
+    analysis                 = RCAIDE.Framework.Analyses.Vehicle()
+    analysis.vehicle         = vehicle
     energy_analysis          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy_analysis.vehicle  = vehicle 
     analysis.append(energy_analysis)
-     
-    mission = RCAIDE.Framework.Mission.Sequential_Segments() 
-    segment = RCAIDE.Framework.Mission.Segments.Segment() 
-    segment.hybrid_power_split_ratio            = None
-    segment.battery_fuel_cell_power_split_ratio = None
-    segment.analyses.extend( analysis) 
-    mission.append_segment(segment) 
-    segment.state.conditions  = conditions    
+
+    mission = RCAIDE.Framework.Mission.Sequential_Segments()
+    segment = RCAIDE.Framework.Mission.Segments.Segment()
+    segment.hybrid_power_split_ratio             = None
+    segment.battery_fuel_cell_power_split_ratio  = None
+    segment.temperature_deviation                = delta_isa
+    segment.initial_battery_conditions           = Data()
+    segment.initial_battery_conditions.state_of_charge      = 1.0
+    segment.initial_battery_conditions.cell_temperature      = None
+    segment.initial_battery_conditions.charge_throughput     = None
+    segment.initial_battery_conditions.increment_battery_age = False
+    segment.analyses.extend( analysis)
+    segment.state.conditions  = conditions
+    segment.conditions        = segment.state.conditions
+    # single control point: 1×1 differentiation / integration matrices for static evaluation
+    segment.state.numerics.time.control_points = np.array([[0.0]])
+    segment.state.numerics.time.differentiate  = np.zeros((1, 1))
+    segment.state.numerics.time.integrate      = np.zeros((1, 1))
+    mission.append_segment(segment)  
     
     # initalize mission
-    energy(mission)      
+    energy(mission)
 
-    thrust =  np.array([[0.0, 0.0, 0.0]]) 
-    for network in vehicle.networks:   
-        for propulsor in  network.propulsors: 
-            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]]) 
-        network.evaluate(segment.state,center_of_gravity = vehicle.mass_properties.center_of_gravity) 
-        thrust += conditions.energy.thrust_force_vector
+    # set up battery unknowns (normally done in the full mission pre-process pipeline)
+    for network in vehicle.networks:
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                source.append_unknowns_and_residuals(segment)
+
+    thrust =  np.array([[0.0, 0.0, 0.0]])
+    for network in vehicle.networks:
+        for propulsor in  network.propulsors:
+            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]])
+            
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel = source.fuel
+                segment.state.conditions.weights.components.mass[fuel.tag] = np.array([[0]])                
+                
+        network.evaluate(segment.state,vehicle)
+        thrust += conditions.energy.total_force_vector
 
     # ==============================================
     # Calculate takeoff distance

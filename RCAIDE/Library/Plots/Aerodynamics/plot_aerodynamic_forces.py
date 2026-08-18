@@ -7,9 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style
+from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -30,7 +29,7 @@ def plot_aerodynamic_forces(results,
         RCAIDE results data structure containing:
             - segments[i].conditions.frames
                 Frame data containing:
-                    - body.thrust_force_vector[:,0]
+                    - body.total_force_vector[:,0]
                         Thrust force in body frame [N]
                     - wind.force_vector[:,0]
                         Drag force in wind frame [N]
@@ -102,15 +101,15 @@ def plot_aerodynamic_forces(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = segment_colors(len(results.segments))     
     
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height)
     
     for i in range(len(results.segments)): 
         time   = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-        Power  = results.segments[i].conditions.energy.power[:,0] 
-        Thrust = results.segments[i].conditions.frames.body.thrust_force_vector[:,0]
+        Power  = results.segments[i].conditions.energy.outputs.power.propulsive[:,0] 
+        Thrust = results.segments[i].conditions.frames.body.total_force_vector[:,0]
         Lift   = -results.segments[i].conditions.frames.wind.force_vector[:,2]
         Drag   = -results.segments[i].conditions.frames.wind.force_vector[:,0]
          

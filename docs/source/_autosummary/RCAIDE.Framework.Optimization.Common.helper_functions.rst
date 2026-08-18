@@ -1,9 +1,9 @@
-RCAIDE.Framework.Optimization.Common.helper_functions
+RCAIDE.Framework.Optimization.helper_functions
 
 helper\_functions
 =================
 
-.. automodule:: RCAIDE.Framework.Optimization.Common.helper_functions
+.. automodule:: RCAIDE.Framework.Optimization.helper_functions
 
    
    

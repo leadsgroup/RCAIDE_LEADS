@@ -1,18 +1,22 @@
 # RCAIDE/Library/Components/Powertrain/Distributors/Coolant_Line.py 
 # 
 # Created:  Aug 2024, S. Shekar
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports  
-from RCAIDE.Library.Components                                import Component
-from RCAIDE.Library.Components.Component                      import Container    
+# RCAIDE imports
+import RCAIDE
+from .Distributor                                             import Distributor
+from RCAIDE.Library.Components.Component                      import Container
+from RCAIDE.Framework.Core                                    import Data
+from RCAIDE.Library.Methods.Powertrain.Distributors.Coolant_Line import append_coolant_line_conditions, append_coolant_line_segment_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Coolant Line
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Coolant_Line(Component):
+class Coolant_Line(Distributor):
     """
     Class for modeling coolant distribution lines in thermal management systems
     
@@ -37,10 +41,7 @@ class Coolant_Line(Component):
         Distribution efficiency of the coolant line (default: 1.0)
         
     battery_modules : Container, optional
-        Collection of battery cooling systems, created when batteries are present
-        
-    identical_battery_modules : bool, optional
-        Flag indicating if all battery modules use identical cooling systems
+        Collection of battery cooling systems, created when batteries are present 
 
     Notes
     -----
@@ -72,12 +73,30 @@ class Coolant_Line(Component):
         
         Source:
             None
-        """          
-        self.tag                            = 'coolant_line' 
-        self.heat_exchangers                = Container()
-        self.reservoirs                     = Container() 
+        """           
+        self.tag                                  = 'coolant_line'
+        self.domain                               = 'thermal'
+        self.heat_exchangers                      = Container()
+        self.reservoirs                           = Container()
+        self.connector_weight_factor              = 1.1  
+        self.pipe                                 = Data()
+        self.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
+        self.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+        self.pipe.flexible_material_ratio         = 0.25
+        self.pipe.diameters                       = Data()
+        self.pipe.diameters.external              = 0.0
+        self.pipe.diameters.internal              = 0.0
+        self.insulation                           = Data()
+        self.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Aluminum() 
+        self.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+        self.insulation.flexible_material_ratio   = 0.25
+        self.insulation.diameters                 = Data()
+        self.insulation.diameters.external        = 0.0
+        self.insulation.diameters.internal        = 0.0
+        self.fuel_probe_unit_mass                 = 0.0
+        self.valve_unit_mass                      = 0.0      
+        self.boost_pump_unit_mass                 = 0.0 
 
-                    
     def __init__ (self, distributor=None):
         """
         Initialize coolant line and set up containers for thermal management components
@@ -95,13 +114,80 @@ class Coolant_Line(Component):
         When a distributor with battery modules is provided, the method creates
         containers to store the cooling system components for each battery.
         """               
-        self.active                        = True 
+        self.active                        = True
         self.efficiency                    = 1.0
-        if distributor is not None:
-            for tag, item in  distributor.items():
-                self.identical_battery_modules  =  distributor.identical_battery_modules
-                if tag == 'battery_modules':
-                    if not hasattr(self, 'battery_modules'):
-                        self.battery_modules = Container()
-                    for battery in item:
-                        self.battery_modules[battery.tag] = Container()
+
+    def unpack_unknowns(self,segment):
+        for reservoir in self.reservoirs:
+            reservoir.unpack_unknowns(self,segment)
+        return
+
+    def pack_residuals(self,segment):
+        for reservoir in self.reservoirs:
+            reservoir.pack_residuals(self,segment)
+        return
+
+    def append_unknowns_and_residuals(self,segment):
+        for reservoir in self.reservoirs:
+            reservoir.append_unknowns_and_residuals(self,segment)
+        return
+
+    def append_operating_conditions(self, segment):
+        """
+        Append operating conditions for a flight segment
+
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment containing operating conditions
+        """
+        append_coolant_line_conditions(self, segment)
+        for reservoir in self.reservoirs:
+            reservoir.append_operating_conditions(segment, self)
+        for heat_exchanger in self.heat_exchangers:
+            heat_exchanger.append_operating_conditions(segment, self)
+        return
+
+    def append_segment_conditions(self, segment):
+        """
+        Append segment-specific conditions to the coolant line
+
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment data
+        """
+        append_coolant_line_segment_conditions(self, segment)
+        for reservoir in self.reservoirs:
+            reservoir.append_segment_conditions(segment, self)
+        for heat_exchanger in self.heat_exchangers:
+            heat_exchanger.append_segment_conditions(segment, self)
+        return
+
+    def compute_distribution_losses(self, component_conditions, state, network):
+        return
+
+    def compute_performance(self, state, network):
+
+        for reservoir in self.reservoirs:
+            reservoir.compute_performance(self, state, network)
+
+        inputs = Data()
+        outputs = Data()
+        inputs.power  = Data()
+        outputs.power = Data()
+
+        inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
+        inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
+        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical
+        inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic
+        inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal
+
+        outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
+        outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
+        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical
+        outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic
+        outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal
+
+        return inputs, outputs
+

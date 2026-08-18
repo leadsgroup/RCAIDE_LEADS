@@ -14,5 +14,6 @@ See Also
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-
-from .compute_integral_tank_volume import compute_fuselage_integral_tank_fuel_volume, compute_wing_integral_tank_fuel_volume
+from .compute_fuselage_integral_tank_volume import compute_fuselage_integral_tank_volume
+from .compute_wing_transverse_integral_tank_volume import compute_wing_transverse_integral_tank_volume
+from .compute_wing_integral_tank_volume import compute_wing_integral_tank_volume

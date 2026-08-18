@@ -22,25 +22,30 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
     #------------------------------------------------------------------------------------------------------------------------------------     
-    vehicle                                     = RCAIDE.Vehicle()
-    vehicle.tag                                 = 'Cessna_172' 
-    vehicle.mass_properties.max_takeoff         = 2550. * Units.pounds
-    vehicle.mass_properties.takeoff             = 2550. * Units.pounds 
-    vehicle.mass_properties.max_zero_fuel       = 1680  * Units.pounds 
-    vehicle.mass_properties.max_fuel            = 152.407
-    vehicle.mass_properties.max_payload         = 910  * Units.pounds 
-    vehicle.mass_properties.cargo               = 0. 
+    vehicle                                          = RCAIDE.Vehicle()
+    vehicle.tag                                      = 'Cessna_172' 
+    vehicle.mass_properties.max_takeoff              = 2550. * Units.pounds
+    vehicle.mass_properties.takeoff                  = 2550. * Units.pounds 
+    vehicle.mass_properties.operating_empty          = 1600 * Units.pounds
+    vehicle.mass_properties.max_zero_fuel            = 1680  * Units.pounds 
+    vehicle.mass_properties.max_fuel                 = 152.407
+    vehicle.mass_properties.max_payload              = 910  * Units.pounds 
+    vehicle.mass_properties.payload                  = 200
                                                
     # envelope properties                       
     vehicle.flight_envelope.ultimate_load            = 5.7 
     vehicle.flight_envelope.positive_limit_load      = 3.8  
     vehicle.flight_envelope.design_range             = 750 * Units.nmi 
     vehicle.flight_envelope.design_dynamic_pressure  = 2755 # max speed at 10 k feet
-    vehicle.flight_envelope.design_mach_number       = 0.18745866156304694
-                                                
+    vehicle.flight_envelope.design_mach_number       = 0.18745866156304694 
+    vehicle.flight_envelope.category                 = 'normal'
+    vehicle.flight_envelope.FAR_part_number          = '23' 
+    vehicle.flight_envelope.maximum_lift_coefficient = 3
+    vehicle.flight_envelope.minimum_lift_coefficient = -1.5
+    
     # basic parameters                          
-    vehicle.reference_area                      = 174. * Units.feet**2       
-    vehicle.passengers                          = 4
+    vehicle.reference_area                           = 174. * Units.feet**2       
+    vehicle.number_of_passengers                     = 4
 
 
     
@@ -56,7 +61,7 @@ def vehicle_setup():
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2
     main_gear.fairing                        = True
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric             = True
     main_gear.gear_extended                  = True
     vehicle.append_component(main_gear)  
 
@@ -96,7 +101,7 @@ def vehicle_setup():
     wing.origin                                 = [[80.* Units.inches,0,  0.820]]
     wing.aerodynamic_center                     = [22.* Units.inches,0,0]
     wing.vertical                               = False
-    wing.symmetric                              = True
+    wing.xz_plane_symmetric                     = True
     wing.high_lift                              = True 
     wing.dynamic_pressure_ratio                 = 1.0 
                                           
@@ -105,7 +110,7 @@ def vehicle_setup():
     flap.tag                                    = 'flap' 
     flap.span_fraction_start                    = 0.15 
     flap.span_fraction_end                      = 0.324    
-    flap.deflection                             = 1.0 * Units.deg
+    flap.deflection                             = 0.0 * Units.deg
     flap.chord_fraction                         = 0.19    
     wing.append_control_surface(flap)           
                                                 
@@ -113,7 +118,7 @@ def vehicle_setup():
     slat.tag                                    = 'slat' 
     slat.span_fraction_start                    = 0.324 
     slat.span_fraction_end                      = 0.963     
-    slat.deflection                             = 1.0 * Units.deg
+    slat.deflection                             = 0.0 * Units.deg
     slat.chord_fraction                         = 0.1      
     wing.append_control_surface(slat)   
 
@@ -141,7 +146,7 @@ def vehicle_setup():
     wing.origin                                 = [[246.* Units.inches,0,0]]
     wing.aerodynamic_center                     = [20.* Units.inches,0,0]
     wing.vertical                               = False
-    wing.symmetric                              = True
+    wing.xz_plane_symmetric                     = True
     wing.high_lift                              = False 
     wing.dynamic_pressure_ratio                 = 0.9 
     wing_airfoil                                = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil() 
@@ -180,7 +185,7 @@ def vehicle_setup():
     wing.origin                                 = [[237.* Units.inches,0,0]]
     wing.aerodynamic_center                     = [20.* Units.inches,0,0] 
     wing.vertical                               = True 
-    wing.symmetric                              = False
+    wing.xz_plane_symmetric                     = False
     wing.t_tail                                 = False 
     wing.dynamic_pressure_ratio                 = 1.0
 
@@ -207,9 +212,7 @@ def vehicle_setup():
     fuselage.heights.maximum                    = 62. * Units.inches    # Height of the fuselage
     fuselage.lengths.total                      = 326.         * Units.inches            # Length of the fuselage
     fuselage.lengths.tail                       = 161. * Units.inches  
-    fuselage.lengths.cabin                      = 105. * Units.inches 
-    fuselage.mass_properties.volume             = .4*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.) #try this as approximation
-    fuselage.mass_properties.internal_volume    = .3*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.)
+    fuselage.lengths.cabin                      = 105. * Units.inches  
     fuselage.areas.wetted                       = 30000. * Units.inches**2. 
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.
@@ -219,7 +222,18 @@ def vehicle_setup():
     fuselage.heights.at_wing_root_quarter_chord = 23. * Units.inches
     fuselage.areas.front_projected              = fuselage.width* fuselage.heights.maximum
     fuselage.effective_diameter                 = 50. * Units.inches
+    fuselage.operational_items.origin           = [[1.8, 0, 0]]
 
+    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 2
+    economy_class.number_of_rows                      = 2
+    economy_class.galley_lavatory_percent_x_locations = [0]      
+    economy_class.emergency_exit_percent_x_locations  = [0.0] 
+    economy_class.type_A_exit_percent_x_locations     = [0.0]
+    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
+    cabin.append_cabin_class(economy_class) 
+    fuselage.append_cabin(cabin)    
 
 
     # Segment  
@@ -320,7 +334,40 @@ def vehicle_setup():
     # ########################################################## Energy Network ######################################################### 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #initialize the fuel network
-    net                                         = RCAIDE.Framework.Networks.Fuel()   
+    net                                         = RCAIDE.Framework.Networks.Fuel()  
+    
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Systems 
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics() 
+    avionics.origin                             = [[1.3, 0, 0.2]]
+    avionics.uninstalled_mass                   = 50. * Units.lbs
+    net.systems.append(avionics)
+
+    flight_controls                             = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin                      = [[4.0, 0, 0]]
+    net.systems.append(flight_controls)
+
+    electrical                                  = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                           = [[0.8, 0, 0]]
+    net.systems.append(electrical)
+
+    hydraulics                                  = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                           = [[2.3, 0, -0.4]]
+    net.systems.append(hydraulics)
+
+    environmental_controls                      = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin               = [[1.5, 0, 0]]
+    net.systems.append(environmental_controls)
+
+    instruments                                 = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                          = [[1.3, 0, 0.3]]
+    net.systems.append(instruments)
+
+    furnishings                                 = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                          = [[2.2, 0, 0]]
+    net.systems.append(furnishings)
+
 
     # add the network to the vehicle
     vehicle.append_energy_network(net) 
@@ -328,7 +375,8 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()   
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                     = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel
@@ -338,8 +386,8 @@ def vehicle_setup():
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel_tank.fuel.mass_properties.mass         = 319 *Units.lbs 
     fuel_tank.mass_properties.center_of_gravity = wing.mass_properties.center_of_gravity
-    fuel_tank.internal_volume                   = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
-    fuel_line.fuel_tanks.append(fuel_tank)   
+    fuel_tank.assigned_distributors             = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
@@ -362,7 +410,7 @@ def vehicle_setup():
     prop.hub_radius                         = 8.     * Units.inches
     prop.cruise.design_freestream_velocity  = 119.   * Units.knots
     prop.cruise.design_angular_velocity     = 2650.  * Units.rpm
-    prop.cruise.design_Cl                   = 0.8
+    prop.cruise.design_lift_coefficient                   = 0.8
     prop.cruise.design_altitude             = 12000. * Units.feet
     prop.cruise.design_power                = .64 * 180. * Units.horsepower
     prop.variable_pitch                     = True  
@@ -386,21 +434,13 @@ def vehicle_setup():
     
     net.propulsors.append(ice_prop)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [[ice_prop.tag]]
-    
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)            
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Assign propulsor to fuel line
+    ice_prop.assigned_distributors =  [[fuel_line.tag]]
 
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    Wuav                                        = 2. * Units.lbs
-    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.mass_properties.uninstalled        = Wuav
-    vehicle.avionics                            = avionics     
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #   Vehicle Definition Complete

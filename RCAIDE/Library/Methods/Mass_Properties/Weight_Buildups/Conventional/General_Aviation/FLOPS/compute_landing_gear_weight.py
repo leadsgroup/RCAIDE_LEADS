@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/compute_landing_gear_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/compute_landing_gear_weight.py
 # 
 # Created:  Sep 2024, M. Clarke
 # Modified: Feb 2025, A. Molloy and S. Shekar
@@ -71,16 +71,21 @@ def compute_landing_gear_weight(vehicle):
     
     DESRNG  = vehicle.flight_envelope.design_range / Units.nmi  # Design range in nautical miles
     WLDG    = vehicle.mass_properties.max_takeoff / Units.lbs * (1 - RFACT * DESRNG)
-    
+     
+    l_f =  0
+    w_f =  0
     for wing in vehicle.wings:
         if isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing):
             main_wing = wing
+        if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            l_f =  wing.chords.root
+            w_f = 0
     
-    l_f =  0
     for fuselage in vehicle.fuselages:
         if l_f < fuselage.lengths.total:
             main_fuselage = fuselage 
             l_f = main_fuselage.lengths.total
+            w_f = main_fuselage.width
         
     for network in vehicle.networks:
         for propulsor in  network.propulsors:
@@ -97,10 +102,10 @@ def compute_landing_gear_weight(vehicle):
                     FNAC    = propulsor.rotor.tip_radius * 2 / Units.ft                          
                 DIH     = main_wing.dihedral
                 YEE     = np.max(np.abs(np.array(propulsor.origin)[:, 1])) / Units.inches
-                WF      = main_fuselage.width / Units.ft
+                WF      = w_f/ Units.ft
                 XMLG    = 12 * FNAC + (0.26 - np.tan(DIH)) * (YEE - 6 * WF)  # length of extended main landing gear
             else:
-                XMLG    = 0.75 * main_fuselage.lengths.total / Units.ft  # length of extended nose landing gear
+                XMLG    = 0.75 * l_f / Units.ft  # length of extended nose landing gear
     XNLG = 0.7 * XMLG
     WLGM = (0.0117) * WLDG ** 0.95 * XMLG ** 0.43
     WLGN = (0.048) * WLDG ** 0.67 * XNLG ** 0.43

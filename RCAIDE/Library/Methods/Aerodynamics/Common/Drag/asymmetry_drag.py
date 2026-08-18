@@ -64,13 +64,13 @@ def asymmetry_drag(state, geometry, engine_out_location = 0,  single_engine_thru
     This function calculates the additional drag required to trim the aircraft when one engine
     fails, creating an asymmetric thrust condition. The calculation accounts for the drag caused by yawing
     moment created by the asymmetric thrust and the counteracting moment from the vertical tail.
-    
+
     **Major Assumptions**
         * Two-engine aircraft configuration
         * Vertical tail provides the primary yawing moment for trim
         * Linear relationship between trim drag and asymmetric thrust moment
         * Windmilling drag contributes to the asymmetric moment
-    
+
     **Theory**
 
     The asymmetry drag is calculated from the trim requirement to balance the yawing moment:
@@ -92,15 +92,15 @@ def asymmetry_drag(state, geometry, engine_out_location = 0,  single_engine_thru
     The asymmetry drag coefficient is:
 
     :math:`C_{D,asymmetry} = \\frac{D_{trim}}{q_{\\infty} \\cdot S_{ref}}`
-    
+
     **Definitions**
 
     'Asymmetry Drag'
         Additional drag required to trim the aircraft when thrust is asymmetric due to engine failure.
-    
+
     'Windmilling Drag'
         Drag produced by a failed engine that continues to rotate due to incoming airflow.
-    
+
     'Trim Drag'
         Drag increment required to maintain aircraft equilibrium in asymmetric flight conditions.
 
@@ -114,15 +114,15 @@ def asymmetry_drag(state, geometry, engine_out_location = 0,  single_engine_thru
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag
     """ 
     # ==============================================
-	# Unpack
+        # Unpack
     # ==============================================
     vehicle    = geometry 
     wings      = vehicle.wings
     dyn_press  = state.conditions.freestream.dynamic_pressure
-    
-     # Defining reference area
+
+    # Defining reference area
     if vehicle.reference_area:
-            reference_area = vehicle.reference_area
+        reference_area = vehicle.reference_area
     else:
         n_wing = 0
         for wing in wings:
@@ -137,10 +137,10 @@ def asymmetry_drag(state, geometry, engine_out_location = 0,  single_engine_thru
                 if not isinstance(wing,Wings.Wing): continue
                 reference_area = wing.sref
                 break
-            
+
     # getting cg x position
     xcg = vehicle.mass_properties.center_of_gravity[0]  
-    
+
     # finding vertical tail
     for idx,wing in enumerate(wings):
         if not wing.vertical: continue
@@ -155,18 +155,18 @@ def asymmetry_drag(state, geometry, engine_out_location = 0,  single_engine_thru
     # getting vertical tail data (span, distance to cg)
     vertical_height = wings[vertical_idx].spans.projected
     vertical_dist   = wings[vertical_idx].aerodynamic_center[0] + wings[vertical_idx].origin[0][0] - xcg[0]
-    
+
     # colculating windmilling drag
     if windmilling_drag_coefficient == 0:
         try:
             windmilling_drag_coefficient = state.conditions.aerodynamics.coefficients.drag.windmilling.total  
         except: pass
-    
+
     windmilling_drag = windmilling_drag_coefficient * dyn_press * reference_area
-    
+
     # calculating Drag force due to trim     
     trim_drag = (engine_out_location**2 * (single_engine_thrust+windmilling_drag)**2 ) /      \
-                (dyn_press * 3.141593* (vertical_height*vertical_dist)**2)
+        (dyn_press * 3.141593* (vertical_height*vertical_dist)**2)
 
     # Compute asymmetry trim drag coefficient
     asymm_trim_drag_coefficient = trim_drag / dyn_press / reference_area

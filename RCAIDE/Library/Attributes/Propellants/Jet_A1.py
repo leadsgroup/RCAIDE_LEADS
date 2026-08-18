@@ -37,7 +37,16 @@ class Jet_A1(Propellant):
     
     lower_heating_value : float
         Lower heating value in J/kg (43.24e6)
-    
+
+    molecular_weight : float
+        Average molecular weight in g/mol (160)
+
+    hydrogen_mass_fraction : float
+        Mass fraction of hydrogen content (0.1348)
+
+    carbon_mass_fraction : float
+        Mass fraction of carbon content (0.8637)
+
     max_mass_fraction : Data
         Maximum fuel-to-oxidizer mass ratios
         
@@ -148,6 +157,10 @@ class Jet_A1(Propellant):
         self.temperatures.boiling      = 0.0                              # K
 
         self.stoichiometric_fuel_air_ratio = 0.068          # [-] Stoichiometric Fuel to Air ratio
+        self.molecular_weight              = 160            # [g/mol] average molecular weight
+        self.hydrogen_mass_fraction        = 0.1348         # [-] mass fraction of hydrogen content
+        self.carbon_mass_fraction          = 0.8637         # [-] mass fraction of carbon content
+        self.kinematic_viscosity           = 2.1e-6         # [m^2/s] kinematic viscosity at ~20 C
         self.heat_of_vaporization          = 360000         # [J/kg] Heat of vaporization at standard conditions
         self.temperature                   = 298.15         # [K] Temperature of fuel
         self.pressure                      = 101325         # [Pa] Pressure of fuel
@@ -165,9 +178,9 @@ class Jet_A1(Propellant):
         self.emission_indices.CO2         = 3.16    # kg/kg  fuel
         self.emission_indices.CO          = 0.00201 # kg/kg  fuel
         self.emission_indices.H2O         = 1.23    # kg/kg  fuel 
-        self.emission_indices.SO2         = 0.0012  # kg/kg  fuel
-        self.emission_indices.NOx         = 0.01514 # kg/kg  fuel
-        self.emission_indices.Soot        = 0.0012  # kg/kg  fuel
+        self.emission_indices.SO2         = 0.0012   # kg/kg  fuel  (2 × ~600 ppm sulfur content)
+        self.emission_indices.NOx         = 0.01514  # kg/kg  fuel
+        self.emission_indices.Soot        = 0.000025 # kg/kg  fuel  (0.025 g/kg, Lee et al. 2021 Table 2)
 
         self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
         self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  

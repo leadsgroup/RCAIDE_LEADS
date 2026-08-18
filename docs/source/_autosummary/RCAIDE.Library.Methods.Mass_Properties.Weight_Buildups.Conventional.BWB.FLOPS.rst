@@ -34,6 +34,6 @@ FLOPS
    compute_bwb_wing_weight
    compute_cabin_weight
    compute_operating_empty_weight
-   compute_operating_items
+   compute_operating_items_weight
    compute_systems_weight
 

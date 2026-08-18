@@ -33,8 +33,7 @@ class Ducted_Fan_Design_Code(Analysis):
         self.current_status.batch_index                   = 0
         self.current_status.batch_file                    = None
         self.current_status.deck_file                     = None
-        self.current_status.cases                         = None      
-        self.geometry                                     = None   
+        self.current_status.cases                         = None    
                                                           
         self.settings                                     = Data()
         self.settings.filenames                           = Data()

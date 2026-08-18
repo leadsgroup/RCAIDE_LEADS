@@ -19,5 +19,6 @@ RCAIDE.Library.Methods.Powertrain.Converters.Reformer.compute_reformer_performan
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .compute_reformer_performance    import compute_reformer_performance
+from .append_reformer_conditions      import append_reformer_conditions
 
 

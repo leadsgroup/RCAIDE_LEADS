@@ -15,7 +15,7 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # append_fuel_cell_conditions
 # ----------------------------------------------------------------------------------------------------------------------  
-def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
+def append_fuel_cell_conditions(fuel_cell_stack,segment):
     """
     Appends the initial fuel_cell conditions. 
 
@@ -45,40 +45,42 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
     ---------- 
     """      
     
-    ones_row = segment.state.ones_row  
-                                             
-    bus_conditions                                                                                 = segment.state.conditions.energy.busses[bus.tag]
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag]                                           = Conditions()
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell                                 = Conditions()
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.inputs                          = Conditions()
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.outputs                         = Conditions()
+    ones_row = segment.state.ones_row
 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power                                     = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].voltage_under_load                        = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].current                                   = 0 * ones_row(1)  
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].voltage_open_circuit                      = 0 * ones_row(1) 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.voltage_open_circuit            = 0 * ones_row(1)  
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.voltage_under_load              = 0 * ones_row(1) 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.power                           = 0 * ones_row(1)  
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.current                         = 0 * ones_row(1)  
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.inlet_H2_mass_flow_rate         = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.inlet_air_mass_flow_rate        = 0 * ones_row(1) 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].H2_mass_flow_rate                         = 0 * ones_row(1) 
+    segment.state.conditions.energy.converters[fuel_cell_stack.tag] = Conditions()
+    fuel_cell_conditions                                           = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
+    fuel_cell_conditions.inputs                                    = Conditions()
+    fuel_cell_conditions.outputs                                   = Conditions()
+    fuel_cell_conditions.inputs.power                              = Conditions()
+    fuel_cell_conditions.outputs.power                             = Conditions()
+    fuel_cell_conditions.inputs.power.propulsive                   = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.mechanical                   = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.electrical                   = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.chemical                     = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.pneumatic                    = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.hydraulic                    = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.thermal                      = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.propulsive                  = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.mechanical                  = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.electrical                  = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.chemical                    = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.pneumatic                   = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.hydraulic                   = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.thermal                     = 0 * ones_row(1)
+    fuel_cell_conditions.power                                     = 0 * ones_row(1)
+    fuel_cell_conditions.voltage_under_load                        = 0 * ones_row(1)
+    fuel_cell_conditions.current                                   = 0 * ones_row(1)
+    fuel_cell_conditions.voltage_open_circuit                      = 0 * ones_row(1)
+    fuel_cell_conditions.H2_mass_flow_rate                         = 0 * ones_row(1)
     
-    # Conditions for recharging fuel_cell 
+    # Conditions for recharging fuel_cell
     if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
-        segment.state.conditions.energy.recharging  = True 
-        segment.state.unknowns['recharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['recharge'] =  0* ones_row(1)
-    elif type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
-        segment.state.conditions.energy.recharging   = False 
-        segment.state.unknowns['discharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['discharge'] =  0* ones_row(1)     
+        segment.state.conditions.energy.recharging  = True
     else:
-        segment.state.conditions.energy.recharging  = False             
+        segment.state.conditions.energy.recharging  = False
     return
  
-def append_fuel_cell_segment_conditions(fuel_cell_stack, bus, conditions, segment): 
+def append_fuel_cell_segment_conditions(fuel_cell_stack, segment): 
     """
     Sets the initial fuel cell energy at the start of each segment as the last point from the previous segment
     
@@ -96,16 +98,17 @@ def append_fuel_cell_segment_conditions(fuel_cell_stack, bus, conditions, segmen
     Returns
     -------  
     """ 
-    fuel_cell_conditions = conditions[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
-    if segment.state.initials:  
-        fuel_cell_initials                                   = segment.state.initials.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
-        fuel_cell_conditions.temperature[:,0]                = fuel_cell_initials.temperature[-1,0]
-        fuel_cell_conditions.cell.temperature[:,0]           = fuel_cell_initials.cell.temperature[-1,0]     
+    fuel_cell_conditions = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
+    fuel_cell_conditions.inputs.power.electrical[:,0]  = 0.0
+    fuel_cell_conditions.inputs.power.chemical[:,0]    = 0.0
+    fuel_cell_conditions.outputs.power.electrical[:,0] = 0.0
+    fuel_cell_conditions.outputs.power.chemical[:,0]   = 0.0
     return
   
-def reuse_stored_fuel_cell_data(fuel_cell_stack,state,bus,stored_results_flag, stored_fuel_cell_stack_tag):
-    '''Reuses results from one propulsor for identical fuel cells     
-    ''' 
-    state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag] = deepcopy(state.conditions.energy.busses[bus.tag].fuel_cell_stacks[stored_fuel_cell_stack_tag])
-     
-    return
+def reuse_stored_fuel_cell_data(fuel_cell_stack,state,network,stored_converter_tag):
+    '''Reuses results from one converter for identical fuel cells'''
+    stored_conditions    = state.conditions.energy.converters[stored_converter_tag]
+    fuel_cell_conditions = state.conditions.energy.converters[fuel_cell_stack.tag]
+    fuel_cell_conditions.update(deepcopy(stored_conditions))
+
+    return fuel_cell_conditions.inputs, fuel_cell_conditions.outputs

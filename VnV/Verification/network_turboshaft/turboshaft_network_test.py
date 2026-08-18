@@ -14,12 +14,14 @@ from RCAIDE.Library.Plots                                    import *
 
 # python imports 
 import numpy   as np      
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():  
+    ti = time.time()
     altitude           = 0.01*Units.feet 
     mach               = 0.1  
     P , eta , PSFC = turboshaft_engine_Boeing_502_14(altitude,mach)
@@ -45,6 +47,10 @@ def main():
     assert eta_error < 1e-6         
      
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return     
   
 def turboshaft_engine_Boeing_502_14(altitude,mach):   
@@ -116,16 +122,17 @@ def turboshaft_engine_Boeing_502_14(altitude,mach):
     # design turboshaft
     design_turboshaft(turboshaft) 
 
-    # set up default operating conditions 
-    operating_state  = setup_operating_conditions(turboshaft) 
+    # set up default operating conditions
+    fuel_line        = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    operating_state  = setup_operating_conditions(turboshaft, fuel_line)
     
     # Assign conditions to the turboshaft
     turboshaft_conditions = operating_state.conditions.energy.converters[turboshaft.tag]    
     turboshaft_conditions.throttle[:,0] = 1.0
     
-    compute_turboshaft_performance(turboshaft,operating_state)  
+    compute_turboshaft_performance(turboshaft,operating_state.conditions)
     
-    power                = turboshaft_conditions.power[0][0]
+    power                = turboshaft_conditions.outputs.power.mechanical[0][0]
     thermal_efficiency   = turboshaft_conditions.thermal_efficiency[0][0]
     PSFC                 = turboshaft_conditions.power_specific_fuel_consumption[0][0]
 

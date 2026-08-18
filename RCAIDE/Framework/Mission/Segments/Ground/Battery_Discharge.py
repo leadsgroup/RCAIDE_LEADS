@@ -56,15 +56,12 @@ class Battery_Discharge(Evaluate):
         # --------------------------------------------------------------------------------------------------------------       
         initialize                         = self.process.initialize 
         initialize.conditions              = Ground.Battery_Charge_Discharge.initialize_conditions 
-        converge                           = self.process.converge 
-        converge.solver                    = skip
         iterate                            = self.process.iterate 
-        iterate.unknowns.mission           = skip
+        iterate.unknowns.mission.mission   = skip
         iterate.conditions.aerodynamics    = skip
-        iterate.conditions.stability       = skip
-        
+        iterate.conditions.stability       = skip 
         post_process                       = self.process.post_process  
-        post_process.noise                 = skip
+        post_process.aeroacoustics         = skip
         post_process.emissions             = skip
         
         return

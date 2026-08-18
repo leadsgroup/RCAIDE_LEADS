@@ -8,7 +8,8 @@
 
 from RCAIDE.Framework.Core import Container as ContainerBase
 from RCAIDE.Framework.Core import Data
-from .Mass_Properties import Mass_Properties
+from .Mass_Properties      import Mass_Properties
+from .Volume_Properties    import Volume_Properties
 
 # package imports 
 import numpy as np
@@ -27,16 +28,38 @@ class Component(Data):
         
     mass_properties : Mass_Properties
         Mass and inertia properties, initialized empty
+    
+     volume_properties : Volume_Properties
+        Volume Properties, initialized empty 
+        
+    xz_plane_symmetric : bool
+        Flag indicating if wing is xz_plane_symmetric about x-z plane, defaults to True
+        
+    yz_plane_symmetric : bool
+        Flag indicating if wing is yz_plane_symmetric about y-z plane, defaults to True
+        
+    xy_plane_symmetric : bool
+        Flag indicating if wing is xy_plane_symmetric about x-y plane, defaults to True
         
     origin : ndarray
-        3D coordinates [x, y, z] defining component's reference point, 
+        3D coordinates [x, y, z] defining component's reference point,
         defaults to [0.0, 0.0, 0.0]
+
+    orientation_euler_angles : list of float
+        Intrinsic X→Y→Z Euler angles ``[φ_x, φ_y, φ_z]`` in radians that map
+        the component frame to the vehicle body frame.
+        Applied via ``scipy.spatial.transform.Rotation.from_euler('xyz', ...)``:
+        first rotate φ_x about X, then φ_y about the new Y, then φ_z about the
+        new Z.  ``[0.0, 0.0, 0.0]`` (default) means the component is aligned with
+        the vehicle body axes (e.g. thrust along vehicle +x).
+        Common example: ``[0, π/2, 0]`` rotates 90° about Y, pointing thrust in
+        the vehicle +z direction (used for lift rotors).
 
     Notes
     -----
-    The Component class serves as the foundation for all physical parts in RCAIDE. 
+    The Component class serves as the foundation for all physical parts in RCAIDE.
     It provides:
-    
+
     * Basic geometric positioning
     * Mass properties tracking
     * Container functionality for sub-components
@@ -52,9 +75,21 @@ class Component(Data):
         """
         Sets default values for the component attributes.
         """         
-        self.tag             = 'Component' 
-        self.mass_properties = Mass_Properties()
-        self.origin          = np.array([[0.0,0.0,0.0]])
+        self.tag                      = 'Component' 
+        self.mass_properties          = Mass_Properties()
+        self.volume_properties        = Volume_Properties()
+        self.origin                   = np.array([[0.0,0.0,0.0]])
+        self.orientation_euler_angles = [0.0, 0.0, 0.0]
+        self.xz_plane_symmetric       = False
+        self.xy_plane_symmetric       = False
+        self.yz_plane_symmetric       = False
+         
+    def compute_center_of_gravity(self, vehicle):
+        return 
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]):
+        return      
+    
     
         
 # ----------------------------------------------------------------------------------------------------------------------

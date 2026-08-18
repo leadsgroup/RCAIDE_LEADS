@@ -24,15 +24,19 @@ def compute_motor_performance(motor,conditions):
     ----------
     motor : Converter
         Motor component (DC_Motor or PMSM_Motor) for which performance is being computed
-    motor_conditions : Conditions
-        Container for motor operating conditions
-    conditions : Conditions 
-        Mission segment conditions containing freestream properties
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Mission segment conditions containing freestream and energy conditions
 
     Returns
     -------
-    None
-        Updates motor_conditions in-place with computed performance parameters
+    inputs : Data
+        Motor input conditions (current, voltage, power.electrical, etc.)
+    outputs : Data
+        Motor output conditions (torque, omega, power.mechanical, etc.)
+    stored_results_flag : bool
+        Flag indicating if results are stored
+    stored_converter_tag : str
+        Tag of the motor with stored results
 
     Notes
     -----
@@ -51,9 +55,9 @@ def compute_motor_performance(motor,conditions):
         - Determines overall efficiency
         
     For Both Motors:
-        - motor.inverse_calculation arg is used to determine parameters that are solved.
-        - motor.inverse_calculation == False calculates electrical properties (electrical power and voltage) from mechnical properties (rpm and torque)
-        - motor.inverse_calculation == True calculates mechanial properties (rpm and torque) from electrical properties (electrical power and voltage)
+        - motor.reverse_mode_computation arg is used to determine parameters that are solved.
+        - motor.reverse_mode_computation == False calculates electrical properties (electrical power and voltage) from mechnical properties (rpm and torque)
+        - motor.reverse_mode_computation == True calculates mechanial properties (rpm and torque) from electrical properties (electrical power and voltage)
 
     **Major Assumptions**
         * Steady state operation
@@ -70,8 +74,8 @@ def compute_motor_performance(motor,conditions):
     # Unpack
     motor_conditions = conditions.energy.converters[motor.tag]
     
-    if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
-        if motor.inverse_calculation == False:
+    if isinstance(motor, RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):
+        if motor.reverse_mode_computation == False:
             Res            = motor.resistance
             G              = motor.gearbox.gear_ratio
             I              = motor_conditions.inputs.current
@@ -156,13 +160,13 @@ def compute_motor_performance(motor,conditions):
             motor_conditions.Loss_cooling             = Loss_cooling                           
             motor_conditions.outputs.torque           = TQ_gearbox 
             motor_conditions.outputs.omega            = omega_gearbox 
-            motor_conditions.outputs.power            = P
+            motor_conditions.outputs.power.mechanical = P
         else:
             io              = motor.no_load_current
             G               = motor.gearbox.gear_ratio 
-            omega_gearbox   = motor_conditions.outputs.omega 
+            omega_gearbox   = motor_conditions.outputs.omega
             omega           = omega_gearbox / G
-            power           = motor_conditions.outputs.power  
+            power           = motor_conditions.outputs.power.mechanical
             Kv              = motor.speed_constant 
             D_in            = motor.stator_inner_diameter  
             kw              = motor.winding_factor  
@@ -176,13 +180,13 @@ def compute_motor_performance(motor,conditions):
             v               = omega/Kv   + ((Q*Kv) + io) * Res  
             etam            = (1-io/i)*(1-i*Res/v)     
 
-            motor_conditions.inputs.power    = v * i   
+            motor_conditions.inputs.power.electrical    = v * i   
             motor_conditions.inputs.voltage  = v    
             motor_conditions.inputs.current  = i 
             motor_conditions.efficiency      = etam             
             
     else:
-        if motor.inverse_calculation == False:
+        if motor.reverse_mode_computation == False:
             G              = motor.gearbox.gear_ratio  
             Res            = motor.resistance  
             Kv             = motor.speed_constant
@@ -199,13 +203,13 @@ def compute_motor_performance(motor,conditions):
                 
             motor_conditions.outputs.torque = Q_gearbox
             motor_conditions.outputs.omega  = omega_gearbox 
-            motor_conditions.outputs.power  = omega_gearbox*Q_gearbox 
+            motor_conditions.outputs.power.mechanical  = omega_gearbox*Q_gearbox 
             motor_conditions.efficiency     = etam
             
         else: 
             G              = motor.gearbox.gear_ratio 
-            omega_gearbox  = motor_conditions.outputs.omega 
-            power          = motor_conditions.outputs.power  
+            omega_gearbox  = motor_conditions.outputs.omega
+            power          = motor_conditions.outputs.power.mechanical
             io             = motor.no_load_current  
             Q_gearbox      = power / omega_gearbox   
             omega          = omega_gearbox / G
@@ -218,9 +222,12 @@ def compute_motor_performance(motor,conditions):
             P              = i * v 
             etam           = (1-io/i)*(1-i*Res/v)
 
-            motor_conditions.inputs.power    = v * i   
+            motor_conditions.inputs.power.electrical = v * i   
             motor_conditions.inputs.voltage  = v    
             motor_conditions.inputs.current  = i 
             motor_conditions.efficiency      = etam 
                    
-    return
+    stored_results_flag            = True
+    stored_converter_tag           = motor.tag  
+
+    return  motor_conditions.inputs, motor_conditions.outputs, stored_results_flag, stored_converter_tag

@@ -66,6 +66,6 @@ def emissions(mission):
                 segment.analyses.emissions.surrogates        = mission.segments[last_tag].analyses.emissions.surrogates  
             else:          
                 em   = segment.analyses.emissions
-                em.initialize()   
+                em.initialize(segment.analyses.vehicle)   
                 last_tag = tag
     return 

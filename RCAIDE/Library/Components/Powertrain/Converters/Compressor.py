@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Compressor.py
+# RCAIDE/Library/Components/Powertrain/Converters/Compressor.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Feb 2024, M. Clarke
@@ -63,11 +63,12 @@ class Compressor(Converter):
         self.tag                             = 'Compressor'
         self.polytropic_efficiency           = 1.0
         self.pressure_ratio                  = 1.0
-        self.design_angular_velocity         = 12000 *  Units.rpm
+        self.design_angular_velocity         = 12000 *  Units.rpm 
         self.motor                           = None
         self.generator                       = None
         self.nondimensional_massflow         = 0.0
+        self.mass_flow_rate                  = 0.0
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
-        append_compressor_conditions(self,segment,energy_conditions)
+    def append_operating_conditions(self,segment):  
+        append_compressor_conditions(self,segment)
         return        

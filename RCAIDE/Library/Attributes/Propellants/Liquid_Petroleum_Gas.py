@@ -29,6 +29,12 @@ class Liquid_Petroleum_Gas(Propellant):
         Specific energy content in J/kg (43.1e6)
     energy_density : float
         Energy density in J/m³ (21949.1e6)
+    molecular_weight : float
+        Molecular weight in g/mol (49.7, 60/40 propane/butane mass blend)
+    hydrogen_mass_fraction : float
+        Mass fraction of hydrogen content (0.179)
+    carbon_mass_fraction : float
+        Mass fraction of carbon content (0.821)
     use_high_fidelity_kinetics_model : bool
         Flag for using detailed chemical kinetics (False)
     fuel_surrogate_chemical_properties : dict
@@ -101,19 +107,33 @@ class Liquid_Petroleum_Gas(Propellant):
     Source:
         None
         """    
-        self.tag             = 'Liquid_Petroleum_Gas'
-        self.reactant        = 'O2'
-        self.density         = 509.26                           # kg/m^3 
-        self.specific_energy = 43.1e6                           # J/kg
-        self.energy_density  = 21949.1e6                        # J/m^3
-        
-        self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
+        self.tag                           = 'Liquid_Petroleum_Gas'
+        self.reactant                      = 'O2'
+        self.density                       = 509.26                     # kg/m^3 
+        self.specific_energy               = 43.1e6                     # J/kg
+        self.energy_density                = 21949.1e6                  # J/m^3
+        self.gravimetric_efficiency        = 0.7
+        self.lower_heating_value           = 48.6e6                     # J/kg
+        self.molecular_weight              = 49.7      # [g/mol] 60/40 propane/butane mass blend
+        self.hydrogen_mass_fraction        = 0.179     # [-] mass fraction of hydrogen content
+        self.carbon_mass_fraction          = 0.821     # [-] mass fraction of carbon content
+        self.kinematic_viscosity           = 2.0e-7    # [m^2/s] kinematic viscosity of liquid propane/butane blend at ~20 C
+
+        self.stoichiometric_fuel_air_ratio = 1/15.6    # [-] Stoichiometric Fuel to Air ratio, 60/40 propane/butane blend
         self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
         self.temperature                   = 0         # [K] Temperature of fuel
         self.pressure                      = 0         # [Pa] Pressure of fuel
         self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''  
+
+        self.emission_indices.Production  = 0.0       # kg/kg  Unknown
+        self.emission_indices.CO2         = 2.96      # kg/kg
+        self.emission_indices.CO          = 0.000210  # kg/kg
+        self.emission_indices.H2O         = 1.60      # kg/kg  
+        self.emission_indices.SO2         = 0.0       # kg/kg   Unknown
+        self.emission_indices.NOx         = 0.0154    # kg/kg
+        self.emission_indices.Soot        = 0.0       # kg/kg   Unknown
         
         self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
         self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  

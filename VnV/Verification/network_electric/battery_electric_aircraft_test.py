@@ -18,19 +18,28 @@ import matplotlib.pyplot as  plt
 import os
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Electric_Twin_Otter    import vehicle_setup, configs_setup 
+import time
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():           
+    ti = time.time()
          
     battery_types = ['lithium_ion_nmc', 'lithium_ion_lfp']
     btms_types    = ['Liquid_Cooled_Wavy_Channel', 'Air_Cooled', None] 
-    CL_true       = [[0.8087720600440024 ,0.8087720600440024,0.8087720600440024  ],
-                     [0.8087720600440024 ,0.8087720600440024 ,0.8087720600440024]] 
+    CL_true       = [[ 0.8285112002922213, 0.8285112002922213, 0.8285112002922213],
+                     [ 0.8285112002922213, 0.8285112002922213, 0.8285112002922213]] 
     # vehicle data
     for i , battery_type in enumerate(battery_types):
         for j , btms_type in enumerate(btms_types):
@@ -48,7 +57,7 @@ def main():
              
             results = missions.base_mission.evaluate()
             
-            CL    = results.segments.climb.conditions.aerodynamics.coefficients.lift.total[0, 0]
+            CL    = results.segments.takeoff_roll.conditions.aerodynamics.coefficients.lift.total[0, 0]
             print('****************************************')
             print('Computed value of coefficient of lift is:', CL)
             error =  abs(CL - CL_true[i][j]) /CL_true[i][j]
@@ -56,6 +65,13 @@ def main():
               
             plot_results(results)
 
+
+    plot_3d_vehicle(vehicle, show_figure = False )
+
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
     
 def analyses_setup(configs): 
@@ -74,23 +90,29 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
-    
+    analyses.vehicle =  vehicle
+
+    # ------------------------------------------------------------------
+    # Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation() 
+    analyses.append(weights)    
+
+    # ------------------------------------------------------------------    
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     geometry.settings.overwrite_reference        = False 
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis  
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle  = vehicle 
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
     
     # ------------------------------------------------------------------
@@ -101,7 +123,6 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
  
     return analyses
@@ -125,7 +146,7 @@ def mission_setup(analyses):
     base_segment.state.numerics.number_of_control_points  = 3
     
     # VSTALL Calculation  
-    vehicle        = analyses.base.aerodynamics.vehicle
+    vehicle        = analyses.base.vehicle
     vehicle_mass   = vehicle.mass_properties.max_takeoff
     reference_area = vehicle.reference_area 
     Vstall         = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)
@@ -134,13 +155,13 @@ def mission_setup(analyses):
     #   Departure End of Runway Segment  
     # ------------------------------------------------------------------ 
     segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment) 
-    segment.tag = 'climb'       
+    segment.tag = 'takeoff_roll'       
     segment.analyses.extend( analyses.base )  
     segment.altitude_start                                           = 0.0 * Units.feet
-    segment.altitude_end                                             = 5 
+    segment.altitude_end                                             = 35 * Units.feet
     segment.air_speed_start                                          = Vstall *1.2  
     segment.air_speed_end                                            = Vstall *1.25
-    segment.initial_battery_state_of_charge                          = 1.0
+    segment.initial_battery_conditions.state_of_charge               = 1.0
                        
     # define flight dynamics to model            
     segment.flight_dynamics.force_x                                  = True  
@@ -149,9 +170,31 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
        
-    mission.append_segment(segment) 
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Departure End of Runway Segment  
+    # ------------------------------------------------------------------ 
+    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment) 
+    segment.tag = 'departure_end_of_runway'       
+    segment.analyses.extend( analyses.base )  
+    segment.altitude_start                                           = 35  * Units.feet
+    segment.altitude_end                                             = 500 * Units.feet
+    segment.air_speed_start                                          = Vstall *1.25  
+    segment.air_speed_end                                            = Vstall *1.5 
+                       
+    # define flight dynamics to model            
+    segment.flight_dynamics.force_x                                  = True  
+    segment.flight_dynamics.force_z                                  = True     
+    
+    # define flight controls 
+    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
+    segment.assigned_control_variables.pitch_angle.active             = True                  
+       
+    mission.append_segment(segment)     
     
     # ------------------------------------------------------------------
     #   Mission definition complete    
@@ -186,8 +229,7 @@ def plot_results(results):
     plot_battery_degradation(results) 
     
     # Plot Propeller Conditions 
-    plot_rotor_conditions(results) 
-    plot_disc_and_power_loading(results)
+    plot_rotor_conditions(results)  
     
     # Plot Electric Motor and Propeller Efficiencies 
     plot_electric_propulsor_efficiencies(results)

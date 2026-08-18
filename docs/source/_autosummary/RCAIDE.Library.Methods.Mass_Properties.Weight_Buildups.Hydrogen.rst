@@ -30,5 +30,6 @@ Hydrogen
    :template: custom-module-template.rst
    :recursive:
 
+   BWB
    Transport
 

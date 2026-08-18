@@ -16,14 +16,23 @@ import sys
 import os
 import matplotlib.pyplot as plt  
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 import Boeing_787 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
     vehicle  = Boeing_787.vehicle_setup() 
     configs  = Boeing_787.configs_setup(vehicle) 
@@ -71,6 +80,10 @@ def main():
     assert (diff_LTO_H2O/truth_values['LTO_H2O_truth']) < 1e-5
     assert (diff_LTO_Soot/truth_values['LTO_Soot_truth']) < 1e-5
              
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 def LTO_emisions_mission_setup(analyses):
@@ -120,21 +133,20 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
 
     # ------------------------------------------------------------------
     #  Geometry
     # ------------------------------------------------------------------
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle = vehicle 
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
     weights.settings.FLOPS.fidelity                                          = 'Complex'      
     weights.settings.weight_correction_additions.empty.structural.paint      = 450 
-    weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.passengers
+    weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.number_of_passengers
     weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.1  
     weights.settings.weight_correction_additions.empty.propulsion.battery    = 56   
     weights.settings.weight_correction_factors.empty.systems.electrical      = 2.67 
@@ -142,21 +154,18 @@ def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle = vehicle    
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()    
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
     #  Energy
-    energy = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle = vehicle 
+    energy = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
     
 
     # ------------------------------------------------------------------
-    # Emissions 
-    emissions = RCAIDE.Framework.Analyses.Emissions.Emission_Index_Correlation_Method()            
-    emissions.vehicle = vehicle          
+    # Emissions     
+    emissions = RCAIDE.Framework.Analyses.Emissions.Emission_Index_Correlation_Method()          
     analyses.append(emissions)  
 
     # ------------------------------------------------------------------
@@ -167,7 +176,6 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     return analyses  

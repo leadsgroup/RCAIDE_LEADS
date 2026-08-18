@@ -32,10 +32,10 @@ class Segment(Component):
         Longitudinal position as percentage of fuselage length, defaults to 0
         
     percent_y_location : float
-        Lateral position as percentage of fuselage width, defaults to 0
+        Lateral position as percentage of fuselage length, defaults to 0
         
     percent_z_location : float
-        Vertical position as percentage of fuselage height, defaults to 0
+        Vertical position as percentage of fuselage length, defaults to 0
         
     height : float
         Vertical dimension of the segment cross-section, defaults to 0
@@ -87,8 +87,7 @@ class Segment(Component):
         self.height                  = 0 
         self.width                   = 0 
         self.curvature               = 2
-        self.radius                  = 0 
-        self.has_fuel_tank           = False
+        self.radius                  = 0  
         self.fuel_tank               = Data() 
         self.vsp_data                = Data()
         self.vsp_data.xsec_id        = ''       

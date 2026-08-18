@@ -25,7 +25,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turbojet
 # ----------------------------------------------------------------------------------------------------------------------   
-def design_turbojet(turbojet):  
+def design_turbojet(turbojet):
     """
     Designs a turbojet engine by computing performance properties and sizing components based on design conditions.
     
@@ -55,7 +55,7 @@ def design_turbojet(turbojet):
     -------
     None
         Updates turbojet object attributes in-place:
-            - mass_flow_rate_design : float
+            - design_mass_flow_rate : float
                 Design core mass flow rate [kg/s]
             - design_core_massflow : float
                 Core mass flow at design point [kg/s]
@@ -146,10 +146,13 @@ def design_turbojet(turbojet):
         conditions.freestream.speed_of_sound              = np.atleast_1d(a)
         conditions.freestream.velocity                    = np.atleast_1d(a*turbojet.design_mach_number)
    
-    segment                                        = RCAIDE.Framework.Mission.Segments.Segment()  
-    segment.state.conditions                       = conditions 
-    turbojet.append_operating_conditions(segment,conditions.energy,conditions.noise)        
-    
+    # create dummy distributor for setup_operating_conditions
+    fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+
+    segment                                        = RCAIDE.Framework.Mission.Segments.Segment()
+    segment.state.conditions                       = conditions
+    turbojet.append_operating_conditions(segment)
+
     ram                       = turbojet.ram
     inlet_nozzle              = turbojet.inlet_nozzle
     low_pressure_compressor   = turbojet.low_pressure_compressor
@@ -280,11 +283,11 @@ def design_turbojet(turbojet):
     # Step 21: Static Sea Level Thrust 
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(turbojet,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    operating_state.conditions.energy.propulsors[turbojet.tag].throttle[:,0] = 1.0  
-    sls_T,_,sls_P,_,_,_                          = turbojet.compute_performance(operating_state) 
-    turbojet.sealevel_static_thrust              = sls_T[0][0]
-    turbojet.sealevel_static_power               = sls_P[0][0]
-     
+    operating_state       = setup_operating_conditions(turbojet,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)
+    operating_state.conditions.energy.propulsors[turbojet.tag].throttle[:,0] = 1.0
+    _,sls_outputs,_,_      = turbojet.compute_performance(operating_state)
+    turbojet.sealevel_static_thrust = sls_outputs.thrust[0][0]
+    turbojet.sealevel_static_power  = sls_outputs.power.propulsive[0][0]
+    
     return      
   

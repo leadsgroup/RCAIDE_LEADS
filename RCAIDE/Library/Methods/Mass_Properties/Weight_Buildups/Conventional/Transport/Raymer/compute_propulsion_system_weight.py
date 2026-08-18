@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/Raymer/compute_propulsion_system_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/Raymer/compute_propulsion_system_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -16,7 +16,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 # Propulsion System Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_propulsion_system_weight(vehicle,network):
+def compute_propulsion_system_weight(vehicle,network, settings):
     """
     Calculates the total propulsion system weight using Raymer's method, including subsystems.
 
@@ -78,16 +78,16 @@ def compute_propulsion_system_weight(vehicle,network):
         W_{nacelle} = 0.6724K_{ng}L_n^{0.1}W_n^{0.294}N_{ult}^{0.119}W_{ec}^{0.611}N_{eng}^{0.984}S_n^{0.224}
 
     .. math::
-        W_{fuel\_sys} = 1.07W_{fuel}^{0.58}N_{eng}^{0.43}M_{max}^{0.34}
+        W_{fuel_sys} = 1.07W_{fuel}^{0.58}N_{eng}^{0.43}M_{max}^{0.34}
 
     .. math::
         W_{engine} = 0.084BPR^{1.1}W_{eng}^{0.5}N_{eng}^{0.5}
 
     .. math::
-        W_{engine\_controls} = 5N_{eng} + 0.8L_{eng}
+        W_{engine_controls} = 5N_{eng} + 0.8L_{eng}
 
     .. math::
-        W_{starter} = 49.19\left(\frac{W_{eng}}{1000}\right)^{0.541}
+        W_{starter} = 49.19  (\frac{W_{eng}}{1000} )^{0.541}
     
     where:
         * :math:`K_{ng}` is a factor for the engine mount type
@@ -115,27 +115,33 @@ def compute_propulsion_system_weight(vehicle,network):
     RCAIDE.Library.Methods.Weights.Correlation_Buildups.FLOPS.compute_piston_engine_weight
     """
 
-    NENG    =  0 
-    WENG    =  0
+    NENG            =  0 
+    WENG            =  0
     number_of_tanks =  0
+    ref_nacelle     = None
     for network in  vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
+
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 number_of_tanks +=  1
-            for propulsor in network.propulsors:
-                if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
-                    ref_propulsor = propulsor  
-                    NENG  += 1
-                    BPR =  propulsor.bypass_ratio
-                    WENG   += 0.084 *  (propulsor.sealevel_static_thrust/Units.lbf)**1.1 * np.exp(-0.045*BPR) * Units.lbs # Raymer 3rd Edition eq. 10.4 
-                if 'nacelle' in propulsor:
-                    ref_nacelle =  propulsor.nacelle 
+        for propulsor in network.propulsors:
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet): 
+                NENG  += 1
+                BPR    =  propulsor.bypass_ratio
+                WENG   += 0.084 *  (propulsor.sealevel_static_thrust/Units.lbf)**1.1 * np.exp(-0.045*BPR) * Units.lbs # Raymer 3rd Edition eq. 10.4 
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
+                NENG  += 1
+                WENG   +=  0.1448/(9.81)*(propulsor.sealevel_static_thrust/2)**1.1*np.e**(-0.045*5) 
+            if propulsor.nacelle != None:
+                ref_nacelle =  propulsor.nacelle 
                     
-    WFSYS           = compute_fuel_system_weight(vehicle, NENG)
-    WNAC            = compute_nacelle_weight(vehicle,ref_nacelle, NENG, WENG)
+    WFSYS           = compute_fuel_system_weight(vehicle, NENG,settings)
+    
+    if ref_nacelle != None: 
+        WNAC = compute_nacelle_weight(vehicle,ref_nacelle, NENG, WENG)
     WEC, WSTART     = compute_misc_engine_weight(vehicle,NENG, WENG)
     WTHR            = 0
-    WPRO            = WENG + WFSYS + WEC + WSTART + WTHR + WNAC
+    WPRO            = WENG + WFSYS + WEC + WSTART + WTHR
 
     output                      = Data()
     output.W_prop               = WPRO
@@ -146,7 +152,14 @@ def compute_propulsion_system_weight(vehicle,network):
     output.W_nacelle            = WNAC
     output.W_engine             = WENG 
     output.number_of_engines    = NENG
-    output.number_of_fuel_tanks = number_of_tanks  
+    output.number_of_fuel_tanks = number_of_tanks
+
+    # append nacelle weight to object: 
+    for network in  vehicle.networks:
+        for propulsor in network.propulsors:
+            if propulsor.nacelle !=  None:               
+                nacelle = propulsor.nacelle
+                nacelle.mass_properties.mass = WNAC    
     return output
 
 def compute_nacelle_weight(vehicle,ref_nacelle, NENG, WENG):
@@ -213,7 +226,7 @@ def compute_misc_engine_weight(vehicle, NENG, WENG):
     WSTART  = 49.19*((WENG/Units.lbs)/1000)**0.541
     return WEC * Units.lbs, WSTART * Units.lbs
  
-def compute_fuel_system_weight(vehicle, NENG):
+def compute_fuel_system_weight(vehicle, NENG,settings):
     """ Calculates the weight of the fuel system based on the Raymer method
         Assumptions:
 
@@ -231,10 +244,10 @@ def compute_fuel_system_weight(vehicle, NENG):
     """
     Nt = 0
     Vt = 0
-    for network in vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
+    for network in vehicle.networks: 
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 Nt +=1
-                Vt += fuel_tank.inner_volume / Units["gallon"]
+                Vt += source.volume_properties.net_volume / Units["gallon"]
     WFSYS = 2.405 * Vt**0.606 * 0.5 * Nt**0.5 
     return WFSYS * Units.lbs

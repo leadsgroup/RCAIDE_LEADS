@@ -1,24 +1,21 @@
-# US_Standard_1976.py
+#RCAIDE/Frameworks/Analyses/Atmospheric/US_Standard_1976.py
 #
-# Created: 
-# Modified: Feb 2016, Andrew Wendorff
-#           Jan 2018, W. Maier
+# Created: Dec 2024, M. Clarke
 
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-
-import numpy as np
-from warnings import warn
+# RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Analyses.Atmospheric import Atmospheric
-from RCAIDE.Framework.Mission.Common.Conditions import Conditions
-from RCAIDE.Framework.Core import Units
-from RCAIDE.Framework.Core.Arrays import atleast_2d_col
+from RCAIDE.Framework.Analyses.Atmospheric      import Atmospheric
+from RCAIDE.Framework.Mission.Common.Conditions import Conditions 
+from RCAIDE.Framework.Core.Arrays               import atleast_2d_col 
+from RCAIDE.Library.Attributes.Gases            import Air
+from RCAIDE.Library.Attributes.Planets          import Earth
 
-from RCAIDE.Library.Attributes.Gases import Air
-from RCAIDE.Library.Attributes.Planets import Earth
- 
+# pthon imports 
+import numpy as np
+from warnings import warn 
 
 # ----------------------------------------------------------------------
 #  Classes
@@ -52,10 +49,11 @@ class US_Standard_1976(Atmospheric):
 
         Properties Used:
         None
-        """     
-        
+        """      
         atmo_data = RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976()
-        self.update(atmo_data)        
+        self.update(atmo_data)         
+        planet = RCAIDE.Framework.Analyses.Planets.Earth()
+        self.features.planet = planet.features
     
     def compute_values(self,altitude,temperature_deviation=0.0,var_gamma=False):
 
@@ -160,40 +158,20 @@ class US_Standard_1976(Atmospheric):
         mu    = gas.compute_absolute_viscosity(T)
         K     = gas.compute_thermal_conductivity(T)  
         Pr    = gas.compute_prandtl_number(T)
+        Cp    = gas.compute_cp(T,p)
+        gamma = gas.compute_gamma(T,p)
         
         atmo_data = Conditions()
         atmo_data.expand_rows(zs.shape[0])
-        atmo_data.pressure                     = p
-        atmo_data.temperature                  = T
-        atmo_data.density                      = rho
-        atmo_data.speed_of_sound               = a
-        atmo_data.dynamic_viscosity            = mu
-        atmo_data.kinematic_viscosity          = mu/rho
-        atmo_data.thermal_conductivity         = K
-        atmo_data.prandtl_number               = Pr 
+        atmo_data.pressure                        = p
+        atmo_data.temperature                     = T
+        atmo_data.density                         = rho
+        atmo_data.speed_of_sound                  = a
+        atmo_data.dynamic_viscosity               = mu
+        atmo_data.kinematic_viscosity             = mu/rho
+        atmo_data.thermal_conductivity            = K
+        atmo_data.prandtl_number                  = Pr 
+        atmo_data.constant_pressure_specific_heat = Cp
+        atmo_data.specific_heat                   = gamma
         
         return atmo_data
-
-
-# ----------------------------------------------------------------------
-#   Module Tests
-# ----------------------------------------------------------------------
-if __name__ == '__main__':
-    
-    import pylab as plt
-    
-    h = np.linspace(-1.,60.,200) * Units.km
-    delta_isa = 0.
-    h = 5000.
-    atmosphere = US_Standard_1976()
-    
-    data = atmosphere.compute_values(h,delta_isa)
-    p   = data.pressure
-    T   = data.temperature
-    rho = data.density
-    a   = data.speed_of_sound
-    mu  = data.dynamic_viscosity
-    K   = data.thermal_conductivity
-    
-    print(data)
-    

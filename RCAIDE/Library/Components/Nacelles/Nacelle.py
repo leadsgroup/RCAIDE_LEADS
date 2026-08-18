@@ -9,6 +9,9 @@
 import RCAIDE
 from RCAIDE.Framework.Core              import Data 
 from RCAIDE.Library.Components          import Component   
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_cylinder_moment_of_inertia
+
+# python imports 
 import scipy as sp
 import numpy as np
  
@@ -118,9 +121,9 @@ class Nacelle(Component):
         self.differential_pressure    = 0.0    
         self.cowling_airfoil_angle    = 0.0
 
-    def append_operating_conditions(self, segment, energy_conditions, noise_conditions=None): 
+    def append_operating_conditions(self, segment): 
         """
-        Placeholder for adding operating conditions to the nacelle.
+        Placeholder for adding operating conditions of the nacelle.
 
         Parameters
         ----------
@@ -128,9 +131,7 @@ class Nacelle(Component):
             Flight segment data
         propulsor : Data
             Propulsion system data
-        """
-    
-        energy_conditions[self.tag]   = RCAIDE.Framework.Mission.Common.Conditions()         
+        """       
         return
 
     def nac_vel_to_body(self):
@@ -175,7 +176,7 @@ class Nacelle(Component):
         
         # Go from vehicle frame to nacelle vehicle frame
         rots = np.array(self.orientation_euler_angles) * 1. 
-        vehicle_2_nac_vec = sp.spatial.transform.Rotation.from_rotvec(rots).as_matrix()        
+        vehicle_2_nac_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()        
         
         # Go from nacelle vehicle frame to nacelle velocity frame
         nac_vec_2_nac_vel = self.vec_to_vel()
@@ -197,5 +198,22 @@ class Nacelle(Component):
         rot_mat = sp.spatial.transform.Rotation.from_rotvec([0,np.pi,0]).as_matrix()
         return rot_mat
     
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the propulsor.
+
+        Parameters
+        ---------- 
+        center_of_gravity : list, optional
+            Reference point coordinates, defaults to [[0, 0, 0]]
+        
+        Returns
+        -------
+        ndarray
+            3x3 moment of inertia tensor
+        """
+
+        _, _ =  compute_cylinder_moment_of_inertia(self, self.length, self.diameter/2, 0, 0, center_of_gravity = center_of_gravity)  
+        return            
     
         

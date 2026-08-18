@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/compute_operating_items_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/compute_operating_items_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -25,7 +25,7 @@ def compute_operating_items_weight(vehicle):
         - engine oil
         - passenger service
         - ammunition and non-fixed weapons
-        - cargo containers
+        - cargo containers (not included)
 
         Assumptions:
             If no tanks are specified, 5 fuel tanks are assumed (includes main and auxiliary tanks)
@@ -59,16 +59,13 @@ def compute_operating_items_weight(vehicle):
             N/A
     """ 
     NENG =  0 
-    NPF  = vehicle.first_class_passengers      
-    NPB  = vehicle.business_class_passengers   
-    NPT  = vehicle.economy_class_passengers   
+    NPF  = vehicle.number_of_first_class_seats      
+    NPB  = vehicle.number_of_business_class_seats   
+    NPE  = vehicle.number_of_economy_class_seats   
     for network in  vehicle.networks:
-        for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan)\
-               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet)\
-               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
-                ref_propulsor = propulsor  
-                NENG  += 1   
+        for propulsor in network.propulsors: 
+            ref_propulsor = propulsor  
+            NENG  += 1   
     
     THRUST          = ref_propulsor.sealevel_static_thrust * 1 / Units.lbf
     SW              = vehicle.reference_area / Units.ft ** 2
@@ -77,39 +74,34 @@ def compute_operating_items_weight(vehicle):
     VMAX            = vehicle.flight_envelope.design_mach_number   
     number_of_tanks = 0  
     for network in  vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for _ in fuel_line.fuel_tanks:
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 number_of_tanks += 1  
     
     WUF             = 11.5 * NENG * THRUST ** 0.2 + 0.07 * SW + 1.6 * number_of_tanks * FMXTOT ** 0.28  # unusable fuel weight
     WOIL            = 0.082 * NENG * THRUST ** 0.65  # engine oil weight
             
-    WSRV        = (5.164 * NPF + 3.846 * NPB + 2.529 * NPT) * (DESRNG / VMAX) ** 0.255  # passenger service weight
+    WSRV        = (5.164 * NPF + 3.846 * NPB + 2.529 * NPE) * (DESRNG / VMAX) ** 0.255  # passenger service weight
 
-    W_cargo = 0
-    for cargo_bay in vehicle.cargo_bays:
-        W_cargo = cargo_bay.cargo.mass_properties.mass      
-    WCON        = 175 * np.ceil(W_cargo/ Units.lbs * 1. / 950)  # cargo container weight
-
-    if vehicle.passengers >= 150:
+    if vehicle.number_of_passengers >= 150:
         NFLCR = 3  # number of flight crew
-        NGALC = 1 + np.floor(vehicle.passengers / 250.)  # number of galley crew
+        NGALC = 1 + np.floor(vehicle.number_of_passengers / 250.)  # number of galley crew
     else:
         NFLCR = 2
         NGALC = 0
-    if vehicle.passengers < 51:
+    if vehicle.number_of_passengers < 51:
         NFLA = 1  # number of flight attendants, NSTU in FLOPS
     else:
-        NFLA = 1 + np.floor(vehicle.passengers / 40.)
+        NFLA = 1 + np.floor(vehicle.number_of_passengers / 40.)
 
     WFLAAB = NFLA * 155 + NGALC * 200  # flight attendant weight, WSTUAB in FLOPS
     WFLCRB = NFLCR * 225  # flight crew and baggage weight
 
     # Passenger Service Weight
-    WSRV = (5.164*NPF + 3.846*NPB + 2.529*NPT)*(DESRNG/VMAX)**0.225 
+    WSRV = (5.164*NPF + 3.846*NPB + 2.529*NPE)*(DESRNG/VMAX)**0.225 
 
     output                           = Data()
-    output.misc                      = WUF * Units.lbs + WOIL * Units.lbs + WCON * Units.lbs
+    output.misc                      = WUF * Units.lbs + WOIL * Units.lbs
     output.flight_crew               = WFLCRB * Units.lbs
     output.flight_attendants         = WFLAAB * Units.lbs
     output.passenger_service         = WSRV   * Units.lbs

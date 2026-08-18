@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------
 
 #RCAIDE Imports
-from RCAIDE import  * 
+import RCAIDE
 from RCAIDE.Framework.Core import Units,  Data
 from RCAIDE.Library.Components import Wings
 
@@ -61,9 +61,8 @@ def compute_max_lift_coeff(state,settings,geometry):
     #unpack
     max_lift_coefficient_factor = settings.maximum_lift_coefficient_factor
     for wing in vehicle.wings:
-    
-        if not wing.high_lift: continue
-        #geometrical data
+        
+        if not (isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body) or isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing)): continue
         Sref       = vehicle.reference_area
         Swing      = wing.areas.reference
         tc         = wing.thickness_to_chord * 100

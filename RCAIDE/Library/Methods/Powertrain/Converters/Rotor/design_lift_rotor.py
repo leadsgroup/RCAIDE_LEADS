@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/design_lift_rotor.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Rotor/design_lift_rotor.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -21,7 +21,7 @@ import sys
 #  Design Lift-rotor
 # ----------------------------------------------------------------------------------------------------------------------  
 def design_lift_rotor(rotor, number_of_stations=20, solver_name='SLSQP', iterations=200,
-                      solver_sense_step=1E-6, solver_tolerance=1E-5, print_iterations=False):
+                      solver_sense_step=1E-5, solver_tolerance=1E-4, print_iterations=False):
     """
     Optimizes rotor chord and twist distribution to meet design power or thrust requirements.
     
@@ -60,9 +60,9 @@ def design_lift_rotor(rotor, number_of_stations=20, solver_name='SLSQP', iterati
     iterations : int, optional
         Maximum number of iterations, default 200
     solver_sense_step : float, optional
-        Step size for finite difference gradient calculation, default 1E-6
+        Step size for finite difference gradient calculation, default 1E-5
     solver_tolerance : float, optional
-        Convergence tolerance for the optimizer, default 1E-5
+        Convergence tolerance for the optimizer, default 1E-4
     print_iterations : bool, optional
         Flag to print optimization iterations, default False
     

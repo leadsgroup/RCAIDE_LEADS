@@ -39,8 +39,8 @@ Components
    Landing_Gear
    Mass_Properties
    Nacelles
-   Network
    Powertrain
    Thermal_Management
+   Volume_Properties
    Wings
 

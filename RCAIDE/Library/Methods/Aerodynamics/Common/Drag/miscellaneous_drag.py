@@ -153,10 +153,10 @@ def miscellaneous_drag(state,settings,geometry):
     for boom in geometry.booms:
         swet_tot += boom.areas.wetted
     for network in geometry.networks: 
-        for propulsor in network.propulsors:  
-            if 'nacelle' in propulsor: 
-                if propulsor.nacelle !=  None:                    
-                    swet_tot += propulsor.nacelle.areas.wetted 
+        for propulsor in network.propulsors:
+            if 'nacelle' in propulsor:
+                if propulsor.nacelle !=  None:
+                    swet_tot += propulsor.nacelle.areas.wetted
     miscellaneous_drag[:,0] =  (0.40* (0.0184 + 0.000469 * swet_tot - 1.13*10**-7 * swet_tot ** 2)) / S_ref
     
     # supersonic 

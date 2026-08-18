@@ -33,17 +33,17 @@ class Wing(Data):
 
     def __defaults__(self):
 
-        self.tag = 'wing'
-        self.symmetric = True
-        self.vertical  = False
-        self.origin    = [0.,0.,0.]
+        self.tag                = 'wing'
+        self.xz_plane_symmetric = True
+        self.vertical           = False
+        self.origin             = [0.,0.,0.]
 
-        self.sweep        = 0.0
-        self.dihedral     = 0.0
+        self.sweep              = 0.0
+        self.dihedral           = 0.0
 
-        self.sections = Data()
-        self.configuration = Data()
-        self.control_surfaces = Data()
+        self.sections           = Data()
+        self.configuration      = Data()
+        self.control_surfaces   = Data()
 
     def append_section(self,section):
         """ Adds a segment to the wing """
@@ -218,10 +218,10 @@ class Control_Surface_Results(Data):
         """   		
         self.tag                 = 'control_surface'
         self.deflection          = 0.0
-        self.CL                  = 0.0
-        self.CY                  = 0.0
-        self.Cl                  = 0.0
-        self.Cm                  = 0.0
-        self.Cn                  = 0.0
-        self.CDff                = 0.0
+        self.CLift_derivative    = 0.0
+        self.CY_derivative       = 0.0
+        self.Cl_derivative       = 0.0
+        self.Cm_derivative       = 0.0
+        self.Cn_derivative       = 0.0
+        self.Cdrag_derivative    = 0.0
         self.e                   = 0.0		
