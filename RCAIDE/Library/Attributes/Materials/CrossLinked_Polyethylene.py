@@ -21,7 +21,7 @@ class CrossLinked_Polyethylene(Solid):
     ----------
     electrical_permittivity : float
         Material electrical permittivity in kg/m³ (2.3)
-    dielectric_strength_range : list
+    dielectric_strength : list
         Range of dielectric strength in Pa (3.5E7,5E7)
     density : float
         Material density in kg/m³ (930)
@@ -48,7 +48,7 @@ class CrossLinked_Polyethylene(Solid):
             IEEE Transactions on Transportation Electrification (2024).
         """
         self.electrical_permittivity    = 2.3
-        self.dielectric_strength_range  = [3.5E7,5E7]  
+        self.dielectric_strength        = 4E7 # [3.5E7,5E7]  
         self.density                    = 930
         self.thermal_conductivity       = 0.29
         self.melting_point              = 403  

@@ -14,7 +14,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # append_fuel_cell_conditions
 # ----------------------------------------------------------------------------------------------------------------------  
-def append_fuel_cell_conditions(fuel_cell_stack,segment,bus): 
+def append_fuel_cell_conditions(fuel_cell_stack,segment): 
     """
     Appends the initial fuel_cell conditions. 
 
@@ -41,96 +41,82 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment,bus):
         - H2_mass_flow_rate
     """      
     
-    ones_row                                                                                       = segment.state.ones_row    
+    ones_row                                                       = segment.state.ones_row    
                                              
-    bus_conditions                                                                                 = segment.state.conditions.energy.busses[bus.tag]
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag]                                           = Conditions()
+    segment.state.conditions.energy.converters[fuel_cell_stack.tag] = Conditions()
+    fuel_cell_conditions                                           = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
+    fuel_cell_conditions.inputs                                    = Conditions()
+    fuel_cell_conditions.outputs                                   = Conditions()
 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power                                     = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].current                                   = 0 * ones_row(1)      
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].voltage_open_circuit                      = 0 * ones_row(1) 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].voltage_under_load                        = 0 * ones_row(1) 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].H2_mass_flow_rate                         = 0 * ones_row(1)
-    
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell                                 = Conditions() 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.voltage_open_circuit            = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.voltage_under_load              = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.power                           = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.current                         = 0 * ones_row(1)  
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.stagnation_temperature          = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.stagnation_pressure             = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.oxygen_relative_humidity        = 1 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.degradation                     = 0 * ones_row(1)
-    
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.pressure_drop                   = 0 * ones_row(1)  
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.air_excess_ratio                = 0 * ones_row(1) 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.stack_temperature               = fuel_cell_stack.fuel_cell.stack_temperature * ones_row(1)  
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.inlet_H2_mass_flow_rate         = 0 * ones_row(1) 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.inlet_air_mass_flow_rate        = 0 * ones_row(1)    
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.outlet_air_pressure             = 0 * ones_row(1) 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.outlet_air_mass_flow_rate       = 0 * ones_row(1) 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.current_density                 = 0 * ones_row(1) 
+    fuel_cell_conditions.inputs.power                              = Conditions()
+    fuel_cell_conditions.outputs.power                             = Conditions()
+    fuel_cell_conditions.inputs.power.propulsive                   = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.mechanical                   = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.electrical                   = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.chemical                     = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.pneumatic                    = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.hydraulic                    = 0 * ones_row(1)
+    fuel_cell_conditions.inputs.power.thermal                      = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.propulsive                  = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.mechanical                  = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.electrical                  = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.chemical                    = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.pneumatic                   = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.hydraulic                   = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.thermal                     = 0 * ones_row(1)
+    fuel_cell_conditions.current                                   = 0 * ones_row(1)      
+    fuel_cell_conditions.voltage_open_circuit                      = 0 * ones_row(1) 
+    fuel_cell_conditions.voltage_under_load                        = 0 * ones_row(1) 
+    fuel_cell_conditions.H2_mass_flow_rate                         = 0 * ones_row(1)
 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.humidifier                      = Conditions() 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.humidifier.pressure_drop        = 0 * ones_row(1)  
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.compressor                      = Conditions()   
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.compressor_inlet_pressure       = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.compressor_pressure_ratio       = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.compressor_inlet_mass_flow_rate = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.compressor_power                = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.expander                        = Conditions()   
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.expander_outlet_mass_flow_rate  = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.expander_inlet_pressure         = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.expander_pressure_ratio         = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.expander_power                  = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.motor_compressor                = Conditions()   
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.motor_compressor_power          = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.expander_generator              = Conditions()   
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.expander_generator_power        = 0 * ones_row(1)
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.compressor_expander_module      = Conditions
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].fuel_cell.compressor_expander_module_power= 0 * ones_row(1)
-
-    # Conditions for recharging fuel_cell         
-    if type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
-        segment.state.conditions.energy.recharging   = False     
-        segment.state.unknowns['recharge']           = 0* ones_row(1)  
-        segment.state.residuals['recharge']          = 0* ones_row(1)
-    else:
-        segment.state.conditions.energy.recharging  = False            
-    
-    return
-
-def append_fuel_cell_segment_conditions(fuel_cell_stack, bus, conditions, segment):  
-    """
-    Sets the initial fuel cell energy at the start of each segment as the last point from the previous segment
-    
-    Parameters
-    ----------
-    fuel_cell_stack : fuel_cell_stack
-        The fuel_cell_stack object containing cell properties and configuration.
-    bus : bus
-        The electrical bus object.
-    conditions : MissionConditions
-        The current conditions of the mission segment segment
-    segment : MissionSegment
-        The current mission segment. 
-
-    Returns
-    ------- 
-        
-    """
-    fuel_cell_conditions = conditions[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
-    if segment.state.initials:  
-        fuel_cell_initials                                   = segment.state.initials.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
-        fuel_cell_conditions.temperature[:,0]                = fuel_cell_initials.temperature[-1,0]
-        fuel_cell_conditions.cell.temperature[:,0]           = fuel_cell_initials.cell.temperature[-1,0]     
-    return
-  
-def reuse_stored_fuel_cell_data(fuel_cell_stack,state,bus,stored_results_flag, stored_fuel_cell_stack_tag):
-    '''
-    Reuses results from one propulsor for identical fuel cells 
-    '''
+    fuel_cell_conditions.voltage_open_circuit            = 0 * ones_row(1)
+    fuel_cell_conditions.voltage_under_load              = 0 * ones_row(1)
+    fuel_cell_conditions.power                           = 0 * ones_row(1)
+    fuel_cell_conditions.current                         = 0 * ones_row(1)  
+    fuel_cell_conditions.stagnation_temperature          = 0 * ones_row(1)
+    fuel_cell_conditions.stagnation_pressure             = 0 * ones_row(1)
+    fuel_cell_conditions.oxygen_relative_humidity        = 1 * ones_row(1)
+    fuel_cell_conditions.degradation                     = 0 * ones_row(1)
    
-    state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag] = deepcopy(state.conditions.energy.busses[bus.tag].fuel_cell_stacks[stored_fuel_cell_stack_tag])
-     
+    fuel_cell_conditions.pressure_drop                   = 0 * ones_row(1)  
+    fuel_cell_conditions.air_excess_ratio                = 0 * ones_row(1) 
+    fuel_cell_conditions.stack_temperature               = fuel_cell_stack.fuel_cell.stack_temperature * ones_row(1)  
+    fuel_cell_conditions.inlet_H2_mass_flow_rate         = 0 * ones_row(1) 
+    fuel_cell_conditions.inlet_air_mass_flow_rate        = 0 * ones_row(1)    
+    fuel_cell_conditions.outlet_air_pressure             = 0 * ones_row(1) 
+    fuel_cell_conditions.outlet_air_mass_flow_rate       = 0 * ones_row(1) 
+    fuel_cell_conditions.current_density                 = 0 * ones_row(1) 
+
+    fuel_cell_conditions.humidifier                      = Conditions() 
+    fuel_cell_conditions.humidifier.pressure_drop        = 0 * ones_row(1)  
+    fuel_cell_conditions.compressor                      = Conditions()   
+    fuel_cell_conditions.compressor_inlet_pressure       = 0 * ones_row(1)
+    fuel_cell_conditions.compressor_pressure_ratio       = 0 * ones_row(1)
+    fuel_cell_conditions.compressor_inlet_mass_flow_rate = 0 * ones_row(1)
+    fuel_cell_conditions.compressor_power                = 0 * ones_row(1)
+    fuel_cell_conditions.expander                        = Conditions()   
+    fuel_cell_conditions.expander_outlet_mass_flow_rate  = 0 * ones_row(1)
+    fuel_cell_conditions.expander_inlet_pressure         = 0 * ones_row(1)
+    fuel_cell_conditions.expander_pressure_ratio         = 0 * ones_row(1)
+    fuel_cell_conditions.expander_power                  = 0 * ones_row(1)
+    fuel_cell_conditions.motor_compressor                = Conditions()   
+    fuel_cell_conditions.motor_compressor_power          = 0 * ones_row(1)
+    fuel_cell_conditions.expander_generator              = Conditions()   
+    fuel_cell_conditions.expander_generator_power        = 0 * ones_row(1)
+    fuel_cell_conditions.compressor_expander_module      = Conditions
+    fuel_cell_conditions.compressor_expander_module_power= 0 * ones_row(1)
+
+    # Conditions for recharging fuel_cell
+    segment.state.conditions.energy.recharging = False
+
     return
+
+def reuse_stored_fuel_cell_data(fuel_cell_stack, state, network, stored_conveter_tag):
+    '''
+    Reuses results from one converter for identical fuel cells
+    '''
+    stored_conditions = state.conditions.energy.converters[stored_conveter_tag]
+    fuel_cell_conditions = state.conditions.energy.converters[fuel_cell_stack.tag]
+    fuel_cell_conditions.update(deepcopy(stored_conditions))
+
+    return fuel_cell_conditions.inputs, fuel_cell_conditions.outputs

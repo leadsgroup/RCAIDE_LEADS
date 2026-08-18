@@ -305,7 +305,8 @@ def vehicle_setup():
     fuselage.areas.side_projected               = 16.9613 * Units.meter**2.
     fuselage.areas.wetted                       = 52.94 * Units.meter**2.
     fuselage.areas.front_projected              = 2.72 * Units.meter**2.
-    fuselage.effective_diameter                 = 1.760 * Units.meter 
+    fuselage.effective_diameter                 = 1.760 * Units.meter
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
@@ -489,8 +490,9 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Fuel Line
     #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()   
-    
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                     = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel. Update Fuel tank location and size
     #------------------------------------------------------------------------------------------------------------------------------------       
@@ -499,8 +501,9 @@ def vehicle_setup():
     fuel_tank.fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel_tank.fuel.mass_properties.mass                   = 1190 *Units.lbs 
     fuel_tank.fuel.mass_properties.center_of_gravity      = wing.mass_properties.center_of_gravity
-    fuel_tank.internal_volume                             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
-    fuel_line.fuel_tanks.append(fuel_tank)  
+    fuel_tank.internal_volume                             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density
+    fuel_tank.assigned_distributors                       = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor. Continental GTSIO-520-S.
@@ -550,7 +553,8 @@ def vehicle_setup():
               
     # design propeller ICE  
     design_internal_combustion_engine(starboard_propulsor)
-    net.propulsors.append(starboard_propulsor) 
+    starboard_propulsor.assigned_distributors        = [[fuel_line.tag]]
+    net.propulsors.append(starboard_propulsor)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Port Propulsor
@@ -564,12 +568,11 @@ def vehicle_setup():
     port_propulsor.engine.origin                    = [[3.75,-2.25,1.15]]
     port_propulsor.propeller.tag                    = 'propeller_2'
     
-    # append propulsor to distribution line 
-    net.propulsors.append(port_propulsor) 
-    fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
+    # append propulsor to distribution line
+    net.propulsors.append(port_propulsor)
 
-    # append bus   
-    net.fuel_lines.append(fuel_line) 
+    # append fuel line
+    net.distributors.append(fuel_line)
     vehicle.append_energy_network(net)
 
     #------------------------------------------------------------------------------------------------------------------------------------ 

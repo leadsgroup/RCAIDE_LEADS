@@ -1,10 +1,14 @@
 # RCAIDE/Library/Plots/Thermal_Management/plot_thermal_management_performance.py
-# 
-# 
+#
+#
 # Created:  Sep 2024, S. Shekar
 # ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+import RCAIDE
+# ----------------------------------------------------------------------------------------------------------------------
 #   plot_thermal_management_performance
-# ----------------------------------------------------------------------------------------------------------------------   
+# ----------------------------------------------------------------------------------------------------------------------
 def plot_thermal_management_performance(results,
                         save_figure   = False,
                         show_legend   = True,
@@ -28,7 +32,7 @@ def plot_thermal_management_performance(results,
                                 List of heat exchanger components
                             - reservoirs
                                 List of thermal reservoir components
-                            - identical_battery_modules : bool
+                            - identical_sources : bool
                                 Flag indicating if batteries are identical
                             
     save_figure : bool, optional
@@ -83,23 +87,31 @@ def plot_thermal_management_performance(results,
     RCAIDE.Library.Plots.Thermal_Management.plot_reservoir_conditions : Reservoir analysis
     """     
     
-    for network in  results.segments[0].analyses.vehicle.networks:
-        for coolant_line in  network.coolant_lines:
-            for tag, item in  coolant_line.items():
-                if coolant_line.identical_battery_modules:
-                    if tag == 'battery_modules':
-                            for i, battery in enumerate(item):
-                                for btms in  (battery):
-                                    if i ==  0:
-                                        btms.plot_operating_conditions(results,coolant_line,save_figure,show_legend,btms.tag,file_type,width, height)
-                else:
-                    for _, battery in enumerate(item):
-                            for btms in  (battery):
-                                btms.plot_operating_conditions(results,coolant_line,save_figure,show_legend,btms.tag,file_type,width, height)
-                if tag == 'heat_exchangers':
-                    for heat_exchanger in  item:
-                        heat_exchanger.plot_operating_conditions(results,coolant_line,save_figure,show_legend,heat_exchanger.tag,file_type,width, height)
-                if tag == 'reservoirs':
-                    for reservoir in  item:
-                        reservoir.plot_operating_conditions(results,coolant_line,save_figure,show_legend,reservoir.tag,file_type,width, height)             
+    for network in results.segments[0].analyses.vehicle.networks:
+        for distributor in network.distributors:
+            if not isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+                continue
+            coolant_line = distributor
+
+            # battery heat acquisition systems (wavy channel / air cooled) assigned to this coolant line
+            plotted_has_tags = set()
+            for source in network.sources:
+                if not isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                    continue
+                for module in source.modules:
+                    HAS = module.heat_acquisition_system
+                    if HAS is None or module.assigned_distributors is None:
+                        continue
+                    if coolant_line.tag not in module.assigned_distributors[0]:
+                        continue
+                    if HAS.tag in plotted_has_tags:
+                        continue
+                    plotted_has_tags.add(HAS.tag)
+                    HAS.plot_operating_conditions(results,coolant_line,HAS.tag,save_figure,show_legend,file_type,width, height)
+
+            for heat_exchanger in coolant_line.heat_exchangers:
+                heat_exchanger.plot_operating_conditions(results,coolant_line,heat_exchanger.tag,save_figure,show_legend,file_type,width, height)
+
+            for reservoir in coolant_line.reservoirs:
+                reservoir.plot_operating_conditions(results,coolant_line,reservoir.tag,save_figure,show_legend,file_type,width, height)
     return

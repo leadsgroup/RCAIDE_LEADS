@@ -53,7 +53,7 @@ def vehicle_setup():
     # mass properties
     vehicle.mass_properties.max_takeoff               = 23000  
     vehicle.mass_properties.max_zero_fuel             = 15651.8 
-    vehicle.mass_properties.max_payload               = 7100
+    vehicle.mass_properties.max_payload               = 7400
     vehicle.mass_properties.min_payload               = 0 
     vehicle.mass_properties.center_of_gravity         = [[13.0038, 0, 0.45]]  
     vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]]  
@@ -111,8 +111,8 @@ def vehicle_setup():
     # ------------------------------------------------------------------      
     landing_battery_gear_pod                                    = RCAIDE.Library.Components.Booms.Boom()
     landing_battery_gear_pod.tag                                = 'landing_gear_battery_pod' 
-    landing_battery_gear_pod.origin                             = [[ 6, 0,  -0.082]]    
-    landing_battery_gear_pod.lengths.total                      = 12 
+    landing_battery_gear_pod.origin                             = [[ 4, 0,  -0.2]]    
+    landing_battery_gear_pod.lengths.total                      = 14
     landing_battery_gear_pod.width                              = 3.5  
     landing_battery_gear_pod.heights.maximum                    = 1.30 
     landing_battery_gear_pod.heights.at_quarter_length          = 1.05    
@@ -416,8 +416,9 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
- 
-     # Segment  
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
+
+     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
     segment.tag                                 = 'segment_1'    
     segment.percent_x_location                  = 0.0000
@@ -568,35 +569,39 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
-    
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()  
+
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
-    bat_module.origin                                      = [[10, 0,  -0.5]]
-    bat_module.electrical_configuration.series             = 135
-    bat_module.electrical_configuration.parallel           = 250
-    bat_module.cell.nominal_capacity                       = 6
-    bat_module.cell.mass                                   = 0.03 * Units.kg
-    bat_module.geometrtic_configuration.normal_count       = 224
-    bat_module.geometrtic_configuration.parallel_count     = 75
-    for _ in range(4):
+    battery_pack                                            = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
+    bat_module.electrical_configuration.series             = 20
+    bat_module.electrical_configuration.parallel           = 420
+    bat_module.cell.nominal_capacity                       = 3.8
+    bat_module.geometric_configuration.stacking_rows       = 10
+    bat_module.geometric_configuration.normal_count        = 140
+    bat_module.geometric_configuration.parallel_count      = 60
+
+    for i in range(12):
         bat_copy = deepcopy(bat_module)
-        bus.battery_modules.append(bat_copy)
+        bat_copy.origin   = [[7 + (i * 0.65) , 0, -0.5]]
+        battery_pack.append_module(bat_copy)
 
-    bus.battery_module_electric_configuration = 'Parallel' 
-    bus.initialize_bus_properties()
-
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    battery_pack.battery_module_electric_configuration = 'Series'
+    battery_pack.assigned_distributors = [[bus.tag]]
+    net.sources.append(battery_pack)
+    battery_pack.initialize(net)
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Coolant Line
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     coolant_line                                 = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line([bus])
     coolant_line.tag                             = 'air_cooled_coolant_line'
-    net.coolant_lines.append(coolant_line)
-    HAS                                         = RCAIDE.Library.Components.Thermal_Management.Batteries.Air_Cooled() 
-    for battery_module in bus.battery_modules:
-        coolant_line.battery_modules[battery_module.tag].append(HAS)
+    net.distributors.append(coolant_line)
+    HAS                                         = RCAIDE.Library.Components.Powertrain.Converters.Air_Cooled_Heat_Aquisition_System()
+    for battery_module in battery_pack.modules:
+        battery_module.heat_acquisition_system = HAS
+        battery_module.assigned_distributors   = [[coolant_line.tag]]
 
 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -610,7 +615,7 @@ def vehicle_setup():
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95 
     esc.origin                                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
-    esc.bus_voltage                                  = bus.voltage   
+    esc.nominal_voltage                              = battery_pack.voltage
     starboard_propulsor.electronic_speed_controller  = esc   
      
     # Propeller              
@@ -641,7 +646,7 @@ def vehicle_setup():
     motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                                 = 0.98
     motor.origin                                     = [[ 9.559106394 ,4.219315295, 1.616135105]]
-    motor.nominal_voltage                            = bus.voltage 
+    motor.nominal_voltage                            = battery_pack.voltage
     motor.no_load_current                            = 1
     starboard_propulsor.motor                        = motor
 
@@ -729,9 +734,10 @@ def vehicle_setup():
     nacelle.append_segment(nac_segment) 
 
     starboard_propulsor.nacelle =  nacelle
-    
-    # append propulsor to distribution line 
-    net.propulsors.append(starboard_propulsor) 
+
+    starboard_propulsor.assigned_distributors = [[bus.tag]]
+    # append propulsor to distribution line
+    net.propulsors.append(starboard_propulsor)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Port Propulsor
@@ -750,20 +756,16 @@ def vehicle_setup():
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor) 
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 30. # Watts
     bus.avionics                 = avionics
-    
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to bus       
-    bus.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]] 
 
-    # append bus   
-    net.busses.append(bus)
-    vehicle.append_energy_network(net)  
+    # append bus
+    net.distributors.append(bus)
+    vehicle.append_energy_network(net)   
 
     return vehicle
  

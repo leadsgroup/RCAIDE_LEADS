@@ -1,9 +1,9 @@
-RCAIDE.Framework.Optimization.Common
+RCAIDE.Framework.Optimization
 
 Common
 ======
 
-.. automodule:: RCAIDE.Framework.Optimization.Common
+.. automodule:: RCAIDE.Framework.Optimization
 
    
    

@@ -243,7 +243,7 @@ def compute_rotor_point_source_coordinates(rotor,conditions,mls,settings):
     phi_hub        = np.arctan2(X_hub[:,:,:,:,1], X_hub[:,:,:,:,2])
     
     orientation     = np.array(rotor.orientation_euler_angles) * 1 
-    body2thrust     = sp.spatial.transform.Rotation.from_rotvec(orientation).as_matrix()  
+    body2thrust     = sp.spatial.transform.Rotation.from_euler('xyz', orientation).as_matrix()  
     alpha           = np.tile((conditions.aerodynamics.angles.alpha  + np.arccos(body2thrust[0,0]))[:,:,None,None], (1,num_mic,num_blades,num_sec ))
     theta_prime_r   = np.arccos(np.cos(theta_r)*np.cos(alpha) + np.sin(theta_r)*np.sin(phi_hub)*np.sin(alpha)) # Eq 3.10 Hanson Sound from a propeller at angle of attack: a new theoretical viewpoint    
  

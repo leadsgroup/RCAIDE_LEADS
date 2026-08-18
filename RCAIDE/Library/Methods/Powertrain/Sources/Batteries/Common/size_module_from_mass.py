@@ -1,7 +1,12 @@
 # RCAIDE/Methods/Powertrain/Sources/Batteries/Common/size_module_from_mass.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke 
+#
+#
+# Created:  Jul 2023, M. Clarke
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
@@ -66,20 +71,22 @@ def size_module_from_mass(battery_module):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_battery_pack_properties
     """
     mass = battery_module.mass_properties.mass/battery_module.BMS_additional_weight_factor
     
-    if battery_module.cell.mass == None: 
+    if battery_module.cell.mass == None:
         n_series   = 1
-        n_parallel = 1 
+        n_parallel = 1
     else:
-        n_cells    = int(mass/battery_module.cell.mass)
-        n_series   = int(battery_module.maximum_voltage/battery_module.cell.maximum_voltage)
-        n_parallel = int(n_cells/n_series)
-        
-    battery_module.maximum_energy                    = mass*battery_module.cell.specific_energy  
-    battery_module.maximum_power                     = mass*battery_module.cell.specific_power
-    battery_module.initial_maximum_energy            = battery_module.maximum_energy    
-    battery_module.electrical_configuration.series   = n_series
-    battery_module.electrical_configuration.parallel = n_parallel     
+        n_series   = int(np.ceil(battery_module.maximum_voltage/battery_module.cell.maximum_voltage))
+        n_cells    = int(np.ceil(mass/battery_module.cell.mass))
+        n_parallel = int(np.ceil(n_cells/n_series))
+
+    battery_module.maximum_energy                          = mass*battery_module.cell.specific_energy
+    battery_module.maximum_power                           = mass*battery_module.cell.specific_power
+    battery_module.initial_maximum_energy                  = battery_module.maximum_energy
+    battery_module.electrical_configuration.series         = n_series
+    battery_module.electrical_configuration.parallel       = n_parallel
+    battery_module.geometric_configuration.normal_count    = n_series
+    battery_module.geometric_configuration.parallel_count  = n_parallel

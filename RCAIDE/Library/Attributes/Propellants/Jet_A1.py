@@ -37,7 +37,16 @@ class Jet_A1(Propellant):
     
     lower_heating_value : float
         Lower heating value in J/kg (43.24e6)
-    
+
+    molecular_weight : float
+        Average molecular weight in g/mol (160)
+
+    hydrogen_mass_fraction : float
+        Mass fraction of hydrogen content (0.1348)
+
+    carbon_mass_fraction : float
+        Mass fraction of carbon content (0.8637)
+
     max_mass_fraction : Data
         Maximum fuel-to-oxidizer mass ratios
         
@@ -148,6 +157,10 @@ class Jet_A1(Propellant):
         self.temperatures.boiling      = 0.0                              # K
 
         self.stoichiometric_fuel_air_ratio = 0.068          # [-] Stoichiometric Fuel to Air ratio
+        self.molecular_weight              = 160            # [g/mol] average molecular weight
+        self.hydrogen_mass_fraction        = 0.1348         # [-] mass fraction of hydrogen content
+        self.carbon_mass_fraction          = 0.8637         # [-] mass fraction of carbon content
+        self.kinematic_viscosity           = 2.1e-6         # [m^2/s] kinematic viscosity at ~20 C
         self.heat_of_vaporization          = 360000         # [J/kg] Heat of vaporization at standard conditions
         self.temperature                   = 298.15         # [K] Temperature of fuel
         self.pressure                      = 101325         # [Pa] Pressure of fuel

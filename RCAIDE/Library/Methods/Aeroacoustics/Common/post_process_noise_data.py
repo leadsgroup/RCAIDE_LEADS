@@ -142,7 +142,7 @@ def post_process_noise_data(results,
     num_noise_time  = settings.noise_times_steps
     num_f           = len(settings.center_frequencies)
     
-    # Step 4: Initalize Arrays 
+    # Step 4: initialize Arrays 
     N_ctrl_pts            = ( N_segs-1) * (num_noise_time -1) + num_noise_time # ensures that noise is computed continuously across segments 
     SPL_dBA               = np.ones((N_ctrl_pts,N_gm_x,N_gm_y))*background_noise()  
     SPL_dBA_1_3_spectrum  = np.ones((N_ctrl_pts,N_gm_x,N_gm_y,num_f))*background_noise()  

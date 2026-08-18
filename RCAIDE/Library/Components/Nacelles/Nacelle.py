@@ -121,7 +121,7 @@ class Nacelle(Component):
         self.differential_pressure    = 0.0    
         self.cowling_airfoil_angle    = 0.0
 
-    def append_operating_conditions(self, segment, energy_conditions, noise_conditions=None): 
+    def append_operating_conditions(self, segment): 
         """
         Placeholder for adding operating conditions of the nacelle.
 
@@ -131,9 +131,7 @@ class Nacelle(Component):
             Flight segment data
         propulsor : Data
             Propulsion system data
-        """
-    
-        energy_conditions[self.tag]   = RCAIDE.Framework.Mission.Common.Conditions()         
+        """       
         return
 
     def nac_vel_to_body(self):
@@ -178,7 +176,7 @@ class Nacelle(Component):
         
         # Go from vehicle frame to nacelle vehicle frame
         rots = np.array(self.orientation_euler_angles) * 1. 
-        vehicle_2_nac_vec = sp.spatial.transform.Rotation.from_rotvec(rots).as_matrix()        
+        vehicle_2_nac_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()        
         
         # Go from nacelle vehicle frame to nacelle velocity frame
         nac_vec_2_nac_vel = self.vec_to_vel()

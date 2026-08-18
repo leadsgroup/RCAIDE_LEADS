@@ -166,9 +166,10 @@ def compute_turbine_performance(turbine,conditions):
     compressor_work             = turbine_conditions.inputs.compressor.work_done
     fan_work                    = turbine_conditions.inputs.fan.work_done
     f                           = turbine_conditions.inputs.fuel_to_air_ratio    
+    shaft_work                  = turbine_conditions.inputs.external_shaft.work_done
     
     # Using the work done by the compressors/fan and the fuel to air ratio to compute the energy drop across the turbine
-    deltah_ht = -1/(1+f) * (compressor_work + alpha * fan_work) * 1/eta_mech
+    deltah_ht = -1/(1+f) * (compressor_work + shaft_work + alpha * fan_work) * 1/eta_mech
     
     # Compute the output stagnation quantities from the inputs and the energy drop computed above
     Tt_out    = Tt_in+deltah_ht/Cp

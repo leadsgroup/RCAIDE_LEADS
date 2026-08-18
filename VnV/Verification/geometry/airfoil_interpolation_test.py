@@ -9,9 +9,11 @@ from RCAIDE.Library.Plots.Common                                              im
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 
 def main():
+    ti = time.time()
 
     airfoils_path = os.path.abspath(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Vehicles", "Airfoils")
@@ -70,6 +72,10 @@ def main():
 
     plot_airfoil_transition(airfoil_files, geo, a_labels, nairfoils)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 

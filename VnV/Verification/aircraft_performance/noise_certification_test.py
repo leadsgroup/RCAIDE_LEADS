@@ -25,11 +25,13 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Embraer_190    import vehicle_setup as vehicle_setup
 from Embraer_190    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 def main(): 
+    ti = time.time()
     vehicle           = vehicle_setup() 
     configs           = configs_setup(vehicle) 
     analyses          = noise_analyses_setup(configs)  
@@ -39,9 +41,9 @@ def main():
     results = compute_noise_certification_metrics(approach_mission = approach_mission, takeoff_mission=takeoff_mission)
     plot_noise_certification_contour(results)
 
-    truth_approach_noise_2000m  = 100.1247990732169
-    truth_flyover_noise_6000m   = 90.06438862340616
-    truth_sideline_noise_450m   = 108.69112870202972
+    truth_approach_noise_2000m  = 100.2084876866911
+    truth_flyover_noise_6000m   = 92.57084988685932
+    truth_sideline_noise_450m   = 108.8302490908947
 
     # Check the errors
     error = Data()
@@ -55,6 +57,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-2)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
  
 

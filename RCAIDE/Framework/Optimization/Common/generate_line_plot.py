@@ -66,7 +66,7 @@ def generate_line_plot(problem,
     con_lbls = [_fmt(n) for n in con_names]
 
     if plot_objective:
-        fig, ax = plt.subplots(num=0)
+        fig, ax = plt.subplots()
         ax.plot(x, obj, lw=2)
         ax.set_xlabel(x_lbl)
         ax.set_ylabel(_fmt(obj_name))
@@ -74,7 +74,7 @@ def generate_line_plot(problem,
 
     if plot_constraint:
         for i in range(n_con):
-            fig, ax = plt.subplots(num=i + 1)
+            fig, ax = plt.subplots()
             ax.plot(x, con[i], lw=2)
             ax.axhline(0, color='gray', linewidth=1, linestyle='--')
             ax.set_xlabel(x_lbl)

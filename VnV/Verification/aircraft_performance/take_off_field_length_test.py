@@ -29,11 +29,13 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Embraer_190 import vehicle_setup, configs_setup
+import time
 
 # ----------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------
 def main():
+    ti = time.time()
 
     # define vehicle 
     vehicle   = vehicle_setup()   
@@ -51,15 +53,19 @@ def main():
     print('Weight (kg): ',takeoff_weight)
     
     print('Takeoff field length (m): ', takeoff_field_length)    
-    truth_TOFL = 1184.9899745165674
+    truth_TOFL = 1721.5670250994767
     TOFL_error = np.max(np.abs(takeoff_field_length-truth_TOFL))
     assert(TOFL_error<1e-6)
 
-    truth_SSCG = 0.16866894804974294
+    truth_SSCG = 0.07847791334209848
     print('Second Segment Climb Gradient (%): ', second_seg_clb_grad)
     SSCG_error = np.max(np.abs(second_seg_clb_grad-truth_SSCG))
     assert(SSCG_error<1e-6)
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
 

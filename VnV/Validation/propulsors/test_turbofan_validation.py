@@ -20,12 +20,14 @@ from   RCAIDE.Framework.Mission.Common import Conditions
 # Python imports 
 import numpy  as np                   
 import pandas as pd
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():  
+    ti = time.time()
 
     altitude            = 35000*Units.feet
     mach_number         = 0.8
@@ -76,11 +78,11 @@ def main():
     segment.state.conditions.energy[fuel_line.tag]    = Conditions()
     segment.state.conditions.aeroacoustics[fuel_line.tag]     = Conditions()
 
-    turbofan.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
+    turbofan.append_operating_conditions(segment)
 
-    for tag, item in turbofan.items(): 
+    for tag, item in turbofan.items():
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,segment.state.conditions.energy)
+            item.append_operating_conditions(segment)
 
     # set throttle
     segment.state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1  
@@ -135,6 +137,10 @@ def main():
     print("\nError in Fuel Mass Flow Rate [%]:", error)
     assert error < 8e-1
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def GE90_94B():

@@ -90,7 +90,7 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     vehicle_0.mass_properties.payload = PLD  
     PLD_per_pax   =  (weight_breakdown.payload.passengers  + weight_breakdown.payload.baggage) / PAX
     OEW           =  vehicle_0.mass_properties.operating_empty
-    if mission.segments[cruise_segment_tag].analyses.weights.propulsion_architecture == 'Hydrogen': 
+    if mission.segments[cruise_segment_tag].analyses.weights.propulsion_architecture == 'Cryogenic':
         MLW = (vehicle_0.mass_properties.max_takeoff - 0.65 * vehicle_0.mass_properties.max_fuel)
     else:
         MLW =  estimate_maximum_landing_weight(MTOW)
@@ -103,12 +103,12 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     W_CARGO += PLD-W_PAX
      
 
-    m_f = []     
+    m_f = []
     for network in vehicle_0.networks:
-        for fuel_line in  network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks: 
-                m_f.append(fuel_tank.fuel.mass_properties.mass)
-    fuel_tank_ratio = np.array(m_f) / sum(np.array(m_f)) 
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                m_f.append(source.fuel.mass_properties.mass)
+    fuel_tank_ratio = np.array(m_f) / sum(np.array(m_f))
 
     #------------------------------------------------------------------------  
     # Compute Loading Points 
@@ -171,11 +171,11 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
                     vehicle.mass_properties.fuel          = 0
                      
                     for network in vehicle.networks:
-                        for fuel_line in  network.fuel_lines:
-                            for fuel_tank in fuel_line.fuel_tanks: 
-                                fuel_tank.fuel.mass_properties.mass = 0
-                                    
-                    for cargo_bay in vehicle.cargo_bays:  
+                        for source in network.sources:
+                            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                                source.fuel.mass_properties.mass = 0
+
+                    for cargo_bay in vehicle.cargo_bays:
                         cargo_bay.mass_properties.mass   =  0
                         
                     for fuselage in  vehicle.fuselages: 
@@ -219,11 +219,13 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
                     vehicle.mass_properties.cargo    =  percent_cargo[c_i] * W_CARGO
                     vehicle.mass_properties.payload  = (W_PAX_per_pax) *vehicle.number_of_passengers +  vehicle.mass_properties.cargo         
                 
-                    # loop through fuel tanks 
+                    # loop through fuel tanks
+                    fuel_tank_i = 0
                     for network in vehicle.networks:
-                        for fuel_line in  network.fuel_lines:
-                            for fuel_tank_i ,  fuel_tank in enumerate(fuel_line.fuel_tanks): 
-                                fuel_tank.fuel.mass_properties.mass = percent_fuel[f_i] * FUEL * fuel_tank_ratio[fuel_tank_i]
+                        for source in network.sources:
+                            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                                source.fuel.mass_properties.mass = percent_fuel[f_i] * FUEL * fuel_tank_ratio[fuel_tank_i]
+                                fuel_tank_i += 1
             
                     # run weights analysis and store results
                     vehicle.mass_properties.fuel = percent_fuel[f_i] * FUEL 
@@ -255,11 +257,11 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
             vehicle.mass_properties.fuel                    = percent_weight[w_i] * FUEL
              
             for network in vehicle.networks:
-                for fuel_line in  network.fuel_lines:
-                    for fuel_tank in fuel_line.fuel_tanks: 
-                        fuel_tank.fuel.mass_properties.mass = 0
-                            
-            for cargo_bay in vehicle.cargo_bays:  
+                for source in network.sources:
+                    if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                        source.fuel.mass_properties.mass = 0
+
+            for cargo_bay in vehicle.cargo_bays:
                 cargo_bay.mass_properties.mass   =  0
                 
             for fuselage in  vehicle.fuselages: 
@@ -291,18 +293,20 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
             #------------------------------------------------------------------------  
             # Update Cargo
             #------------------------------------------------------------------------
-            for cargo_bay in vehicle.cargo_bays: 
-                cargo_bay.mass_properties.mass   = percent_cargo[w_i]  * W_CARGO *  cargo_bay_ratio[cargo_bay_i]
-                
+            for cb_i, cargo_bay in enumerate(vehicle.cargo_bays):
+                cargo_bay.mass_properties.mass   = percent_cargo[w_i]  * W_CARGO *  cargo_bay_ratio[cb_i]
+
 
             vehicle.mass_properties.cargo    =  percent_cargo[w_i] * W_CARGO
-            vehicle.mass_properties.payload  = (W_PAX_per_pax) *vehicle.number_of_passengers +  vehicle.mass_properties.cargo         
-        
-            # loop through fuel tanks 
+            vehicle.mass_properties.payload  = (W_PAX_per_pax) *vehicle.number_of_passengers +  vehicle.mass_properties.cargo
+
+            # loop through fuel tanks
+            fuel_tank_i = 0
             for network in vehicle.networks:
-                for fuel_line in  network.fuel_lines:
-                    for fuel_tank in fuel_line.fuel_tanks: 
-                        fuel_tank.fuel.mass_properties.mass = percent_fuel[w_i]  * FUEL * fuel_tank_ratio[fuel_tank_i]
+                for source in network.sources:
+                    if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                        source.fuel.mass_properties.mass = percent_fuel[w_i]  * FUEL * fuel_tank_ratio[fuel_tank_i]
+                        fuel_tank_i += 1
     
             # run weights analysis and store results
             vehicle.mass_properties.fuel = percent_fuel[w_i] * FUEL

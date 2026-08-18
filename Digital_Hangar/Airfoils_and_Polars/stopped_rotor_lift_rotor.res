@@ -62,11 +62,17 @@
             0.0
         ]
     ],
+    "orientation_euler_angles": [
+        0.0,
+        0.0,
+        0.0
+    ],
     "xz_plane_symmetric": false,
     "xy_plane_symmetric": false,
     "yz_plane_symmetric": false,
     "active": true,
     "wing_mounted": true,
+    "domain": "electrical",
     "nacelle": {
         "tag": "nacelle",
         "mass_properties": {
@@ -131,6 +137,11 @@
                 1.2
             ]
         ],
+        "orientation_euler_angles": [
+            0,
+            -1.5707963267948966,
+            0.0
+        ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
@@ -147,22 +158,14 @@
         "diameter": 0.3,
         "inlet_diameter": 0.0,
         "length": 0.45,
-        "orientation_euler_angles": [
-            0,
-            -1.5707963267948966,
-            0.0
-        ],
         "flow_through": false,
         "has_pylon": true,
         "differential_pressure": 0.0,
         "cowling_airfoil_angle": 0.0
     },
-    "sealevel_static_thrust": [
-        9664.62634511829
-    ],
-    "diameter": 0.0,
-    "length": 0.0,
-    "height": 0.0,
+    "identical_propulsors": true,
+    "reverse_thrust": false,
+    "sealevel_static_thrust": 4.513128882250699e-12,
     "working_fluid": {
         "tag": "air",
         "molecular_mass": 28.96442,
@@ -183,10 +186,17 @@
         },
         "kinetic_mechanism": "Air.yaml"
     },
-    "motor": {
-        "tag": "motor",
+    "assigned_converters": null,
+    "assigned_modulators": null,
+    "assigned_distributors": null,
+    "efficiency": 1.0,
+    "diameter": 0.0,
+    "length": 0.0,
+    "height": 0.0,
+    "electronic_speed_controller": {
+        "tag": "electronic_speed_controller",
         "mass_properties": {
-            "mass": 42.528853329140595,
+            "mass": 0,
             "center_of_gravity": [
                 [
                     0.0,
@@ -242,32 +252,24 @@
         },
         "origin": [
             [
-                0.0,
-                0.0,
-                0.0
+                -0.073,
+                1.95,
+                1.2
             ]
+        ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
         ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
         "working_fluid": {},
         "active": true,
-        "diameter": 0.0,
-        "length": 0.0,
-        "resistance": 0.6604656891365065,
-        "no_load_current": 0.01,
-        "speed_constant": 0.18344863202960124,
-        "efficiency": 0.9,
-        "gearbox": {
-            "gear_ratio": 1.0
-        },
-        "design_angular_velocity": 145.63243681979714,
-        "design_torque": 727.4083689034837,
-        "design_current": 133.45207020222765,
-        "inverse_calculation": false,
-        "interpolated_func": null,
-        "nominal_voltage": 882.0,
-        "propeller_radius": 1.4
+        "assigned_distributors": null,
+        "efficiency": 0.95,
+        "nominal_voltage": 1176.0
     },
     "rotor": {
         "tag": "lift_rotor",
@@ -333,9 +335,22 @@
                 1.2
             ]
         ],
+        "orientation_euler_angles": [
+            0.0,
+            1.5707963267948966,
+            0.0
+        ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
+        "working_fluid": {},
+        "active": true,
+        "assigned_converters": null,
+        "assigned_modulators": null,
+        "assigned_distributors": null,
+        "identical_converters": true,
+        "efficiency": 1.0,
+        "provides_domain": null,
         "number_of_blades": 3,
         "tip_radius": 1.4,
         "hub_radius": 0.1,
@@ -541,6 +556,11 @@
                         0.0,
                         0.0
                     ]
+                ],
+                "orientation_euler_angles": [
+                    0.0,
+                    0.0,
+                    0.0
                 ],
                 "xz_plane_symmetric": false,
                 "xy_plane_symmetric": false,
@@ -14214,11 +14234,6 @@
         "profile_drag_coefficient": 0.03,
         "clockwise_rotation": true,
         "phase_offset_angle": 0.0,
-        "orientation_euler_angles": [
-            0.0,
-            1.5707963267948966,
-            0.0
-        ],
         "ducted": false,
         "sol_tolerance": 1e-08,
         "use_2d_analysis": false,
@@ -14277,13 +14292,12 @@
             "design_lift_coefficient": null,
             "design_thrust_coefficient": null,
             "design_power_coefficient": null
-        },
-        "active": true
+        }
     },
-    "electronic_speed_controller": {
-        "tag": "electronic_speed_controller",
+    "motor": {
+        "tag": "motor",
         "mass_properties": {
-            "mass": 0,
+            "mass": 42.528853329140595,
             "center_of_gravity": [
                 [
                     0.0,
@@ -14339,17 +14353,70 @@
         },
         "origin": [
             [
-                -0.073,
-                1.95,
-                1.2
+                0.0,
+                0.0,
+                0.0
             ]
+        ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
         ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
-        "bus_voltage": 1176.0,
-        "efficiency": 0.95
+        "working_fluid": {},
+        "active": true,
+        "assigned_converters": null,
+        "assigned_modulators": null,
+        "assigned_distributors": null,
+        "identical_converters": true,
+        "efficiency": 0.9,
+        "provides_domain": null,
+        "diameter": 0.0,
+        "length": 0.0,
+        "gearbox": {
+            "gear_ratio": 1.0
+        },
+        "interpolated_func": null,
+        "type": "DC",
+        "reverse_mode_computation": false,
+        "design_angular_velocity": 145.63243681979714,
+        "design_torque": 727.4083689034837,
+        "design_current": 133.45207020222765,
+        "resistance": 0.6604656891365065,
+        "no_load_current": 0.01,
+        "speed_constant": 0.18344863202960124,
+        "stator_inner_diameter": 0.16,
+        "stator_outer_diameter": 0.348,
+        "winding_factor": 0.95,
+        "motor_stack_length": 0.114,
+        "number_of_turns": 80,
+        "length_of_path": 0.4,
+        "mu_0": 1.256637061e-06,
+        "mu_r": 1005,
+        "thermal_conductivity": 200,
+        "Delta_T": 10,
+        "characteristic_length_of_flow": 0.01,
+        "thermal_conductivity_fluid": 0.026,
+        "length_of_conductive_path": 0.4,
+        "Re_cooling_flow": 100000,
+        "Re_airgap": 100000,
+        "Prandtl_number": 0.708,
+        "height_of_duct": 0.005,
+        "width_of_duct": 0.005,
+        "hydraulic_diameter_of_duct": 0.005,
+        "length_of_channel": 0.005,
+        "volume_flow_rate_of_fluid": 0.005,
+        "density_of_fluid": 1000,
+        "velocity_of_fluid": 0.005,
+        "Taylor_number": 20,
+        "axial_gap_to_radius_of_rotor": 0.01,
+        "Conduction_laminar_flow": true,
+        "Convection_laminar_flow": true,
+        "nominal_voltage": 882.0,
+        "propeller_radius": 1.4
     },
-    "active_crypgenic_tanks_tanks": null,
     "sealevel_static_power": 287287.41636622604
 }

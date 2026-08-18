@@ -92,9 +92,9 @@ def compute_propulsion_system_weight(vehicle,network,settings):
             
             if propulsor.nacelle !=  None:                    
                 ref_nacelle =  propulsor.nacelle                   
-                
-        for fuel_line in network.fuel_lines:
-            for _ in fuel_line.fuel_tanks:
+        
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):      
                 number_of_tanks +=  1
     
     # nacelle weight
@@ -115,7 +115,7 @@ def compute_propulsion_system_weight(vehicle,network,settings):
     WFSYS           = compute_fuel_system_weight(vehicle, NENG,settings) 
 
     output                      = Data()
-    output.W_prop               = WENG + WFSYS + WTHR + WSTART + WEC + WNAC
+    output.W_prop               = WENG + WFSYS + WTHR + WSTART + WEC
     output.W_thrust_reverser    = WTHR
     output.W_starter            = WSTART*JNENG
     output.W_engine_controls    = WEC*JNENG

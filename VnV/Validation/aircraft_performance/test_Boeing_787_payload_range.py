@@ -54,7 +54,7 @@ def main():
         
     truth_values = {
         "range":            np.array([       0.        , 10090424.13008407, 17488065.51305655, 18153977.03778774]),
-        "payload":          np.array([44000.        , 44000.        , 10317.36918343,     0.        ]),
+        "payload":          np.array([44000.        , 44000.        , 10271.2719788,     0.        ]),
         "oew_plus_payload": np.array([160289.63081657, 160289.63081657, 126607.        , 116289.63081657]),
         "fuel":             np.array([     0.        ,  67640.36918343, 101323.        , 101323.        ]),
         "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 217612.63081657]),
@@ -188,8 +188,9 @@ def payload_range_mission_setup(analyses):
     mission.tag = 'the_mission'
 
     Segments = RCAIDE.Framework.Mission.Segments 
-    base_segment = Segments.Segment() 
-    base_segment.state.numerics.solver.type = 'root_finder'
+    base_segment = Segments.Segment()
+    base_segment.state.numerics.mission_solver.type = 'root_finder'
+    base_segment.state.numerics.mission_solver.max_evaluations = 800
     
 
     # ------------------------------------------------------------------------------------------------------------------------------------ 
@@ -369,20 +370,22 @@ def payload_range_mission_setup(analyses):
     # ------------------------------------------------------------------
 
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
-    segment.tag  = "approach" 
-    segment.analyses.extend( analyses.landing ) 
+    segment.tag  = "approach"
+    segment.analyses.extend( analyses.landing )
     segment.altitude_end                                             = 2000 * Units.ft
     segment.air_speed                                                = 225.0 * Units['knots']
-    segment.descent_rate                                             = 650  * Units['fpm']  
-             
-    # define flight dynamics to model              
-    segment.flight_dynamics.force_x                                  = True  
-    segment.flight_dynamics.force_z                                  = True     
+    segment.descent_rate                                             = 650  * Units['fpm']
 
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                                  = True
+    segment.flight_dynamics.force_z                                  = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']]
+    segment.assigned_control_variables.throttle.initial_guess_values  = [[0.2]]
+    segment.assigned_control_variables.pitch_angle.active             = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[2.0 * Units.deg]]
 
     mission.append_segment(segment)
 
@@ -472,9 +475,9 @@ def base_analysis(vehicle):
     weights.settings.advanced_composites                                     = True
     weights.settings.weight_correction_additions.empty.structural.paint      = 450 
     weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.number_of_passengers
-    weights.settings.weight_correction_additions.empty.propulsion.battery    = 56 
-    weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.05    
-    weights.settings.weight_correction_factors.empty.systems.electrical      = 2.67 
+    weights.settings.weight_correction_additions.empty.propulsion.battery    = 150 
+    weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.1   
+    weights.settings.weight_correction_factors.empty.systems.electrical      = 2.7 
     analyses.append(weights)
 
     # ------------------------------------------------------------------

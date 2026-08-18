@@ -7,7 +7,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_ram_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_ram_conditions(ram, segment, energy_conditions):
+def append_ram_conditions(ram, segment):
     """
     Initializes ram air converter operating conditions for a mission segment.
     
@@ -23,8 +23,6 @@ def append_ram_conditions(ram, segment, energy_conditions):
                 Segment state
                     - ones_row : function
                         Function to create array of ones with specified length
-    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Energy conditions container where ram air converter conditions will be stored
     
     Returns
     -------
@@ -36,7 +34,7 @@ def append_ram_conditions(ram, segment, energy_conditions):
     operating conditions during a mission segment. It creates empty containers for
     input and output conditions that will be populated during the mission analysis.
     
-    The function initializes the following in energy_conditions.converters[ram.tag]:
+    The function initializes the following in segment.state.conditions.energy.converters[ram.tag]:
         - inputs : Conditions
             Input conditions container (empty)
         - outputs : Conditions
@@ -50,7 +48,7 @@ def append_ram_conditions(ram, segment, energy_conditions):
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance
     """
-    energy_conditions.converters[ram.tag]                              = Conditions() 
-    energy_conditions.converters[ram.tag].inputs                       = Conditions() 
-    energy_conditions.converters[ram.tag].outputs                      = Conditions() 
+    segment.state.conditions.energy.converters[ram.tag]                              = Conditions() 
+    segment.state.conditions.energy.converters[ram.tag].inputs                       = Conditions() 
+    segment.state.conditions.energy.converters[ram.tag].outputs                      = Conditions() 
     return 

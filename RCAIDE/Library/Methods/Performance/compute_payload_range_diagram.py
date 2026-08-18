@@ -106,6 +106,10 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         segment.analyses.aerodynamics.settings.reuse_training_data = False
         segment.analyses.aerodynamics.settings.use_surrogate       = True
         
+        # if stability analysis is defined and neutral point already computed
+        if segment.analyses.stability != None: 
+            segment.analyses.stability.settings.compute_neutral_point = False
+
     # run preliminary mass properties analyss 
     mass_properties(mission) 
    
@@ -219,11 +223,14 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     R       = [0,0,0]
     
     for segment in  mission.segments:
-        segment.analyses.weights.settings.run_weights_analysis = False
-        segment.analyses.weights.settings.run_center_of_gravity_analysis = False
-        segment.analyses.weights.settings.run_moments_of_inertia_analysis = False
-        segment.analyses.geometry.settings.compute_fuel_volume = False
-        segment.analyses.geometry.settings.update_max_fuel  = False
+        segment.analyses.weights.settings.run_weights_analysis             = False
+        segment.analyses.weights.settings.run_center_of_gravity_analysis   = False
+        segment.analyses.weights.settings.run_moments_of_inertia_analysis  = False
+        segment.analyses.weights.settings.update_fuel_mass                 = False
+        segment.analyses.weights.settings.update_max_fuel_mass             = False
+        segment.analyses.geometry.settings.compute_fuel_volume             = False
+        segment.analyses.weights.print_weight_analysis_report              = False
+        segment.analyses.energy.verbose                                    = False
 
 
     # loop for each point of Payload Range Diagram
@@ -237,9 +244,12 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         # Evaluate mission with current TOW
         results = mission.evaluate()
         segment = results.segments[cruise_segment_tag]
-        
+
         for segment in  mission.segments:
             segment.analyses.aerodynamics.settings.reuse_training_data = True
+            # Neutral point is now computed — disable recomputation for speed
+            if segment.analyses.stability != None: 
+                segment.analyses.stability.settings.compute_neutral_point = False
         
         
         # Distance convergency in order to have total fuel equal to target fuel 

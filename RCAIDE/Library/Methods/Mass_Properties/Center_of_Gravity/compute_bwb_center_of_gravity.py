@@ -207,11 +207,12 @@ def compute_aft_center_body_center_of_gravity(bwb_wing,seg_keys):
     centroid                   = np.array(combined_mesh_full.centroid)
     centroid[1] = 0
 
-    # store values 
-    bwb_wing.aft_center_body.mass_properties.center_of_gravity         =  [centroid.tolist()]
+    # store CG relative to component origin
+    origin = np.array(bwb_wing.aft_center_body.origin[0])
+    bwb_wing.aft_center_body.mass_properties.center_of_gravity         =  [(centroid - origin).tolist()]
     bwb_wing.aft_center_body.mass_properties.moments_of_inertia.tensor =  I
-    
-    return  
+
+    return
 
 def compute_center_body_center_of_gravity(bwb_wing,seg_keys):
     mass          = bwb_wing.center_body.mass_properties.mass
@@ -288,8 +289,9 @@ def compute_center_body_center_of_gravity(bwb_wing,seg_keys):
     centroid                   = np.array(combined_mesh_full.centroid)
     centroid[1] = 0
 
-    # store values 
-    bwb_wing.center_body.mass_properties.center_of_gravity         =  [centroid.tolist()]
+    # store CG relative to component origin
+    origin = np.array(bwb_wing.center_body.origin[0])
+    bwb_wing.center_body.mass_properties.center_of_gravity         =  [(centroid - origin).tolist()]
     bwb_wing.center_body.mass_properties.moments_of_inertia.tensor =  I
-    
-    return   
+
+    return

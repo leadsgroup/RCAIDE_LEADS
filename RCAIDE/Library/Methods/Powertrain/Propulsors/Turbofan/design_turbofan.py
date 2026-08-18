@@ -16,8 +16,9 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan           import size_core 
-from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions 
-
+from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor import   design_optimal_motor
+from RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_generator import design_optimal_generator
 
 # Python package imports
 import numpy as np
@@ -153,22 +154,22 @@ def design_turbofan(turbofan):
         conditions = RCAIDE.Framework.Mission.Common.Results()
     
         # freestream conditions    
-        conditions.freestream.altitude                    = np.atleast_1d(turbofan.design_altitude)
-        conditions.freestream.mach_number                 = np.atleast_1d(turbofan.design_mach_number)
-        conditions.freestream.pressure                    = np.atleast_1d(p)
-        conditions.freestream.temperature                 = np.atleast_1d(T)
-        conditions.freestream.density                     = np.atleast_1d(rho)
-        conditions.freestream.dynamic_viscosity           = np.atleast_1d(mu)
-        conditions.freestream.gravity                     = np.atleast_1d(planet.compute_gravity(turbofan.design_altitude))
-        conditions.freestream.isentropic_expansion_factor = np.atleast_1d(turbofan.working_fluid.compute_gamma(T,p))
-        conditions.freestream.Cp                          = np.atleast_1d(turbofan.working_fluid.compute_cp(T,p))
-        conditions.freestream.R                           = np.atleast_1d(turbofan.working_fluid.gas_specific_constant)
-        conditions.freestream.speed_of_sound              = np.atleast_1d(a)
-        conditions.freestream.velocity                    = np.atleast_1d(U) 
+        conditions.freestream.altitude                    = np.atleast_2d(turbofan.design_altitude)
+        conditions.freestream.mach_number                 = np.atleast_2d(turbofan.design_mach_number)
+        conditions.freestream.pressure                    = np.atleast_2d(p)
+        conditions.freestream.temperature                 = np.atleast_2d(T)
+        conditions.freestream.density                     = np.atleast_2d(rho)
+        conditions.freestream.dynamic_viscosity           = np.atleast_2d(mu)
+        conditions.freestream.gravity                     = np.atleast_2d(planet.compute_gravity(turbofan.design_altitude))
+        conditions.freestream.isentropic_expansion_factor = np.atleast_2d(turbofan.working_fluid.compute_gamma(T,p))
+        conditions.freestream.Cp                          = np.atleast_2d(turbofan.working_fluid.compute_cp(T,p))
+        conditions.freestream.R                           = np.atleast_2d(turbofan.working_fluid.gas_specific_constant)
+        conditions.freestream.speed_of_sound              = np.atleast_2d(a)
+        conditions.freestream.velocity                    = np.atleast_2d(U) 
      
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions 
-    turbofan.append_operating_conditions(segment,conditions.energy,conditions.aeroacoustics)
+    turbofan.append_operating_conditions(segment)
                     
     ram                       = turbofan.ram
     inlet_nozzle              = turbofan.inlet_nozzle
@@ -178,9 +179,12 @@ def design_turbofan(turbofan):
     combustor                 = turbofan.combustor
     high_pressure_turbine     = turbofan.high_pressure_turbine
     low_pressure_turbine      = turbofan.low_pressure_turbine
+    integrated_drive_generator= turbofan.integrated_drive_generator 
+    integrated_drive_motor    = turbofan.integrated_drive_motor
     core_nozzle               = turbofan.core_nozzle
-    fan_nozzle                = turbofan.fan_nozzle 
-    bypass_ratio              = turbofan.bypass_ratio  
+    fan_nozzle                = turbofan.fan_nozzle  
+    bypass_ratio              = turbofan.bypass_ratio 
+    design_power_offtake      = turbofan.design_power_offtake 
 
     # unpack component conditions
     turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]
@@ -193,7 +197,12 @@ def design_turbofan(turbofan):
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
-    fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
+    fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]
+
+    # instantiate dummy network 
+    dummy_network          = RCAIDE.Framework.Networks.Fuel()
+    fuel_line              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    dummy_network.distributors.append(fuel_line)     
      
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                             = turbofan.working_fluid
@@ -258,7 +267,33 @@ def design_turbofan(turbofan):
     combustor.working_fluid                                           = high_pressure_compressor.working_fluid     
     
     # Step 12: Compute flow through the high pressor compressor 
-    compute_combustor_performance(combustor,conditions)
+    compute_combustor_performance(combustor,conditions) 
+       
+    net_external_shaft_power  = np.array([[0.0]])
+    
+    # Design and size integrated drive motor (parallel hybrid)
+    # Design and size integrated drive motor (parallel hybrid)
+    if integrated_drive_motor != None: 
+        motor_electrical_power = design_power_offtake
+        motor_mechanical_power = motor_electrical_power * integrated_drive_motor.efficiency
+        integrated_drive_motor.design_power             = motor_electrical_power
+        integrated_drive_motor.design_angular_velocity  = low_pressure_compressor.design_angular_velocity
+        integrated_drive_motor.design_torque            = motor_mechanical_power / integrated_drive_motor.design_angular_velocity  
+        design_optimal_motor(integrated_drive_motor) 
+        net_external_shaft_power -= motor_mechanical_power
+
+    # Design and size integrated drive generator (IDG)
+    if integrated_drive_generator != None:
+        gen_mechanical_power = design_power_offtake / integrated_drive_generator.efficiency
+        integrated_drive_generator.design_power             = design_power_offtake
+        integrated_drive_generator.design_angular_velocity  = low_pressure_compressor.design_angular_velocity
+        integrated_drive_generator.design_torque            = gen_mechanical_power / integrated_drive_generator.design_angular_velocity
+        integrated_drive_generator.design_current           = design_power_offtake / integrated_drive_generator.nominal_voltage if integrated_drive_generator.nominal_voltage > 0 else 0.0
+        if integrated_drive_generator.voltage_type == 'DC' and integrated_drive_generator.nominal_voltage > 0:
+            design_optimal_generator(integrated_drive_generator)
+        net_external_shaft_power += gen_mechanical_power
+                
+    external_shaft_work =  net_external_shaft_power    
     
     # Step 13: Link the high pressure turbione to the combustor
     hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
@@ -269,6 +304,7 @@ def design_turbofan(turbofan):
     hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number       
     hpt_conditions.inputs.compressor                = hpc_conditions.outputs  
     hpt_conditions.inputs.bypass_ratio              = 0.0
+    hpt_conditions.inputs.external_shaft.work_done  = external_shaft_work 
     high_pressure_turbine.working_fluid             = combustor.working_fluid    
     
     # Step 14: Compute flow through the high pressure turbine
@@ -326,15 +362,17 @@ def design_turbofan(turbofan):
     turbofan_conditions.flow_through_fan                         = bypass_ratio/(1.+bypass_ratio) #scaled constant to turn on fan thrust computation        
 
     # Step 22: Size the core of the turbofan  
-    size_core(turbofan,conditions) 
-    
+    size_core(turbofan,conditions)  
+
     # Step 23: Static Sea Level Thrust  
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(turbofan,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
+    operating_state       = setup_operating_conditions(turbofan,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0  
-    sls_T,_,sls_P,_,_,_                          = turbofan.compute_performance(operating_state) 
-    turbofan.sealevel_static_thrust              = sls_T[0][0]
-    turbofan.sealevel_static_power               = sls_P[0][0]
-     
+    operating_state.unknowns.network['electrical_power'] = np.array([[design_power_offtake]])
+    inputs,outputs,_,_                     = turbofan.compute_performance(operating_state,dummy_network) 
+    turbofan.sealevel_static_thrust        = outputs.thrust[0][0]
+    turbofan.sealevel_static_power         = outputs.power.propulsive[0][0]
+    turbofan.design_power                  = design_power_offtake
+ 
     return 

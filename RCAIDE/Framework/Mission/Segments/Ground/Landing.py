@@ -71,9 +71,9 @@ class Landing(Evaluate):
         ones_row_m1                                             = self.state.ones_row_m1
         self.flight_dynamics.force_x                            = True   
         self.flight_dynamics.final_velocity_error               = True  
-        self.state.residuals.force_x                            = ones_row_m1(1) * 0.0  
-        self.state.unknowns.elapsed_time                        = 30.                     
-        self.state.unknowns.ground_velocity                     = ones_row_m1(1) * 0  
+        self.state.residuals.mission.force_x                    = ones_row_m1(1) * 0.0  
+        self.state.unknowns.mission.elapsed_time                = 30.                     
+        self.state.unknowns.mission.ground_velocity             = ones_row_m1(1) * 0  
         self.assigned_control_variables.elapsed_time.active     = True   
         self.assigned_control_variables.ground_velocity.active  = True   
 
@@ -85,13 +85,14 @@ class Landing(Evaluate):
         self.state.conditions.ground.friction_coefficient         = ones_row(1) * 0.0
         self.state.conditions.frames.inertial.ground_force_vector = ones_row(3) * 0.0 
         
-        # -------------------------------------------------------------------------------------------------------------- 
-        #  Mission specific processes 
-        # --------------------------------------------------------------------------------------------------------------  
-        initialize                         = self.process.initialize
-        initialize.conditions              = Ground.Landing.initialize_conditions  
-        iterate                            = self.process.iterate   
-        iterate.conditions.forces_ground   = Update.ground_forces
-        iterate.unknowns.mission           = Unpack_Unknowns.ground 
+        # --------------------------------------------------------------------------------------------------------------
+        #  Mission specific processes
+        # --------------------------------------------------------------------------------------------------------------
+        initialize                                 = self.process.initialize
+        initialize.conditions                      = Ground.Landing.initialize_conditions
+        iterate                                    = self.process.iterate
+        iterate.conditions.forces_ground           = Update.ground_forces
+        iterate.unknowns.mission.mission           = Unpack_Unknowns.ground
+        iterate.residuals.mission.flight_dynamics  = Residuals.flight_dynamics 
 
         return

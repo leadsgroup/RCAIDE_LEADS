@@ -79,21 +79,21 @@ def control_surfaces(segment):
             # Elevator Control
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator: 
                 if assigned_control_variables.elevator_deflection.active:                                
-                    control_surfaces.elevator.deflection  = segment.state.unknowns["elevator"]
+                    control_surfaces.elevator.deflection  = segment.state.unknowns.mission["elevator"]
                 else:
                     control_surfaces.elevator.deflection[:,0]  = control_surface.deflection 
 
             # Rudder Control 
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder: 
                 if assigned_control_variables.rudder_deflection.active:                                
-                    control_surfaces.rudder.deflection  = segment.state.unknowns["rudder"]
+                    control_surfaces.rudder.deflection  = segment.state.unknowns.mission["rudder"]
                 else:
                     control_surfaces.rudder.deflection[:,0]  = control_surface.deflection 
 
             # Aileron Control 
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron: 
                 if assigned_control_variables.aileron_deflection.active:
-                    control_surfaces.aileron.deflection  = segment.state.unknowns["aileron"]
+                    control_surfaces.aileron.deflection  = segment.state.unknowns.mission["aileron"]
                 else:
                     control_surfaces.aileron.deflection[:,0]  = control_surface.deflection
                     
