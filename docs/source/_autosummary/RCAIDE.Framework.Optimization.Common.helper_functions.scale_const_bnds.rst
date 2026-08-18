@@ -1,6 +1,6 @@
-RCAIDE.Framework.Optimization.Common.helper\_functions.scale\_const\_bnds
+RCAIDE.Framework.Optimization.helper\_functions.scale\_const\_bnds
 =========================================================================
 
-.. currentmodule:: RCAIDE.Framework.Optimization.Common.helper_functions
+.. currentmodule:: RCAIDE.Framework.Optimization.helper_functions
 
 .. autofunction:: scale_const_bnds

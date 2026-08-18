@@ -15,12 +15,14 @@ from RCAIDE.Library.Plots import *
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():    
+    ti = time.time()
     # ----------------------------------------------------------------------------------------------------------------
     #  Define airfoil geometry and polar files 
     # ---------------------------------------------------------------------------------------------------------------- 
@@ -73,6 +75,10 @@ def main():
 
     plot_airfoil(airfoil_geometry_with_selig[1])
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
 
 if __name__ == '__main__': 

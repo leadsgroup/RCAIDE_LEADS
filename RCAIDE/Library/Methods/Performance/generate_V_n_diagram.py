@@ -102,7 +102,7 @@ def generate_V_n_diagram(analyses=None,altitude = 0,delta_ISA = 0):
     [3] Gudmundsson, S. (2022). General Aviation Aircraft Design: Applied Methods and procedures. Elsevier. 
     """
     
-    if type(analyses) != RCAIDE.Framework.Analyses.Vehicle:
+    if not isinstance(analyses, RCAIDE.Framework.Analyses.Analysis.Container):
         raise AttributeError('RCAIDE analyses must be defined')
     # ---------------------------------------------- 
     # Preprocess Geometry 
@@ -436,75 +436,6 @@ def evalaute_aircraft(analyses,altitude,Vc):
     results = missions.base_mission.evaluate() 
 
     return results 
- 
-def analyses_setup(configs):
-
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # build a base analysis for each config
-    for tag,config in configs.items():
-        analysis = base_analysis(config)
-        analyses[tag] = analysis
-
-    return analyses
-
-def base_analysis(vehicle):
-
-       # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------
-    analyses         = RCAIDE.Framework.Analyses.Vehicle()
-    analyses.vehicle = vehicle
-    
-    #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    analyses.append(geometry) 
-
-    # ------------------------------------------------------------------
-    #  Weights
-    # ------------------------------------------------------------------
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation() 
-    analyses.append(weights)
-
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    # ------------------------------------------------------------------
-    aerodynamics                                      = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.use_surrogate               = False
-    analyses.append(aerodynamics)
-
-
-    # ------------------------------------------------------------------
-    #  Energy
-    # ------------------------------------------------------------------
-    energy     = RCAIDE.Framework.Analyses.Energy.Energy()
-    analyses.append(energy)
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    # ------------------------------------------------------------------
-    planet     = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    # ------------------------------------------------------------------
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)
-
-    # done!
-    return analyses
-
-
-def configs_setup(vehicle):
-    # ------------------------------------------------------------------
-    #   Initialize Configurations
-    # ------------------------------------------------------------------
-    configs = RCAIDE.Library.Components.Configs.Config.Container()
-    base_config                                                       = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag                                                   = 'base'
-    configs.append(base_config)
-    return configs
 
 def base_mission_setup(analyses,altitude,Vc):
     '''

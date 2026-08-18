@@ -32,11 +32,13 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Lockheed_Martin_F22 import vehicle_setup as vehicle_setup
 import matplotlib.pyplot                as plt
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 def main():
+    ti = time.time()
     update_regression_values = False  # should be false unless code functionally changes
     
     # all-moving surface deflection cases
@@ -88,6 +90,10 @@ def main():
         max_err = np.max(np.abs(errors))
         assert max_err < 1e-5 , 'Failed at {} test'.format(key)
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 # ----------------------------------------------------------------------

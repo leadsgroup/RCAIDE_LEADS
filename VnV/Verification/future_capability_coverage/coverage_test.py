@@ -17,6 +17,7 @@ import numpy as np
 import pylab as plt 
 import sys
 import os
+import time
  
 
 # ----------------------------------------------------------------------
@@ -24,6 +25,7 @@ import os
 # ----------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
  
     # materials 
@@ -68,13 +70,16 @@ def main():
     propellant  = RCAIDE.Library.Attributes.Propellants.Butanol()
     propellant  = RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas()
     propellant  = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
-    propellant  = RCAIDE.Library.Attributes.Propellants.JP7()  
-    propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_LH2()  
-    propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_RP1()
-    
+    propellant  = RCAIDE.Library.Attributes.Propellants.JP7()
+
     # networks
     network =  RCAIDE.Framework.Networks.Hydrogen()
-    
+
+    # powertrain base classes
+    distributor        = RCAIDE.Library.Components.Powertrain.Distributors.Distributor()
+    modulator           = RCAIDE.Library.Components.Powertrain.Modulators.Modulator()
+    source              = RCAIDE.Library.Components.Powertrain.Sources.Source()
+
     # booms
     boom      = RCAIDE.Library.Components.Booms.Boom()
     segment_1 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
@@ -101,6 +106,10 @@ def main():
     segment_5 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
     nacelle.append_segment(segment_5)
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
     
     

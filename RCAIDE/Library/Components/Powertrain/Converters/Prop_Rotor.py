@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Prop_Rotor.py
+# RCAIDE/Library/Components/Powertrain/Converters/Prop_Rotor.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke

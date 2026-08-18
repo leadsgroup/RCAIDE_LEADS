@@ -11,12 +11,14 @@ from RCAIDE.Framework.Core import Units
 
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 
 # ----------------------------------------------------------------------        
 #   Main
 # ----------------------------------------------------------------------  
 def main():
+    ti = time.time()
     
     # ------------------------------------------------------------------
     #   The Tests
@@ -73,6 +75,10 @@ def main():
     assert( p_err   < 1e-1 )
     assert( rho_err < 1e-5 )   
  
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 # ----------------------------------------------------------------------        

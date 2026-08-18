@@ -1,7 +1,7 @@
 # Titanum.py
 #
 # Created: Jul, 2022, J. Smart
-# Modified:
+# Modified: Jul, 2026, S. Sharma
 
 # -------------------------------------------------------------------------------
 # Imports
@@ -9,7 +9,6 @@
 
 from .Solid import Solid
 from RCAIDE.Framework.Core import Units
-
 
 # -------------------------------------------------------------------------------
 # Titanium 
@@ -36,6 +35,8 @@ class Titanium(Solid):
         Minimum manufacturable thickness in m (0.0)
     density : float
         Material density in kg/m³ (4430)
+    thermal_conductivity : float
+        Thermal conductivity in W/(m*K) (6.7)
 
     Notes
     -----
@@ -56,7 +57,11 @@ class Titanium(Solid):
 
     References
     ----------
-    [1] Aerospace Specification Metals, Inc. (n.d.). Titanium Ti-6Al-4V (Grade 5), Annealed. ASM material data sheet. https://asm.matweb.com/search/SpecificMaterial.asp?bassnum=mtp641 
+    [1] Aerospace Specification Metals, Inc. (n.d.). Titanium Ti-6Al-4V (Grade 5), Annealed. 
+        ASM material data sheet. https://asm.matweb.com/search/SpecificMaterial.asp?bassnum=mtp641
+    [2] HonTitan. Titanium Thermal Conductivity: Why It's Low and When That Matters. ~6.7 W/(m*K)
+        at room temperature for Ti-6Al-4V, consistent with the 6.2-7.66 W/(m*K) experimental range
+        reported for bulk Ti-6Al-4V. https://hontitan.com/titanium-thermal-conductivity/
     """
 
     def __defaults__(self):
@@ -78,11 +83,12 @@ class Titanium(Solid):
         None
         """
 
-        self.ultimate_tensile_strength  = 950e6 * Units.Pa
-        self.ultimate_shear_strength    = 550e6 * Units.Pa
+        self.ultimate_tensile_strength  = 950e6  * Units.Pa
+        self.ultimate_shear_strength    = 550e6  * Units.Pa
         self.ultimate_bearing_strength  = 1860e6 * Units.Pa
-        self.yield_tensile_strength     = 880e6 * Units.Pa
-        self.yield_shear_strength       = 550e6 * Units.Pa
+        self.yield_tensile_strength     = 880e6  * Units.Pa
+        self.yield_shear_strength       = 550e6  * Units.Pa
         self.yield_bearing_strength     = 1480e6 * Units.Pa
-        self.minimum_gage_thickness     = 0.0 * Units.m
-        self.density                    = 4430. * Units['kg/(m**3)']
+        self.minimum_gage_thickness     = 0.0    * Units.m
+        self.density                    = 4430.  * Units['kg/(m**3)']
+        self.thermal_conductivity       = 6.7    # W/(m*K)

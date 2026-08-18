@@ -64,7 +64,7 @@ def estimate_take_off_weight_given_TOFL(analyses=None,target_tofl=0.0,altitude =
     RCAIDE.Library.Methods.Performance.estimate_take_off_field_length
     """       
  
-    if type(analyses) != RCAIDE.Framework.Analyses.Vehicle:
+    if not isinstance(analyses, RCAIDE.Framework.Analyses.Analysis.Container):
         raise AttributeError('RCAIDE analyses must be defined')
     
     if target_tofl ==0.0:

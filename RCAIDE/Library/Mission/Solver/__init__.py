@@ -8,6 +8,6 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
  
-from .converge      import * 
+from .solver         import * 
 from .expand_state  import expand_state 
  

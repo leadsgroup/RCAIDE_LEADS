@@ -71,8 +71,8 @@ def compute_distributor_moment_of_inertia(component,vehicle, center_of_gravity =
             c_loc  = np.array(propulsor.origin) + np.array(propulsor.mass_properties.center_of_gravity)
             c_locs =  np.concatenate((c_locs,c_loc), axis=0)
         
-        for fuel_line in network.fuel_lines: 
-            for tag, item in fuel_line.items():
+        for distributor in network.distributor: 
+            for tag, item in distributor.items():
                 if isinstance(item,RCAIDE.Library.Components.Component): 
                     c_list.append(item.tag)
                     c_symm.append(item.xz_plane_symmetric)

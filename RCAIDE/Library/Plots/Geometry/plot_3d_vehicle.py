@@ -55,7 +55,7 @@ def plot_3d_vehicle(vehicle,
                     show_Cabin                  = True,
                     wing_opacity                = 0.5, 
                     fuselage_opacity            = 0.5,
-                    boom_opacity                = 1.0,
+                    boom_opacity                = 0.5,
                     nacelle_opacity             = 0.5,
                     fuel_tank_opacity           = 0.5,
                     lopa_opacity                = 1.0,
@@ -254,13 +254,6 @@ def plot_3d_vehicle(vehicle,
             lopa_geom = generate_3d_lopa_points(fuselage)
             add_lopa_seats(plotter, lopa_geom, lopa_opacity)
 
-    # -------------------------------------------------------------------------
-    # Plot systems
-    # -------------------------------------------------------------------------
-    for system in vehicle.systems:
-        if isinstance(system, Component):
-            GEOM = generate_3d_cuboid_points(system)
-            plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=system_rgb_color, opacity=systems_opacity)
 
     # -------------------------------------------------------------------------
     # Plot cargo bay
@@ -280,10 +273,18 @@ def plot_3d_vehicle(vehicle,
     # Plot Nacelle, Rotors and Fuel Tanks
     # -------------------------------------------------------------------------
     for network in geometry.networks:
+        for system in network.systems:
+            if isinstance(system, Component):
+                GEOM = generate_3d_cuboid_points(system)
+                plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=system_rgb_color, opacity=systems_opacity)
+
+
         for propulsor in network.propulsors:
 
-            if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() or type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet():
-       
+            if type(propulsor) in (RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan,
+                                   RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet,
+                                   RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
+
                 GEOM = generate_3d_propulsor_points(propulsor, tessellation)
                 plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=propulsor_rgb_color, opacity=propulsor_opacity)
                 
@@ -326,16 +327,17 @@ def plot_3d_vehicle(vehicle,
                         GEOM = generate_3d_blade_points(prop, number_of_airfoil_points, dim, i)
                         plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=rotor_rgb_color, opacity=rotor_opacity)
 
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel_tank = source
                 if fuel_tank.wing_tag is not None:
                     wing = geometry.wings[fuel_tank.wing_tag]
                     if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                        if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank) and fuel_tank.geometry_type == 'conformal' and fuel_tank.bwb_aft_tank:
-                            seg_bounds = fuel_tank.aft_tank_root_chord_bounds
+                        if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank) and fuel_tank.geometry_type == 'conformal' and fuel_tank.transverse_tank:
+                            seg_bounds = fuel_tank.transverse_tank_chord_bounds
                             GEOM       = generate_aft_integral_wing_tank_points(wing, 5, seg_bounds, fuel_tank)
                             plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=fuel_tank_rgb_color, opacity=fuel_tank_opacity)
-                        elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank) and fuel_tank.geometry_type == 'conformal':
+                        elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank) and fuel_tank.geometry_type == 'conformal':
                             seg_bounds = fuel_tank.segments_bounding_tank
                             GEOM       = generate_integral_wing_tank_points(wing, number_of_airfoil_points, seg_bounds, fuel_tank)
                             plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=fuel_tank_rgb_color, opacity=fuel_tank_opacity)
@@ -371,21 +373,22 @@ def plot_3d_vehicle(vehicle,
                         GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                         plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=fuel_tank_rgb_color, opacity=fuel_tank_opacity)
 
-        for bus in network.busses:
-            for battery in bus.battery_modules:
-                GEOM = generate_3d_cuboid_points(battery)
-                plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=battery_rgb_color, opacity=battery_opacity)
-    
+            elif isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                for battery_module in source.modules:
+                    GEOM = generate_3d_cuboid_points(battery_module)
+                    plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=battery_rgb_color, opacity=battery_opacity)
+
+    # Cameraa Position [camera_position, focal_point, view_up]
     if front_view:
         plotter.camera_position = [(-2 * L , 0, 0), (0, 0,0), (0, 0, 1)] 
     elif side_view:
         plotter.camera_position = [(L /2 , 2 * L, 0), (L /4, 0, 0), (0, 0, 1)]  
     elif top_view:
-        plotter.camera_position = [(L, 0 , 2 * L ), (L/4, 0,0), (0, 0, 1)]       
+        plotter.camera_position = [(L/2, 0 , 2.5 * L ), (L/2.5, 0,0), (0, 0, 1)]       
     else:
         plotter.camera_position = [(L * camera_eye_x, L * camera_eye_y, L * camera_eye_z), (L /2, 0, 0), (0, 0, 1)]
     
-    plotter.window_size = [1500, 1500]
+    plotter.window_size = [3000, 2000]
     plotter.set_background('white')
 
     if export_gltf:

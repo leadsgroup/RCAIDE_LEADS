@@ -79,6 +79,7 @@ class JP7(Propellant):
         self.reactant                   = 'O2'
         self.density                    = 803.0                          # kg/m^3 (15 C, 1 atm)
         self.specific_energy            = 43.50e6                        # J/kg
+        self.lower_heating_value        = 43.50e6                        # J/kg
         self.energy_density             = 34930.5e6                      # J/m^3
         self.stoichiometric_fuel_to_air = 0.0674            
 

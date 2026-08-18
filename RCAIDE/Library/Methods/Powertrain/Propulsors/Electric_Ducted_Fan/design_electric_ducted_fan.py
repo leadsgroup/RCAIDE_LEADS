@@ -30,9 +30,7 @@ def design_electric_ducted_fan(EDF, new_regression_results=False, keep_files=Tru
             - tag : str
                 Identifier for the propulsor
             - electronic_speed_controller : Data
-                ESC component
-                    - bus_voltage : float
-                        Bus voltage [V]
+                ESC component 
             - ducted_fan : Data
                 Ducted fan component
                     - cruise : Data
@@ -92,10 +90,7 @@ def design_electric_ducted_fan(EDF, new_regression_results=False, keep_files=Tru
     RCAIDE.Library.Methods.Powertrain.setup_operating_conditions
     """
     if EDF.electronic_speed_controller == None: 
-        raise AssertionError("electric speed controller not defined on propulsor")
-    
-    if EDF.electronic_speed_controller.bus_voltage == None: 
-        raise AssertionError("ESC bus voltage not specified on propulsor")
+        raise AssertionError("electric speed controller not defined on propulsor") 
     
     if EDF.ducted_fan == None:
         raise AssertionError("ducted fan not defined on propulsor")
@@ -118,10 +113,12 @@ def design_electric_ducted_fan(EDF, new_regression_results=False, keep_files=Tru
     # Static Sea Level Thrust   
     atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
-    V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(EDF,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    operating_state.conditions.energy.propulsors[EDF.tag].throttle[:,0] = 1.0  
-    sls_T,_,sls_P,_,_,_               = EDF.compute_performance(operating_state) 
-    EDF.sealevel_static_thrust        = sls_T[0][0]
-    EDF.sealevel_static_power         = sls_P[0][0]
+    V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01
+    distributor           = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    EDF.assigned_distributors = [[distributor.tag]]
+    operating_state       = setup_operating_conditions(EDF,distributor,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)
+    operating_state.conditions.energy.propulsors[EDF.tag].throttle[:,0] = 1.0
+    _,sls_outputs,_,_                 = EDF.compute_performance(operating_state)
+    EDF.sealevel_static_thrust        = sls_outputs.thrust[0][0]
+    EDF.sealevel_static_power         = sls_outputs.power.propulsive[0][0]
     return 

@@ -257,16 +257,19 @@ def vehicle_setup(new_regression=True):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus Battery
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    battery_pack                                           = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     bat.tag                                                = 'bus_battery'
-    bat.electrical_configuration.series                    = 8 
-    bat.electrical_configuration.parallel                  = 60 
-    bat.geometrtic_configuration.normal_count              = 20
-    bat.geometrtic_configuration.parallel_count            = 24  
-    
+    bat.electrical_configuration.series                    = 8
+    bat.electrical_configuration.parallel                  = 60
+    bat.geometric_configuration.normal_count              = 20
+    bat.geometric_configuration.parallel_count            = 24
+
     for _ in range(10):
-        bus.battery_modules.append(deepcopy(bat))   
-    bus.initialize_bus_properties()
+        battery_pack.append_module(deepcopy(bat))
+    battery_pack.assigned_distributors = [[bus.tag]]
+    network.sources.append(battery_pack)
+    battery_pack.initialize(network)
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Lift Propulsors 
@@ -281,7 +284,7 @@ def vehicle_setup(new_regression=True):
     prop_rotor_esc                                = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     prop_rotor_esc.efficiency                     = 0.95    
     prop_rotor_esc.tag                            = 'esc_1'  
-    prop_rotor_esc.bus_voltage                    = bus.voltage   
+    prop_rotor_esc.nominal_voltage                = battery_pack.voltage
     prop_rotor_propulsor.electronic_speed_controller = prop_rotor_esc  
     
     # Lift Rotor Design
@@ -322,7 +325,7 @@ def vehicle_setup(new_regression=True):
     #------------------------------------------------------------------------------------------------------------------------------------    
     prop_rotor_motor                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     prop_rotor_motor.efficiency              = 0.95
-    prop_rotor_motor.nominal_voltage         = bus.voltage *0.75
+    prop_rotor_motor.nominal_voltage         = battery_pack.voltage *0.75
     prop_rotor_motor.tag                     = 'motor_1'
     prop_rotor_motor.no_load_current         = 0.1    
     prop_rotor_propulsor.motor               = prop_rotor_motor
@@ -378,9 +381,9 @@ def vehicle_setup(new_regression=True):
         prop_rotor_propulsor_i.electronic_speed_controller.origin    = [origins[i]]  
         prop_rotor_propulsor_i.nacelle.tag                           = 'nacelle_' + str(i + 1)  
         prop_rotor_propulsor_i.nacelle.origin                        = [origins[i]]
+        prop_rotor_propulsor_i.assigned_distributors = [[bus.tag]]
         assigned_propulsor_list.append(prop_rotor_propulsor_i.tag)
-        network.propulsors.append(prop_rotor_propulsor_i)  
-    bus.assigned_propulsors = [assigned_propulsor_list]
+        network.propulsors.append(prop_rotor_propulsor_i)
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
@@ -389,16 +392,32 @@ def vehicle_setup(new_regression=True):
     systems                         = RCAIDE.Library.Components.Powertrain.Systems.Systems()
     systems.power_draw              = 10. # Watts 
     systems.mass_properties.mass    = 1.0 * Units.kg
-    bus.systems                     = systems 
+    network.systems.append(systems)  
                              
     # Avionics                            
     avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw             = 10. # Watts  
     avionics.mass_properties.mass   = 1.0 * Units.kg
-    bus.avionics                    = avionics    
+    network.systems.append(avionics)    
+
+    # Environmental Control System
+    environmental_controls                                  = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin                           = [[2.5, 0, 0]]
+    network.systems.append(environmental_controls)
+
+    # Electrical (wiring)
+    electrical                                              = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                                       = [[3.0, 0, 0]]
+    network.systems.append(electrical)
+
+    # Furnishings (seats)
+    furnishings                                             = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                                      = [[2.5, 0, 0]]
+    network.systems.append(furnishings)
+
     
   
-    network.busses.append(bus) 
+    network.distributors.append(bus)
         
     # append energy network 
     vehicle.append_energy_network(network)  

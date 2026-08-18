@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors
 import matplotlib.pyplot as plt
@@ -35,7 +36,7 @@ def plot_wavy_channel_conditions(wavy_channel, results, coolant_line,
         RCAIDE results data structure containing:
             - segments[i].conditions.frames.inertial.time[:,0]
                 Time history for each segment
-            - segments[i].conditions.energy.coolant_lines[coolant_line.tag][wavy_channel.tag]
+            - segments[i].conditions.energy.distributors[coolant_line.tag][wavy_channel.tag]
                 Heat exchanger data containing:
                     - outlet_coolant_temperature[:,0]
                         Coolant outlet temperature in K
@@ -115,14 +116,14 @@ def plot_wavy_channel_conditions(wavy_channel, results, coolant_line,
     axis_2 = plt.subplot(2,2,2) 
     axis_3 = plt.subplot(2,2,3)
 
-    for network in results.segments[0].analyses.vehicle.networks: 
-        busses  = network.busses 
-        for bus in busses:
-            for b_i, battery in enumerate(bus.battery_modules):
-                if b_i == 0 or bus.identical_battery_modules == False:
+    for network in results.segments[0].analyses.vehicle.networks:
+        for b_i, source in enumerate(network.sources):
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                battery = source
+                if b_i == 0 or source.identical_sources == False:
                     for i in range(len(results.segments)): 
                         time                            = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
-                        wavy_channel_conditions         = results.segments[i].conditions.energy.coolant_lines[coolant_line.tag][wavy_channel.tag]
+                        wavy_channel_conditions         = results.segments[i].conditions.energy.distributors[coolant_line.tag][wavy_channel.tag]
                         outlet_coolant_temperature      = wavy_channel_conditions.outlet_coolant_temperature[:,0]
                         coolant_mass_flow_rate          = wavy_channel_conditions.coolant_mass_flow_rate[:,0]
                         power                           = wavy_channel_conditions.power[:,0]       

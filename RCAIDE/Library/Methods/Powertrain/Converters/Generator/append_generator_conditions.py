@@ -6,7 +6,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_generator_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_generator_conditions(generator, segment, conditions):
+def append_generator_conditions(generator, segment):
     """
     Initializes generator operating conditions for a mission segment.
     
@@ -22,9 +22,7 @@ def append_generator_conditions(generator, segment, conditions):
                 Segment state
                     - ones_row : function
                         Function to create array of ones with specified length
-    conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Energy conditions container where generator conditions will be stored
-    
+
     Returns
     -------
     None
@@ -59,15 +57,32 @@ def append_generator_conditions(generator, segment, conditions):
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance
     """
-    ones_row                                             = segment.state.ones_row                  
-    conditions.converters[generator.tag]                 = Conditions()
-    conditions.converters[generator.tag].inputs          = Conditions()
-    conditions.converters[generator.tag].inputs.torque   = 0. * ones_row(1) 
-    conditions.converters[generator.tag].inputs.power    = 0. * ones_row(1)
-    conditions.converters[generator.tag].inputs.omega    = 0. * ones_row(1)
-    conditions.converters[generator.tag].outputs         = Conditions()
-    conditions.converters[generator.tag].outputs.current = 0. * ones_row(1) 
-    conditions.converters[generator.tag].outputs.voltage = 0. * ones_row(1) 
-    
-    return 
+    ones_row                                                           = segment.state.ones_row                  
+    segment.state.conditions.energy.converters[generator.tag]                 = Conditions()
+    segment.state.conditions.energy.converters[generator.tag].inputs          = Conditions()
+    segment.state.conditions.energy.converters[generator.tag].inputs.power    = Conditions()
+    segment.state.conditions.energy.converters[generator.tag].inputs.torque   = 0. * ones_row(1) 
+    segment.state.conditions.energy.converters[generator.tag].inputs.omega    = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].outputs         = Conditions()
+    segment.state.conditions.energy.converters[generator.tag].outputs.power   = Conditions()
+    segment.state.conditions.energy.converters[generator.tag].outputs.current = 0. * ones_row(1) 
+    segment.state.conditions.energy.converters[generator.tag].outputs.voltage = 0. * ones_row(1) 
+ 
+    segment.state.conditions.energy.converters[generator.tag].inputs.power.propulsive   = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].inputs.power.mechanical  = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].inputs.power.electrical  = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].inputs.power.chemical    = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].inputs.power.pneumatic   = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].inputs.power.hydraulic   = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].inputs.power.thermal     = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].outputs.power.propulsive = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].outputs.power.mechanical = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].outputs.power.electrical = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].outputs.power.chemical   = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].outputs.power.pneumatic  = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].outputs.power.hydraulic  = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].outputs.power.thermal    = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].outputs.efficiency       = 0. * ones_row(1)
+
+    return
 

@@ -29,12 +29,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 
 from Embraer_190 import vehicle_setup, configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():    
+    ti = time.time()
 
     # define vehicle 
     vehicle   = vehicle_setup()   
@@ -53,11 +55,15 @@ def main():
                                                target_tofl =target_tofl)
                                                
 
-    truth_max_tow = 56980.00000000001
+    truth_max_tow = 48014
     max_tow_error = np.max(np.abs(MTOW[0]-truth_max_tow)) 
     print('Range Error = %.4e' % max_tow_error)
     assert(max_tow_error   < 1e-6 )
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
 
 

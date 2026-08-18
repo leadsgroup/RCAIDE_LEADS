@@ -23,6 +23,8 @@ class Propellant(Component):
     ----------
     tag : str
         Identifier for the specific propellant type
+    cryogenic : bool
+        True if this propellant requires cryogenic storage/handling (e.g. LH2, LNG)
     reactant : str
         Primary oxidizer used for combustion
     density : float
@@ -109,11 +111,15 @@ class Propellant(Component):
             None
         """    
         self.tag                                    = 'Propellant'
+        self.cryogenic                              = False
         self.reactant                               = 'O2'
         self.density                                = 0.0                       # kg/m^3
         self.specific_energy                        = 0.0                       # MJ/kg
         self.energy_density                         = 0.0                       # MJ/m^3
         self.lower_heating_value                    = 0.0                       # MJ/kg
+        self.molecular_weight                       = 0.0                       # g/mol
+        self.hydrogen_mass_fraction                 = 0.0                       # [-] mass fraction of hydrogen content
+        self.carbon_mass_fraction                   = 0.0                       # [-] mass fraction of carbon content
         self.mass_properties                        = Mass_Properties()
         self.volume_properties                      = Volume_Properties()
         self.max_mass_fraction                      = Data({'Air' : 0.0, 'O2' : 0.0}) # kg propellant / kg oxidizer
@@ -150,7 +156,7 @@ class Propellant(Component):
         self.global_warming_potential_100.Soot      = 0  
         self.global_warming_potential_100.Contrails = 0 
     
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+    def append_operating_conditions(self,segment):
         """
         Appends operating conditions of the combustor.
         """  

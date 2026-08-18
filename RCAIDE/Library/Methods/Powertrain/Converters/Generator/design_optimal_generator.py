@@ -20,7 +20,7 @@ def design_optimal_generator(generator):
     
     Parameters
     ----------
-    generator : RCAIDE.Library.Components.Powertrain.Converters.DC_Generator
+    generator : RCAIDE.Library.Components.Powertrain.Converters.Generator
         Generator component with the following attributes:
             - no_load_current : float
                 No-load current [A]
@@ -43,7 +43,7 @@ def design_optimal_generator(generator):
     
     Returns
     -------
-    generator : RCAIDE.Library.Components.Powertrain.Converters.DC_Generator
+    generator : RCAIDE.Library.Components.Powertrain.Converters.Generator
         Generator with updated attributes:
             - speed_constant : float
                 Speed constant [unitless]
@@ -92,7 +92,7 @@ def design_optimal_generator(generator):
     RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance
     """
     
-    if type(generator) != RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:
+    if type(generator) == RCAIDE.Library.Components.Powertrain.Converters.Generator and generator.voltage_type != 'DC':
         raise Exception('function only supports low-fidelity (DC) generator')
     
     # design properties of the generator 

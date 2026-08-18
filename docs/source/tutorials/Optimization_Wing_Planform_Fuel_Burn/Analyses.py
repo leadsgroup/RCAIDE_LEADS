@@ -3,6 +3,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports 
 import RCAIDE 
+import numpy as np
 
 # ----------------------------------------------------------------------        
 #   Set Up
@@ -32,18 +33,21 @@ def base_analysis(vehicle):
     
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    geometry.settings.update_max_fuel           = True
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Weights
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
-    weights.settings.FLOPS.fidelity = 'Complex'
-    weights.print_weight_analysis_report =  False
+    weights.settings.FLOPS.fidelity = 'Complex' 
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis 
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics.training.Mach                      = np.array([0.1  , 0.3,  0.5,  0.65 , 0.85 , 0.9])    
+    aerodynamics.settings.number_of_spanwise_panels = 5
+    aerodynamics.settings.number_of_chordwise_panels = 2
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------

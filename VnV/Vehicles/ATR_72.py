@@ -475,13 +475,14 @@ def vehicle_setup():
     net                                              = RCAIDE.Framework.Networks.Fuel()    
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
- 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Propulsor
-    #------------------------------------------------------------------------------------------------------------------------------------     
+    #------------------------------------------------------------------------------------------------------------------------------------
     starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop()    
     starboard_propulsor.tag                          = 'starboard_propulsor'  
     starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
@@ -489,7 +490,9 @@ def vehicle_setup():
     starboard_propulsor.gearbox.efficiency           = 0.99                                             
     starboard_propulsor.design_thrust                = 15000.0 * Units.N 
     starboard_propulsor.design_altitude              = 25000*Units.ft                                
-    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts  
+    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts
+    starboard_propulsor.length                       = 2.0
+    starboard_propulsor.diameter                     = 0.60
 
      #Propeller Design              
     propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller()   
@@ -658,15 +661,15 @@ def vehicle_setup():
     fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
     fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center 
     
-    # apend fuel tank to dataclass of fuel tanks on fuel line 
-    fuel_line.fuel_tanks.append(fuel_tank) 
+    # assign fuel tank to fuel line and append to network sources
+    fuel_tank.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line    
-    fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
-    
-    # Append fuel line to Network      
-    net.fuel_lines.append(fuel_line)   
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Assign distributors to propulsors and append fuel line
+    starboard_propulsor.assigned_distributors = [[fuel_line.tag]]
+    port_propulsor.assigned_distributors      = [[fuel_line.tag]]
+    net.distributors.append(fuel_line)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)     

@@ -128,6 +128,9 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin,cabin_length):
     gl_loc  = cabin_class.galley_lavatory_percent_x_locations
     ex_loc  = cabin_class.emergency_exit_percent_x_locations
     A_loc   = cabin_class.type_A_exit_percent_x_locations
+    if not isinstance(gl_loc, (list, np.ndarray)): gl_loc  = []
+    if not isinstance(ex_loc, (list, np.ndarray)): ex_loc  = []
+    if not isinstance(A_loc,  (list, np.ndarray)): A_loc   = []
     
     # place seats
     s_x_coord = np.arange(0, n_r) * (s_p)

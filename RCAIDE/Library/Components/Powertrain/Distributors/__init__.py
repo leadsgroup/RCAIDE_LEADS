@@ -1,5 +1,8 @@
 # RCAIDE/Library/Components/Powertrain/Distributors/__init__.py
 # 
+# 
+# Created:  Feb 2024, M. Clarke
+# Modified: Sep 2025, M. Guidotti
 
 """
 Energy Distributor module providing components for aircraft power distribution
@@ -20,7 +23,7 @@ RCAIDE.Library.Components.Powertrain.Sources
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
+from .Distributor                          import Distributor
 from .Coolant_Line                         import Coolant_Line
 from .Electrical_Bus                       import Electrical_Bus
 from .Fuel_Line                            import Fuel_Line
-

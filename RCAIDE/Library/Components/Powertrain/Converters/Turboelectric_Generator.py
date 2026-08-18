@@ -1,17 +1,16 @@
-# RCAIDE/Library/Components/Converters/Turboelectric_Generator.py
+# RCAIDE/Library/Components/Powertrain/Converters/Turboelectric_Generator.py 
 # 
 #  
 # Created:  Jan 2025, M. Clarke 
+# Modified: Oct. 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-## RCAIDE imports
+# RCAIDE imports
 from RCAIDE.Framework.Core                  import Data 
 from .Converter                             import Converter
-from RCAIDE.Library.Components.Powertrain.Converters.Turboshaft    import Turboshaft 
-from RCAIDE.Library.Components.Powertrain.Converters.DC_Generator  import DC_Generator 
-from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.append_turboelectric_generator_conditions      import append_turboelectric_generator_conditions  
+from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.append_turboelectric_generator_conditions      import append_turboelectric_generator_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.compute_turboelectric_generator_performance    import compute_turboelectric_generator_performance, reuse_stored_turboelectric_generator_data
  
 # ----------------------------------------------------------------------
@@ -36,8 +35,12 @@ class Turboelectric_Generator(Converter):
     gearbox : Component
         Gearbox data structure. Default is None. 
         
-    inverse_calculation : Component
-        Flag that determines the how calculations are performed. Default is False    
+    reverse_mode_computation : Component
+        Flag that determines the how calculations are performed. Default is False
+
+    power_split_ratio : float
+        Fraction of the network's electrical demand this generator supplies. Default is 1.0;
+        set to e.g. 0.5 on each of two identical generators sharing a bus.
 
     Notes
     -----
@@ -53,26 +56,30 @@ class Turboelectric_Generator(Converter):
     def __defaults__(self):
         # setting the default values
         self.tag                       = 'turboelectric_generator'
-        self.turboshaft                = Turboshaft()
-        self.generator                 = DC_Generator()
+        self.provides_domain           = 'electrical'
+        self.identical_converters      = True
+        self.turboshaft                = None
+        self.generator                 = None
         self.gearbox                   = Data()
-        self.gearbox.gear_ratio        = None  
-        self.inverse_calculation       = False
-
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+        self.gearbox.gear_ratio        = None
+        self.reverse_mode_computation  = False
+        self.power_split_ratio         = 1.0    # fraction of the electrical demand this generator supplies, for multiple identical generators sharing a bus
+        self.assigned_converters       = Data()
+        
+    def append_operating_conditions(self,segment): 
         """
         Appends operating conditions of the segment.
         """  
-        append_turboelectric_generator_conditions(self,segment,energy_conditions) 
+        append_turboelectric_generator_conditions(self,segment) 
         return
  
-    def compute_performance(self,state,fuel_line = None,bus = None):
+    def compute_performance(self,state,network):
         """
         Computes Turboelectric_Generator performance including power.
         """
-        P_mech,P_elec,stored_results_flag,stored_propulsor_tag =  compute_turboelectric_generator_performance(self,state,fuel_line, bus)
-        return P_mech,P_elec,stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_converter_tag = compute_turboelectric_generator_performance(self,state,network=network)
+        return inputs, outputs, stored_results_flag, stored_converter_tag
     
-    def reuse_stored_data(self,state, network,stored_conveter_tag,fuel_line, bus):
-        P_mech,P_elec  = reuse_stored_turboelectric_generator_data(self,state,network,stored_conveter_tag,fuel_line, bus)
-        return  P_mech,P_elec 
+    def reuse_stored_data(self,state,network,stored_conveter_tag):
+        inputs, outputs  = reuse_stored_turboelectric_generator_data(self,state.conditions,network,stored_conveter_tag)
+        return inputs, outputs

@@ -26,12 +26,14 @@ if vehicles_path not in sys.path:
 # the analysis functions 
  
 from Cessna_172  import vehicle_setup ,configs_setup
+import time
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():   
+    ti = time.time()
     
     # vehicle data
     vehicle  = vehicle_setup() 
@@ -54,7 +56,7 @@ def main():
     P_truth     = 61264.08298406276
     mdot_truth  = 0.005382801659231894
     
-    P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
+    P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power.propulsive[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle.mass_rate[-1,0]
 
     # Print the results
@@ -73,6 +75,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-3)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return    
 
 

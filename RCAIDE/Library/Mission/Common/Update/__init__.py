@@ -21,6 +21,7 @@ from .forces                                   import forces
 from .aeroacoustics                            import aeroacoustics
 from .emissions                                import emissions   
 from .moments                                  import moments
+from .network                                  import network
 from .ground_forces                            import ground_forces
 from .freestream                               import freestream
 from .gravity                                  import gravity 

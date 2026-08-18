@@ -365,15 +365,16 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum * Units.meter
-    
-    # Segment  
-    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
-    segment.tag                                 = 'segment_0'    
+    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
+
+    # Segment
+    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment.tag                                 = 'segment_0'
     segment.percent_x_location                  = 0.0000
-    segment.percent_z_location                  = 0.00 
-    segment.height                              = 0.000 
-    segment.width                               = 0.000  
-    fuselage.append_segment(segment)   
+    segment.percent_z_location                  = 0.00
+    segment.height                              = 0.000
+    segment.width                               = 0.000
+    fuselage.append_segment(segment)
     
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
@@ -550,22 +551,56 @@ def vehicle_setup():
     # ########################################################## Energy Network ######################################################### 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #initialize the fuel network
-    net                                            = RCAIDE.Framework.Networks.Fuel() 
-    net.identical_propulsors                       = True 
-    
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distribution Line 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                     = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
+    net                                            = RCAIDE.Framework.Networks.Fuel()
+    net.identical_propulsors                       = True
+
+    ##  Systems
+    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[1,0,0]]
+    net.systems.append(avionics)
+
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[6,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[12,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[6,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[6,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[6,0,-0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[5,0,0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[6,0,0]]
+    net.systems.append(furnishings)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Fuel Distribution Line
+    #------------------------------------------------------------------------------------------------------------------------------------
+    fuel_line                                     = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                       = RCAIDE.Library.Attributes.Propellants.Jet_A()
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
-    turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()   
-    turbofan1.origin                             = [[ 16.0 , 0.0 , 0.0 ]]
-    turbofan1.tag                                = 'propulsor_1'    
-    turbofan1.length                             = 5.59                     
-    turbofan1.diameter                           = 1.17               
+    turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
+    turbofan1.origin                             = [[ 8.0 , 0.0 , 0.0 ]]
+    turbofan1.tag                                = 'propulsor_1'
+    turbofan1.length                             = 5.59
+    turbofan1.diameter                           = 1.168               
     turbofan1.bypass_ratio                       = 0.57                     
     turbofan1.design_altitude                    = 50000*Units.ft             
     turbofan1.design_mach_number                 = 1.6                    
@@ -656,7 +691,7 @@ def vehicle_setup():
     fan_nozzle.tag                                = 'fan_nozzle'
     fan_nozzle.polytropic_efficiency              = 0.98                     
     fan_nozzle.pressure_ratio                     = 0.995 
-    fan_nozzle.diameter                           = 1.3
+    fan_nozzle.diameter                           = 1.168
     turbofan1.fan_nozzle                          = fan_nozzle
     
     # # design turbofan
@@ -744,17 +779,16 @@ def vehicle_setup():
     nacelle_mirror.segments['segment_4'].percent_y_location = -0.00806
     ghost_propulsor.nacelle = nacelle_mirror
 
-    net.propulsors.append(ghost_propulsor) 
+    net.propulsors.append(ghost_propulsor)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network   
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    fuel_line.assigned_propulsors =  [['propulsor_1']]
+    # ghost_propulsor produces no thrust and was never part of the fuel line's
+    # propulsor group in the original wiring -- only turbofan1 is assigned.
+    turbofan1.assigned_distributors = [[fuel_line.tag]]
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network  
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    #------------------------------------------------------------------------------------------------------------------------------------
+    net.distributors.append(fuel_line)
 
     #------------------------------------------------------------------------------------------------------------------------- 
     # Done ! 

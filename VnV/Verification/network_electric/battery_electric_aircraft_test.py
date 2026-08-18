@@ -27,12 +27,14 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Electric_Twin_Otter    import vehicle_setup, configs_setup 
+import time
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():           
+    ti = time.time()
          
     battery_types = ['lithium_ion_nmc', 'lithium_ion_lfp']
     btms_types    = ['Liquid_Cooled_Wavy_Channel', 'Air_Cooled', None] 
@@ -66,6 +68,10 @@ def main():
 
     plot_3d_vehicle(vehicle, show_figure = False )
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
     
 def analyses_setup(configs): 
@@ -155,7 +161,7 @@ def mission_setup(analyses):
     segment.altitude_end                                             = 35 * Units.feet
     segment.air_speed_start                                          = Vstall *1.2  
     segment.air_speed_end                                            = Vstall *1.25
-    segment.initial_battery_state_of_charge                          = 1.0
+    segment.initial_battery_conditions.state_of_charge               = 1.0
                        
     # define flight dynamics to model            
     segment.flight_dynamics.force_x                                  = True  

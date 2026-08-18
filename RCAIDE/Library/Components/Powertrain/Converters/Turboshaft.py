@@ -1,15 +1,16 @@
-# RCAIDE/Library/Components/Converters/Turboshaft.py
+# RCAIDE/Library/Components/Powertrain/Converters/Turboshaft.py
 # 
 #  
 # Created:  Mar 2024, M. Clarke
-# Modified: Jun 2024, M. Guidotti  
+# Modified: Oct 2025, M. Guidotti  
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-## RCAIDE imports
+# RCAIDE imports
 import RCAIDE
-from .Converter                             import Converter
+from RCAIDE.Framework.Core                    import Data
+from .Converter                               import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.append_turboshaft_conditions     import append_turboshaft_conditions 
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.compute_turboshaft_performance   import compute_turboshaft_performance, reuse_stored_turboshaft_data
  
@@ -44,11 +45,8 @@ class Turboshaft(Converter):
         Combustor component. Default is None.
         
     core_nozzle : Component
-        Core exhaust nozzle component. Default is None. 
-        
-    active_crypgenic_tanks_tanks : None or list
-        Collection of active cryogenoc tanks. Default is None.
-        
+        Core exhaust nozzle component. Default is None.
+
     diameter : float
         Diameter of the engine [m]. Default is 0.0.
         
@@ -100,53 +98,57 @@ class Turboshaft(Converter):
     """
     def __defaults__(self):
         # setting the default values
-        self.tag                                              = 'turboshaft'
-        self.fuel_type                                        = RCAIDE.Library.Attributes.Propellants.Jet_A1() 
-        self.ram                                              = None 
-        self.inlet_nozzle                                     = None 
-        self.compressor                                       = None 
-        self.low_pressure_turbine                             = None 
-        self.high_pressure_turbine                            = None 
-        self.combustor                                        = None 
-        self.core_nozzle                                      = None
-        self.active                                           = True
-        self.length                                           = 0.0
-        self.diamter                                          = 0.0
-        self.design_isa_deviation                             = 0.0
-        self.design_altitude                                  = 0.0
-        self.specific_fuel_consumption_reduction_factor       = -3.875 
-        self.reference_temperature                            = 288.15
-        self.reference_pressure                               = 1.01325*10**5 
-        self.design_power                                     = 0.0
-        self.design_mass_flow_rate                            = 0.0 
-        self.conversion_efficiency                            = 0.5
-        self.compressor_nondimensional_massflow               = 0.0
-        self.design_angular_velocity                          = 0.0
-        self.inverse_calculation                              = False
+        self.tag                                         = 'turboshaft'
+        self.fuel_type                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1() 
+        self.ram                                         = None
+        self.inlet_nozzle                                = None
+        self.compressor                                  = None
+        self.combustor                                   = None
+        self.low_pressure_turbine                        = None
+        self.high_pressure_turbine                       = None
+        self.core_nozzle                                 = None 
+        self.active                                      = True
+        self.identical_converters                        = True
+        self.length                                      = 0.0
+        self.diamter                                     = 0.0
+        self.design_isa_deviation                        = 0.0
+        self.design_altitude                             = 0.0
+        self.design_mach_number                          = 0.0
+        self.specific_fuel_consumption_reduction_factor  = -3.875 
+        self.reference_temperature                       = 288.15
+        self.reference_pressure                          = 1.01325*10**5 
+        self.design_power                                = 0.0
+        self.design_mass_flow_rate                       = 0.0 
+        self.conversion_efficiency                       = 0.5
+        self.compressor_nondimensional_massflow          = 0.0
+        self.design_angular_velocity                     = 0.0
+        self.reverse_mode_computation                    = False
+        self.assigned_converters                         = Data() 
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+    def append_operating_conditions(self,segment): 
         """
         Appends operating conditions of the segment.
         """  
-        append_turboshaft_conditions(self,segment,energy_conditions,noise_conditions) 
+        append_turboshaft_conditions(self,segment) 
         return
 
     def unpack_propulsor_unknowns(self,segment):   
         return 
 
-    def pack_propulsor_residuals(self,segment): 
+    def pack_residuals(self,segment): 
         return      
-
-    def append_propulsor_unknowns_and_residuals(self,segment): 
-        return
+ 
+    def append_unknowns_and_residuals(self,segment):
+        return 
     
-    def compute_performance(self,state,converter = None,fuel_line = None,bus = None):
+    def compute_performance(self,state,network=None):
         """
         Computes turboshaft performance including thrust, moment, and power.
         """
-        power,stored_results_flag,stored_propulsor_tag =  compute_turboshaft_performance(self,state,fuel_line=fuel_line,bus=bus)
-        return  power,stored_results_flag,stored_propulsor_tag
-    
-    def reuse_stored_data(turboshaft,state,network,stored_propulsor_tag = None):
-        power  = reuse_stored_turboshaft_data(turboshaft,state,network,stored_propulsor_tag)
-        return power 
+     
+        inputs, outputs, stored_results_flag, stored_converter  =  compute_turboshaft_performance(self,state.conditions,network)
+        return inputs, outputs, stored_results_flag, stored_converter
+
+    def reuse_stored_data(turboshaft,state,network,stored_converter = None):
+        inputs, outputs  = reuse_stored_turboshaft_data(turboshaft,state.conditions,network,stored_converter)
+        return inputs, outputs 

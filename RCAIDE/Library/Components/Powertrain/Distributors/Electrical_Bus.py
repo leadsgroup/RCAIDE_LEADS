@@ -1,65 +1,77 @@
 # RCAIDE/Library/Components/Powertrain/Distributors/Electrical_Bus.py 
 # 
 # Created:  Jul 2023, M. Clarke 
-# Modofied: Jan 2025, M. Clarke 
+# Modified: Jan 2025, M. Clarke 
+#           Sep 2025, M. Guidotti
+#           Apr 2026, S. Sharma
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
-import RCAIDE 
-from RCAIDE.Library.Components                                 import Component
-from RCAIDE.Library.Components.Component                       import Container
-from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
+import RCAIDE
+from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.compute_fuel_line_distribution_losses import compute_fuel_line_distribution_losses  
+from .Distributor                                                  import Distributor 
+from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import * 
+from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide 
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_distributor_moment_of_inertia import *
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_distributor_center_of_gravity import * 
-
+from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.size_electrical_cable import size_electrical_cable
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electrical_Bus
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Electrical_Bus(Component):
+class Electrical_Bus(Distributor):
     """
     Class for managing power distribution between aircraft electrical components
-    
+
     Attributes
     ----------
     tag : str
-        Identifier for the electrical bus (default: 'bus')
-        
-    battery_modules : Container
-        Collection of battery modules connected to this bus
-        
-    assigned_propulsors : list
-        List of propulsion systems powered by this bus
-        
-    avionics : Component
-        Aircraft avionics system 
-        
-    identical_battery_modules : bool
-        Flag indicating if all battery modules are identical (default: True)
-        
+        Identifier for the electrical bus (default: 'electrical_line')
+
+    domain : str
+        Power domain this distributor carries (default: 'electrical')
+
     active : bool
         Flag indicating if the bus is operational (default: True)
-        
+
+    design_power : float
+        Design power the bus is sized to carry [W] (default: 0.0), derived
+        from its assigned sources/converters/propulsors during `initialize()`
+
+    design_voltage : float
+        Design voltage of the bus [V] (default: 0.0), set from an assigned
+        battery pack's or fuel cell's voltage during `initialize()`
+
+    frequency : float
+        AC frequency, if applicable [Hz] (default: 0.0)
+
+    current_type : str
+        Type of current carried, e.g. 'DC' or 'AC' (default: 'DC')
+
     efficiency : float
-        Power distribution efficiency (default: 1.0)
-        
-    voltage : float
-        Bus voltage in volts (default: 0.0)
-        
-    power_split_ratio : float
-        Ratio of power distribution between multiple buses (default: 1.0)
-        
-    nominal_capacity : float
-        Total capacity of connected batteries (default: 0.0)
-        
-    charging_c_rate : float
-        Battery charging rate in C (default: 1.0)
-        
-    battery_module_electric_configuration : str
-        Configuration of battery modules ('Series' or 'Parallel') (default: 'Series')
+        Power distribution efficiency (default: 1)
+
+    length : float
+        Cable length [m] (default: 1)
+
+    number_of_parallel_wires : int
+        Number of parallel conductors (default: 1)
+
+    design_ambient_temperature : float
+        Ambient temperature used for cable sizing [K] (default: 273)
+
+    conductor : Component
+        Conductor properties (`radius`, `material` -- default `Copper()`,
+        `resistance`), sized by `size_electrical_cable`
+
+    insulator : Component
+        Insulator properties (`radius`, `material` -- default `Polyimide()`)
+
+    duplicate_wires : int
+        Number of duplicate cables carried for redundancy (default: 2)
 
     Notes
     -----
@@ -77,7 +89,7 @@ class Electrical_Bus(Component):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules
         Battery module components
     """
     
@@ -90,30 +102,32 @@ class Electrical_Bus(Component):
         Source:
             None
         """                
-        self.tag                                    = 'bus' 
-        self.battery_modules                        = Container()
-        self.fuel_cell_stacks                       = Container()
-        self.fuel_tanks                             = Container()
-        self.assigned_propulsors                    = []
-        self.assigned_converters                    = [] 
-        self.avionics                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-        self.systems                                = RCAIDE.Library.Components.Powertrain.Systems.Systems()
-        self.environmental_controls                 = None
-        self.ice_protection                         = None
-        self.flight_controls                        = None
-        self.hydraulics                             = None
-        self.cabin_loads                            = None
-        self.identical_battery_modules              = True      
-        self.identical_fuel_cell_stacks             = True  
-        self.active                                 = True
-        self.efficiency                             = 1.0
-        self.voltage                                = 0.0 
-        self.power_split_ratio                      = 1.0
-        self.nominal_capacity                       = 0.0
-        self.charging_c_rate                        = 1.0 
-        self.battery_module_electric_configuration  = "Series"
-        self.fuel_cell_stack_electric_configuration = "Series"
-        
+        self.tag                                       = 'electrical_line' 
+        self.domain                                    = 'electrical'  
+        self.active                                    = True
+        self.design_power                              = 0.0
+        self.design_voltage                            = 0.0  
+        self.frequency                                 = 0.0    
+        self.current_type                              = 'DC'   
+        self.efficiency                                = 1
+        self.length                                    = 1
+        self.number_of_parallel_wires                  = 1
+        self.design_ambient_temperature                = 273  
+        self.maximum_insulator_electric_field          = 0  
+        self.maximum_operating_temperature             = 0 
+        self.maximum_current                           = 0  
+        self.maximum_temperature                       = 423  
+        self.environmental_external_thermal_resistance = 1  
+        self.conductor                                 = Component()
+        self.conductor.radius                          = None
+        self.conductor.material                        = Copper()  
+        self.conductor.resistance                      = None
+        self.insulator                                 = Component()
+        self.insulator.radius                          = None
+        self.insulator.material                        = Polyimide()  
+        self.duplicate_wires                           = 2 
+
+
     def append_operating_conditions(self, segment):
         """
         Append operating conditions for a flight segment
@@ -129,46 +143,23 @@ class Electrical_Bus(Component):
     def append_segment_conditions(self, segment):
         """
         Append segment-specific conditions to the bus
-        
+
         Parameters
         ----------
-        conditions : Data
-            Container for segment conditions
         segment : Segment
             Flight segment data
         """
         append_bus_segment_conditions(self,segment)
-        return    
+        return      
     
-    def initialize_bus_properties(self):
-        """
-        Initialize electrical bus properties
-        
-        Sets up initial values for bus voltage, capacity, and other electrical
-        properties based on connected components.
-        """
-        initialize_bus_properties(self)
+    
+    def compute_distribution_losses(self, component_conditions, state, network):
+        compute_electrical_bus_distribution_losses(self, component_conditions, state, network) 
         return
-        
-    def compute_distributor_conditions(self,state,t_idx, delta_t):
-        """
-        Compute electrical conditions during operation
-        
-        Parameters
-        ----------
-        state : Data
-            Current system state
-        t_idx : int
-            Time index
-        delta_t : float
-            Time step
-        """
-        compute_bus_conditions(self,state,t_idx, delta_t)
-        return    
 
-    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]):
         """
-        Computes the moment of inertia tensor for the fuel line.
+        Computes the moment of inertia tensor for the electrical bus.
 
         Parameters
         ----------
@@ -179,11 +170,71 @@ class Electrical_Bus(Component):
         --------
         RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
             Implementation of the moment of inertia calculation
+        """ 
+        return
+ 
+    def initialize(self,network):
         """
-        # _ , _ = compute_distributor_moment_of_inertia(self,center_of_gravity= center_of_gravity) 
+        Computes the bus's design voltage and power from its assigned sources,
+        converters, and propulsor-integrated generators, then sizes its cable.
+
+        Batteries and fuel cells (bare Generic_Fuel_Cell_Stack, or one wrapped in a
+        Reformer_Fuel_Cell composite) set `design_voltage` directly, since they define
+        the bus's electrical potential. Generators only add to `design_power`,
+        since their output voltage follows the bus rather than setting it -- so a
+        generator-only bus keeps whatever `design_voltage` the vehicle definition
+        set explicitly.
+
+        An IDG/IDM's wiring is read from its parent propulsor (matching
+        analyze_topology's convention), not its own assigned_distributors, which
+        is always None. Multiple IDGs on one bus carry the same shared target in
+        their own design_power (not a per-engine portion), so they're combined
+        with max(), not summed.
+
+        Parameters
+        ----------
+        network : Network
+            Energy network this bus belongs to, used to find the sources,
+            converters, and propulsors assigned to it.
+        """
+        self.design_power = 0.0
+
+        def assigned_here(component):
+            return component.active and component.assigned_distributors is not None and (self.tag in component.assigned_distributors[0])
+
+        def generator_design_power(generator): 
+            return getattr(generator, 'design_power', None) or getattr(getattr(generator, 'generator', None), 'design_power', 0.0) or 0.0
+
+        for source in network.sources:
+            if assigned_here(source):
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack): 
+                    if source.power_split_ratio != 0.0:
+                        self.design_voltage = source.voltage
+                        self.design_power  += source.maximum_power
+
+        for converter in network.converters:
+            if assigned_here(converter):
+                if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack): 
+                    self.design_voltage = converter.voltage
+                    self.design_power  += converter.maximum_power
+                elif isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Reformer_Fuel_Cell): 
+                    stack = converter.fuel_cell
+                    if stack is not None and isinstance(stack, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
+                        self.design_voltage = stack.voltage
+                        self.design_power  += stack.maximum_power
+                elif isinstance(converter, (RCAIDE.Library.Components.Powertrain.Converters.Generator,
+                                            RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator)):
+                    self.design_power  += generator_design_power(converter)
+
+        # Propulsor-integrated generators aren't in network.converters, so check separately.
+        for propulsor in network.propulsors:
+            idg = getattr(propulsor, 'integrated_drive_generator', None)
+            if idg is not None and assigned_here(propulsor):
+                self.design_power = max(self.design_power, generator_design_power(idg))
+
+        size_electrical_cable(self)
         return
     
-
     def compute_center_of_gravity(self,vehicle): 
         """
         Computes the center of gravity for the distributor. 
@@ -192,6 +243,5 @@ class Electrical_Bus(Component):
         --------
         RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
             Implementation of the moment of inertia calculation
-        """
-        # _  = compute_distributor_center_of_gravity(self,vehicle) 
-        return
+        """ 
+        return 
