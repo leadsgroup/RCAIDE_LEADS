@@ -136,7 +136,7 @@ class Semi_Empirical(Aeroacoustics):
             # sideline distance / AGL altitude split, for lateral attenuation
             along_track = relative_position[nearby, 0:2] @ heading[0:2]
             l_seg       = np.sqrt(np.maximum(R_nearby**2 - along_track**2 - relative_position[nearby, 2]**2,0)) #this is the culprit.
-            print(np.max(l_seg),np.min(l_seg))
+      
             d_seg       = np.full_like(l_seg, -ac_pos[2])
             cpt_list.append(np.full(len(nearby), cpt))
             receptor_list.append(nearby)
@@ -184,7 +184,7 @@ class Semi_Empirical(Aeroacoustics):
         att_dB     = atmospheric_attenuation(R_arr, frequency)
 
         LADJ_dB, _ = compute_lateral_attenuation(l_seg_arr, d_seg_arr) #l_seg_array has a problem, which propagates in the code
-        attenuated = total_spectrum - att_dB
+        attenuated = total_spectrum - att_dB - LADJ_dB[:,None]
 
         total_SPL_spectra[cpt_arr, receptor_arr, 5:] = attenuated
         total_SPL_dBA[cpt_arr, receptor_arr]         = SPL_arithmetic(A_weighting_metric(attenuated, frequency), sum_axis=1)
