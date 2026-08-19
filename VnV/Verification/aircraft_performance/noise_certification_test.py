@@ -148,7 +148,7 @@ def approach_mission_setup(analyses):
 
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment() 
-    base_segment.state.numerics.number_of_control_points = 10 
+    base_segment.state.numerics.number_of_control_points = 40 
  
 
     # ------------------------------------------------------------------
@@ -188,7 +188,7 @@ def takeoff_mission_setup(analyses):
 
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
-    base_segment.state.numerics.number_of_control_points = 10  
+    base_segment.state.numerics.number_of_control_points = 40
 
 
     # ------------------------------------------------------------------------------------------------------------------------------------ 

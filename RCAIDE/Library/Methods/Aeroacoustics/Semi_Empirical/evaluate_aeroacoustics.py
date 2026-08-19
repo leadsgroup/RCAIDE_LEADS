@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
+from RCAIDE.Framework.Core                                                                import Data
 from RCAIDE.Library.Methods.Aeroacoustics.Common.decibel_arithmetic                       import SPL_arithmetic
 from RCAIDE.Library.Methods.Aeroacoustics.Common.generate_zero_elevation_microphone_locations import generate_zero_elevation_microphone_locations
 from RCAIDE.Library.Methods.Aeroacoustics.Common.atmospheric_attenuation                  import atmospheric_attenuation
@@ -141,16 +142,67 @@ def evaluate_aeroacoustics(segment, settings, vehicle):
     component_spectra = []
 
 
+    if not hasattr(settings, 'noise_hemisphere_radius'):
+        settings.noise_hemisphere_radius = 50
+    if not hasattr(settings, 'noise_receptor_search_radius'):
+        settings.noise_receptor_search_radius = 2000
+
+    if not hasattr(settings, 'landing_gear_noise_parameters'):
+        settings.landing_gear_noise_parameters = Data(
+            Low  = Data(beta=4.5e-8, St0=1.0, sigma=4.0, mu=2.5, q=2.6, h=0.2, A=3.53, B=0.62),
+            Mid  = Data(beta=1.5e-8, St0=0.3, sigma=3.0, mu=1.5, q=4.2, h=0.6, A=0.42, B=0.18),
+            High = Data(beta=3.2e-5, St0=0.1, sigma=2.0, mu=1.1, q=4.2, h=1.0, A=0.08, B=0.10),
+        )
+    if not hasattr(settings, 'flap_noise_parameters'):
+        settings.flap_noise_parameters = Data(
+            A0=3e-5, mu0=0.7693, mu1=1.0, mu2=0.292, alpha_0=0.008, sigma_f=0.436332,
+        )
+    if not hasattr(settings, 'slat_noise_parameters'):
+        settings.slat_noise_parameters = Data(
+            amplitude=1e-5, St_peak=2.0,
+        )
+
+    analysis = Data()
+    analysis.settings = settings
+
+    # --------------------------------------------------------------------------------------
+    # Noise Evaluation
+    # --------------------------------------------------------------------------------------
+    for gear in landing_gears:
+        spl = compute_landing_gear_noise(R_val, theta_col, gear, vehicle, cpt_arr, frequency, segment, analysis).Total
+        component_spectra.append(spl)
+
+    for wing, control_surface in control_surfaces:
+        if type(control_surface) is RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
+            spl = flap_noise_model(R_val, theta_col, control_surface, wing, cpt_arr, frequency, segment, analysis)
+            component_spectra.append(spl)
+        elif type(control_surface) is RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
+            spl = slat_noise(R_val, theta_col, control_surface, wing, cpt_arr, segment, frequency, analysis)
+            component_spectra.append(spl)
+
     for network in vehicle.networks:
         for propulsor in network.propulsors:
-            jet_noise = compute_jet_noise(mic_locations, propulsor, cpt_arr, segment, frequency, 0)
-            component_spectra.append(jet_noise.SPL_1_3_spectrum[0])
+                if not (propulsor.active and (isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet))):
+                    continue 
+                #pressure_ratio = propulsor.fan.pressure_ratio * propulsor.low_pressure_compressor.pressure_ratio * propulsor.high_pressure_compressor.pressure_ratio
+                
+                if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan): 
+                    fan_noise = compute_fan_noise(R_val, theta_col, propulsor, None, cpt_arr, segment, frequency)
+                    component_spectra.append(fan_noise.SPL_1_3_spectrum[0])
+
+                #to fix core noise combustor tag error
+
+                #core_noise = compute_core_noise(R_val, theta_col, propulsor, pressure_ratio, cpt_arr, segment, frequency)
+                #component_spectra.append(core_noise.SPL_1_3_spectrum[0])
+
+                jet_noise = compute_jet_noise(mic_locations, propulsor, cpt_arr, segment, frequency, 0)
+                component_spectra.append(jet_noise.SPL_1_3_spectrum[0])
 
     total_spectrum = SPL_arithmetic(np.array(component_spectra), sum_axis=0)
 
     att_dB     = atmospheric_attenuation(R_arr, frequency)
-    LADJ_dB, _ = compute_lateral_attenuation(l_seg_arr, d_seg_arr) #l_seg_array has a problem, which propagates in the code
-    attenuated = total_spectrum - att_dB -LADJ_dB[:, None]
+    LADJ_dB, _ = compute_lateral_attenuation(l_seg_arr, d_seg_arr)
+    attenuated = total_spectrum - att_dB - LADJ_dB[:, None]
 
     total_SPL_spectra[cpt_arr, receptor_arr, 5:] = attenuated
     total_SPL_dBA[cpt_arr, receptor_arr]         = SPL_arithmetic(A_weighting_metric(attenuated, frequency), sum_axis=1)
