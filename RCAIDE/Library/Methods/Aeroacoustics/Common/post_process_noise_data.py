@@ -55,7 +55,7 @@ def post_process_noise_data(results,
             - segments[i].state.conditions
                 Flight conditions including:
                     - frames.inertial.time
-                    - noise.hemisphere_SPL_dBA
+                    - noise.SPL_dBA
                 
     flight_times : ndarray of str, optional
         Array of time strings for noise evaluation (default: hourly from 06:00 to 15:00)
@@ -120,7 +120,7 @@ def post_process_noise_data(results,
     N_gm_y     = settings.microphone_y_resolution    
     noise_data = Data()   
      
-    # Step 2: Determing microhpone points where noise is to be computed
+    # Step 2: Determing microphone points where noise is to be computed
     microphone_coordinates =  None
     if settings.topography_file !=  None:
         compute_point_to_point_geospacial_data(settings)
@@ -152,73 +152,98 @@ def post_process_noise_data(results,
  
     idx =  0
     
-    # Step 5: loop through segments and store noise 
-    for seg in range(N_segs):  
-        segment    = results.segments[seg]
-        settings   = segment.analyses.aeroacoustics.settings  
-        phi        = settings.noise_hemisphere_phi_angles
-        theta      = settings.noise_hemisphere_theta_angles
-        conditions = segment.state.conditions  
-        time       = conditions.frames.inertial.time[:,0]
-        
-        # Step 5.1 : Compute relative microhpone locations 
-        noise_time,noise_pos,RML,PHI,THETA,num_gm_mic  = compute_relative_noise_evaluation_locations(settings, microphone_locations,segment) 
-         
-        # Step 5.2: Compute aircraft position and npose at interpolated hemisphere locations
-        cpt   = 0 
+    # Semi-Empirical noise is evaluated directly at each ground receptor (no hemisphere
+    # surrogate), while Physics-Based noise is evaluated on a phi/theta hemisphere around the
+    # source and must be interpolated/scaled out to the ground receptors. Import locally to
+    # avoid a circular import (this module is imported from Common/__init__.py).
+    from RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical import Semi_Empirical
+
+    # Step 5: loop through segments and store noise
+    for seg in range(N_segs):
+        segment        = results.segments[seg]
+        settings       = segment.analyses.aeroacoustics.settings
+        conditions     = segment.state.conditions
+        time           = conditions.frames.inertial.time[:,0]
+        use_hemisphere = not isinstance(segment.analyses.aeroacoustics, Semi_Empirical)
+        if use_hemisphere:
+            phi   = settings.noise_hemisphere_phi_angles
+            theta = settings.noise_hemisphere_theta_angles
+
+        # Step 5.1 : Compute relative microphone locations
+        noise_time,noise_pos,RML,PHI,THETA,num_gm_mic  = compute_relative_noise_evaluation_locations(settings, microphone_locations,segment)
+
+        # Step 5.2: Compute aircraft position and noise at interpolated hemisphere locations
+        cpt   = 0
         if seg == (N_segs - 1):
-            noise_time_ = noise_time 
+            noise_time_ = noise_time
         else:
             noise_time_ = noise_time[:-1]
-             
+
         Aircraft_pos = np.vstack((Aircraft_pos,noise_pos))
         Time         = np.hstack((Time,noise_time_))
-        
-        for i in range(len(noise_time_)):
-            # Step 5.2.1 :Noise interpolation 
-            delta_t         = (noise_time[i] -time[cpt]) / (time[cpt+1] - time[cpt])
-            SPL_lower       = conditions.aeroacoustics.hemisphere_SPL_dBA[cpt].reshape(len(phi),len(theta))
-            SPL_upper      = conditions.aeroacoustics.hemisphere_SPL_dBA[cpt+1].reshape(len(phi),len(theta))
-            SPL_gradient    = SPL_upper -  SPL_lower
-            SPL_interp      = SPL_lower + SPL_gradient *delta_t
-            
 
-            SPL_lower_1_3_spectrum       = conditions.aeroacoustics.hemisphere_SPL_1_3_spectrum_dBA[cpt].reshape(len(phi),len(theta),num_f)
-            SPL_upper_1_3_spectrum       = conditions.aeroacoustics.hemisphere_SPL_1_3_spectrum_dBA[cpt+1].reshape(len(phi),len(theta),num_f)
-            SPL_gradient_1_3_spectrum    = SPL_upper_1_3_spectrum -  SPL_lower_1_3_spectrum
-            SPL_interp_1_3_spectrum      = SPL_lower_1_3_spectrum + SPL_gradient_1_3_spectrum *delta_t
-            
-     
-            #  Step 5.2.2 Create surrogate   
-            SPL_dBA_surrogate              = RegularGridInterpolator((phi, theta),SPL_interp  ,method = 'linear',   bounds_error=False, fill_value=None) 
-            SPL_dBA_1_3_spectrum_surrogate = RegularGridInterpolator((phi, theta),SPL_interp_1_3_spectrum  ,method = 'linear',   bounds_error=False, fill_value=None)       
-            
-            #  Step 5.2.3 Query surrogate
-            R                              = np.linalg.norm(RML[i], axis=1) 
-            locs                           = np.argsort(R)[:n]
-            pts                            = (PHI[i][locs],THETA[i][locs]) 
-            SPL_dBA_unscaled               = SPL_dBA_surrogate(pts)
-            SPL_dBA_1_3_spectrum_unscaled  = SPL_dBA_1_3_spectrum_surrogate(pts) 
-            
-            #  Step 5.2.4 Scale data using radius  
-            R_ref                          = settings.noise_hemisphere_radius  
-            SPL_dBA_scaled                 = SPL_dBA_unscaled - 20*np.log10(R[locs]/R_ref)
-            SPL_dBA_1_3_spectrum_scaled    = SPL_dBA_1_3_spectrum_unscaled -  np.tile(20*np.log10(R[locs]/R_ref)[:, None], (1, num_f))
-            
-            # insert noise incorrect mic locations 
+        for i in range(len(noise_time_)):
+            # Step 5.2.1 :Noise interpolation
+            delta_t         = (noise_time[i] -time[cpt]) / (time[cpt+1] - time[cpt])
+
+            if use_hemisphere:
+                SPL_lower       = conditions.aeroacoustics.SPL_dBA[cpt].reshape(len(phi),len(theta))
+                SPL_upper       = conditions.aeroacoustics.SPL_dBA[cpt+1].reshape(len(phi),len(theta))
+                SPL_gradient    = SPL_upper -  SPL_lower
+                SPL_interp      = SPL_lower + SPL_gradient *delta_t
+
+
+                SPL_lower_1_3_spectrum       = conditions.aeroacoustics.SPL_1_3_spectrum_dBA[cpt].reshape(len(phi),len(theta),num_f)
+                SPL_upper_1_3_spectrum       = conditions.aeroacoustics.SPL_1_3_spectrum_dBA[cpt+1].reshape(len(phi),len(theta),num_f)
+                SPL_gradient_1_3_spectrum    = SPL_upper_1_3_spectrum -  SPL_lower_1_3_spectrum
+                SPL_interp_1_3_spectrum      = SPL_lower_1_3_spectrum + SPL_gradient_1_3_spectrum *delta_t
+
+
+                #  Step 5.2.2 Create surrogate
+                SPL_dBA_surrogate              = RegularGridInterpolator((phi, theta),SPL_interp  ,method = 'linear',   bounds_error=False, fill_value=None)
+                SPL_dBA_1_3_spectrum_surrogate = RegularGridInterpolator((phi, theta),SPL_interp_1_3_spectrum  ,method = 'linear',   bounds_error=False, fill_value=None)
+
+                #  Step 5.2.3 Query surrogate
+                R                              = np.linalg.norm(RML[i], axis=1)
+                locs                           = np.argsort(R)[:n]
+                pts                            = (PHI[i][locs],THETA[i][locs])
+                SPL_dBA_unscaled               = SPL_dBA_surrogate(pts)
+                SPL_dBA_1_3_spectrum_unscaled  = SPL_dBA_1_3_spectrum_surrogate(pts)
+
+                #  Step 5.2.4 Scale data using radius
+                R_ref                          = settings.noise_hemisphere_radius
+                SPL_dBA_scaled                 = SPL_dBA_unscaled - 20*np.log10(R[locs]/R_ref)
+                SPL_dBA_1_3_spectrum_scaled    = SPL_dBA_1_3_spectrum_unscaled -  np.tile(20*np.log10(R[locs]/R_ref)[:, None], (1, num_f))
+            else:
+                # Semi-Empirical SPL is already computed directly at every ground receptor
+                # (same grid/ordering as `microphone_locations`), so there is no hemisphere to
+                # query and no spherical-spreading distance scaling left to apply here -- just
+                # interpolate between the two bracketing control points in time.
+                SPL_lower                    = conditions.aeroacoustics.SPL_dBA[cpt]
+                SPL_upper                    = conditions.aeroacoustics.SPL_dBA[cpt+1]
+                SPL_dBA_scaled                = SPL_lower + (SPL_upper - SPL_lower) * delta_t
+
+                SPL_lower_1_3_spectrum        = conditions.aeroacoustics.SPL_1_3_spectrum_dBA[cpt]
+                SPL_upper_1_3_spectrum        = conditions.aeroacoustics.SPL_1_3_spectrum_dBA[cpt+1]
+                SPL_dBA_1_3_spectrum_scaled   = SPL_lower_1_3_spectrum + (SPL_upper_1_3_spectrum - SPL_lower_1_3_spectrum) * delta_t
+
+                locs                           = np.arange(num_gm_mic)
+
+            # insert noise incorrect mic locations
             SPL_dBA_temp         = SPL_dBA[idx].flatten()
             SPL_dBA_temp[locs]   = SPL_dBA_scaled
-            SPL_dBA[idx]         = SPL_dBA_temp.reshape(N_gm_x,N_gm_y) 
+            SPL_dBA[idx]         = SPL_dBA_temp.reshape(N_gm_x,N_gm_y)
 
             SPL_dBA_1_3_spectrum_temp         = SPL_dBA_1_3_spectrum[idx].reshape(N_gm_x*N_gm_y,num_f)
             SPL_dBA_1_3_spectrum_temp[locs]   = SPL_dBA_1_3_spectrum_scaled
-            SPL_dBA_1_3_spectrum[idx]         = SPL_dBA_1_3_spectrum_temp.reshape(N_gm_x,N_gm_y,num_f) 
+            SPL_dBA_1_3_spectrum[idx]         = SPL_dBA_1_3_spectrum_temp.reshape(N_gm_x,N_gm_y,num_f)
 
-            mic_locs[idx]        = locs 
+            if use_hemisphere:
+                mic_locs[idx]    = locs
             idx += 1
-            
+
             if noise_time[i] >= time[cpt+1]:
-                cpt += 1             
+                cpt += 1
                 
     # Step 6: Make any readings less that background noise equal to background noise
     SPL_dBA                             = np.nan_to_num(SPL_dBA) 
@@ -232,7 +257,7 @@ def post_process_noise_data(results,
     noise_data.SPL_dBA_1_3_spectrum  = SPL_dBA_1_3_spectrum
     noise_data.time                  = Time 
     noise_data.aircraft_position     = Aircraft_pos
-    noise_data.microhpone_locations  = mic_locs
+    noise_data.microphone_stencil_indices = mic_locs
     
     # Step 8: Perform noise metric calculations 
     if (compute_SENEL or compute_SEL) or compute_eqivalent_noise:

@@ -23,14 +23,16 @@ import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import numpy as np
 import pandas as pd
+import os, sys
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 def main():
     # --- Load and Interpolate CSV Data ---
-    df = pd.read_csv("/Users/siripunn/Desktop/LEADS_WORK/LEADS_Research/RCAIDE_LEADS/VnV/Verification/analysis_aeroacoustics/b737_sim_track_interpolated_pun_original.csv")
-
+    #df = pd.read_csv("b737_sim_track_interpolated_pun_original.csv")
+    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "b737_sim_track_interpolated_pun_original.csv")
+    df = pd.read_csv(csv_path)
     def interpolate_path(original_list):
         new_length = 100
         old_indices = np.arange(len(original_list))
@@ -339,7 +341,7 @@ def receptor_grid_setup(aeroacoustics_analysis, x_range, y_range, resolution):
 # ----------------------------------------------------------------------
 def compute_sound_exposure_level(aeroacoustics_analysis, segment):
     conditions = segment.state.conditions
-    SPL_dBA    = conditions.aeroacoustics.hemisphere_SPL_dBA   # (ctrl_pts, n_receptor)
+    SPL_dBA    = conditions.aeroacoustics.SPL_dBA   # (ctrl_pts, n_receptor)
     time       = conditions.frames.inertial.time[:, 0]
 
     dt = np.gradient(time)

@@ -9,3 +9,4 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from . import Rotor
+from .evaluate_aeroacoustics import evaluate_aeroacoustics

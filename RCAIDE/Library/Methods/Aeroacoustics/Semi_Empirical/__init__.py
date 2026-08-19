@@ -8,5 +8,6 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from . import Airframe 
+from . import Airframe
 from .Propulsion import Engine_Noise
+from .evaluate_aeroacoustics import evaluate_aeroacoustics

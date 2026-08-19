@@ -22,7 +22,7 @@ import matplotlib.colors as colors
 def plot_noise_certification_contour( noise_data,
                                     noise_level       = None, 
                                     min_noise_level   = 45,  
-                                    max_noise_level   = 105, 
+                                    max_noise_level   = 130, 
                                     noise_scale_label = "Max. SPL [dbA]",
                                     save_figure       = False,
                                     show_figure       = True,
@@ -36,7 +36,7 @@ def plot_noise_certification_contour( noise_data,
     fig = plt.figure(save_filename)
     fig.set_size_inches(width,height) 
     
-    noise_levels   = np.linspace(min_noise_level,max_noise_level,7)  
+    noise_levels   = np.linspace(min_noise_level,max_noise_level,21)
     noise_cmap     = plt.get_cmap('turbo')
     noise_new_cmap = truncate_colormap(noise_cmap,0.0, 1.0) 
 

@@ -18,15 +18,16 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compute Aircraft Noise Certification Data  
 # ----------------------------------------------------------------------  
-def compute_noise_certification_metrics(approach_mission  = None, takeoff_mission   = None):
+def compute_noise_certification_metrics(approach_mission  = None,
+                                        takeoff_mission   = None, 
+                                        microphone_x_resolution                = 21, 
+                                        microphone_y_resolution                = 11,
+                                        noise_times_steps                      = 81,     
+                                        number_of_microphone_in_stencil        = 1800):
     """Calculates the noise at certification points as well as the noise contours of approach and takeoff.
     A combined approach-takeoff noisec contour is also created 
     """
     
-    microphone_x_resolution                = 401 
-    microphone_y_resolution                = 9  
-    noise_times_steps                      = 51 
-    number_of_microphone_in_stencil        = 1800
     
     # update weights analysis
     for segment in approach_mission.segments:
