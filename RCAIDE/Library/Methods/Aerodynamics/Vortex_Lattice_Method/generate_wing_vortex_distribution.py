@@ -197,9 +197,16 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
                     elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron: 
                         TE_angle          = -cs.deflection * sym_sign 
                         TE_chord_fraction = cs.chord_fraction 
-                    elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder: 
-                        TE_angle          = cs.deflection * xz_sym_sign 
-                        TE_chord_fraction = cs.chord_fraction                        
+                    elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:
+                        TE_angle          = cs.deflection * xz_sym_sign
+                        TE_chord_fraction = cs.chord_fraction
+                    elif type(cs) in (RCAIDE.Library.Components.Wings.Control_Surfaces.Flaperon,
+                                       RCAIDE.Library.Components.Wings.Control_Surfaces.Elevon,
+                                       RCAIDE.Library.Components.Wings.Control_Surfaces.Ruddervator):
+                        # compound surface: primary (symmetric) command plus a secondary
+                        # (antisymmetric) command mirrored the same way Aileron's is
+                        TE_angle          = cs.deflection + cs.secondary_deflection * sym_sign
+                        TE_chord_fraction = cs.chord_fraction
                     else:
                         TE_angle          = cs.deflection 
                         TE_chord_fraction = cs.chord_fraction 

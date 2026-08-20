@@ -107,13 +107,38 @@ class Aerodynamics(Analysis):
         self.stability_derivatives.Clift_delta_f                         = None 
         self.stability_derivatives.CM_delta_s                            = None
         self.stability_derivatives.Clift_delta_s                         = None 
-        self.stability_derivatives.Cdrag_delta_a                         = None 
-        self.stability_derivatives.Cdrag_delta_r                         = None 
-        self.stability_derivatives.Cdrag_delta_e                         = None 
-        self.stability_derivatives.Cdrag_delta_f                         = None 
-        self.stability_derivatives.Cdrag_delta_s                         = None  
-        
-        
+        self.stability_derivatives.Cdrag_delta_a                         = None
+        self.stability_derivatives.Cdrag_delta_r                         = None
+        self.stability_derivatives.Cdrag_delta_e                         = None
+        self.stability_derivatives.Cdrag_delta_f                         = None
+        self.stability_derivatives.Cdrag_delta_s                         = None
+        # remaining entries completing the uniform coefficient set (Clift, Cdrag, CX, CY, CZ, CL, CM, CN)
+        # for every registered control surface type (see control_surface_registry.py)
+        self.stability_derivatives.Clift_delta_a                         = None
+        self.stability_derivatives.CX_delta_a                            = None
+        self.stability_derivatives.CZ_delta_a                            = None
+        self.stability_derivatives.CM_delta_a                            = None
+        self.stability_derivatives.CX_delta_e                            = None
+        self.stability_derivatives.CY_delta_e                            = None
+        self.stability_derivatives.CZ_delta_e                            = None
+        self.stability_derivatives.CL_delta_e                            = None
+        self.stability_derivatives.CN_delta_e                            = None
+        self.stability_derivatives.Clift_delta_r                         = None
+        self.stability_derivatives.CX_delta_r                            = None
+        self.stability_derivatives.CZ_delta_r                            = None
+        self.stability_derivatives.CM_delta_r                            = None
+        self.stability_derivatives.CX_delta_f                            = None
+        self.stability_derivatives.CY_delta_f                            = None
+        self.stability_derivatives.CZ_delta_f                            = None
+        self.stability_derivatives.CL_delta_f                            = None
+        self.stability_derivatives.CN_delta_f                            = None
+        self.stability_derivatives.CX_delta_s                            = None
+        self.stability_derivatives.CY_delta_s                            = None
+        self.stability_derivatives.CZ_delta_s                            = None
+        self.stability_derivatives.CL_delta_s                            = None
+        self.stability_derivatives.CN_delta_s                            = None
+
+
     def evaluate(self,state, vehicle):
         """The default evaluate function.
 

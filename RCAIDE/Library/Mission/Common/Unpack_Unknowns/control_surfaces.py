@@ -97,11 +97,43 @@ def control_surfaces(segment):
                 else:
                     control_surfaces.aileron.deflection[:,0]  = control_surface.deflection
                     
-            # Flap Control 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:  
+            # Flap Control
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
                 control_surfaces.flap.deflection[:,0]  = control_surface.deflection
-        
-            # Slat Control 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:  
-                control_surfaces.slat.deflection[:,0]  = control_surface.deflection                           
+
+            # Slat Control
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
+                control_surfaces.slat.deflection[:,0]  = control_surface.deflection
+
+            # Elevon Control (compound: elevator channel = primary/pitch, aileron channel = secondary/roll)
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevon:
+                if assigned_control_variables.elevator_deflection.active:
+                    control_surfaces.elevon.deflection  = segment.state.unknowns.mission["elevator"]
+                else:
+                    control_surfaces.elevon.deflection[:,0]  = control_surface.deflection
+                if assigned_control_variables.aileron_deflection.active:
+                    control_surfaces.elevon.secondary_deflection  = segment.state.unknowns.mission["aileron"]
+                else:
+                    control_surfaces.elevon.secondary_deflection[:,0]  = control_surface.secondary_deflection
+
+            # Flaperon Control (compound: flap channel = primary, aileron channel = secondary/roll).
+            # flap_deflection is not wired as a solver unknown (same limitation as plain Flap), so the
+            # primary channel is always the fixed pilot-set value.
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flaperon:
+                control_surfaces.flaperon.deflection[:,0]  = control_surface.deflection
+                if assigned_control_variables.aileron_deflection.active:
+                    control_surfaces.flaperon.secondary_deflection  = segment.state.unknowns.mission["aileron"]
+                else:
+                    control_surfaces.flaperon.secondary_deflection[:,0]  = control_surface.secondary_deflection
+
+            # Ruddervator Control (compound: elevator channel = primary/pitch, rudder channel = secondary/yaw)
+            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Ruddervator:
+                if assigned_control_variables.elevator_deflection.active:
+                    control_surfaces.ruddervator.deflection  = segment.state.unknowns.mission["elevator"]
+                else:
+                    control_surfaces.ruddervator.deflection[:,0]  = control_surface.deflection
+                if assigned_control_variables.rudder_deflection.active:
+                    control_surfaces.ruddervator.secondary_deflection  = segment.state.unknowns.mission["rudder"]
+                else:
+                    control_surfaces.ruddervator.secondary_deflection[:,0]  = control_surface.secondary_deflection
     return
