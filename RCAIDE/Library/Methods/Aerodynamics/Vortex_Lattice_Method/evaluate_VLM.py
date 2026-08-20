@@ -8,7 +8,8 @@
 import RCAIDE 
 from RCAIDE.Framework.Core                                               import Data, orientation_product 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM       import VLM
-from RCAIDE.Library.Methods.Utilities                                    import Cubic_Spline_Blender 
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES
+from RCAIDE.Library.Methods.Utilities                                    import Cubic_Spline_Blender
 from RCAIDE.Library.Mission.Common.Update                                import orientations
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns                       import orientation
 
@@ -166,143 +167,53 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.coefficients.N      = conditions.static_stability.derivatives.CN_beta * Beta
  
     # -----------------------------------------------------------------------------------------------------------------------
-    # Addition of Control Surface Effect 
+    # Addition of Control Surface Effect
     # -----------------------------------------------------------------------------------------------------------------------
-    # Aileron 
-    if aerodynamics.aileron_flag:  
-        if aerodynamics.stability_derivatives.CY_delta_a == None:
-            conditions.static_stability.derivatives.CY_delta_a     = compute_stability_derivative(sub_sur.dCY_ddelta_a     ,trans_sur.dCY_ddelta_a     ,sup_sur.dCY_ddelta_a     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.CY_delta_a = aerodynamics.stability_derivatives.CY_delta_a* ones_row
-        
-        if aerodynamics.stability_derivatives.CL_delta_a == None:
-            conditions.static_stability.derivatives.CL_delta_a     = compute_stability_derivative(sub_sur.dCL_ddelta_a     ,trans_sur.dCL_ddelta_a     ,sup_sur.dCL_ddelta_a     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.CL_delta_a = aerodynamics.stability_derivatives.CL_delta_a* ones_row
-        
-        if aerodynamics.stability_derivatives.CN_delta_a == None:
-            conditions.static_stability.derivatives.CN_delta_a     = compute_stability_derivative(sub_sur.dCN_ddelta_a     ,trans_sur.dCN_ddelta_a     ,sup_sur.dCN_ddelta_a     ,h_sub,h_sup,Mach) 
-        else:
-            conditions.static_stability.derivatives.CN_delta_a     = aerodynamics.stability_derivatives.CN_delta_a* ones_row
-            
-        if aerodynamics.stability_derivatives.Cdrag_delta_a == None:
-            conditions.static_stability.derivatives.Cdrag_delta_a     = compute_stability_derivative(sub_sur.dCdrag_ddelta_a     ,trans_sur.dCdrag_ddelta_a     ,sup_sur.dCdrag_ddelta_a     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.Cdrag_delta_a = aerodynamics.stability_derivatives.Cdrag_delta_a* ones_row
-        
-        conditions.static_stability.coefficients.Y                                   += conditions.static_stability.derivatives.CY_delta_a * conditions.control_surfaces.aileron.deflection  
-        conditions.static_stability.coefficients.L                                   += conditions.static_stability.derivatives.CL_delta_a * conditions.control_surfaces.aileron.deflection
-        conditions.static_stability.coefficients.N                                   += conditions.static_stability.derivatives.CN_delta_a * conditions.control_surfaces.aileron.deflection
-        conditions.aerodynamics.coefficients.drag.induced.inviscid                   += conditions.static_stability.derivatives.Cdrag_delta_a * conditions.control_surfaces.aileron.deflection
-                     
-        conditions.control_surfaces.aileron.static_stability.coefficients.Y          = conditions.static_stability.derivatives.CY_delta_a * conditions.control_surfaces.aileron.deflection               
-        conditions.control_surfaces.aileron.static_stability.coefficients.L          = conditions.static_stability.derivatives.CL_delta_a * conditions.control_surfaces.aileron.deflection          
-        conditions.control_surfaces.aileron.static_stability.coefficients.N          = conditions.static_stability.derivatives.CN_delta_a * conditions.control_surfaces.aileron.deflection             
-    
-    # Elevator 
-    if aerodynamics.elevator_flag: 
-        if aerodynamics.stability_derivatives.CM_delta_e == None:
-            conditions.static_stability.derivatives.CM_delta_e    = compute_stability_derivative(sub_sur.dCM_ddelta_e     ,trans_sur.dCM_ddelta_e     ,sup_sur.dCM_ddelta_e     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.CM_delta_e    = aerodynamics.stability_derivatives.CM_delta_e * ones_row
-    
-        if aerodynamics.stability_derivatives.Clift_delta_e == None:
-            conditions.static_stability.derivatives.Clift_delta_e = compute_stability_derivative(sub_sur.dClift_ddelta_e     ,trans_sur.dClift_ddelta_e     ,sup_sur.dClift_ddelta_e     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.Clift_delta_e = aerodynamics.stability_derivatives.Clift_delta_e* ones_row
-    
-        if aerodynamics.stability_derivatives.Cdrag_delta_e == None:
-            conditions.static_stability.derivatives.Cdrag_delta_e     = compute_stability_derivative(sub_sur.dCdrag_ddelta_e    ,trans_sur.dCdrag_ddelta_e     ,sup_sur.dCdrag_ddelta_e     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.Cdrag_delta_e = aerodynamics.stability_derivatives.Cdrag_delta_e* ones_row
-                        
-        
-        conditions.static_stability.coefficients.M                              += conditions.static_stability.derivatives.CM_delta_e * conditions.control_surfaces.elevator.deflection   
-        conditions.aerodynamics.coefficients.drag.induced.inviscid              += conditions.static_stability.derivatives.Cdrag_delta_e * conditions.control_surfaces.elevator.deflection 
-        conditions.control_surfaces.elevator.static_stability.coefficients.M     = conditions.static_stability.derivatives.CM_delta_e * conditions.control_surfaces.elevator.deflection
-        
-    # Rudder  
-    if aerodynamics.rudder_flag:  
-        if aerodynamics.stability_derivatives.CY_delta_r == None:
-            conditions.static_stability.derivatives.CY_delta_r = compute_stability_derivative(sub_sur.dCY_ddelta_r,trans_sur.dCY_ddelta_r     ,sup_sur.dCY_ddelta_r     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.CY_delta_r = aerodynamics.stability_derivatives.CY_delta_r* ones_row
-        
-        if aerodynamics.stability_derivatives.CL_delta_r == None:
-            conditions.static_stability.derivatives.CL_delta_r = compute_stability_derivative(sub_sur.dCL_ddelta_r,trans_sur.dCL_ddelta_r     ,sup_sur.dCL_ddelta_r     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.CL_delta_r = aerodynamics.stability_derivatives.CL_delta_r* ones_row
-        
-        if aerodynamics.stability_derivatives.CN_delta_r == None:
-            conditions.static_stability.derivatives.CN_delta_r = compute_stability_derivative(sub_sur.dCN_ddelta_r ,trans_sur.dCN_ddelta_r     ,sup_sur.dCN_ddelta_r     ,h_sub,h_sup,Mach) 
-        else:
-            conditions.static_stability.derivatives.CN_delta_r = aerodynamics.stability_derivatives.CN_delta_r* ones_row
-    
-        if aerodynamics.stability_derivatives.Cdrag_delta_r == None:
-            conditions.static_stability.derivatives.Cdrag_delta_r     = compute_stability_derivative(sub_sur.dCdrag_ddelta_r    ,trans_sur.dCdrag_ddelta_r     ,sup_sur.dCdrag_ddelta_r     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.Cdrag_delta_r = aerodynamics.stability_derivatives.Cdrag_delta_r* ones_row            
-        
-        conditions.static_stability.coefficients.Y                               += conditions.static_stability.derivatives.CY_delta_r * conditions.control_surfaces.rudder.deflection  
-        conditions.static_stability.coefficients.L                               += conditions.static_stability.derivatives.CL_delta_r * conditions.control_surfaces.rudder.deflection
-        conditions.static_stability.coefficients.N                               += conditions.static_stability.derivatives.CN_delta_r * conditions.control_surfaces.rudder.deflection
-        conditions.aerodynamics.coefficients.drag.induced.inviscid               += conditions.static_stability.derivatives.Cdrag_delta_r* conditions.control_surfaces.rudder.deflection 
-        conditions.control_surfaces.rudder.static_stability.coefficients.Y        = conditions.static_stability.derivatives.CY_delta_r * conditions.control_surfaces.rudder.deflection          
-        conditions.control_surfaces.rudder.static_stability.coefficients.L        = conditions.static_stability.derivatives.CL_delta_r * conditions.control_surfaces.rudder.deflection        
-        conditions.control_surfaces.rudder.static_stability.coefficients.N        = conditions.static_stability.derivatives.CN_delta_r * conditions.control_surfaces.rudder.deflection       
-    
-    
-    # -----------------------------------------------------------------------------------------------------------------------
-    # Flap 
-    # -----------------------------------------------------------------------------------------------------------------------
-    if aerodynamics.flap_flag:
-        if aerodynamics.stability_derivatives.CM_delta_f == None:
-            conditions.static_stability.derivatives.CM_delta_f     = compute_stability_derivative(sub_sur.dCM_ddelta_f     ,trans_sur.dCM_ddelta_f     ,sup_sur.dCM_ddelta_f     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.CM_delta_f = aerodynamics.stability_derivatives.CM_delta_f* ones_row 
-        
-        if aerodynamics.stability_derivatives.Clift_delta_f == None:
-            conditions.static_stability.derivatives.Clift_delta_f     = compute_stability_derivative(sub_sur.dClift_ddelta_f     ,trans_sur.dClift_ddelta_f     ,sup_sur.dClift_ddelta_f     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.Clift_delta_f = aerodynamics.stability_derivatives.Clift_delta_f* ones_row 
-    
-        if aerodynamics.stability_derivatives.Cdrag_delta_f == None:
-            conditions.static_stability.derivatives.Cdrag_delta_f     = compute_stability_derivative(sub_sur.dCdrag_ddelta_f   ,trans_sur.dCdrag_ddelta_f     ,sup_sur.dCdrag_ddelta_f     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.Cdrag_delta_f = aerodynamics.stability_derivatives.Cdrag_delta_f* ones_row
-            
-        conditions.static_stability.coefficients.M                                   += conditions.static_stability.derivatives.CM_delta_f * conditions.control_surfaces.flap.deflection  
-        conditions.static_stability.coefficients.Z                                   += conditions.static_stability.derivatives.Clift_delta_f * conditions.control_surfaces.flap.deflection 
-        conditions.aerodynamics.coefficients.drag.induced.inviscid                   += conditions.static_stability.derivatives.Cdrag_delta_f* conditions.control_surfaces.flap.deflection  
-        conditions.aerodynamics.coefficients.lift.inviscid.total                     += conditions.static_stability.derivatives.Clift_delta_f * conditions.control_surfaces.flap.deflection  
-        conditions.control_surfaces.flap.static_stability.coefficients.M              = conditions.static_stability.derivatives.CM_delta_f * conditions.control_surfaces.flap.deflection      
-        
-    
-    # -----------------------------------------------------------------------------------------------------------------------
-    # Slat 
-    # -----------------------------------------------------------------------------------------------------------------------
-    if aerodynamics.slat_flag:
-        if aerodynamics.stability_derivatives.CM_delta_s == None:
-            conditions.static_stability.derivatives.CM_delta_s     = compute_stability_derivative(sub_sur.dCM_ddelta_s     ,trans_sur.dCM_ddelta_s     ,sup_sur.dCM_ddelta_s     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.CM_delta_s = aerodynamics.stability_derivatives.CM_delta_s* ones_row 
-        
-        if aerodynamics.stability_derivatives.Clift_delta_s == None:
-            conditions.static_stability.derivatives.Clift_delta_s     = compute_stability_derivative(sub_sur.dClift_ddelta_s     ,trans_sur.dClift_ddelta_s     ,sup_sur.dClift_ddelta_s     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.Clift_delta_s = aerodynamics.stability_derivatives.Clift_delta_s* ones_row 
-     
-        if aerodynamics.stability_derivatives.Cdrag_delta_s == None:
-            conditions.static_stability.derivatives.Cdrag_delta_s     = compute_stability_derivative(sub_sur.dCdrag_ddelta_s   ,trans_sur.dCdrag_ddelta_s     ,sup_sur.dCdrag_ddelta_s     ,h_sub,h_sup,Mach)
-        else:
-            conditions.static_stability.derivatives.Cdrag_delta_s = aerodynamics.stability_derivatives.Cdrag_delta_s* ones_row
-                
-        conditions.static_stability.coefficients.M                                   += conditions.static_stability.derivatives.CM_delta_s * conditions.control_surfaces.slat.deflection  
-        conditions.static_stability.coefficients.Z                                   += conditions.static_stability.derivatives.Clift_delta_s * conditions.control_surfaces.slat.deflection  
-        conditions.aerodynamics.coefficients.drag.induced.inviscid                   += conditions.static_stability.derivatives.Cdrag_delta_s* conditions.control_surfaces.slat.deflection  
-        conditions.aerodynamics.coefficients.lift.inviscid.total                     += conditions.static_stability.derivatives.Clift_delta_s * conditions.control_surfaces.slat.deflection
-        conditions.control_surfaces.slat.static_stability.coefficients.M              = conditions.static_stability.derivatives.CM_delta_s * conditions.control_surfaces.slat.deflection      
-              
+    # see control_surface_registry.py for why every control surface is handled through one generic path here.
+    # Induced drag is added as an absolute value (it cannot reduce total induced drag regardless of deflection
+    # direction), unlike the signed linear terms used for Y/L/N/M/lift. A compound surface (Flaperon, Elevon,
+    # Ruddervator) contributes two rows sharing one `name` conditions block, so that block's diagnostic
+    # coefficients are reset once per call and accumulated with += across its rows rather than overwritten.
+    touched_names = set()
+    for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
+        if not getattr(aerodynamics, flag):
+            continue
+
+        cs_conditions = getattr(conditions.control_surfaces, name)
+        deflection    = getattr(cs_conditions, deflection_attr)
+
+        if name not in touched_names:
+            cs_conditions.static_stability.coefficients.Y = 0 * ones_row
+            cs_conditions.static_stability.coefficients.L = 0 * ones_row
+            cs_conditions.static_stability.coefficients.N = 0 * ones_row
+            cs_conditions.static_stability.coefficients.M = 0 * ones_row
+            touched_names.add(name)
+
+        derivative = {}
+        for coeff in ('CY', 'CL', 'CN', 'CM', 'Clift', 'Cdrag'):
+            key      = coeff + '_delta_' + letter
+            override = getattr(aerodynamics.stability_derivatives, key)
+            if override is None:
+                surrogate_key     = 'd' + coeff + '_ddelta_' + letter
+                derivative[coeff] = compute_stability_derivative(getattr(sub_sur, surrogate_key), getattr(trans_sur, surrogate_key),
+                                                                   getattr(sup_sur, surrogate_key), h_sub, h_sup, Mach)
+            else:
+                derivative[coeff] = override * ones_row
+            setattr(conditions.static_stability.derivatives, key, derivative[coeff])
+
+        conditions.static_stability.coefficients.Y                 += derivative['CY']    * deflection
+        conditions.static_stability.coefficients.L                 += derivative['CL']    * deflection
+        conditions.static_stability.coefficients.N                 += derivative['CN']    * deflection
+        conditions.static_stability.coefficients.M                 += derivative['CM']    * deflection
+        conditions.static_stability.coefficients.Z                 += derivative['Clift'] * deflection
+        conditions.aerodynamics.coefficients.lift.inviscid.total   += derivative['Clift'] * deflection
+        conditions.aerodynamics.coefficients.drag.induced.inviscid += abs(derivative['Cdrag'] * deflection)
+
+        cs_conditions.static_stability.coefficients.Y += derivative['CY'] * deflection
+        cs_conditions.static_stability.coefficients.L += derivative['CL'] * deflection
+        cs_conditions.static_stability.coefficients.N += derivative['CN'] * deflection
+        cs_conditions.static_stability.coefficients.M += derivative['CM'] * deflection
+
     return
 
 def evaluate_no_surrogate(state,settings,vehicle):
@@ -752,219 +663,25 @@ def evaluate_no_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.CM_r     =  (CM_r_prime      - CM_0)    / (r_hat)  
     conditions.static_stability.derivatives.CN_r     =  (CN_r_prime      - CN_0)    / (r_hat) 
  
-    for wing in vehicle.wings: 
-        for control_surface in wing.control_surfaces:  
-            # only compute derivative if control surface exists 
-            pertubation_conditions =  create_conditions(n_cpts,alt,g,V,MAC,conditions.energy)  
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:  
-                vehicle.wings[wing.tag].control_surfaces.aileron.deflection =  delta_ctrl_surf
-                
-                VLM_results = VLM(pertubation_conditions,settings,vehicle)
-                Clift_res = VLM_results.CLift
-                Cdrag_res = VLM_results.CDrag_induced
-                CX_res    = VLM_results.CX
-                CY_res    = VLM_results.CY
-                CZ_res    = VLM_results.CZ
-                CL_res    = VLM_results.CL
-                CM_res    = VLM_results.CM
-                CN_res    = VLM_results.CN
-                
-                vehicle.wings[wing.tag].control_surfaces.aileron.deflection = 0
-                
-                Clift_delta_a_prime   = Clift_res
-                Cdrag_delta_a_prime   = Cdrag_res
-                CX_delta_a_prime      = CX_res   
-                CY_delta_a_prime      = CY_res   
-                CZ_delta_a_prime      = CZ_res   
-                CL_delta_a_prime      = CL_res   
-                CM_delta_a_prime      = CM_res   
-                CN_delta_a_prime      = CN_res   
-                
-                dClift_ddelta_a = (Clift_delta_a_prime   - Clift_0) / (delta_ctrl_surf)
-                dCdrag_ddelta_a = (Cdrag_delta_a_prime   - Cdrag_0) / (delta_ctrl_surf)  
-                dCX_ddelta_a    = (CX_delta_a_prime      - CX_0) / (delta_ctrl_surf)  
-                dCY_ddelta_a    = (CY_delta_a_prime      - CY_0) / (delta_ctrl_surf) 
-                dCZ_ddelta_a    = (CZ_delta_a_prime      - CZ_0) / (delta_ctrl_surf) 
-                dCL_ddelta_a    = (CL_delta_a_prime      - CL_0) / (delta_ctrl_surf)  
-                dCM_ddelta_a    = (CM_delta_a_prime      - CM_0) / (delta_ctrl_surf)  
-                dCN_ddelta_a    = (CN_delta_a_prime      - CN_0) / (delta_ctrl_surf) 
-                
-                conditions.static_stability.derivatives.Clift_delta_a = dClift_ddelta_a 
-                conditions.static_stability.derivatives.Cdrag_delta_a = dCdrag_ddelta_a 
-                conditions.static_stability.derivatives.CX_delta_a    = dCX_ddelta_a    
-                conditions.static_stability.derivatives.CY_delta_a    = dCY_ddelta_a    
-                conditions.static_stability.derivatives.CZ_delta_a    = dCZ_ddelta_a    
-                conditions.static_stability.derivatives.CL_delta_a    = dCL_ddelta_a    
-                conditions.static_stability.derivatives.CM_delta_a    = dCM_ddelta_a    
-                conditions.static_stability.derivatives.CN_delta_a    = dCN_ddelta_a 
-  
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator:  
-                vehicle.wings[wing.tag].control_surfaces.elevator.deflection =  delta_ctrl_surf
+    # see control_surface_registry.py for why every control surface is handled through one generic path here
+    baseline_coefficients = {'Clift': Clift_0, 'Cdrag': Cdrag_0, 'CX': CX_0, 'CY': CY_0,
+                              'CZ': CZ_0, 'CL': CL_0, 'CM': CM_0, 'CN': CN_0}
 
-                VLM_results = VLM(pertubation_conditions,settings,vehicle)
-                Clift_res = VLM_results.CLift
-                Cdrag_res = VLM_results.CDrag_induced
-                CX_res    = VLM_results.CX
-                CY_res    = VLM_results.CY
-                CZ_res    = VLM_results.CZ
-                CL_res    = VLM_results.CL
-                CM_res    = VLM_results.CM
-                CN_res    = VLM_results.CN 
-                vehicle.wings[wing.tag].control_surfaces.elevator.deflection = 0  
-     
-                Clift_delta_e_prime   = Clift_res
-                Cdrag_delta_e_prime   = Cdrag_res
-                CX_delta_e_prime      = CX_res   
-                CY_delta_e_prime      = CY_res   
-                CZ_delta_e_prime      = CZ_res   
-                CL_delta_e_prime      = CL_res   
-                CM_delta_e_prime      = CM_res   
-                CN_delta_e_prime      = CN_res   
-                
-                dClift_ddelta_e = (Clift_delta_e_prime   - Clift_0) / (delta_ctrl_surf)
-                dCdrag_ddelta_e = (Cdrag_delta_e_prime   - Cdrag_0) / (delta_ctrl_surf)  
-                dCX_ddelta_e    = (CX_delta_e_prime      - CX_0) / (delta_ctrl_surf)  
-                dCY_ddelta_e    = (CY_delta_e_prime      - CY_0) / (delta_ctrl_surf) 
-                dCZ_ddelta_e    = (CZ_delta_e_prime      - CZ_0) / (delta_ctrl_surf) 
-                dCL_ddelta_e    = (CL_delta_e_prime      - CL_0) / (delta_ctrl_surf)  
-                dCM_ddelta_e    = (CM_delta_e_prime      - CM_0) / (delta_ctrl_surf)  
-                dCN_ddelta_e    = (CN_delta_e_prime      - CN_0) / (delta_ctrl_surf)
-                
-            
-                conditions.static_stability.derivatives.Clift_delta_e = dClift_ddelta_e 
-                conditions.static_stability.derivatives.Cdrag_delta_e = dCdrag_ddelta_e 
-                conditions.static_stability.derivatives.CX_delta_e    = dCX_ddelta_e    
-                conditions.static_stability.derivatives.CY_delta_e    = dCY_ddelta_e    
-                conditions.static_stability.derivatives.CZ_delta_e    = dCZ_ddelta_e    
-                conditions.static_stability.derivatives.CL_delta_e    = dCL_ddelta_e    
-                conditions.static_stability.derivatives.CM_delta_e    = dCM_ddelta_e    
-                conditions.static_stability.derivatives.CN_delta_e    = dCN_ddelta_e   
-     
- 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:  
-                vehicle.wings[wing.tag].control_surfaces.rudder.deflection =  delta_ctrl_surf 
-                VLM_results = VLM(pertubation_conditions,settings,vehicle)
-                Clift_res = VLM_results.CLift
-                Cdrag_res = VLM_results.CDrag_induced
-                CX_res    = VLM_results.CX
-                CY_res    = VLM_results.CY
-                CZ_res    = VLM_results.CZ
-                CL_res    = VLM_results.CL
-                CM_res    = VLM_results.CM
-                CN_res    = VLM_results.CN 
-                vehicle.wings[wing.tag].control_surfaces.rudder.deflection = 0
-                 
-                Clift_delta_r_prime   = Clift_res
-                Cdrag_delta_r_prime   = Cdrag_res
-                CX_delta_r_prime      = CX_res   
-                CY_delta_r_prime      = CY_res   
-                CZ_delta_r_prime      = CZ_res   
-                CL_delta_r_prime      = CL_res   
-                CM_delta_r_prime      = CM_res   
-                CN_delta_r_prime      = CN_res   
-                
-                dClift_ddelta_r = (Clift_delta_r_prime   - Clift_0) / (delta_ctrl_surf)
-                dCdrag_ddelta_r = (Cdrag_delta_r_prime   - Cdrag_0) / (delta_ctrl_surf)  
-                dCX_ddelta_r    = (CX_delta_r_prime      - CX_0) / (delta_ctrl_surf)  
-                dCY_ddelta_r    = (CY_delta_r_prime      - CY_0) / (delta_ctrl_surf) 
-                dCZ_ddelta_r    = (CZ_delta_r_prime      - CZ_0) / (delta_ctrl_surf) 
-                dCL_ddelta_r    = (CL_delta_r_prime      - CL_0) / (delta_ctrl_surf)  
-                dCM_ddelta_r    = (CM_delta_r_prime      - CM_0) / (delta_ctrl_surf)  
-                dCN_ddelta_r    = (CN_delta_r_prime      - CN_0) / (delta_ctrl_surf) 
-            
-                conditions.static_stability.derivatives.Clift_delta_r = dClift_ddelta_r 
-                conditions.static_stability.derivatives.Cdrag_delta_r = dCdrag_ddelta_r 
-                conditions.static_stability.derivatives.CX_delta_r    = dCX_ddelta_r    
-                conditions.static_stability.derivatives.CY_delta_r    = dCY_ddelta_r    
-                conditions.static_stability.derivatives.CZ_delta_r    = dCZ_ddelta_r    
-                conditions.static_stability.derivatives.CL_delta_r    = dCL_ddelta_r    
-                conditions.static_stability.derivatives.CM_delta_r    = dCM_ddelta_r    
-                conditions.static_stability.derivatives.CN_delta_r    = dCN_ddelta_r
-     
- 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:  
-                vehicle.wings[wing.tag].control_surfaces.flap.deflection =  delta_ctrl_surf 
-                VLM_results = VLM(pertubation_conditions,settings,vehicle)
-                Clift_res = VLM_results.CLift
-                Cdrag_res = VLM_results.CDrag_induced
-                CX_res    = VLM_results.CX
-                CY_res    = VLM_results.CY
-                CZ_res    = VLM_results.CZ
-                CL_res    = VLM_results.CL
-                CM_res    = VLM_results.CM
-                CN_res    = VLM_results.CN
-                vehicle.wings[wing.tag].control_surfaces.flap.deflection = 0
-                 
-                            
-                Clift_delta_f_prime   = Clift_res
-                Cdrag_delta_f_prime   = Cdrag_res
-                CX_delta_f_prime      = CX_res   
-                CY_delta_f_prime      = CY_res   
-                CZ_delta_f_prime      = CZ_res   
-                CL_delta_f_prime      = CL_res   
-                CM_delta_f_prime      = CM_res   
-                CN_delta_f_prime      = CN_res   
-                
-                dClift_ddelta_f = (Clift_delta_f_prime   - Clift_0) / (delta_ctrl_surf)
-                dCdrag_ddelta_f = (Cdrag_delta_f_prime   - Cdrag_0) / (delta_ctrl_surf)  
-                dCX_ddelta_f    = (CX_delta_f_prime      - CX_0) / (delta_ctrl_surf)  
-                dCY_ddelta_f    = (CY_delta_f_prime      - CY_0) / (delta_ctrl_surf) 
-                dCZ_ddelta_f    = (CZ_delta_f_prime      - CZ_0) / (delta_ctrl_surf) 
-                dCL_ddelta_f    = (CL_delta_f_prime      - CL_0) / (delta_ctrl_surf)  
-                dCM_ddelta_f    = (CM_delta_f_prime      - CM_0) / (delta_ctrl_surf)  
-                dCN_ddelta_f    = (CN_delta_f_prime      - CN_0) / (delta_ctrl_surf)
-                
-            
-                conditions.static_stability.derivatives.Clift_delta_f = dClift_ddelta_f 
-                conditions.static_stability.derivatives.Clift_delta_f = dCdrag_ddelta_f 
-                conditions.static_stability.derivatives.CX_delta_f    = dCX_ddelta_f    
-                conditions.static_stability.derivatives.CY_delta_f    = dCY_ddelta_f    
-                conditions.static_stability.derivatives.CZ_delta_f    = dCZ_ddelta_f    
-                conditions.static_stability.derivatives.CL_delta_f    = dCL_ddelta_f    
-                conditions.static_stability.derivatives.CM_delta_f    = dCM_ddelta_f    
-                conditions.static_stability.derivatives.CN_delta_f    = dCN_ddelta_f 
- 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:  
-                vehicle.wings[wing.tag].control_surfaces.slat.deflection =  delta_ctrl_surf 
-                VLM_results = VLM(pertubation_conditions,settings,vehicle)
-                Clift_res = VLM_results.CLift
-                Cdrag_res = VLM_results.CDrag_induced
-                CX_res    = VLM_results.CX
-                CY_res    = VLM_results.CY
-                CZ_res    = VLM_results.CZ
-                CL_res    = VLM_results.CL
-                CM_res    = VLM_results.CM
-                CN_res    = VLM_results.CN
-                vehicle.wings[wing.tag].control_surfaces.slat.deflection = 0
-                 
-                            
-                Clift_delta_s_prime   = Clift_res
-                Cdrag_delta_s_prime   = Cdrag_res
-                CX_delta_s_prime      = CX_res   
-                CY_delta_s_prime      = CY_res   
-                CZ_delta_s_prime      = CZ_res   
-                CL_delta_s_prime      = CL_res   
-                CM_delta_s_prime      = CM_res   
-                CN_delta_s_prime      = CN_res   
-                
-                dClift_ddelta_s = (Clift_delta_s_prime   - Clift_0) / (delta_ctrl_surf)
-                dCdrag_ddelta_s = (Cdrag_delta_s_prime   - Cdrag_0) / (delta_ctrl_surf)  
-                dCX_ddelta_s    = (CX_delta_s_prime      - CX_0) / (delta_ctrl_surf)  
-                dCY_ddelta_s    = (CY_delta_s_prime      - CY_0) / (delta_ctrl_surf) 
-                dCZ_ddelta_s    = (CZ_delta_s_prime      - CZ_0) / (delta_ctrl_surf) 
-                dCL_ddelta_s    = (CL_delta_s_prime      - CL_0) / (delta_ctrl_surf)  
-                dCM_ddelta_s    = (CM_delta_s_prime      - CM_0) / (delta_ctrl_surf)  
-                dCN_ddelta_s    = (CN_delta_s_prime      - CN_0) / (delta_ctrl_surf)
-                
-            
-                conditions.static_stability.derivatives.Clift_delta_s = dClift_ddelta_s 
-                conditions.static_stability.derivatives.Clift_delta_s = dCdrag_ddelta_s 
-                conditions.static_stability.derivatives.CX_delta_s    = dCX_ddelta_s    
-                conditions.static_stability.derivatives.CY_delta_s    = dCY_ddelta_s    
-                conditions.static_stability.derivatives.CZ_delta_s    = dCZ_ddelta_s    
-                conditions.static_stability.derivatives.CL_delta_s    = dCL_ddelta_s    
-                conditions.static_stability.derivatives.CM_delta_s    = dCM_ddelta_s    
-                conditions.static_stability.derivatives.CN_delta_s    = dCN_ddelta_s                    
+    for wing in vehicle.wings:
+        for control_surface in wing.control_surfaces:
+            for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
+                pertubation_conditions = create_conditions(n_cpts,alt,g,V,MAC,conditions.energy)
+                setattr(control_surface, deflection_attr, delta_ctrl_surf)
+                VLM_results             = VLM(pertubation_conditions,settings,vehicle)
+                setattr(control_surface, deflection_attr, 0)
+
+                perturbed_coefficients = {'Clift': VLM_results.CLift, 'Cdrag': VLM_results.CDrag_induced,
+                                           'CX': VLM_results.CX, 'CY': VLM_results.CY, 'CZ': VLM_results.CZ,
+                                           'CL': VLM_results.CL, 'CM': VLM_results.CM, 'CN': VLM_results.CN}
+
+                for coeff, prime in perturbed_coefficients.items():
+                    key = coeff + '_delta_' + letter
+                    conditions.static_stability.derivatives[key] = (prime - baseline_coefficients[coeff]) / delta_ctrl_surf
     return
 def create_conditions(n_cpts,altitude,g,V,MAC,energy_conditions):
     
