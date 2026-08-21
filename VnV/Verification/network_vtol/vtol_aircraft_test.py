@@ -501,10 +501,11 @@ def TW_mission_setup(analyses ):
     # Vertical Climb 
     # ------------------------------------------------------------------ 
     segment                                                          = Segments.Vertical_Flight.Climb(base_segment)
-    segment.tag                                                      = "Vertical_Climb"   
-    segment.analyses.extend(analyses.vertical_climb)                
-    segment.altitude_start                                           = 0  * Units.ft  
-    segment.altitude_end                                             = 100.  * Units.ft   
+    segment.tag                                                      = "Vertical_Climb"
+    segment.state.numerics.mission_solver.type                       = "root_finder"
+    segment.analyses.extend(analyses.vertical_climb)
+    segment.altitude_start                                           = 0  * Units.ft
+    segment.altitude_end                                             = 100.  * Units.ft
     segment.climb_rate                                               = 300. * Units['ft/min']  
     segment.initial_battery_conditions.state_of_charge               = 1.0
 
@@ -543,8 +544,9 @@ def TW_mission_setup(analyses ):
     # Vertical Descent 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     segment                                                         = Segments.Vertical_Flight.Descent(base_segment)
-    segment.tag                                                     = "Vertical_Descent" 
-    segment.analyses.extend( analyses.vertical_descent)               
+    segment.tag                                                     = "Vertical_Descent"
+    segment.state.numerics.mission_solver.type                      = "root_finder"
+    segment.analyses.extend( analyses.vertical_descent)
     segment.altitude_start                                          = 100.0 * Units.ft   
     segment.altitude_end                                            = 0.   * Units.ft  
     segment.descent_rate                                            = 300. * Units['ft/min']   
@@ -627,8 +629,9 @@ def SR_mission_setup(analyses,vehicle):
     # High-Speed Climbing Transition 
     #------------------------------------------------------------------------------------------------------------------------------------  
     segment                                               = Segments.Climb.Constant_Acceleration_Constant_Pitchrate_Constant_Angle(base_segment)
-    segment.tag                                           = "High_Speed_Climbing_Transition" 
-    segment.analyses.extend( analyses.transition_flight)    
+    segment.tag                                           = "High_Speed_Climbing_Transition"
+    segment.state.numerics.mission_solver.type             = "root_finder"
+    segment.analyses.extend( analyses.transition_flight)
     segment.altitude_start                                = 200.0 * Units.ft   
     segment.altitude_end                                  = 500.0 * Units.ft 
     segment.climb_angle                                   = 3     * Units.degrees   

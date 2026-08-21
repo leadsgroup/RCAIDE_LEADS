@@ -47,10 +47,33 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
     b_ref      = vehicle.reference_span
  
     if (np.count_nonzero(vehicle.mass_properties.moments_of_inertia.tensor) > 0) and (np.all(np.isnan(AoA)) !=  True):
-        g      = conditions.freestream.gravity  
+        method = settings.dynamic_stability_method
+        if method != "linearized_derivatives":
+            raise NotImplementedError(
+                "dynamic_stability_method '" + str(method) + "' is not implemented. "
+                "Only 'linearized_derivatives' (the classical small-perturbation "
+                "stability-derivative EOM) is currently available."
+            )
+
+        g      = conditions.freestream.gravity
         rho    = conditions.freestream.density
         u0     = conditions.freestream.velocity
-        qDyn0  = conditions.freestream.dynamic_pressure  
+        qDyn0  = conditions.freestream.dynamic_pressure
+
+        # VLM-based stability derivatives are undefined at zero airspeed (hover);
+        # skip rather than let u0/qDyn0 divisions silently produce inf/nan.
+        near_zero_airspeed_threshold = 1.0 # m/s
+        if np.any(np.abs(u0) < near_zero_airspeed_threshold):
+            import warnings
+            warnings.warn(
+                "compute_dynamic_flight_modes: airspeed below "
+                + str(near_zero_airspeed_threshold) + " m/s (hover or "
+                "near-hover) at one or more control points. This method's "
+                "VLM-based stability derivatives are undefined at zero "
+                "airspeed; skipping dynamic-mode computation for this "
+                "segment rather than returning silently invalid results."
+            )
+            return
         theta0 = np.arctan(conditions.frames.inertial.velocity_vector[:,2]/conditions.frames.inertial.velocity_vector[:,0])[:,None] 
         SS     = conditions.static_stability
         SSD    = SS.derivatives 
@@ -70,27 +93,48 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         BLon = np.zeros((n_cpts,4,1))  
         
 
-        # Elevator effectiveness 
-        for wing in vehicle.wings:
-            if isinstance(wing,RCAIDE.Library.Components.Wings.Horizontal_Tail): 
-                horizontal_tail = wing  
-            if isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing):  
-                main_wing       = wing  
-            if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
-                main_wing       = wing
-                horizontal_tail = wing 
-        
-        # unpack unit conversions  
-        a_t              = 2 * np.pi # dCL_t_dalphat 
-        l_t              = (horizontal_tail.origin[0][0] +horizontal_tail.aerodynamic_center[0]) - vehicle.mass_properties.center_of_gravity[0][0] # disstance from CG to tail AC
-        S_t              = horizontal_tail.areas.reference # tail area
-        S                = main_wing.areas.reference # wing area
-        l_bar_t          = (horizontal_tail.origin[0][0] +  horizontal_tail.aerodynamic_center[0]) -(main_wing.origin[0][0] +  main_wing.aerodynamic_center[0])  # distance from AC of main wing to tail AC
-        V_H              = ( l_bar_t *S_t ) /(c_ref *S)  # tail volume
-        dEpsilon_dalpha  =  0.3
-        SSD.CZ_alpha_dot =  a_t * dEpsilon_dalpha *  (l_t /u0) *  (S_t / S) 
-        SSD.CM_alpha_dot =  -a_t * V_H * dEpsilon_dalpha*  (l_t /u0)    
-        Cw               = m * g / (qDyn0 * S_ref)  
+        # Locate the main wing and, if present, an aft tail by geometry.
+        vertical_types    = (RCAIDE.Library.Components.Wings.Vertical_Tail,
+                              RCAIDE.Library.Components.Wings.Vertical_Tail_All_Moving)
+        lifting_surfaces  = [w for w in vehicle.wings if not isinstance(w, vertical_types)]
+        main_wing         = max(lifting_surfaces, key=lambda w: w.areas.reference) if lifting_surfaces else None
+
+        horizontal_tail = None
+        if main_wing is not None:
+            main_AC          = main_wing.origin[0][0] + main_wing.aerodynamic_center[0]
+            tail_size_margin = 0.5 # candidate tail must be under half the main wing's area
+            tail_candidates  = [w for w in lifting_surfaces if w is not main_wing
+                                 and w.areas.reference < tail_size_margin * main_wing.areas.reference
+                                 and (w.origin[0][0] + w.aerodynamic_center[0]) > main_AC]
+            if len(tail_candidates) > 1:
+                import warnings
+                warnings.warn(str(len(tail_candidates)) + " candidate aft tail surfaces found; using the largest.")
+            horizontal_tail = max(tail_candidates, key=lambda w: w.areas.reference) if tail_candidates else None
+
+        a_t               = 2 * np.pi # dCL_t_dalphat
+        has_separate_tail = (horizontal_tail is not None) and (main_wing is not None)
+        if has_separate_tail:
+            l_t              = (horizontal_tail.origin[0][0] +horizontal_tail.aerodynamic_center[0]) - vehicle.mass_properties.center_of_gravity[0][0] # disstance from CG to tail AC
+            S_t              = horizontal_tail.areas.reference # tail area
+            S                = main_wing.areas.reference # wing area
+            l_bar_t          = (horizontal_tail.origin[0][0] +  horizontal_tail.aerodynamic_center[0]) -(main_wing.origin[0][0] +  main_wing.aerodynamic_center[0])  # distance from AC of main wing to tail AC
+            V_H              = ( l_bar_t *S_t ) /(c_ref *S)  # tail volume
+            dEpsilon_dalpha  =  0.3
+            SSD.CZ_alpha_dot =  a_t * dEpsilon_dalpha *  (l_t /u0) *  (S_t / S)
+            SSD.CM_alpha_dot =  -a_t * V_H * dEpsilon_dalpha*  (l_t /u0)
+        else:
+            import warnings
+            warnings.warn(
+                "No aft tail-like surface found (single lifting surface e.g. "
+                "flying-wing/BWB, a forward/canard surface, or a second "
+                "surface too close in size to count as a tail e.g. tandem/"
+                "box-wing); the tail-downwash-lag alpha-dot damping terms "
+                "(CZ_alpha_dot, CM_alpha_dot) are not modeled for this "
+                "configuration and are set to zero."
+            )
+            SSD.CZ_alpha_dot = 0.0 * u0
+            SSD.CM_alpha_dot = 0.0 * u0
+        Cw               = m * g / (qDyn0 * S_ref)
         Xu               = rho * u0 * S_ref * Cw * np.sin(theta0) + 0.5 * rho * u0 * S_ref * SSD.CX_u  
         Xw               = 0.5 * rho * u0 * S_ref * SSD.CX_alpha     
         Zu               = -rho * u0 * S_ref * Cw * np.cos(theta0) + 0.5 * rho * u0 * S_ref * SSD.CZ_u 
@@ -107,8 +151,9 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         ALon[:,0,1] = (Xw / m).T[0] 
         ALon[:,0,3] = (-g * np.cos(theta0)).T[0]
         ALon[:,1,0] = (Zu / (m - ZwDot)).T[0]
-        ALon[:,1,1] = (Zw / (m - ZwDot)).T[0] 
+        ALon[:,1,1] = (Zw / (m - ZwDot)).T[0]
         ALon[:,1,2] = ((Zq + (m * u0)) / (m - ZwDot) ).T[0]
+        ALon[:,1,3] = (-m * g * np.sin(theta0) / (m - ZwDot)).T[0]
         ALon[:,2,0] = ((Mu + MwDot * Zu / (m - ZwDot)) / Iyy).T[0]  
         ALon[:,2,1] = ((Mw + MwDot * Zw / (m - ZwDot)) / Iyy).T[0] 
         ALon[:,2,2] = ((Mq + MwDot * (Zq + m * u0) / (m - ZwDot)) / Iyy ).T[0] 
@@ -118,11 +163,27 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         ALon[:,3,2] = 1
         ALon[:,3,3] = 0 
  
-        ele = conditions.control_surfaces.elevator.static_stability.coefficients 
-        Xe  = 0 # Neglect
-        Ze  = 0.5 * rho * u0 * u0 * S_ref * ele.lift
-        Me  = 0.5 * rho * u0 * u0 * S_ref * c_ref * ele.M
-        
+        Control_Surfaces      = RCAIDE.Library.Components.Wings.Control_Surfaces
+        all_control_surfaces  = [cs for wing in vehicle.wings for cs in wing.control_surfaces]
+        pitch_letters         = [letter for letter, cls in (('e', Control_Surfaces.Elevator),
+                                                              ('pe', Control_Surfaces.Elevon),
+                                                              ('pr', Control_Surfaces.Ruddervator))
+                                  if any(isinstance(cs, cls) for cs in all_control_surfaces)]
+
+        Xe = 0 # Neglect
+        if pitch_letters:
+            Clift_de = sum(getattr(SSD, 'Clift_delta_' + letter, 0.0) for letter in pitch_letters)
+            CM_de    = sum(getattr(SSD, 'CM_delta_'    + letter, 0.0) for letter in pitch_letters)
+            Ze       = 0.5 * rho * u0 * u0 * S_ref * Clift_de
+            Me       = 0.5 * rho * u0 * u0 * S_ref * c_ref * CM_de
+        else:
+            import warnings
+            warnings.warn(
+                "No elevator, elevon, or ruddervator found in vehicle.wings[*].control_surfaces; "
+                "setting pitch-control effectiveness terms (Ze, Me) to zero."
+            )
+            Ze = Me = 0.0 * u0
+
         BLon[:,0,0] = Xe / m[:, 0]
         BLon[:,1,0] = (Ze / (m - ZwDot)).T[0]
         BLon[:,2,0] = (Me / Iyy + MwDot / Iyy * Ze / (m - ZwDot)).T[0]
@@ -156,7 +217,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         ALat = np.zeros((n_cpts,4,4))
         BLat = np.zeros((n_cpts,4,1))
         
-        # Need to compute Ixx, Izz, and Ixz as a function of alpha. Which alpha? I wouldn't expect this to change.
+        # Rotate inertias into the stability axis (function of angle of attack)
         R    = np.zeros((n_cpts,2,2))
         modI = np.zeros((n_cpts,2,2)) 
 
@@ -178,7 +239,8 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         Izp       = np.atleast_2d((IxxStab * IzzStab - IxzStab**2) / IxxStab).T
         Ixzp      = np.atleast_2d(IxzStab / (IxxStab * IzzStab - IxzStab**2)).T 
             
-        Yv = 0.5 * rho * u0 * S_ref * SSD.CY_beta 
+        Yv = 0.5 * rho * u0 * S_ref * SSD.CY_beta
+        Yp = 0.25 * rho * u0 * b_ref * S_ref * SSD.CY_p
         Yr = 0.25 * rho * u0 * b_ref * S_ref * SSD.CY_r
         Lv = 0.5 * rho * u0 * b_ref * S_ref * SSD.CL_beta
         Lp = 0.25 * rho * u0 * b_ref**2 * S_ref * SSD.CL_p
@@ -187,20 +249,34 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         Np = 0.25 * rho * u0 * b_ref**2 * S_ref * SSD.CN_p
         Nr = 0.25 * rho * u0 * b_ref**2 * S_ref * SSD.CN_r
         
-        # Aileron effectiveness  
-        # WHat is we don't have ailerons? Will this work? Check this
-        ail = conditions.control_surfaces.aileron.static_stability.coefficients                  
-        Ya = 0.5 * rho * u0 * u0 * S_ref * ail.Y 
-        La = 0.5 * rho * u0 * u0 * S_ref * b_ref * ail.L 
-        Na = 0.5 * rho * u0 * u0 * S_ref * b_ref * ail.N 
-        
+        roll_letters = [letter for letter, cls in (('a', Control_Surfaces.Aileron),
+                                                     ('se', Control_Surfaces.Elevon),
+                                                     ('sf', Control_Surfaces.Flaperon))
+                         if any(isinstance(cs, cls) for cs in all_control_surfaces)]
+
+        if roll_letters:
+            CY_da = sum(getattr(SSD, 'CY_delta_' + letter, 0.0) for letter in roll_letters)
+            CL_da = sum(getattr(SSD, 'CL_delta_' + letter, 0.0) for letter in roll_letters)
+            CN_da = sum(getattr(SSD, 'CN_delta_' + letter, 0.0) for letter in roll_letters)
+            Ya    = 0.5 * rho * u0 * u0 * S_ref * CY_da
+            La    = 0.5 * rho * u0 * u0 * S_ref * b_ref * CL_da
+            Na    = 0.5 * rho * u0 * u0 * S_ref * b_ref * CN_da
+        else:
+            import warnings
+            warnings.warn(
+                "No aileron, elevon, or flaperon found in vehicle.wings[*].control_surfaces; "
+                "setting roll-control effectiveness terms (Ya, La, Na) to zero."
+            )
+            Ya = La = Na = 0.0 * u0
+
         BLat[:,0,0] = (Ya / m).T[0]
         BLat[:,1,0] = (La / Ixp + Ixzp * Na).T[0]
         BLat[:,2,0] = (Ixzp * La + Na / Izp).T[0]
         BLat[:,3,0] = 0
      
-        ALat[:,0,0] = (Yv / m).T[0]  
-        ALat[:,0,2] = (Yr/m - u0).T[0] 
+        ALat[:,0,0] = (Yv / m).T[0]
+        ALat[:,0,1] = (Yp / m).T[0]
+        ALat[:,0,2] = (Yr/m - u0).T[0]
         ALat[:,0,3] = (g * np.cos(theta0)).T[0]
         
         ALat[:,1,0] = (Lv / Ixp + Ixzp * Nv).T[0] 
@@ -232,9 +308,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
          
         try: 
             LatModes  , V = np.linalg.eig(ALat) # State order: u, w, q, theta
-            # Change to LatModes? If we changed D above then mind as well change this too
-            # LatModes[:,:] =  D[:,:]  
-            
+
             real_parts = LatModes.real
             unique_elements, counts = np.unique(real_parts, return_counts=True, axis=1)
             idx = np.where(counts==2)[0]

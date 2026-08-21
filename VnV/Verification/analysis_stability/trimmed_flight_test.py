@@ -111,6 +111,42 @@ def main():
     assert np.abs(fs_rudder)   < 1e-6
     assert np.abs((fs_elevator - fs_elevator_true) / fs_elevator_true) < 5e-3
 
+    # ------------------------------------------------------------------
+    # Dynamic stability modes (cruise segment)
+    # ------------------------------------------------------------------
+    DS                             = results.segments.cruise.conditions.dynamic_stability
+    phugoid_freq                   = DS.LongModes.phugoidFreqHz[0,0]
+    phugoid_damping                = DS.LongModes.phugoidDamping[0,0]
+    short_period_freq              = DS.LongModes.shortPeriodFreqHz[0,0]
+    short_period_damping           = DS.LongModes.shortPeriodDamping[0,0]
+    dutch_roll_freq                = DS.LatModes.dutchRollFreqHz[0,0]
+    dutch_roll_damping             = DS.LatModes.dutchRollDamping[0,0]
+    roll_subsistence_time_constant = DS.LatModes.rollSubsistenceTimeConstant[0,0]
+    spiral_time_double_half        = DS.LatModes.spiralTimeDoubleHalf[0,0]
+
+    phugoid_freq_true                   = 0.0498980620834614
+    phugoid_damping_true                = 0.14598132422045618
+    short_period_freq_true              = 0.2875274425477587
+    short_period_damping_true           = 0.7832908110862572
+    dutch_roll_freq_true                = 0.486458976924637
+    dutch_roll_damping_true             = 0.13883619187347213
+    roll_subsistence_time_constant_true = 0.028073156923046644
+    spiral_time_double_half_true        = 423.073887387459
+
+    print('Phugoid freq (Hz):', phugoid_freq, 'damping:', phugoid_damping)
+    print('Short period freq (Hz):', short_period_freq, 'damping:', short_period_damping)
+    print('Dutch roll freq (Hz):', dutch_roll_freq, 'damping:', dutch_roll_damping)
+    print('Roll subsistence time constant (s):', roll_subsistence_time_constant)
+    print('Spiral time to double/half (s):', spiral_time_double_half)
+    assert np.abs((phugoid_freq                   - phugoid_freq_true)                   / phugoid_freq_true)                   < 5e-3
+    assert np.abs((phugoid_damping                - phugoid_damping_true)                / phugoid_damping_true)                < 5e-3
+    assert np.abs((short_period_freq               - short_period_freq_true)              / short_period_freq_true)              < 5e-3
+    assert np.abs((short_period_damping            - short_period_damping_true)           / short_period_damping_true)           < 5e-3
+    assert np.abs((dutch_roll_freq                 - dutch_roll_freq_true)                / dutch_roll_freq_true)                < 5e-3
+    assert np.abs((dutch_roll_damping              - dutch_roll_damping_true)             / dutch_roll_damping_true)             < 5e-3
+    assert np.abs((roll_subsistence_time_constant  - roll_subsistence_time_constant_true) / roll_subsistence_time_constant_true) < 5e-3
+    assert np.abs((spiral_time_double_half         - spiral_time_double_half_true)        / spiral_time_double_half_true)        < 5e-3
+
     # plt results
     plot_mission(results)
     

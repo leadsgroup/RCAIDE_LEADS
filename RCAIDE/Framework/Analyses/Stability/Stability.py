@@ -66,6 +66,13 @@ class Stability(Analysis):
         self.settings.span_efficiency                                    = None
         self.settings.compute_neutral_point                              = True
 
+        # Method used to build the dynamic-stability state-space model.
+        # "linearized_derivatives" is the only option currently implemented:
+        # the classical small-perturbation stability-derivative EOM
+        # (Blakelock; Etkin & Reid Ch. 5). Reserved for a future higher-fidelity
+        # option (e.g. numerical linearization of the full nonlinear model).
+        self.settings.dynamic_stability_method                           = "linearized_derivatives"
+
         self.settings.supersonic                                         = Data() 
         self.settings.supersonic.begin_drag_rise_mach_number             = 0.95
         self.settings.supersonic.end_drag_rise_mach_number               = 1.15    
