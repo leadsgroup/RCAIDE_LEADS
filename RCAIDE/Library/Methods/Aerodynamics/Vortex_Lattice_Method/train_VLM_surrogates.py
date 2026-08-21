@@ -377,6 +377,13 @@ def train_model(aerodynamics,Mach, vehicle):
                 training['dCL_ddelta_'    + letter] = (CL_d[0,:]    - CL_d[1,:]   ) / (delta[0] - delta[1])
                 training['dCM_ddelta_'    + letter] = (CM_d[0,:]    - CM_d[1,:]   ) / (delta[0] - delta[1])
                 training['dCN_ddelta_'    + letter] = (CN_d[0,:]    - CN_d[1,:]   ) / (delta[0] - delta[1])
+                # reset to 0, not the real deflection, so later surfaces train in isolation
+                setattr(control_surface, deflection_attr, 0)
+
+    # restore real deflections now that training is done
+    for wing in vehicle.wings:
+        for control_surface in wing.control_surfaces:
+            for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
                 setattr(control_surface, deflection_attr, delta_0[letter])
 
     # reset vortex distribution after training

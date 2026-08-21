@@ -191,6 +191,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
 
         # Look at eigenvalues and eigenvectors
         LonModes                  = np.zeros((n_cpts,4), dtype = complex)
+        VLon                      = np.zeros((n_cpts,4,4), dtype = complex)
         phugoidFreqHz             = np.zeros((n_cpts,1))
         phugoidDamping            = np.zeros((n_cpts,1))
         phugoidTimeDoubleHalf     = np.zeros((n_cpts,1))
@@ -198,7 +199,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         shortPeriodDamping        = np.zeros((n_cpts,1))
         shortPeriodTimeDoubleHalf = np.zeros((n_cpts,1)) 
         try: 
-            LonModes  , V = np.linalg.eig(ALon)  
+            LonModes  , VLon = np.linalg.eig(ALon)
             phugoidInd                    = np.argmax(LonModes,axis=1)
             Ind                           = np.arange(n_cpts)
             phugoidFreqHz                 = np.atleast_2d(abs(LonModes[Ind, phugoidInd]) / (2 * np.pi)).T
@@ -295,6 +296,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         ALat[:,3,3] = 0
                                     
         LatModes                    = np.zeros((n_cpts,4),dtype=complex)
+        VLat                        = np.zeros((n_cpts,4,4),dtype=complex)
         dutchRollFreqHz             = np.zeros((n_cpts,1))
         dutchRollDamping            = np.zeros((n_cpts,1))
         dutchRollTimeDoubleHalf     = np.zeros((n_cpts,1))
@@ -307,7 +309,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         dutchRoll_mode_real         = np.zeros((n_cpts,1))
          
         try: 
-            LatModes  , V = np.linalg.eig(ALat) # State order: u, w, q, theta
+            LatModes  , VLat = np.linalg.eig(ALat) # State order: beta, p, r, phi
 
             real_parts = LatModes.real
             unique_elements, counts = np.unique(real_parts, return_counts=True, axis=1)
@@ -340,6 +342,8 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         # -----------------------------------------------------------------------------------------------------------------------  
         # Store Results
         # ------------------------------------------------------------------------------------------------------------------------  
+        DS.LongModes.A                            = ALon
+        DS.LongModes.eigenvectors                 = VLon
         DS.LongModes.LongModes                    = LonModes
         DS.LongModes.phugoidFreqHz                = phugoidFreqHz
         DS.LongModes.phugoidDamping               = phugoidDamping
@@ -348,7 +352,9 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         DS.LongModes.shortPeriodDamping           = shortPeriodDamping
         DS.LongModes.shortPeriodTimeDoubleHalf    = shortPeriodTimeDoubleHalf
                                                                         
-        DS.LatModes.LatModes                      = LatModes   
+        DS.LatModes.A                              = ALat
+        DS.LatModes.eigenvectors                   = VLat
+        DS.LatModes.LatModes                      = LatModes
         DS.LatModes.dutchRollFreqHz               = dutchRollFreqHz
         DS.LatModes.dutchRollDamping              = dutchRollDamping
         DS.LatModes.dutchRollTimeDoubleHalf       = dutchRollTimeDoubleHalf

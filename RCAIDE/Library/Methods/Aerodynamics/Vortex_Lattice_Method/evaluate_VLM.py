@@ -67,8 +67,8 @@ def evaluate_surrogate(state,settings,vehicle):
                                          sub_sur.Clift_spanwise, trans_sur.Clift_spanwise, sup_sur.Clift_spanwise,
                                          h_sub,h_sup,Mach, pts_alpha)   
       
-    conditions.aerodynamics.coefficients.lift.inviscid.total    = results_alpha.Clift   
-    conditions.aerodynamics.coefficients.drag.induced.inviscid  = results_alpha.Cdrag 
+    conditions.aerodynamics.coefficients.lift.inviscid.total    = results_alpha.Clift
+    conditions.aerodynamics.coefficients.drag.induced.inviscid  = results_alpha.Cdrag
     conditions.static_stability.coefficients.M                  = results_alpha.CM
     
     conditions.static_stability.coefficients.M_0 = compute_stability_derivative(sub_sur.CM_0    ,trans_sur.CM_0    ,sup_sur.CM_0    ,h_sub,h_sup,Mach) 
@@ -199,6 +199,9 @@ def evaluate_surrogate(state,settings,vehicle):
                                                                    getattr(sup_sur, surrogate_key), h_sub, h_sup, Mach)
             else:
                 derivative[coeff] = override * ones_row
+            # Cdrag_delta is always non-negative, same convention as trim_drag.py
+            if coeff == 'Cdrag':
+                derivative[coeff] = np.abs(derivative[coeff])
             setattr(conditions.static_stability.derivatives, key, derivative[coeff])
 
         conditions.static_stability.coefficients.Y                 += derivative['CY']    * deflection
@@ -207,7 +210,7 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.static_stability.coefficients.M                 += derivative['CM']    * deflection
         conditions.static_stability.coefficients.Z                 += derivative['Clift'] * deflection
         conditions.aerodynamics.coefficients.lift.inviscid.total   += derivative['Clift'] * deflection
-        conditions.aerodynamics.coefficients.drag.induced.inviscid += abs(derivative['Cdrag'] * deflection)
+        conditions.aerodynamics.coefficients.drag.induced.inviscid += derivative['Cdrag'] * np.abs(deflection)
 
         cs_conditions.static_stability.coefficients.Y += derivative['CY'] * deflection
         cs_conditions.static_stability.coefficients.L += derivative['CL'] * deflection
@@ -312,13 +315,15 @@ def evaluate_no_surrogate(state,settings,vehicle):
     # --------------------------------------------------------------------------------------------      
     # Equilibrium Condition 
     # --------------------------------------------------------------------------------------------
-    equilibrium_conditions =  create_conditions(n_cpts,alt,g,V,MAC,conditions.energy) 
-    VLM_results = VLM(equilibrium_conditions,settings,vehicle) 
+    equilibrium_conditions =  create_conditions(n_cpts,alt,g,V,MAC,conditions.energy)
+    VLM_results = VLM(equilibrium_conditions,settings,vehicle)
     CY_0     = VLM_results.CY
     CZ_0     = VLM_results.CZ
     CL_0     = VLM_results.CL
     CM_0     = VLM_results.CM
     CN_0     = VLM_results.CN
+    # induced-only baseline; rate/control-surface derivatives below diff against raw induced drag, not total_drag
+    Cdrag_induced_0 = VLM_results.CDrag_induced
      
     # store CM at 0 AoA
     conditions.static_stability.coefficients.M_0 =  CM_0
@@ -443,7 +448,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     CN_beta_prime    = VLM_results.CN
     
     conditions.static_stability.derivatives.Clift_beta =   (Clift_beta_prime   - Clift_0) / (delta_angle)
-    conditions.static_stability.derivatives.Cdrag_beta =   (Cdrag_beta_prime   - Cdrag_0) / (delta_angle) 
+    conditions.static_stability.derivatives.Cdrag_beta =   (Cdrag_beta_prime   - Cdrag_induced_0) / (delta_angle)
     conditions.static_stability.derivatives.CX_beta    =   (CX_beta_prime      - CX_0) / (delta_angle)  
     conditions.static_stability.derivatives.CY_beta    =   (CY_beta_prime      - CY_0) / (delta_angle) 
     conditions.static_stability.derivatives.CZ_beta    =   (CZ_beta_prime      - CZ_0) / (delta_angle) 
@@ -540,7 +545,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     CN_v_prime    = VLM_results.CN
     
     conditions.static_stability.derivatives.Clift_v = (Clift_v_prime   - Clift_0) / (delta_speed)
-    conditions.static_stability.derivatives.Cdrag_v = (Cdrag_v_prime   - Cdrag_0) / (delta_speed) 
+    conditions.static_stability.derivatives.Cdrag_v = (Cdrag_v_prime   - Cdrag_induced_0) / (delta_speed)
     conditions.static_stability.derivatives.CX_v    = (CX_v_prime      - CX_0) / (delta_speed)  
     conditions.static_stability.derivatives.CY_v    = (CY_v_prime      - CY_0) / (delta_speed) 
     conditions.static_stability.derivatives.CZ_v    = (CZ_v_prime      - CZ_0) / (delta_speed) 
@@ -569,7 +574,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     CN_w_prime    = VLM_results.CN
     
     conditions.static_stability.derivatives.Clift_w  = (Clift_w_prime   - Clift_0) / (delta_speed)
-    conditions.static_stability.derivatives.Cdrag_w  = (Cdrag_w_prime   - Cdrag_0) / (delta_speed) 
+    conditions.static_stability.derivatives.Cdrag_w  = (Cdrag_w_prime   - Cdrag_induced_0) / (delta_speed)
     conditions.static_stability.derivatives.CX_w     = (CX_w_prime      - CX_0) / (delta_speed)  
     conditions.static_stability.derivatives.CY_w     = (CY_w_prime      - CY_0) / (delta_speed) 
     conditions.static_stability.derivatives.CZ_w     = (CZ_w_prime      - CZ_0) / (delta_speed) 
@@ -598,7 +603,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     CN_p_prime    = VLM_results.CN
     
     conditions.static_stability.derivatives.Clift_p  =  (Clift_p_prime   - Clift_0) / (p_hat)
-    conditions.static_stability.derivatives.Cdrag_p  =  (Cdrag_p_prime   - Cdrag_0) / (p_hat) 
+    conditions.static_stability.derivatives.Cdrag_p  =  (Cdrag_p_prime   - Cdrag_induced_0) / (p_hat)
     conditions.static_stability.derivatives.CX_p     =  (CX_p_prime      - CX_0)    / (p_hat)  
     conditions.static_stability.derivatives.CY_p     =  (CY_p_prime      - CY_0)    / (p_hat) 
     conditions.static_stability.derivatives.CZ_p     =  (CZ_p_prime      - CZ_0)    / (p_hat) 
@@ -627,7 +632,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     CN_q_prime      = VLM_results.CN
     
     conditions.static_stability.derivatives.Clift_q  = (Clift_q_prime   - Clift_0) / (q_hat)
-    conditions.static_stability.derivatives.Cdrag_q  = (Cdrag_q_prime   - Cdrag_0) / (q_hat)
+    conditions.static_stability.derivatives.Cdrag_q  = (Cdrag_q_prime   - Cdrag_induced_0) / (q_hat)
     conditions.static_stability.derivatives.CX_q     = (CX_q_prime      - CX_0)    / (q_hat)
     conditions.static_stability.derivatives.CY_q     = (CY_q_prime      - CY_0)    / (q_hat)  
     conditions.static_stability.derivatives.CZ_q     = (CZ_q_prime      - CZ_0)    / (q_hat)
@@ -655,7 +660,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     CN_r_prime    = VLM_results.CN
      
     conditions.static_stability.derivatives.Clift_r  =  (Clift_r_prime   - Clift_0) / (r_hat)
-    conditions.static_stability.derivatives.Cdrag_r  =  (Cdrag_r_prime   - Cdrag_0) / (r_hat) 
+    conditions.static_stability.derivatives.Cdrag_r  =  (Cdrag_r_prime   - Cdrag_induced_0) / (r_hat)
     conditions.static_stability.derivatives.CX_r     =  (CX_r_prime      - CX_0)    / (r_hat)  
     conditions.static_stability.derivatives.CY_r     =  (CY_r_prime      - CY_0)    / (r_hat) 
     conditions.static_stability.derivatives.CZ_r     =  (CZ_r_prime      - CZ_0)    / (r_hat) 
@@ -664,16 +669,18 @@ def evaluate_no_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.CN_r     =  (CN_r_prime      - CN_0)    / (r_hat) 
  
     # see control_surface_registry.py for why every control surface is handled through one generic path here
-    baseline_coefficients = {'Clift': Clift_0, 'Cdrag': Cdrag_0, 'CX': CX_0, 'CY': CY_0,
+    baseline_coefficients = {'Clift': Clift_0, 'Cdrag': Cdrag_induced_0, 'CX': CX_0, 'CY': CY_0,
                               'CZ': CZ_0, 'CL': CL_0, 'CM': CM_0, 'CN': CN_0}
 
     for wing in vehicle.wings:
         for control_surface in wing.control_surfaces:
             for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
                 pertubation_conditions = create_conditions(n_cpts,alt,g,V,MAC,conditions.energy)
-                setattr(control_surface, deflection_attr, delta_ctrl_surf)
+                original_deflection    = getattr(control_surface, deflection_attr)
+                # perturb relative to the current deflection, not an absolute set-point
+                setattr(control_surface, deflection_attr, original_deflection + delta_ctrl_surf)
                 VLM_results             = VLM(pertubation_conditions,settings,vehicle)
-                setattr(control_surface, deflection_attr, 0)
+                setattr(control_surface, deflection_attr, original_deflection)
 
                 perturbed_coefficients = {'Clift': VLM_results.CLift, 'Cdrag': VLM_results.CDrag_induced,
                                            'CX': VLM_results.CX, 'CY': VLM_results.CY, 'CZ': VLM_results.CZ,
@@ -681,7 +688,11 @@ def evaluate_no_surrogate(state,settings,vehicle):
 
                 for coeff, prime in perturbed_coefficients.items():
                     key = coeff + '_delta_' + letter
-                    conditions.static_stability.derivatives[key] = (prime - baseline_coefficients[coeff]) / delta_ctrl_surf
+                    derivative_value = (prime - baseline_coefficients[coeff]) / delta_ctrl_surf
+                    # Cdrag_delta is always non-negative, same convention as trim_drag.py
+                    if coeff == 'Cdrag':
+                        derivative_value = np.abs(derivative_value)
+                    conditions.static_stability.derivatives[key] = derivative_value
     return
 def create_conditions(n_cpts,altitude,g,V,MAC,energy_conditions):
     
