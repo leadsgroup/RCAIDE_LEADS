@@ -434,13 +434,15 @@ def TR_mission_setup(analyses):
     segment.air_speed_start                               = 15 * Units['mph']    
     segment.air_speed_end                                 = 35 * Units['mph']     
     segment.acceleration                                  = 0.2
-    
-    
-    segment.state.numerics.mission_solver.type                    = 'optimize' 
-    segment.state.numerics.mission_solver.step_size               = 1E-3 
-    segment.state.numerics.mission_solver.tolerance                = 1E-2
-    segment.state.numerics.mission_solver.objective               = None 
-    
+
+    # square (2 unknowns: throttle, thrust_vector_angle vs 2 residuals:
+    # force_x, force_z) -- root_finder converges in ~35s vs. optimize's
+    # 511.9s SLSQP failure ("Singular matrix C in LSQ subproblem"). The
+    # step_size/tolerance overrides previously here were SLSQP-specific
+    # tuning and don't apply to fsolve, so they're dropped along with the
+    # type change (fsolve uses Numerics.py's tighter defaults instead)
+    segment.state.numerics.mission_solver.type                    = 'root_finder'
+
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  
     segment.flight_dynamics.force_z                       = True     
