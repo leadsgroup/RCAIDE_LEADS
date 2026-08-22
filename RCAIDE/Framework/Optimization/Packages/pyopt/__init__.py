@@ -8,4 +8,4 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-from .pyopt_setup import Pyopt_Solve
+from .pyopt_setup import Pyoptsparse_Solve
