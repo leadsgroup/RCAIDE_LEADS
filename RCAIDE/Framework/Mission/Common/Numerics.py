@@ -50,6 +50,7 @@ class Numerics(Conditions):
         # mission solver
         self.mission_solver                     = Conditions()
         self.mission_solver.type                = "optimize"
+        self.mission_solver.package             = "scipy"    # "scipy" or "pyopt" -- which package backs the "optimize" dispatch
         self.mission_solver.method              = "SLSQP"
         self.mission_solver.objective           = "energy"
         self.mission_solver.tolerance           = 1E-6

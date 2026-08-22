@@ -9,6 +9,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import  Units, Data
 from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
+from RCAIDE.Framework.Optimization.Packages.pyopt import pyopt_setup
 from RCAIDE.Framework.Optimization.Common  import Nexus
 from RCAIDE.Framework.Analyses.Process            import Process
 
@@ -60,32 +61,83 @@ def converge(segment):
         return
 
     if numerics.mission_solver.type  == "optimize":
-        problem  = add_mission_variables(segment) 
-       
-       
-        # Comment suppression of console window output
+        problem  = add_mission_variables(segment)
+        package  = getattr(numerics.mission_solver, 'package', 'scipy')
+
+        # Comment suppression of console window output. try/finally so an
+        # exception from either solve path (e.g. a bad package/method value)
+        # can't leave sys.stdout permanently redirected to devnull.
         if numerics.mission_solver.verbose == False:
             devnull = open(os.devnull,'w')
             sys.stdout = devnull
 
-        outputs  = scipy_setup.SciPy_Solve(problem,
-                                           solver     = numerics.mission_solver.method,
-                                           sense_step = numerics.mission_solver.step_size,
-                                           iter       = numerics.mission_solver.max_evaluations,
-                                           tolerance  = numerics.mission_solver.tolerance)
+        try:
+            if package == "scipy":
+                outputs  = scipy_setup.SciPy_Solve(problem,
+                                                   solver     = numerics.mission_solver.method,
+                                                   sense_step = numerics.mission_solver.step_size,
+                                                   iter       = numerics.mission_solver.max_evaluations,
+                                                   tolerance  = numerics.mission_solver.tolerance)
 
-        # Terminate suppression of console window output
-        if numerics.mission_solver.verbose == False:
-            sys.stdout = sys.__stdout__
-         
-        if outputs[3] != 0:
-            mission_converge = False
-            error_message =  outputs[4]
-        else:
-            mission_converge = True
-            error_message    = ""
-     
-    elif numerics.mission_solver.type  == "root_finder": 
+                if outputs[3] != 0:
+                    mission_converge = False
+                    error_message =  outputs[4]
+                else:
+                    mission_converge = True
+                    error_message    = ""
+
+            elif package == "pyopt":
+                # pyoptsparse has no cross-backend option for max_evaluations/tolerance
+                # (each optimizer names its own: IPOPT's 'max_iter'/'tol', SLSQP's
+                # 'MAXIT'/'ACC', CONMIN's 'ITMAX'/'DABFUN', ...) -- left as a follow-up,
+                # backends run with their own defaults for now.
+                outputs = pyopt_setup.Pyoptsparse_Solve(problem,
+                                                        solver     = numerics.mission_solver.method,
+                                                        sense_step = numerics.mission_solver.step_size)
+
+                # pyoptsparse backends aren't all guaranteed to leave their last
+                # objective call at xStar the way scipy's SLSQP does (see fsolve's
+                # analogous re-run below) -- force one so segment.state and the
+                # residual check just below both reflect the returned point.
+                input_names = problem.optimization_problem.inputs[:,0]
+                x_star      = np.array([np.atleast_1d(outputs.xStar[name])[0] for name in input_names], dtype=float)
+                problem.evaluate(x_star)
+
+                # Don't trust a backend's own success report at face value: CONMIN's
+                # pyoptsparse wrapper reports no optInform at all (confirmed -- it's
+                # None), and was observed accepting its unmoved initial guess as
+                # "solved" on a fully-determined (zero-DOF) equality-constrained
+                # problem where that guess wasn't actually a root. Independently
+                # verify the equality-constraint residual ourselves, the same way
+                # the root_finder path below never just trusts fsolve's ier either.
+                residual  = np.atleast_1d(problem.equality_constraint(x_star))
+                converged_residual = (residual.size == 0) or np.all(np.abs(residual) <= numerics.mission_solver.tolerance)
+
+                if outputs.optInform is not None and outputs.optInform['value'] != 0:
+                    mission_converge = False
+                    error_message    = outputs.optInform['text']
+                elif not converged_residual:
+                    mission_converge = False
+                    error_message    = (
+                        f"pyopt ({numerics.mission_solver.method}) reported success but the "
+                        f"equality-constraint residual is not within tolerance: max |residual| = "
+                        f"{np.max(np.abs(residual)) if residual.size else 0.0:.3e} > "
+                        f"{numerics.mission_solver.tolerance:.1e}"
+                    )
+                else:
+                    mission_converge = True
+                    error_message    = ""
+            else:
+                raise ValueError(
+                    f"Unsupported mission_solver.package '{package}'. Supported values "
+                    f"are 'scipy', 'pyopt'."
+                )
+        finally:
+            # Terminate suppression of console window output
+            if numerics.mission_solver.verbose == False:
+                sys.stdout = sys.__stdout__
+
+    elif numerics.mission_solver.type  == "root_finder":
         unknowns = segment.state.unknowns.mission.pack_array() 
         if segment.state.numerics.network_solver.type is None:
             unknowns = np.concatenate([unknowns, segment.state.unknowns.network.pack_array()])
