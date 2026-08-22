@@ -268,10 +268,52 @@ class Results(Conditions):
         self.control_surfaces.slat.static_stability.coefficients.e             = ones_1col * 0
 
         self.control_surfaces.spoiler                                          = Conditions()
-        self.control_surfaces.spoiler.deflection                               = ones_1col * 0         
+        self.control_surfaces.spoiler.deflection                               = ones_1col * 0
+
+        self.control_surfaces.flaperon                                         = Conditions()
+        self.control_surfaces.flaperon.deflection                              = ones_1col * 0
+        self.control_surfaces.flaperon.secondary_deflection                    = ones_1col * 0
+        self.control_surfaces.flaperon.hinge_moment                            = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability                        = Conditions()
+        self.control_surfaces.flaperon.static_stability.coefficients           = Conditions()
+        self.control_surfaces.flaperon.static_stability.coefficients.X         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.Y         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.Z         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.L         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.M         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.N         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.e         = ones_1col * 0
+
+        self.control_surfaces.elevon                                           = Conditions()
+        self.control_surfaces.elevon.deflection                                = ones_1col * 0
+        self.control_surfaces.elevon.secondary_deflection                      = ones_1col * 0
+        self.control_surfaces.elevon.hinge_moment                              = ones_1col * 0
+        self.control_surfaces.elevon.static_stability                          = Conditions()
+        self.control_surfaces.elevon.static_stability.coefficients             = Conditions()
+        self.control_surfaces.elevon.static_stability.coefficients.X           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.Y           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.Z           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.L           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.M           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.N           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.e           = ones_1col * 0
+
+        self.control_surfaces.ruddervator                                       = Conditions()
+        self.control_surfaces.ruddervator.deflection                            = ones_1col * 0
+        self.control_surfaces.ruddervator.secondary_deflection                  = ones_1col * 0
+        self.control_surfaces.ruddervator.hinge_moment                          = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability                      = Conditions()
+        self.control_surfaces.ruddervator.static_stability.coefficients         = Conditions()
+        self.control_surfaces.ruddervator.static_stability.coefficients.X       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.Y       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.Z       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.L       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.M       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.N       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.e       = ones_1col * 0
 
         # ----------------------------------------------------------------------------------------------------------------------
-        # Stability 
+        # Stability
         # ----------------------------------------------------------------------------------------------------------------------  
         self.static_stability                                                  = Conditions()
  

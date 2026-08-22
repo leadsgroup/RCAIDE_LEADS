@@ -66,6 +66,13 @@ class Stability(Analysis):
         self.settings.span_efficiency                                    = None
         self.settings.compute_neutral_point                              = True
 
+        # Method used to build the dynamic-stability state-space model.
+        # "linearized_derivatives" is the only option currently implemented:
+        # the classical small-perturbation stability-derivative EOM
+        # (Blakelock; Etkin & Reid Ch. 5). Reserved for a future higher-fidelity
+        # option (e.g. numerical linearization of the full nonlinear model).
+        self.settings.dynamic_stability_method                           = "linearized_derivatives"
+
         self.settings.supersonic                                         = Data() 
         self.settings.supersonic.begin_drag_rise_mach_number             = 0.95
         self.settings.supersonic.end_drag_rise_mach_number               = 1.15    
@@ -104,12 +111,35 @@ class Stability(Analysis):
         self.stability_derivatives.Clift_delta_f                         = None
         self.stability_derivatives.CM_delta_s                            = None
         self.stability_derivatives.Clift_delta_s                         = None    
-        self.stability_derivatives.Cdrag_delta_a                         = None 
-        self.stability_derivatives.Cdrag_delta_r                         = None 
-        self.stability_derivatives.Cdrag_delta_e                         = None 
-        self.stability_derivatives.Cdrag_delta_f                         = None 
-        self.stability_derivatives.Cdrag_delta_s                         = None    
- 
+        self.stability_derivatives.Cdrag_delta_a                         = None
+        self.stability_derivatives.Cdrag_delta_r                         = None
+        self.stability_derivatives.Cdrag_delta_e                         = None
+        self.stability_derivatives.Cdrag_delta_f                         = None
+        self.stability_derivatives.Cdrag_delta_s                         = None 
+        self.stability_derivatives.Clift_delta_a                         = None
+        self.stability_derivatives.CX_delta_a                            = None
+        self.stability_derivatives.CZ_delta_a                            = None
+        self.stability_derivatives.CM_delta_a                            = None
+        self.stability_derivatives.CX_delta_e                            = None
+        self.stability_derivatives.CY_delta_e                            = None
+        self.stability_derivatives.CZ_delta_e                            = None
+        self.stability_derivatives.CL_delta_e                            = None
+        self.stability_derivatives.CN_delta_e                            = None
+        self.stability_derivatives.Clift_delta_r                         = None
+        self.stability_derivatives.CX_delta_r                            = None
+        self.stability_derivatives.CZ_delta_r                            = None
+        self.stability_derivatives.CM_delta_r                            = None
+        self.stability_derivatives.CX_delta_f                            = None
+        self.stability_derivatives.CY_delta_f                            = None
+        self.stability_derivatives.CZ_delta_f                            = None
+        self.stability_derivatives.CL_delta_f                            = None
+        self.stability_derivatives.CN_delta_f                            = None
+        self.stability_derivatives.CX_delta_s                            = None
+        self.stability_derivatives.CY_delta_s                            = None
+        self.stability_derivatives.CZ_delta_s                            = None
+        self.stability_derivatives.CL_delta_s                            = None
+        self.stability_derivatives.CN_delta_s                            = None
+
         return
 
 

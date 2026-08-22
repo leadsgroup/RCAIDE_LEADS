@@ -24,4 +24,6 @@ from .Flap            import Flap
 from .Aileron         import Aileron
 from .Elevator        import Elevator
 from .Rudder          import Rudder
-from .Spoiler         import Spoiler
+from .Flaperon        import Flaperon
+from .Elevon          import Elevon
+from .Ruddervator     import Ruddervator
