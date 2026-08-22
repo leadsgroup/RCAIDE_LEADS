@@ -89,8 +89,8 @@ def converge(segment):
             elif package == "pyopt":
                 # pyoptsparse has no cross-backend option for max_evaluations/tolerance
                 # (each optimizer names its own: IPOPT's 'max_iter'/'tol', SLSQP's
-                # 'MAXIT'/'ACC', CONMIN's 'ITMAX'/'DABFUN', ...) -- left as a follow-up,
-                # backends run with their own defaults for now.
+                # 'MAXIT'/'ACC', ...) -- left as a follow-up, backends run with
+                # their own defaults for now.
                 outputs = pyopt_setup.Pyoptsparse_Solve(problem,
                                                         solver     = numerics.mission_solver.method,
                                                         sense_step = numerics.mission_solver.step_size)
@@ -103,13 +103,14 @@ def converge(segment):
                 x_star      = np.array([np.atleast_1d(outputs.xStar[name])[0] for name in input_names], dtype=float)
                 problem.evaluate(x_star)
 
-                # Don't trust a backend's own success report at face value: CONMIN's
-                # pyoptsparse wrapper reports no optInform at all (confirmed -- it's
-                # None), and was observed accepting its unmoved initial guess as
+                # Don't trust a backend's own success report at face value: CONMIN
+                # (since dropped -- see pyopt_setup.py) reported no optInform at
+                # all and was observed accepting its unmoved initial guess as
                 # "solved" on a fully-determined (zero-DOF) equality-constrained
                 # problem where that guess wasn't actually a root. Independently
-                # verify the equality-constraint residual ourselves, the same way
-                # the root_finder path below never just trusts fsolve's ier either.
+                # verify the equality-constraint residual ourselves for whichever
+                # backend is in use, the same way the root_finder path below never
+                # just trusts fsolve's ier either.
                 residual  = np.atleast_1d(problem.equality_constraint(x_star))
                 converged_residual = (residual.size == 0) or np.all(np.abs(residual) <= numerics.mission_solver.tolerance)
 

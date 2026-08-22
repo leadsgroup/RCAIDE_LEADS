@@ -16,9 +16,9 @@ from RCAIDE.Framework.Optimization.Common import helper_functions as help_fun
 # ----------------------------------------------------------------------
 def Pyoptsparse_Solve(problem, solver='SLSQP', FD='single', sense_step=1.0E-6, nonderivative_line_search=False):
     """ This converts your RCAIDE Nexus problem into a pyoptsparse optimization problem and solves it.
-        pyoptsparse has many algorithms, they can be switched out by using the solver input.
-        No SNOPT: commercial license despite pyoptsparse itself being open source. IPOPT and
-        CONMIN are the free solvers this is built against.
+        Supports SLSQP and IPOPT. No SNOPT: commercial license despite pyoptsparse
+        itself being open source. CONMIN was tried and dropped -- see the ValueError
+        message below for why.
 
         Assumptions:
         None
@@ -63,7 +63,7 @@ def Pyoptsparse_Solve(problem, solver='SLSQP', FD='single', sense_step=1.0E-6, n
         # IPOPT additionally needs the native IPOPT library findable via
         # pkg-config (e.g. `brew install ipopt` on macOS, or
         # `conda install -c conda-forge ipopt`) plus `pip install cyipopt`.
-        # SLSQP/CONMIN build in without any external solver library.
+        # SLSQP builds in without any external solver library.
         raise ImportError(
             'pyoptsparse not found. Install it with: '
             'pip install git+https://github.com/mdolab/pyoptsparse.git '
@@ -114,19 +114,18 @@ def Pyoptsparse_Solve(problem, solver='SLSQP', FD='single', sense_step=1.0E-6, n
 
     if solver == 'SLSQP':
         opt = pyOpt.SLSQP()
-    elif solver == 'CONMIN':
-        opt = pyOpt.CONMIN()
     elif solver == 'IPOPT':
         opt = pyOpt.IPOPT()
-    elif solver == 'NSGA2':
-        opt = pyOpt.NSGA2(pll_type='POA')
-    elif solver == 'ALPSO':
-        opt = pyOpt.ALPSO()
     else:
         raise ValueError(
             f"Unsupported mission_solver.method '{solver}' for the pyopt package. "
-            f"Supported values are 'SLSQP', 'CONMIN', 'IPOPT', 'NSGA2', 'ALPSO' "
-            f"(no SNOPT: commercial license despite pyoptsparse being open source)."
+            f"Supported values are 'SLSQP', 'IPOPT'. (No SNOPT: commercial "
+            f"license despite pyoptsparse itself being open source. CONMIN was "
+            f"tried and dropped: pyoptsparse's CONMIN wrapper reports no "
+            f"optInform at all and was observed reporting false convergence -- "
+            f"declaring success while leaving every unknown at its unmoved "
+            f"initial guess -- on RCAIDE's exactly-determined, equality-"
+            f"constrained mission segments.)"
         )
 
     if nonderivative_line_search == True:
