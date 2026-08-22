@@ -445,15 +445,18 @@ def TR_mission_setup(analyses):
     segment.flight_dynamics.force_x                       = True  
     segment.flight_dynamics.force_z                       = True     
     
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active                                = True           
+    # define flight controls
+    # bounds needed: unset defaults to -inf/+inf, letting SLSQP diverge
+    segment.assigned_control_variables.throttle.active                                = True
     segment.assigned_control_variables.throttle.assigned_propulsors                   = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
-                                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']] 
-    
-    segment.assigned_control_variables.thrust_vector_angle.active                     = True        
+                                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.throttle.bounds                                = [[0.0, 1.0]]
+
+    segment.assigned_control_variables.thrust_vector_angle.active                     = True
     segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
-                                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]  
-     
+                                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.thrust_vector_angle.bounds                     = [[0.0, 90.0 * Units.degrees]]
+
     mission.append_segment(segment)
     
 
