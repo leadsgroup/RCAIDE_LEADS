@@ -20,6 +20,7 @@ def main():
     test_hp_decompose_segment_linear_pair()
     test_hp_decompose_segment_divide()
     test_hp_decompose_segment_dual_spec()
+    test_hp_decompose_segment_cumulative()
     test_hp_decompose_segment_no_split_needed()
     test_hp_decompose_segment_unregistered_type_raises()
 
@@ -165,6 +166,45 @@ def test_hp_decompose_segment_dual_spec():
 
 
 # ----------------------------------------------------------------------
+#   hp_decompose_segment -- ('cumulative', target, source) extent:
+#   heading continuity for a curved segment
+# ----------------------------------------------------------------------
+def test_hp_decompose_segment_cumulative():
+    Segments = RCAIDE.Framework.Mission.Segments
+    base = Segments.Segment()
+    segment = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude(base)
+    segment.tag         = "turn"
+    segment.air_speed   = 110 * Units["mph"]
+    segment.altitude    = 1000 * Units.ft
+    segment.turn_radius = 3600 * Units.ft
+    segment.turn_angle  = 90 * Units.degree
+    segment.true_course = 30 * Units.degree  # starts mid-turn from a prior leg, not due north
+    segment.state.numerics.number_of_control_points = 16
+
+    n, k = compute_subsegment_layout(16, 2, max_dimension=32, min_control_points=4)
+    pieces = hp_decompose_segment(segment, number_of_unknowns=2, tolerance=1e-4, step_size=1e-5,
+                                   max_dimension=32, min_control_points=4)
+    assert len(pieces) == k
+
+    # each piece turns 1/k of the total arc
+    for piece in pieces:
+        assert abs(piece.turn_angle - segment.turn_angle / k) < 1e-9
+
+    # true_course accumulates: piece 0 starts at the original heading, each
+    # later piece starts where the previous one's turn would have ended --
+    # this is the actual bug being fixed (true_course isn't chained via
+    # state.initials the way position/velocity/time are)
+    expected_starts = segment.true_course + np.arange(k) * (segment.turn_angle / k)
+    for i, piece in enumerate(pieces):
+        assert abs(piece.true_course - expected_starts[i]) < 1e-9
+
+    # the last piece's start + its own turn reaches the original total heading change
+    assert abs((pieces[-1].true_course + pieces[-1].turn_angle) - (segment.true_course + segment.turn_angle)) < 1e-9
+
+    print("test_hp_decompose_segment_cumulative: PASS")
+
+
+# ----------------------------------------------------------------------
 #   hp_decompose_segment -- already small enough, no-op
 # ----------------------------------------------------------------------
 def test_hp_decompose_segment_no_split_needed():
@@ -194,14 +234,16 @@ def test_hp_decompose_segment_no_split_needed():
 def test_hp_decompose_segment_unregistered_type_raises():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
-    # Curved_Constant_Radius_... is a real, deliberately-unregistered "needs-
-    # care" type (true_course/heading continuity isn't handled by the
-    # generic linear-interpolation path) -- confirm it still fails loudly
-    # rather than silently mis-splitting. Single_Point isn't a useful check
-    # here: it's hardcoded to 1 control point, so layout always picks
-    # number_of_subsegments=1 and returns before ever reaching the registry.
-    segment = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude(base)
-    segment.tag = "curved_segment"
+    # Takeoff is deliberately unregistered: velocity profile and total
+    # elapsed time are both solved unknowns there, not prescribed, plus a
+    # standing reputation for finicky convergence independent of this
+    # feature -- not worth registering without real motivation. Confirm it
+    # still fails loudly rather than silently mis-splitting. Single_Point
+    # isn't a useful check here: it's hardcoded to 1 control point, so
+    # layout always picks number_of_subsegments=1 and returns before ever
+    # reaching the registry.
+    segment = Segments.Ground.Takeoff(base)
+    segment.tag = "takeoff"
     segment.state.numerics.number_of_control_points = 16
     assert type(segment) not in EXTENT_ATTRIBUTES
 

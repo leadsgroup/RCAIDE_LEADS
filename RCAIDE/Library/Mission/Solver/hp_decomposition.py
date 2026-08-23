@@ -82,16 +82,22 @@ def compute_subsegment_layout(number_of_control_points, number_of_unknowns, max_
 # e.g. Constant_Mach_Linear_Altitude -- vary two attributes in lockstep, like
 # altitude and distance, to keep a derived quantity like climb angle
 # consistent). Each spec is one of:
-#   ('pair', start_attr, end_attr)  -- linearly interpolated across sub-segments
-#   ('divide', attr)                -- a total-extent scalar, divided evenly
+#   ('pair', start_attr, end_attr)         -- linearly interpolated across sub-segments
+#   ('divide', attr)                       -- a total-extent scalar, divided evenly
+#   ('cumulative', target_attr, source_attr) -- piece i gets
+#       segment.target_attr + i*(segment.source_attr / K); for segment types
+#       (so far just the curved-radius cruise) where target_attr is read as a
+#       plain, non-chained attribute rather than carried forward via
+#       state.initials the way position/velocity/time are, so each piece
+#       needs the cumulative effect of every prior piece added back in.
 #
 # Only segment types whose extent attributes were directly confirmed against
 # their own initialize_conditions code (this session's audit, spot-checked
 # again while registering) belong here. Excluded on purpose:
-#   - the four "needs-care" categories from the A.4 audit (altitude-as-
-#     unknown re-seeding, heading continuity, Takeoff/Landing's velocity-as-
-#     unknown structure) -- registering them here would silently apply the
-#     plain linear-interpolation path where it's known to be insufficient.
+#   - the remaining "needs-care" categories from the A.4 audit (altitude-as-
+#     unknown re-seeding, Takeoff/Landing's velocity-as-unknown structure)
+#     -- registering them here would silently apply the plain linear-
+#     interpolation path where it's known to be insufficient.
 #   - Ground/Battery_Discharge, Battery_Recharge -- the audit assumed
 #     separate Library-side files for these that turned out not to exist
 #     (only Battery_Charge_Discharge.py does); not re-verified yet.
@@ -164,9 +170,24 @@ def _register_known_segment_types():
     _register(Vertical_Flight.Descent, ('pair', 'altitude_start', 'altitude_end'))
     _register(Vertical_Flight.Hover, ('divide', 'time'))
 
-    # Ground (Takeoff/Landing: needs-care, velocity/time are solved unknowns;
-    # Battery_Discharge/Recharge: audit's assumed file location doesn't
-    # exist, not re-verified) -- none registered this pass.
+    # Curved_Constant_Radius: true_course_control_points = segment.true_course
+    # + t_nondim*turn_angle (initialize_conditions.py) -- true_course is read
+    # directly, not carried forward via state.initials like everything else,
+    # so each piece needs the heading already turned by prior pieces added
+    # back in, not just an even turn_angle split.
+    _register(Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude,
+              ('divide', 'turn_angle'), ('cumulative', 'true_course', 'turn_angle'))
+
+    # Ground: deliberately excluded, not just unfinished.
+    #   - Takeoff/Landing: velocity profile and total elapsed time are both
+    #     solved unknowns (not prescribed), a fundamentally different
+    #     residual/unknown structure than every airborne segment here, and
+    #     already have a reputation (independent of this feature) for being
+    #     finicky to converge -- not worth compounding that with a first
+    #     pass at decomposition. Revisit only with real motivation.
+    #   - Battery_Discharge/Recharge: the audit assumed separate Library-
+    #     side files for these that don't exist (only
+    #     Battery_Charge_Discharge.py does) -- not re-verified.
 
 
 _register_known_segment_types()
@@ -254,6 +275,11 @@ def hp_decompose_segment(segment, number_of_unknowns, tolerance, step_size,
             _, attr = spec
             total = getattr(segment, attr)
             per_spec_values.append(('divide', attr, total / number_of_subsegments))
+        elif spec[0] == 'cumulative':
+            _, target_attr, source_attr = spec
+            base_value = getattr(segment, target_attr)
+            per_piece  = getattr(segment, source_attr) / number_of_subsegments
+            per_spec_values.append(('cumulative', target_attr, base_value, per_piece))
         else:
             raise ValueError(f"Unknown extent spec kind {spec[0]!r} for {segment_class.__name__}")
 
@@ -271,9 +297,12 @@ def hp_decompose_segment(segment, number_of_unknowns, tolerance, step_size,
                 _, start_attr, end_attr, edges = value
                 setattr(piece, start_attr, edges[i])
                 setattr(piece, end_attr, edges[i + 1])
-            else:
+            elif value[0] == 'divide':
                 _, attr, per_piece_value = value
                 setattr(piece, attr, per_piece_value)
+            elif value[0] == 'cumulative':
+                _, target_attr, base_value, per_piece = value
+                setattr(piece, target_attr, base_value + i * per_piece)
 
         pieces.append(piece)
 
