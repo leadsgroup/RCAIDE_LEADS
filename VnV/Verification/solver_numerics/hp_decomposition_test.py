@@ -32,17 +32,21 @@ def main():
 # ----------------------------------------------------------------------
 def test_compute_subsegment_layout():
 
-    # worked examples from the A.4 design discussion: N=16 points
-    assert compute_subsegment_layout(16, 6, max_dimension=32, min_control_points=1) == (4, 4)
-    assert compute_subsegment_layout(16, 12, max_dimension=32, min_control_points=1) == (2, 8)
+    # worked examples from the A.4 design discussion: N=16 points, floor=4.
+    # Smallest, not largest: at U=1, three divisors (4,8,16) all clear the
+    # dimension cap -- the old max-based algorithm would have picked 16 (no
+    # split at all); the calibration-driven min-based algorithm picks 4.
+    assert compute_subsegment_layout(16, 1, max_dimension=100, min_control_points=4) == (4, 4)
 
     # the actual departure_transition_1 case: 16 points, 5 unknowns/point
     # (2 mission: throttle, thrust_vector_angle; 3 network: motor_current,
-    # cell_temperature, cell_state_of_charge)
+    # cell_temperature, cell_state_of_charge). Only n=4 clears the dimension
+    # cap here (n=8 -> dim 40 >= 32), so floor and dimension cap agree.
     assert compute_subsegment_layout(16, 5, max_dimension=32, min_control_points=4) == (4, 4)
 
-    # already small enough: no split needed, n == N
-    assert compute_subsegment_layout(8, 2, max_dimension=32, min_control_points=1) == (8, 1)
+    # floor equal to N: the only divisor >= floor is N itself, so no split
+    # happens regardless of how loose the dimension cap is
+    assert compute_subsegment_layout(8, 2, max_dimension=32, min_control_points=8) == (8, 1)
 
     # min_control_points floor takes precedence over a smaller dimension-
     # satisfying divisor when both exist
@@ -127,29 +131,31 @@ def test_hp_decompose_segment_defaults_from_numerics():
 
     default_max_dim = segment.state.numerics.hp_decomposition.max_dimension
     default_floor    = segment.state.numerics.hp_decomposition.min_control_points
-    assert default_max_dim == 32
+    assert default_max_dim == 64
     assert default_floor == 4
 
     # no max_dimension/min_control_points passed -- must fall back to
     # segment.state.numerics.hp_decomposition, not silently use something else.
-    # U=2 (not the real departure_transition_1 U=5) specifically because it
-    # leaves multiple valid divisors of 16 available (n=4,8,16 all clear the
-    # floor), so tightening max_dimension below actually has room to change
-    # the outcome -- U=5 only ever has one valid choice (n=4) across a wide
-    # range of max_dimension, which wouldn't demonstrate the fallback is live.
     pieces = hp_decompose_segment(segment, number_of_unknowns=2, tolerance=1e-4, step_size=1e-5)
     n, k = compute_subsegment_layout(16, 2, max_dimension=default_max_dim, min_control_points=default_floor)
     assert len(pieces) == k
     for piece in pieces:
         assert piece.state.numerics.number_of_control_points == n
 
-    # overriding the segment's own numerics changes the outcome, confirming
-    # the fallback actually reads from the segment, not a hardcoded module-level constant
-    segment.state.numerics.hp_decomposition.max_dimension = 12
-    pieces_tight = hp_decompose_segment(segment, number_of_unknowns=2, tolerance=1e-4, step_size=1e-5)
-    n_tight, k_tight = compute_subsegment_layout(16, 2, max_dimension=12, min_control_points=default_floor)
-    assert len(pieces_tight) == k_tight
-    assert k_tight != k  # tighter cap must actually change the layout, not be ignored
+    # overriding the segment's own numerics changes the outcome, confirming the
+    # fallback actually reads from the segment, not a hardcoded module-level
+    # constant. Under min-based selection, tightening the cap only changes the
+    # chosen n once it excludes the smallest candidate entirely (n=4 -> dim 8
+    # stays valid as long as max_dimension > 8, since min-selection never
+    # prefers a larger n just because the cap loosened) -- so tighten past
+    # that point and confirm it now raises instead of silently keeping n=4.
+    segment.state.numerics.hp_decomposition.max_dimension = 6
+    raised = False
+    try:
+        hp_decompose_segment(segment, number_of_unknowns=2, tolerance=1e-4, step_size=1e-5)
+    except ValueError:
+        raised = True
+    assert raised, "tightened max_dimension must actually be read from the segment, not ignored"
 
     print("test_hp_decompose_segment_defaults_from_numerics: PASS")
 

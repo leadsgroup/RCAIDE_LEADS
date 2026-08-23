@@ -11,17 +11,27 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_subsegment_layout
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_subsegment_layout(number_of_control_points, number_of_unknowns, max_dimension=32, min_control_points=4):
+def compute_subsegment_layout(number_of_control_points, number_of_unknowns, max_dimension=64, min_control_points=4):
     """Static (design-time) hp-decomposition layout: how many sub-segments a
     segment should be split into, and how many control points each gets.
 
-    Finds the largest divisor of number_of_control_points that (a) keeps
-    total sub-problem dimension (points-per-piece * number_of_unknowns)
-    under max_dimension and (b) stays at or above min_control_points.
-    Largest, not smallest, because fewer sub-segments means less chained-
-    segment overhead while still respecting the dimension cap. Requiring an
-    exact divisor keeps every sub-segment the same size -- no ragged last
-    piece with fewer points than the rest.
+    Finds the SMALLEST divisor of number_of_control_points that (a) is at
+    or above min_control_points and (b) keeps total sub-problem dimension
+    (points-per-piece * number_of_unknowns) under max_dimension. Requiring
+    an exact divisor keeps every sub-segment the same size -- no ragged
+    last piece with fewer points than the rest.
+
+    Smallest, not largest: calibration on a real vehicle (A.4 in
+    RCAIDE_compute_acceleration_path.md) found control-point count itself,
+    not the points*unknowns product, is what drives solve difficulty --
+    tripling unknowns at fixed points (5->12, dim 20->48) cost ~30% wall-
+    clock; doubling points at fixed unknowns (4->8, dim 20->40, so a
+    *smaller* dimension) cost ~3x. So max_dimension is now mostly a safety
+    net against a genuinely pathological control-variable count, not the
+    primary lever -- min_control_points is. This trades fewer, larger sub-
+    segments for more, smaller ones whenever both are available, which is
+    the opposite of what an "avoid chaining overhead" instinct would pick,
+    but matches the evidence.
 
     This is a pure function of static problem size (never of solver
     behavior/convergence outcome), so it returns the same layout every time
@@ -30,10 +40,14 @@ def compute_subsegment_layout(number_of_control_points, number_of_unknowns, max_
     went would defeat trace reuse entirely.
 
     Assumptions:
-    max_dimension=32 and min_control_points=4 are placeholders pending a
-    proper calibration sweep (see RCAIDE_compute_acceleration_path.md A.4)
-    -- only two real data points exist so far (24 dims converged in
-    seconds, 96 dims did not converge in 15+ minutes on the same segment).
+    min_control_points=4 is calibration-backed (see A.4's floor discussion:
+    cubic as the traditional minimum for real curvature, matches a pre-
+    existing hand-tuned precedent in this codebase, converged correctly in
+    testing). max_dimension=64 is NOT independently calibrated -- the sweep
+    never found a U-driven wall at fixed small n (dimension up to 48 at n=4
+    converged cleanly, barely slower than dimension 20), so 64 is set
+    generous enough to stay non-binding across the validated range and only
+    guard a genuinely pathological control-variable count.
 
     Source:
     N/A
@@ -69,7 +83,7 @@ def compute_subsegment_layout(number_of_control_points, number_of_unknowns, max_
             f"variables, raise max_dimension, or lower min_control_points."
         )
 
-    points_per_subsegment = max(candidates)
+    points_per_subsegment = min(candidates)
     number_of_subsegments = number_of_control_points // points_per_subsegment
     return points_per_subsegment, number_of_subsegments
 

@@ -75,7 +75,14 @@ class Numerics(Conditions):
         # network unknowns together whenever network_solver.type is None, so this
         # isn't a mission_solver-only setting.
         self.hp_decomposition                    = Conditions()
-        self.hp_decomposition.max_dimension      = 32   # placeholder pending a calibration sweep
+        # min_control_points is the calibrated, load-bearing lever: the Tiltrotor
+        # VTOL sweep showed control-point count (n) drives solver cost far more than
+        # the n*U dimension product (U 5->12 at fixed n=4 cost ~30%; n 4->8 at fixed
+        # U=5, a *smaller* dimension, cost ~3x). max_dimension is therefore only a
+        # pathological-U safety net, not independently calibrated; 64 is set generous
+        # enough that it never binds within the validated range (n=4, U up to 12,
+        # dimension up to 48 all converged cleanly).
+        self.hp_decomposition.max_dimension      = 64
         self.hp_decomposition.min_control_points = 4
 
         self.dimensionless                      = Conditions()
