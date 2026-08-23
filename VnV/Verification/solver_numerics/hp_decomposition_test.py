@@ -18,6 +18,7 @@ import numpy as np
 def main():
     test_compute_subsegment_layout()
     test_hp_decompose_segment_linear_pair()
+    test_hp_decompose_segment_defaults_from_numerics()
     test_hp_decompose_segment_divide()
     test_hp_decompose_segment_dual_spec()
     test_hp_decompose_segment_cumulative()
@@ -107,6 +108,49 @@ def test_hp_decompose_segment_linear_pair():
         assert p.tag.startswith("departure_transition_1_")
 
     print("test_hp_decompose_segment_linear_pair: PASS")
+
+
+# ----------------------------------------------------------------------
+#   hp_decompose_segment -- max_dimension/min_control_points default from
+#   Numerics.py's hp_decomposition block when not passed explicitly
+# ----------------------------------------------------------------------
+def test_hp_decompose_segment_defaults_from_numerics():
+    Segments = RCAIDE.Framework.Mission.Segments
+    base = Segments.Segment()
+    segment = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base)
+    segment.tag              = "departure_transition_1"
+    segment.air_speed_start  = 15 * Units.mph
+    segment.air_speed_end    = 35 * Units.mph
+    segment.acceleration     = 0.2
+    segment.state.numerics.number_of_control_points = 16
+
+    default_max_dim = segment.state.numerics.hp_decomposition.max_dimension
+    default_floor    = segment.state.numerics.hp_decomposition.min_control_points
+    assert default_max_dim == 32
+    assert default_floor == 4
+
+    # no max_dimension/min_control_points passed -- must fall back to
+    # segment.state.numerics.hp_decomposition, not silently use something else.
+    # U=2 (not the real departure_transition_1 U=5) specifically because it
+    # leaves multiple valid divisors of 16 available (n=4,8,16 all clear the
+    # floor), so tightening max_dimension below actually has room to change
+    # the outcome -- U=5 only ever has one valid choice (n=4) across a wide
+    # range of max_dimension, which wouldn't demonstrate the fallback is live.
+    pieces = hp_decompose_segment(segment, number_of_unknowns=2, tolerance=1e-4, step_size=1e-5)
+    n, k = compute_subsegment_layout(16, 2, max_dimension=default_max_dim, min_control_points=default_floor)
+    assert len(pieces) == k
+    for piece in pieces:
+        assert piece.state.numerics.number_of_control_points == n
+
+    # overriding the segment's own numerics changes the outcome, confirming
+    # the fallback actually reads from the segment, not a hardcoded module-level constant
+    segment.state.numerics.hp_decomposition.max_dimension = 12
+    pieces_tight = hp_decompose_segment(segment, number_of_unknowns=2, tolerance=1e-4, step_size=1e-5)
+    n_tight, k_tight = compute_subsegment_layout(16, 2, max_dimension=12, min_control_points=default_floor)
+    assert len(pieces_tight) == k_tight
+    assert k_tight != k  # tighter cap must actually change the layout, not be ignored
+
+    print("test_hp_decompose_segment_defaults_from_numerics: PASS")
 
 
 # ----------------------------------------------------------------------

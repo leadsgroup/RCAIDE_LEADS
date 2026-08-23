@@ -197,10 +197,18 @@ _register_known_segment_types()
 #  hp_decompose_segment
 # ----------------------------------------------------------------------------------------------------------------------
 def hp_decompose_segment(segment, number_of_unknowns, tolerance, step_size,
-                          max_dimension=32, min_control_points=4):
+                          max_dimension=None, min_control_points=None):
     """Splits one segment into a chain of smaller sub-segments of the same
     type, covering the same overall extent, per compute_subsegment_layout's
     static sizing rule.
+
+    max_dimension/min_control_points default to the segment's own
+    state.numerics.hp_decomposition.max_dimension/.min_control_points
+    (Numerics.py) when not passed explicitly -- a sibling of mission_solver/
+    network_solver, not nested under either, since total sub-problem
+    dimension is mission + network unknowns together whenever
+    network_solver.type is None, not a mission_solver-only concern. Pass
+    either argument explicitly to override per-call.
 
     Reuses RCAIDE's existing segment-chaining (state.initials) for
     continuity between pieces -- this is not new solver machinery, just
@@ -231,8 +239,8 @@ def hp_decompose_segment(segment, number_of_unknowns, tolerance, step_size,
     Inputs:
     segment              [RCAIDE.Framework.Mission.Segments.Segment] already-configured, not yet appended to a mission
     number_of_unknowns   [int]  mission + network unknowns per control point (caller-supplied -- see module docstring)
-    max_dimension        [int]
-    min_control_points   [int]
+    max_dimension        [int]  optional, defaults to segment.state.numerics.hp_decomposition.max_dimension
+    min_control_points   [int]  optional, defaults to segment.state.numerics.hp_decomposition.min_control_points
     tolerance            [float]
     step_size            [float]
 
@@ -242,6 +250,11 @@ def hp_decompose_segment(segment, number_of_unknowns, tolerance, step_size,
     Properties Used:
     N/A
     """
+    if max_dimension is None:
+        max_dimension = segment.state.numerics.hp_decomposition.max_dimension
+    if min_control_points is None:
+        min_control_points = segment.state.numerics.hp_decomposition.min_control_points
+
     segment_class = type(segment)
     n_points      = segment.state.numerics.number_of_control_points
 

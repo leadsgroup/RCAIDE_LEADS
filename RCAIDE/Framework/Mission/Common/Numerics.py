@@ -70,6 +70,14 @@ class Numerics(Conditions):
         self.network_solver.step_size           = 1E-8   
         self.network_solver.verbose             = False
            
+        # static hp-decomposition (A.4) -- sibling to mission_solver/network_solver,
+        # not nested under either: total sub-problem dimension is mission +
+        # network unknowns together whenever network_solver.type is None, so this
+        # isn't a mission_solver-only setting.
+        self.hp_decomposition                    = Conditions()
+        self.hp_decomposition.max_dimension      = 32   # placeholder pending a calibration sweep
+        self.hp_decomposition.min_control_points = 4
+
         self.dimensionless                      = Conditions()
         self.dimensionless.control_points       = np.empty([0,0])
         self.dimensionless.differentiate        = np.empty([0,0])
