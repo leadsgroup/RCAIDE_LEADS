@@ -20,6 +20,7 @@ def main():
     test_hp_decompose_segment_linear_pair()
     test_hp_decompose_segment_defaults_from_numerics()
     test_hp_decompose_segment_divide()
+    test_hp_decompose_segment_battery_discharge()
     test_hp_decompose_segment_dual_spec()
     test_hp_decompose_segment_cumulative()
     test_hp_decompose_segment_no_split_needed()
@@ -177,6 +178,29 @@ def test_hp_decompose_segment_divide():
         assert piece.altitude == segment.altitude
 
     print("test_hp_decompose_segment_divide: PASS")
+
+
+# ----------------------------------------------------------------------
+#   hp_decompose_segment -- Ground.Battery_Discharge, a second ('divide', ...)
+#   type on a structurally different segment (Ground, not Cruise/Climb)
+# ----------------------------------------------------------------------
+def test_hp_decompose_segment_battery_discharge():
+    Segments = RCAIDE.Framework.Mission.Segments
+    base = Segments.Segment()
+    segment = Segments.Ground.Battery_Discharge(base)
+    segment.tag  = "discharge"
+    segment.time = 300 * Units.seconds
+    segment.state.numerics.number_of_control_points = 16
+
+    pieces = hp_decompose_segment(segment, number_of_unknowns=1, tolerance=1e-4, step_size=1e-5,
+                                   max_dimension=8, min_control_points=4)
+
+    n, k = compute_subsegment_layout(16, 1, max_dimension=8, min_control_points=4)
+    assert len(pieces) == k
+    for piece in pieces:
+        assert abs(piece.time - segment.time / k) < 1e-9
+
+    print("test_hp_decompose_segment_battery_discharge: PASS")
 
 
 # ----------------------------------------------------------------------

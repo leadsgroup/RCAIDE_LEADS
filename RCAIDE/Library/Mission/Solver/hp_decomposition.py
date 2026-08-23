@@ -95,12 +95,10 @@ def compute_subsegment_layout(number_of_control_points, number_of_unknowns, max_
 # their own initialize_conditions code (this session's audit, spot-checked
 # again while registering) belong here. Excluded on purpose:
 #   - the remaining "needs-care" categories from the A.4 audit (altitude-as-
-#     unknown re-seeding, Takeoff/Landing's velocity-as-unknown structure)
-#     -- registering them here would silently apply the plain linear-
-#     interpolation path where it's known to be insufficient.
-#   - Ground/Battery_Discharge, Battery_Recharge -- the audit assumed
-#     separate Library-side files for these that turned out not to exist
-#     (only Battery_Charge_Discharge.py does); not re-verified yet.
+#     unknown re-seeding, Takeoff/Landing's velocity-as-unknown structure,
+#     Battery_Recharge's solve-dependent charging duration) -- registering
+#     them here would silently apply the plain linear-interpolation path
+#     where it's known to be insufficient.
 #   - Single_Point (all 4) and Untrimmed -- not decomposition candidates at
 #     all (hardcoded to 1-2 control points, no extent to split).
 # See RCAIDE_compute_acceleration_path.md's A.4 section for the full audit.
@@ -114,7 +112,7 @@ def _register(segment_class, *specs):
 def _register_known_segment_types():
     # Imported lazily to avoid a hard import-order dependency between this
     # module and RCAIDE.Framework.Mission.Segments at package-init time.
-    from RCAIDE.Framework.Mission.Segments import Cruise, Climb, Descent, Vertical_Flight
+    from RCAIDE.Framework.Mission.Segments import Cruise, Climb, Descent, Vertical_Flight, Ground
 
     # Cruise
     _register(Cruise.Constant_Acceleration_Constant_Altitude,
@@ -178,16 +176,26 @@ def _register_known_segment_types():
     _register(Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude,
               ('divide', 'turn_angle'), ('cumulative', 'true_course', 'turn_angle'))
 
-    # Ground: deliberately excluded, not just unfinished.
+    # Battery_Discharge: initialize_conditions.py's else-branch (non-Recharge)
+    # reads segment.time directly -- a plain, prescribed duration, same as
+    # Hover/the Loiter segments.
+    _register(Ground.Battery_Discharge, ('divide', 'time'))
+
+    # Ground: the rest deliberately excluded, not just unfinished.
     #   - Takeoff/Landing: velocity profile and total elapsed time are both
     #     solved unknowns (not prescribed), a fundamentally different
     #     residual/unknown structure than every airborne segment here, and
     #     already have a reputation (independent of this feature) for being
     #     finicky to converge -- not worth compounding that with a first
     #     pass at decomposition. Revisit only with real motivation.
-    #   - Battery_Discharge/Recharge: the audit assumed separate Library-
-    #     side files for these that don't exist (only
-    #     Battery_Charge_Discharge.py does) -- not re-verified.
+    #   - Battery_Recharge: charging duration is computed from cutoff_SOC and
+    #     the SOC the segment actually starts at (initialize_conditions.py:
+    #     "linear SOC increase" from state.initials's converged end-of-flight
+    #     SOC, or initial_battery_conditions if it's the first segment) --
+    #     not known until solve time, and specifically not known to
+    #     hp_decompose_segment, which runs on a bare segment before it's
+    #     chained into a mission (state.initials doesn't exist yet). Same
+    #     class of problem as Takeoff/Landing, just for a different reason.
 
 
 _register_known_segment_types()
