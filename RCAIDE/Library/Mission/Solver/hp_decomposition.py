@@ -304,6 +304,8 @@ def hp_decompose_segment(segment, number_of_unknowns, tolerance, step_size,
             _, start_attr, end_attr = spec
             v0 = getattr(segment, start_attr)
             vf = getattr(segment, end_attr)
+            if v0 is None or vf is None:
+                return [segment]
             edges = np.linspace(v0, vf, number_of_subsegments + 1)
             per_spec_values.append(('pair', start_attr, end_attr, edges))
         elif spec[0] == 'divide':

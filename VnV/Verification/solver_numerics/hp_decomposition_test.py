@@ -25,6 +25,7 @@ def main():
     test_hp_decompose_segment_cumulative()
     test_hp_decompose_segment_no_split_needed()
     test_hp_decompose_segment_unregistered_type_raises()
+    test_hp_decompose_segment_pair_with_none_start_skips()
 
 
 # ----------------------------------------------------------------------
@@ -330,6 +331,40 @@ def test_hp_decompose_segment_unregistered_type_raises():
     assert raised, "expected ValueError for an unregistered segment type"
 
     print("test_hp_decompose_segment_unregistered_type_raises: PASS")
+
+
+# ----------------------------------------------------------------------
+#   hp_decompose_segment -- ('pair', start, end) extent where the start
+#   value is still None (e.g. Constant_Speed_Constant_Rate's altitude_start,
+#   left unset by convention to inherit the previous segment's final
+#   altitude via state.initials chaining at mission-evaluate time -- not yet
+#   known at this Pre_Process step). Regression test for a real crash: an
+#   E175 regional-jet climb mission (climb_1 -> climb_2 -> climb_3, each
+#   only setting altitude_end) hit a TypeError from np.linspace(None, ...)
+#   here before this was fixed.
+# ----------------------------------------------------------------------
+def test_hp_decompose_segment_pair_with_none_start_skips():
+    Segments = RCAIDE.Framework.Mission.Segments
+    base = Segments.Segment()
+    segment = Segments.Climb.Constant_Speed_Constant_Rate(base)
+    segment.tag           = "climb_2"
+    segment.altitude_end  = 8.0 * Units.km
+    segment.air_speed     = 190.0 * Units['m/s']
+    segment.climb_rate    = 6.0 * Units['m/s']
+    segment.state.numerics.number_of_control_points = 16
+    assert segment.altitude_start is None
+    assert type(segment) in EXTENT_ATTRIBUTES
+
+    # would otherwise split (16 points, plenty of unknowns to force it) --
+    # confirm the unresolved boundary is what prevents the split, not layout
+    pieces = hp_decompose_segment(segment, number_of_unknowns=5, tolerance=1e-4, step_size=1e-5,
+                                   max_dimension=32, min_control_points=4)
+
+    assert len(pieces) == 1
+    assert pieces[0] is segment
+    assert segment.altitude_start is None  # untouched, not guessed at
+
+    print("test_hp_decompose_segment_pair_with_none_start_skips: PASS")
 
 
 if __name__ == '__main__':
