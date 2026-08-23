@@ -84,6 +84,18 @@ class Numerics(Conditions):
         # dimension up to 48 all converged cleanly).
         self.hp_decomposition.max_dimension      = 64
         self.hp_decomposition.min_control_points = 4
+        # enabled defaults True: wired into Sequential_Segments' process.initialize
+        # (RCAIDE.Library.Mission.Common.Pre_Process.hp_decompose_mission), auto-
+        # splitting any registered segment type (EXTENT_ATTRIBUTES) before the
+        # solve. Set False on a segment to opt it out individually.
+        self.hp_decomposition.enabled            = True
+        # tolerance/step_size for hp-decomposed pieces -- calibration found
+        # neither the parent segment's own settings (2.7% final-SOC discrepancy)
+        # nor the library mission_solver default (1.9%) were safe for the
+        # smaller, now-cheap sub-problem; these tuned values gave 0.3%. See
+        # hp_decompose_segment's docstring for the full comparison.
+        self.hp_decomposition.tolerance          = 1E-4
+        self.hp_decomposition.step_size          = 1E-5
 
         self.dimensionless                      = Conditions()
         self.dimensionless.control_points       = np.empty([0,0])
