@@ -119,81 +119,81 @@ def compute_subsegment_layout(number_of_control_points, number_of_unknowns, max_
 EXTENT_ATTRIBUTES = {}
 
 
-def _register(segment_class, *specs):
+def register(segment_class, *specs):
     EXTENT_ATTRIBUTES[segment_class] = specs
 
 
-def _register_known_segment_types():
+def register_known_segment_types():
     # Imported lazily to avoid a hard import-order dependency between this
     # module and RCAIDE.Framework.Mission.Segments at package-init time.
     from RCAIDE.Framework.Mission.Segments import Cruise, Climb, Descent, Vertical_Flight, Ground
 
     # Cruise
-    _register(Cruise.Constant_Acceleration_Constant_Altitude,
+    register(Cruise.Constant_Acceleration_Constant_Altitude,
               ('pair', 'air_speed_start', 'air_speed_end'))
-    _register(Cruise.Constant_Acceleration_Constant_Pitchrate_Constant_Altitude,
+    register(Cruise.Constant_Acceleration_Constant_Pitchrate_Constant_Altitude,
               ('pair', 'air_speed_start', 'air_speed_end'), ('pair', 'pitch_initial', 'pitch_final'))
-    _register(Cruise.Constant_Dynamic_Pressure_Constant_Altitude, ('divide', 'distance'))
-    _register(Cruise.Constant_Dynamic_Pressure_Constant_Altitude_Loiter, ('divide', 'time'))
-    _register(Cruise.Constant_Mach_Constant_Altitude, ('divide', 'distance'))
-    _register(Cruise.Constant_Mach_Constant_Altitude_Loiter, ('divide', 'time'))
-    _register(Cruise.Constant_Pitch_Rate_Constant_Altitude, ('pair', 'pitch_initial', 'pitch_final'))
-    _register(Cruise.Constant_Speed_Constant_Altitude, ('divide', 'distance'))
-    _register(Cruise.Constant_Speed_Constant_Altitude_Loiter, ('divide', 'time'))
+    register(Cruise.Constant_Dynamic_Pressure_Constant_Altitude, ('divide', 'distance'))
+    register(Cruise.Constant_Dynamic_Pressure_Constant_Altitude_Loiter, ('divide', 'time'))
+    register(Cruise.Constant_Mach_Constant_Altitude, ('divide', 'distance'))
+    register(Cruise.Constant_Mach_Constant_Altitude_Loiter, ('divide', 'time'))
+    register(Cruise.Constant_Pitch_Rate_Constant_Altitude, ('pair', 'pitch_initial', 'pitch_final'))
+    register(Cruise.Constant_Speed_Constant_Altitude, ('divide', 'distance'))
+    register(Cruise.Constant_Speed_Constant_Altitude_Loiter, ('divide', 'time'))
     # Curved_Constant_Radius_Constant_Speed_Constant_Altitude excluded: needs-care
     # (true_course continuity isn't carried by state.initials like everything else).
 
     # Climb
-    _register(Climb.Constant_Acceleration_Constant_Pitchrate_Constant_Angle,
+    register(Climb.Constant_Acceleration_Constant_Pitchrate_Constant_Angle,
               ('pair', 'air_speed_start', 'air_speed_end'),
               ('pair', 'altitude_start', 'altitude_end'),
               ('pair', 'pitch_initial', 'pitch_final'))
-    _register(Climb.Constant_CAS_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Climb.Constant_Dynamic_Pressure_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Climb.Constant_EAS_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Climb.Constant_Mach_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Climb.Constant_Mach_Linear_Altitude,
+    register(Climb.Constant_CAS_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
+    register(Climb.Constant_Dynamic_Pressure_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
+    register(Climb.Constant_EAS_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
+    register(Climb.Constant_Mach_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
+    register(Climb.Constant_Mach_Linear_Altitude,
               ('pair', 'altitude_start', 'altitude_end'), ('divide', 'distance'))
-    _register(Climb.Constant_Speed_Constant_Angle, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Climb.Constant_Speed_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Climb.Constant_Speed_Linear_Altitude,
+    register(Climb.Constant_Speed_Constant_Angle, ('pair', 'altitude_start', 'altitude_end'))
+    register(Climb.Constant_Speed_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
+    register(Climb.Constant_Speed_Linear_Altitude,
               ('pair', 'altitude_start', 'altitude_end'), ('divide', 'distance'))
-    _register(Climb.Constant_Throttle_Constant_Speed, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Climb.Linear_Mach_Constant_Rate,
+    register(Climb.Constant_Throttle_Constant_Speed, ('pair', 'altitude_start', 'altitude_end'))
+    register(Climb.Linear_Mach_Constant_Rate,
               ('pair', 'altitude_start', 'altitude_end'), ('pair', 'mach_number_start', 'mach_number_end'))
-    _register(Climb.Linear_Speed_Constant_Rate,
+    register(Climb.Linear_Speed_Constant_Rate,
               ('pair', 'altitude_start', 'altitude_end'), ('pair', 'air_speed_start', 'air_speed_end'))
     # Constant_Dynamic_Pressure_Constant_Angle, Constant_Mach_Constant_Angle excluded:
     # needs-care (interior altitude is a solved unknown re-seeded from initialize_conditions).
 
     # Descent (mirrors Climb)
-    _register(Descent.Constant_CAS_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Descent.Constant_EAS_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Descent.Constant_Speed_Constant_Angle, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Descent.Constant_Speed_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Descent.Constant_Throttle_Constant_Speed, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Descent.Linear_Mach_Constant_Rate,
+    register(Descent.Constant_CAS_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
+    register(Descent.Constant_EAS_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
+    register(Descent.Constant_Speed_Constant_Angle, ('pair', 'altitude_start', 'altitude_end'))
+    register(Descent.Constant_Speed_Constant_Rate, ('pair', 'altitude_start', 'altitude_end'))
+    register(Descent.Constant_Throttle_Constant_Speed, ('pair', 'altitude_start', 'altitude_end'))
+    register(Descent.Linear_Mach_Constant_Rate,
               ('pair', 'altitude_start', 'altitude_end'), ('pair', 'mach_number_start', 'mach_number_end'))
-    _register(Descent.Linear_Speed_Constant_Rate,
+    register(Descent.Linear_Speed_Constant_Rate,
               ('pair', 'altitude_start', 'altitude_end'), ('pair', 'air_speed_start', 'air_speed_end'))
 
     # Vertical_Flight
-    _register(Vertical_Flight.Climb, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Vertical_Flight.Descent, ('pair', 'altitude_start', 'altitude_end'))
-    _register(Vertical_Flight.Hover, ('divide', 'time'))
+    register(Vertical_Flight.Climb, ('pair', 'altitude_start', 'altitude_end'))
+    register(Vertical_Flight.Descent, ('pair', 'altitude_start', 'altitude_end'))
+    register(Vertical_Flight.Hover, ('divide', 'time'))
 
     # Curved_Constant_Radius: true_course_control_points = segment.true_course
     # + t_nondim*turn_angle (initialize_conditions.py) -- true_course is read
     # directly, not carried forward via state.initials like everything else,
     # so each piece needs the heading already turned by prior pieces added
     # back in, not just an even turn_angle split.
-    _register(Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude,
+    register(Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude,
               ('divide', 'turn_angle'), ('cumulative', 'true_course', 'turn_angle'))
 
     # Battery_Discharge: initialize_conditions.py's else-branch (non-Recharge)
     # reads segment.time directly -- a plain, prescribed duration, same as
     # Hover/the Loiter segments.
-    _register(Ground.Battery_Discharge, ('divide', 'time'))
+    register(Ground.Battery_Discharge, ('divide', 'time'))
 
     # Ground: the rest deliberately excluded, not just unfinished.
     #   - Takeoff/Landing: velocity profile and total elapsed time are both
@@ -212,7 +212,7 @@ def _register_known_segment_types():
     #     class of problem as Takeoff/Landing, just for a different reason.
 
 
-_register_known_segment_types()
+register_known_segment_types()
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -326,6 +326,10 @@ def hp_decompose_segment(segment, number_of_unknowns, tolerance, step_size,
         piece.state.numerics.number_of_control_points = points_per_subsegment
         piece.state.numerics.mission_solver.tolerance  = tolerance
         piece.state.numerics.mission_solver.step_size  = step_size
+        # only pieces after the first: the first piece has no predecessor of
+        # its own to seed from (state.initials already chains it to whatever
+        # segment came before the original, undecomposed segment)
+        piece.state.numerics.hp_decomposition.seed_guess_from_previous_piece = (i > 0)
 
         for value in per_spec_values:
             if value[0] == 'pair':

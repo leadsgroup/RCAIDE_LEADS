@@ -96,6 +96,17 @@ class Numerics(Conditions):
         # hp_decompose_segment's docstring for the full comparison.
         self.hp_decomposition.tolerance          = 1E-4
         self.hp_decomposition.step_size          = 1E-5
+        # set True only on pieces 1..K-1 by hp_decompose_segment itself (never
+        # by a user/mission-setup function): tells sequential_segments to seed
+        # this piece's initial unknown guess from the previous piece's
+        # converged final control point, instead of every piece starting from
+        # the same static default guess regardless of where in the original
+        # segment's extent it falls. Root cause of a real SLSQP convergence
+        # failure found investigating A.4: a piece mid-transition can be far
+        # from a flat default guess (e.g. thrust_vector_angle=0.5 rad
+        # everywhere) even when its neighbors aren't -- see hp_decompose_
+        # segment's docstring.
+        self.hp_decomposition.seed_guess_from_previous_piece = False
 
         self.dimensionless                      = Conditions()
         self.dimensionless.control_points       = np.empty([0,0])

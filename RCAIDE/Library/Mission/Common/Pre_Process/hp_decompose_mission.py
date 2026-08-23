@@ -17,7 +17,7 @@ from .set_network_residuals_and_unknowns            import set_network_residuals
 # ----------------------------------------------------------------------------------------------------------------------
 #  hp_decompose_mission
 # ----------------------------------------------------------------------------------------------------------------------
-class _SegmentListView:
+class SegmentListView:
     """Minimal mission-like stand-in so energy()/set_mission_residuals_and_
     unknowns()/set_network_residuals_and_unknowns() -- which only ever read
     mission.segments -- can run against a throwaway single-segment list
@@ -84,9 +84,9 @@ def hp_decompose_mission(mission):
 
         # throwaway prototype, purely to learn the unknown count -- see docstring
         prototype = copy.deepcopy(segment)
-        energy(_SegmentListView([prototype]))
-        set_mission_residuals_and_unknowns(_SegmentListView([prototype]))
-        set_network_residuals_and_unknowns(_SegmentListView([prototype]))
+        energy(SegmentListView([prototype]))
+        set_mission_residuals_and_unknowns(SegmentListView([prototype]))
+        set_network_residuals_and_unknowns(SegmentListView([prototype]))
         number_of_unknowns = prototype.state.number_of_mission_unknowns + prototype.state.number_of_network_unknowns
 
         pieces = hp_decompose_segment(
