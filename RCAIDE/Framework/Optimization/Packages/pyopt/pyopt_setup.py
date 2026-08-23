@@ -14,11 +14,11 @@ from RCAIDE.Framework.Optimization.Common import helper_functions as help_fun
 # ----------------------------------------------------------------------
 #  Pyoptsparse_Solve
 # ----------------------------------------------------------------------
-def Pyoptsparse_Solve(problem, solver='SLSQP', FD='single', sense_step=1.0E-6, nonderivative_line_search=False):
+def Pyoptsparse_Solve(problem, solver='IPOPT', FD='single', sense_step=1.0E-6, nonderivative_line_search=False):
     """ This converts your RCAIDE Nexus problem into a pyoptsparse optimization problem and solves it.
-        Supports SLSQP and IPOPT. No SNOPT: commercial license despite pyoptsparse
-        itself being open source. CONMIN was tried and dropped -- see the ValueError
-        message below for why.
+        Supports IPOPT only. No SNOPT: commercial license despite pyoptsparse
+        itself being open source. CONMIN and SLSQP were both tried and dropped --
+        see the ValueError message below for why.
 
         Assumptions:
         None
@@ -63,7 +63,6 @@ def Pyoptsparse_Solve(problem, solver='SLSQP', FD='single', sense_step=1.0E-6, n
         # IPOPT additionally needs the native IPOPT library findable via
         # pkg-config (e.g. `brew install ipopt` on macOS, or
         # `conda install -c conda-forge ipopt`) plus `pip install cyipopt`.
-        # SLSQP builds in without any external solver library.
         raise ImportError(
             'pyoptsparse not found. Install it with: '
             'pip install git+https://github.com/mdolab/pyoptsparse.git '
@@ -112,20 +111,20 @@ def Pyoptsparse_Solve(problem, solver='SLSQP', FD='single', sense_step=1.0E-6, n
     # Finalize problem statement and run
     print(opt_prob)
 
-    if solver == 'SLSQP':
-        opt = pyOpt.SLSQP()
-    elif solver == 'IPOPT':
+    if solver == 'IPOPT':
         opt = pyOpt.IPOPT()
     else:
         raise ValueError(
             f"Unsupported mission_solver.method '{solver}' for the pyopt package. "
-            f"Supported values are 'SLSQP', 'IPOPT'. (No SNOPT: commercial "
-            f"license despite pyoptsparse itself being open source. CONMIN was "
-            f"tried and dropped: pyoptsparse's CONMIN wrapper reports no "
-            f"optInform at all and was observed reporting false convergence -- "
-            f"declaring success while leaving every unknown at its unmoved "
-            f"initial guess -- on RCAIDE's exactly-determined, equality-"
-            f"constrained mission segments.)"
+            f"Supported values are 'IPOPT'. (No SNOPT: commercial license "
+            f"despite pyoptsparse itself being open source. CONMIN and SLSQP "
+            f"were both tried and dropped: CONMIN's pyoptsparse wrapper reports "
+            f"no optInform at all and was observed reporting false convergence "
+            f"on RCAIDE's exactly-determined, equality-constrained mission "
+            f"segments; pyoptsparse's own SLSQP ran 3.5-6+ hours without "
+            f"converging on the same case scipy's SLSQP solves in minutes and "
+            f"pyopt's IPOPT solves in seconds, with or without a real "
+            f"objective.)"
         )
 
     if nonderivative_line_search == True:

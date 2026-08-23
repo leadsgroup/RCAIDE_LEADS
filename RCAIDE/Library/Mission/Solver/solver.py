@@ -87,10 +87,9 @@ def converge(segment):
                     error_message    = ""
 
             elif package == "pyopt":
-                # pyoptsparse has no cross-backend option for max_evaluations/tolerance
-                # (each optimizer names its own: IPOPT's 'max_iter'/'tol', SLSQP's
-                # 'MAXIT'/'ACC', ...) -- left as a follow-up, backends run with
-                # their own defaults for now.
+                # pyoptsparse doesn't expose max_evaluations/tolerance under a
+                # common name (IPOPT's own options are 'max_iter'/'tol') -- left
+                # as a follow-up, runs with IPOPT's own defaults for now.
                 outputs = pyopt_setup.Pyoptsparse_Solve(problem,
                                                         solver     = numerics.mission_solver.method,
                                                         sense_step = numerics.mission_solver.step_size)

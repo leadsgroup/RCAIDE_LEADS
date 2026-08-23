@@ -10,17 +10,18 @@ breaking RCAIDE_LEADS's own PyPI upload (PyPI rejects packages whose
 metadata contains a direct git URL dependency). It has to be installed
 separately, once, per machine.
 
-Supported methods: **SLSQP** and **IPOPT**. CONMIN was tried and dropped --
-see `pyopt_setup.py`'s `Pyoptsparse_Solve` docstring/`ValueError` for why
-(pyoptsparse's CONMIN wrapper reports no exit status at all, and was
-observed reporting false convergence on RCAIDE's mission segments). SNOPT
-isn't supported: commercial license, despite pyoptsparse itself being open
-source.
+Supported method: **IPOPT** only. CONMIN and SLSQP were both tried and
+dropped -- see `pyopt_setup.py`'s `Pyoptsparse_Solve` docstring/`ValueError`
+for why: CONMIN's pyoptsparse wrapper reports no exit status at all and was
+observed reporting false convergence on RCAIDE's mission segments; SLSQP
+ran 3.5-6+ hours without converging on a case scipy's SLSQP solves in
+minutes and pyopt's IPOPT solves in seconds. SNOPT isn't supported:
+commercial license, despite pyoptsparse itself being open source.
 
 ## macOS (Homebrew), verified working
 
 ```bash
-# 1. IPOPT itself (skip if you only want SLSQP)
+# 1. IPOPT itself -- required, this is the only supported pyopt method
 brew install ipopt
 
 # 2. cyipopt -- the Python binding pyoptsparse's IPOPT wrapper uses.
@@ -55,7 +56,6 @@ sufficient -- no `xcode-select --install` / CLT reinstall needed.
 
 ```python
 import pyoptsparse
-pyoptsparse.SLSQP()   # always available
 pyoptsparse.IPOPT()   # raises "No module named 'cyipopt'" if step 2 was skipped/failed
 ```
 
