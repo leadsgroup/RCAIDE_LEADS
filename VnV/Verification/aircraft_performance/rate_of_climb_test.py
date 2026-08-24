@@ -1,0 +1,138 @@
+# rate_of_climb_test.py
+#
+# Created: Aug 2026, M. Clarke
+
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
+
+# RCAIDE Imports
+import RCAIDE
+from RCAIDE.Framework.Core import Data, Units
+from RCAIDE.Library.Methods.Performance.estimate_rate_of_climb import estimate_rate_of_climb
+
+# package imports
+import numpy as np
+import pylab as plt
+import sys
+import os
+import time
+
+# import vehicle file
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
+from Embraer_190 import vehicle_setup, configs_setup
+
+# ----------------------------------------------------------------------
+#   Build the Vehicle
+# ----------------------------------------------------------------------
+def main():
+    ti = time.time()
+
+    # define vehicle
+    vehicle = vehicle_setup()
+
+    # Set up vehicle configs
+    configs = configs_setup(vehicle)
+
+    # create analyses
+    analyses = analyses_setup(configs)
+
+    altitude    = vehicle.flight_envelope.design_cruise_altitude
+    mach_number = vehicle.flight_envelope.design_mach_number
+    weight      = vehicle.mass_properties.takeoff
+
+    rate_of_climb, excess_power = estimate_rate_of_climb(
+        analyses    = analyses.cruise,
+        altitude    = altitude,
+        mach_number = mach_number,
+        weight      = weight,
+    )
+
+    print('Weight (kg): ', weight)
+    print('Altitude (ft): ', altitude / Units.ft)
+    print('Mach Number: ', mach_number)
+    print('Rate of Climb (ft/min): ', rate_of_climb / Units['ft/min'])
+    print('Excess Power (kW): ', excess_power / 1000.)
+
+    truth_ROC = 1339.4400050415918
+    ROC_error = np.max(np.abs(rate_of_climb / Units['ft/min'] - truth_ROC))
+    assert (ROC_error < 1e-6)
+
+    truth_Pex = 3444960.211170695
+    Pex_error = np.max(np.abs(excess_power - truth_Pex))
+    assert (Pex_error < 1e-6)
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
+    return
+
+
+def analyses_setup(configs):
+
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+
+    # build a base analysis for each config
+    for tag, config in configs.items():
+        analysis = base_analysis(config)
+        analyses[tag] = analysis
+
+    return analyses
+
+def base_analysis(vehicle):
+    # ------------------------------------------------------------------
+    #   Initialize the Analyses
+    # ------------------------------------------------------------------
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    analyses.append(geometry)
+
+    # ------------------------------------------------------------------
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
+    analyses.append(weights)
+
+    # ------------------------------------------------------------------
+    #  Aerodynamics Analysis
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.maximum_lift_coefficient_factor = 0.90
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test
+    analyses.append(aerodynamics)
+
+    # ------------------------------------------------------------------
+    #  Energy
+    energy = RCAIDE.Framework.Analyses.Energy.Energy()
+    analyses.append(energy)
+
+    # ------------------------------------------------------------------
+    #  Planet Analysis
+    planet = RCAIDE.Framework.Analyses.Planets.Earth()
+    analyses.append(planet)
+
+    # ------------------------------------------------------------------
+    #  Atmosphere Analysis
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    analyses.append(atmosphere)
+
+    # done!
+    return analyses
+
+
+# ----------------------------------------------------------------------
+#   Call Main
+# ----------------------------------------------------------------------
+
+if __name__ == '__main__':
+    main()
+    plt.show()

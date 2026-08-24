@@ -265,9 +265,10 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
     state.residuals.network[battery.tag + '_' + battery_module.tag  + '_cell_temperature'] = R_temp
         
     # SOC residual with better conditioning
-    dE_dt    = -P_module
-    R_soc    = np.dot(D, SOC_cell_unkn * E_scale)[:, 0] - dE_dt[:, 0]
-    R_soc[0] = SOC_cell_unkn[0,0] - battery_module_conditions.cell.state_of_charge[0, 0]
+    dE_dt        = -P_module
+    dE_dt_scaled = dE_dt / E_scale
+    R_soc        = np.dot(D, SOC_cell_unkn)[:, 0] - dE_dt_scaled[:, 0]
+    R_soc[0]     = SOC_cell_unkn[0,0] - battery_module_conditions.cell.state_of_charge[0, 0]
     state.residuals.network[battery.tag + '_' + battery_module.tag  +  '_cell_state_of_charge'] = R_soc
 
     # Charge throughput 
