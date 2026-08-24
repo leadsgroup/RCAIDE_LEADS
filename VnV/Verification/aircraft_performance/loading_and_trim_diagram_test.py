@@ -32,17 +32,23 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Embraer_190    import vehicle_setup as E190_vehicle_setup       
 from BWB            import vehicle_setup as BWB_vehicle_setup       
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():
+    ti = time.time()
     # tube and wing load trim test 
     tube_and_wing_load_trim_test()
  
     # blended wing body load trim test 
     blended_wing_body_load_trim_test()
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 def tube_and_wing_load_trim_test():
@@ -63,21 +69,21 @@ def tube_and_wing_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag = 'cruise', discretization=  3)
     
-    CG_Percent_of_LEMAC_truth = np.array([[-0.25572757,  0.67208385,  1.59989527],
-                                          [-0.25572757,  0.67208385,  1.59989527],
-                                          [-0.25572757,  0.67208385,  1.59989527]]) 
-    plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram") 
+    CG_Percent_of_LEMAC_truth = np.array([[-0.1361106882,  0.8027287268,  1.7415681418],
+                                          [-0.1361106882,  0.8027287268,  1.7415681418],
+                                          [-0.1361106882,  0.8027287268,  1.7415681418]])
+    plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram")
 
     LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
     print(f"LEMAC error: {LEMAC_error}")
     assert LEMAC_error < 1e-2, f"LEMAC error too large: {LEMAC_error}"
-        
-    return 
- 
+
+    return
+
 
 def blended_wing_body_load_trim_test():
     vehicle    = BWB_vehicle_setup()  
-    
+     
     # take out control surfaces to make regression run faster
     for wing in vehicle.wings:
         wing.control_surfaces  = Container() 
@@ -93,16 +99,16 @@ def blended_wing_body_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3) 
   
-    CG_Percent_of_LEMAC_truth = np.array([[-0.09845205,  0.74167646,  1.58180497],
-                                            [-0.09845205,  0.74167646,  1.58180497],
-                                            [-0.09845205,  0.74167646,  1.58180497]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.65157837,  0.05026856,  0.75211548],
+                                            [-0.65157837,  0.05026856,  0.75211548],
+                                            [-0.65157837,  0.05026856,  0.75211548]])
     
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram") 
 
     LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
     print(f"LEMAC error: {LEMAC_error}")
     assert LEMAC_error < 5e-2, f"LEMAC error too large: {LEMAC_error}"
-        
+
     return
 
 def configs_setup(vehicle): 
@@ -150,7 +156,7 @@ def E190_base_analysis(vehicle):
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()   
     weights.settings.FLOPS.fidelity              = 'Complex' 
     weights.settings.run_center_of_gravity_analysis             = True
-    weights.settings.run_moments_of_inertia_analysis            = True 
+    weights.settings.run_moments_of_inertia_analysis            = True  
     weights.print_weight_analysis_report         = False
     analyses.append(weights)
 
@@ -199,6 +205,7 @@ def BWB_base_analysis(vehicle):
     #  Weights 
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_BWB()   
     weights.settings.FLOPS.fidelity              = 'Complex' 
+    weights.settings.update_max_fuel_mass        = True
     weights.print_weight_analysis_report         = False
     analyses.append(weights)
 
@@ -241,7 +248,7 @@ def E190_mission_setup(analyses):
   
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
-    base_segment.state.numerics.solver.type = 'root_finder'
+    base_segment.state.numerics.mission_solver.type = 'root_finder'
 
     # ------------------------------------------------------------------    
     #   Cruise Segment 
@@ -277,7 +284,7 @@ def BWB_mission_setup(analyses):
   
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
-    base_segment.state.numerics.solver.type = 'root_finder'
+    base_segment.state.numerics.mission_solver.type = 'root_finder'
 
     # ------------------------------------------------------------------    
     #   Cruise Segment 

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Compressor.py
+# RCAIDE/Library/Components/Powertrain/Converters/Compressor.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Feb 2024, M. Clarke
@@ -11,7 +11,7 @@ from .Converter  import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle.append_supersonic_nozzle_conditions import append_supersonic_nozzle_conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Compressor 
+#  Supersonic_Nozzle 
 # ----------------------------------------------------------------------------------------------------------------------  
 class Supersonic_Nozzle(Converter):
     """
@@ -105,6 +105,6 @@ class Supersonic_Nozzle(Converter):
         self.max_area_ratio                  = 1000.
         self.min_area_ratio                  = 0.
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
-        append_supersonic_nozzle_conditions(self,segment,energy_conditions)
+    def append_operating_conditions(self,segment):  
+        append_supersonic_nozzle_conditions(self,segment)
         return 

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Turbine.py
+# RCAIDE/Library/Components/Powertrain/Converters/Turbine.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Mar 2024, M. Clarke
@@ -76,7 +76,7 @@ class Turbine(Converter):
         self.mechanical_efficiency             = 1.0
         self.polytropic_efficiency             = 1.0 
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
-        append_turbine_conditions(self,segment,energy_conditions)
+    def append_operating_conditions(self,segment):  
+        append_turbine_conditions(self,segment)
         return                            
     

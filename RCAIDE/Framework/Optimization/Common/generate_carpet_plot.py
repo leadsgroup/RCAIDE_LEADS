@@ -75,7 +75,7 @@ def generate_carpet_plot(problem,
     con_lbls = [_fmt(n) for n in con_names]
 
     if generate_objective_plot:
-        fig, ax = plt.subplots(num=0)
+        fig, ax = plt.subplots()
         CS = ax.contourf(x, y, obj)
         fig.colorbar(CS, ax=ax).ax.set_ylabel(_fmt(obj_name))
         CS_con = ax.contour(x, y, con[objective_plot_constraint_index],
@@ -91,7 +91,7 @@ def generate_carpet_plot(problem,
 
     if generate_constraint_plots:
         for i in range(n_con):
-            fig, ax = plt.subplots(num=i + 1)
+            fig, ax = plt.subplots()
             CS_c = ax.contourf(x, y, con[i])
             fig.colorbar(CS_c, ax=ax).ax.set_ylabel(con_lbls[i])
             if con[i].min() <= 0 <= con[i].max():

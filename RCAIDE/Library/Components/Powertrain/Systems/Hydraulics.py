@@ -9,7 +9,7 @@
 from RCAIDE.Framework.Core import Data
 from .Systems import Systems
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
- 
+from RCAIDE.Library.Methods.Powertrain.Systems.compute_hydraulics_power_draw import compute_hydraulics_power_draw
 # ----------------------------------------------------------------------------------------------------------------------
 #  Hydraulics
 # ----------------------------------------------------------------------------------------------------------------------            
@@ -34,19 +34,8 @@ class Hydraulics(Systems):
         self.central_system.number_of_pumps =  1
         self.central_system.flowspeed       =  23.0
         self.central_system.system_power    = 196.0
-        
-        
-    def append_operating_conditions(self, segment, bus): 
-        """
-        Adds operating conditions for the hydraulic systems system to a mission segment.
-
-        Parameters
-        ----------
-        segment : Data
-            Mission segment to which conditions are being added
-        bus : Data
-            Electrical bus supplying power to the hydraulic systems
-        """
-        append_systems_conditions(self, segment, bus)
-        
-        return
+    
+    def compute_performance(self, state, vehicle):
+        """Computes the power draw of the hydraulic systems based on operating conditions."""
+        inputs, outputs = compute_hydraulics_power_draw(self, state, vehicle)
+        return inputs, outputs, False, None

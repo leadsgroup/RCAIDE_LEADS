@@ -11,13 +11,14 @@
 import RCAIDE
 from .Fuel_Tank  import Fuel_Tank 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_integral_tank_volume import *
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_fuselage_integral_tank_volume  import compute_fuselage_integral_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_wing_integral_tank_volume      import compute_wing_integral_tank_volume
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_integral_tank_moment_of_inertia     import  compute_wing_integral_tank_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_integral_tank_center_of_gravity     import  compute_wing_integral_tank_center_of_gravity
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Fuel Tank
+#  Integral_Tank
 # ---------------------------------------------------------------------------------------------------------------------    
 class Integral_Tank(Fuel_Tank):
     """Fuel tank compoment.
@@ -27,10 +28,7 @@ class Integral_Tank(Fuel_Tank):
     Attributes
     ----------
     tag : str
-        Identifier for the fuel tank (default: 'wing_fuel_tank')
-        
-    fuel_flow_split_ratio : float
-        Ratio of fuel flow allocation (default: 1.0)
+        Identifier for the fuel tank (default: 'wing_fuel_tank') 
         
     mass_properties.empty_mass : float
         Mass of empty tank structure [kg] (default: 0.0)
@@ -68,6 +66,7 @@ class Integral_Tank(Fuel_Tank):
         Sets default values for wing fuel tank attributes
         """          
         self.tag                         = 'integral_tank' 
+        self.pressure                    = 101325.0  
 
     def __init__ (self, compoment=None):
         """
@@ -79,7 +78,7 @@ class Integral_Tank(Fuel_Tank):
             if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage):  
                 self.fuselage_tag = compoment.tag
                 
-    def append_operating_conditions(self,segment,fuel_line):  
+    def append_operating_conditions(self,segment):  
         """
         Append fuel tank operating conditions for a flight segment
         
@@ -90,7 +89,7 @@ class Integral_Tank(Fuel_Tank):
         fuel_line : Component
             Connected fuel line component
         """
-        append_fuel_tank_conditions(self,segment, fuel_line)  
+        append_fuel_tank_conditions(self,segment)  
         return       
 
     def compute_volume(self, wings, fuselages, _):
@@ -152,7 +151,7 @@ class Integral_Tank(Fuel_Tank):
             compute_wing_integral_tank_volume(self, wing)
         elif self.fuselage_tag is not None: 
             fuselage = fuselages[self.fuselage_tag]  
-            compute_fuselage_integral_tank_fuel_volume(self, fuselage)
+            compute_fuselage_integral_tank_volume(self, fuselage)
         return
     
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
@@ -173,8 +172,7 @@ class Integral_Tank(Fuel_Tank):
 
         if self.wing_tag != None:
             wing = vehicle.wings[self.wing_tag]  
-            _, _ = compute_wing_integral_tank_moment_of_inertia(self, wing, center_of_gravity = center_of_gravity)
-        #  MOI for fuselage Integral Tank is computed with the volume computations.
+            _, _ = compute_wing_integral_tank_moment_of_inertia(self, wing, center_of_gravity = center_of_gravity) 
          
         return
     

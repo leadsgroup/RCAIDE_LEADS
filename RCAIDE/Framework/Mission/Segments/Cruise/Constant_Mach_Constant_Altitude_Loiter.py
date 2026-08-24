@@ -57,11 +57,8 @@ class Constant_Mach_Constant_Altitude_Loiter(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
         # --------------------------------------------------------------------------------------------------------------    
-        initialize                         = self.process.initialize  
-        initialize.conditions              = Segments.Cruise.Constant_Mach_Constant_Altitude_Loiter.initialize_conditions
-        iterate                            = self.process.iterate   
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation 
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
+        initialize                                 = self.process.initialize  
+        initialize.conditions                      = Segments.Cruise.Constant_Mach_Constant_Altitude_Loiter.initialize_conditions   
 
         return
 

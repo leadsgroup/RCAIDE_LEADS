@@ -1,4 +1,3 @@
-  
 # Regression/scripts/Tests/network_ducted_fan/electric_ducted_fan_netowrk.py
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -28,12 +27,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from NASA_X48    import vehicle_setup as vehicle_setup
 from NASA_X48    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
 
     regression_flag = True # Keep True for regression 
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
@@ -65,13 +66,13 @@ def main():
                 error = Data()
                 error.thrust   = 0
             else:   
-                thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['center_propulsor'].thrust, axis=1)  
+                thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['center_propulsor'].outputs.thrust, axis=1)
                 error          = Data()
                 print('Thrust', thurst[0])
                 error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))        
                 
         elif ducted_fan_type[i] ==  'Rankine_Froude_Momentum_Theory':  
-            thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['starboard_propulsor'].thrust, axis=1)  
+            thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['starboard_propulsor'].outputs.thrust, axis=1)
             error          = Data()
             print('Thrust', thurst[0])
             error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))   
@@ -82,6 +83,10 @@ def main():
         for k,v in list(error.items()):
             assert(np.abs(v)<1e-5) 
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 # ----------------------------------------------------------------------
@@ -180,7 +185,7 @@ def mission_setup(analyses):
     segment.altitude       = 5000  * Units.feet
     segment.air_speed      = 90 *  Units.mph
     segment.distance       = 5000  
-    segment.initial_battery_state_of_charge                          = 1.0 
+    segment.initial_battery_conditions.state_of_charge               = 1.0
                 
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  

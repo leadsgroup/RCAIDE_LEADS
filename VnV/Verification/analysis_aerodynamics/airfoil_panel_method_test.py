@@ -17,16 +17,22 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt    
 import matplotlib.cm as cm
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():   
+    ti = time.time()
     single_airfoil()
     multi_airfoil()
     high_AoA_test()
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
 def single_airfoil():

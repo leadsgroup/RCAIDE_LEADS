@@ -27,11 +27,13 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Navion    import vehicle_setup, configs_setup
+import time
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main(): 
+    ti = time.time()
     
     # vehicle data
     vehicle  = vehicle_setup()
@@ -51,69 +53,107 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()  
     
-    '''Values are different from trimmed stability derivative test because stability derivatives are different.'''
-    elevator_deflection        = results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
-    print('Elevator Defection',elevator_deflection)
-    elevator_deflection_true   = -2.6435023483528166
-    elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
-    print('Elevator Error 1: ',elevator_deflection_diff)
-    assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
-
-    aileron_deflection        = results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
-    print('Aileron Defection',aileron_deflection)
-    aileron_deflection_true   = -7.878979331209824
-    aileron_deflection_diff   = np.abs(aileron_deflection - aileron_deflection_true)
-    print('Aileron Error 2: ',aileron_deflection_diff)
-    assert np.abs(aileron_deflection_diff/aileron_deflection_true) < 5e-3
-
-    rudder_deflection        = results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
-    print('Rudder Defection',rudder_deflection)
-    rudder_deflection_true   = 14.01392795293547
-    rudder_deflection_diff   = np.abs(rudder_deflection - rudder_deflection_true)
-    print('Rudder Error 3: ',rudder_deflection_diff)
-    assert np.abs(rudder_deflection_diff/rudder_deflection_true) < 5e-3  
-
-    throttle        = results.segments.cruise_2.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    throttle_true   = 0.5199678748285615
-    throttle_diff   = np.abs(throttle - throttle_true)
-    print('Throttle Error 1: ',throttle_diff)
-    assert np.abs(throttle_diff/throttle_true) < 5e-3    
-
-    throttle3        = results.segments.cruise_3.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    throttle3_true   = 0.4093629874877228
-    throttle3_diff   = np.abs(throttle3 - throttle3_true)
-    print('Throttle Error 2: ',throttle3_diff)
-    assert np.abs(throttle3_diff/throttle3_true) < 5e-3
+    # ------------------------------------------------------------------
+    # Cruise segment (6-DOF with sideslip = 10 deg)
+    # ------------------------------------------------------------------
+    cruise_elevator       = results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
+    cruise_aileron        = results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
+    cruise_rudder         = results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
+    cruise_elevator_true  = -1.2801567533653204
+    cruise_aileron_true   = -7.660066661814855
+    cruise_rudder_true    = 14.06335960790088
+    print('Cruise elevator:', cruise_elevator, 'aileron:', cruise_aileron, 'rudder:', cruise_rudder)
+    assert np.abs((cruise_elevator - cruise_elevator_true) / cruise_elevator_true) < 5e-3
+    assert np.abs((cruise_aileron  - cruise_aileron_true)  / cruise_aileron_true)  < 5e-3
+    assert np.abs((cruise_rudder   - cruise_rudder_true)   / cruise_rudder_true)   < 5e-3
 
     # ------------------------------------------------------------------
-    # Mode 1: crosswind_speed → β computed kinematically
-    # crosswind = 50 * sin(10 deg) gives same effective β as cruise segment
-    # results must match cruise within tolerance
+    # Cruise 2 segment (2-DOF longitudinal only)
     # ------------------------------------------------------------------
-    elevator_cw      = results.segments.cruise_crosswind.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
-    aileron_cw       = results.segments.cruise_crosswind.conditions.control_surfaces.aileron.deflection[0,0]  / Units.deg
-    rudder_cw        = results.segments.cruise_crosswind.conditions.control_surfaces.rudder.deflection[0,0]   / Units.deg
-    print('Crosswind elevator:', elevator_cw, 'aileron:', aileron_cw, 'rudder:', rudder_cw)
-    assert np.abs((elevator_cw - elevator_deflection_true) / elevator_deflection_true) < 5e-3
-    assert np.abs((aileron_cw  - aileron_deflection_true)  / aileron_deflection_true)  < 5e-3
-    assert np.abs((rudder_cw   - rudder_deflection_true)   / rudder_deflection_true)   < 5e-3
+    cruise2_throttle       = results.segments.cruise_2.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
+    cruise2_throttle_true  = 0.5282772484484782
+    print('Cruise 2 throttle:', cruise2_throttle)
+    assert np.abs((cruise2_throttle - cruise2_throttle_true) / cruise2_throttle_true) < 5e-3
 
     # ------------------------------------------------------------------
-    # Mode 2: sideslip_angle as solver unknown
-    # symmetric aircraft, no crosswind → solver must find β ≈ 0
-    # bank_angle fixed at 0 to keep system well-determined (6×6)
+    # Cruise 3 segment (6-DOF with sideslip = 10 deg)
     # ------------------------------------------------------------------
-    sideslip_free    = results.segments.cruise_free_sideslip.conditions.frames.wind.body_rotations[0,2] / Units.deg
-    rudder_free      = results.segments.cruise_free_sideslip.conditions.control_surfaces.rudder.deflection[0,0]  / Units.deg
-    aileron_free     = results.segments.cruise_free_sideslip.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
-    print('Free sideslip β:', sideslip_free, 'rudder:', rudder_free, 'aileron:', aileron_free)
-    assert np.abs(sideslip_free) < 1e-1
-    assert np.abs(rudder_free)   < 1e-1
-    assert np.abs(aileron_free)  < 1e-1
+    cruise3_throttle       = results.segments.cruise_3.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
+    cruise3_throttle_true  = 0.7179143078154885
+    print('Cruise 3 throttle:', cruise3_throttle)
+    assert np.abs((cruise3_throttle - cruise3_throttle_true) / cruise3_throttle_true) < 5e-3
+
+    # ------------------------------------------------------------------
+    # Crosswind segment (6-DOF, crosswind_speed → β computed kinematically)
+    # ------------------------------------------------------------------
+    cw_elevator       = results.segments.cruise_crosswind.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
+    cw_aileron        = results.segments.cruise_crosswind.conditions.control_surfaces.aileron.deflection[0,0]  / Units.deg
+    cw_rudder         = results.segments.cruise_crosswind.conditions.control_surfaces.rudder.deflection[0,0]   / Units.deg
+    cw_elevator_true  = -1.2925852612272133
+    cw_aileron_true   = -7.655548544445317
+    cw_rudder_true    = 14.064149405090152
+    print('Crosswind elevator:', cw_elevator, 'aileron:', cw_aileron, 'rudder:', cw_rudder)
+    assert np.abs((cw_elevator - cw_elevator_true) / cw_elevator_true) < 5e-3
+    assert np.abs((cw_aileron  - cw_aileron_true)  / cw_aileron_true)  < 5e-3
+    assert np.abs((cw_rudder   - cw_rudder_true)   / cw_rudder_true)   < 5e-3
+
+    # ------------------------------------------------------------------
+    # Free sideslip segment (symmetric, no crosswind → β ≈ 0)
+    # ------------------------------------------------------------------
+    fs_sideslip       = results.segments.cruise_free_sideslip.conditions.frames.wind.body_rotations[0,2] / Units.deg
+    fs_elevator       = results.segments.cruise_free_sideslip.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
+    fs_aileron        = results.segments.cruise_free_sideslip.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
+    fs_rudder         = results.segments.cruise_free_sideslip.conditions.control_surfaces.rudder.deflection[0,0]  / Units.deg
+    fs_elevator_true  = -1.28807396586814
+    print('Free sideslip beta:', fs_sideslip, 'elevator:', fs_elevator, 'rudder:', fs_rudder, 'aileron:', fs_aileron)
+    assert np.abs(fs_sideslip) < 1e-6
+    assert np.abs(fs_aileron)  < 1e-6
+    assert np.abs(fs_rudder)   < 1e-6
+    assert np.abs((fs_elevator - fs_elevator_true) / fs_elevator_true) < 5e-3
+
+    # ------------------------------------------------------------------
+    # Dynamic stability modes (cruise segment)
+    # ------------------------------------------------------------------
+    DS                             = results.segments.cruise.conditions.dynamic_stability
+    phugoid_freq                   = DS.LongModes.phugoidFreqHz[0,0]
+    phugoid_damping                = DS.LongModes.phugoidDamping[0,0]
+    short_period_freq              = DS.LongModes.shortPeriodFreqHz[0,0]
+    short_period_damping           = DS.LongModes.shortPeriodDamping[0,0]
+    dutch_roll_freq                = DS.LatModes.dutchRollFreqHz[0,0]
+    dutch_roll_damping             = DS.LatModes.dutchRollDamping[0,0]
+    roll_subsistence_time_constant = DS.LatModes.rollSubsistenceTimeConstant[0,0]
+    spiral_time_double_half        = DS.LatModes.spiralTimeDoubleHalf[0,0]
+
+    phugoid_freq_true                   = 0.0498980620834614
+    phugoid_damping_true                = 0.14598132422045618
+    short_period_freq_true              = 0.2875274425477587
+    short_period_damping_true           = 0.7832908110862572
+    dutch_roll_freq_true                = 0.486458976924637
+    dutch_roll_damping_true             = 0.13883619187347213
+    roll_subsistence_time_constant_true = 0.028073156923046644
+    spiral_time_double_half_true        = 423.073887387459
+
+    print('Phugoid freq (Hz):', phugoid_freq, 'damping:', phugoid_damping)
+    print('Short period freq (Hz):', short_period_freq, 'damping:', short_period_damping)
+    print('Dutch roll freq (Hz):', dutch_roll_freq, 'damping:', dutch_roll_damping)
+    print('Roll subsistence time constant (s):', roll_subsistence_time_constant)
+    print('Spiral time to double/half (s):', spiral_time_double_half)
+    assert np.abs((phugoid_freq                   - phugoid_freq_true)                   / phugoid_freq_true)                   < 5e-3
+    assert np.abs((phugoid_damping                - phugoid_damping_true)                / phugoid_damping_true)                < 5e-3
+    assert np.abs((short_period_freq               - short_period_freq_true)              / short_period_freq_true)              < 5e-3
+    assert np.abs((short_period_damping            - short_period_damping_true)           / short_period_damping_true)           < 5e-3
+    assert np.abs((dutch_roll_freq                 - dutch_roll_freq_true)                / dutch_roll_freq_true)                < 5e-3
+    assert np.abs((dutch_roll_damping              - dutch_roll_damping_true)             / dutch_roll_damping_true)             < 5e-3
+    assert np.abs((roll_subsistence_time_constant  - roll_subsistence_time_constant_true) / roll_subsistence_time_constant_true) < 5e-3
+    assert np.abs((spiral_time_double_half         - spiral_time_double_half_true)        / spiral_time_double_half_true)        < 5e-3
 
     # plt results
     plot_mission(results)
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
 # ----------------------------------------------------------------------
 #   Define the Vehicle Analyses

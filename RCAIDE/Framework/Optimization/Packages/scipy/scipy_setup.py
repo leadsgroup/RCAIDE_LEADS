@@ -108,10 +108,13 @@ def SciPy_Solve(problem,solver='SLSQP', sense_step = 1.4901161193847656e-08, ite
         
     elif solver == 'particle_swarm_optimization':
         outputs = particle_swarm_optimization(wrapper, lb, ub, f_ieqcons=problem.inequality_constraint, kwargs={}, swarmsize=pop_size ,\
-                                              omega=0.5, phip=0.5, phig=0.5, maxiter=1000, minstep=1e-4, minfunc=1e-4, debug=False)    
-    else:
-        outputs = sp.optimize.minimize(wrapper,x,method=solver)
-    
+                                              omega=0.5, phip=0.5, phig=0.5, maxiter=1000, minstep=1e-4, minfunc=1e-4, debug=False)
+    else: 
+        raise ValueError(
+            f"Unsupported mission_solver.method '{solver}'. Supported values "
+            f"are 'SLSQP', 'differential_evolution', 'particle_swarm_optimization'."
+        )
+
     return outputs
  
 def SciPy_Problem(problem,x):

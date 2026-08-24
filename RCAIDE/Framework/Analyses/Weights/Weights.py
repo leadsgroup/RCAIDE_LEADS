@@ -50,9 +50,10 @@ class Weights(Analysis):
             from the weight breakdown after each evaluation.
 
         ``iterate_mtow`` (default ``False``)
-            Iterate MTOW to satisfy the Staub factor constraint. Requires
-            ``vehicle.staub_factor`` to be set. Significantly increases
-            computational cost; leave ``False`` for most optimizations.
+            Iterate MTOW to satisfy the MTOW capacity fraction constraint.
+            Requires ``settings.mtow_capacity_fraction`` to be set (0–1).
+            Significantly increases computational cost; leave ``False``
+            for most optimizations.
 
         ``run_center_of_gravity_analysis`` (default ``False``)
             Compute and store the vehicle CG after the weight buildup.
@@ -81,9 +82,11 @@ class Weights(Analysis):
         self.settings.run_weights_analysis                          = True
         self.settings.run_center_of_gravity_analysis                = False
         self.settings.run_moments_of_inertia_analysis               = False
+        self.settings.update_max_fuel_mass                          = False
+        self.settings.update_fuel_mass                              = True
         self.settings.write_mass_properties                         = False
         self.settings.iterate_mtow                                  = False
-        self.settings.mtow_iteration_tolerance                      = 0.001
+        self.settings.mtow_capacity_fraction                        = None
     
         self.settings.weight_correction_factors                     = Data()
         self.settings.weight_correction_factors.empty               = Data()
@@ -119,6 +122,6 @@ class Weights(Analysis):
         compute_operating_empty_weight = getattr(compute_module, "compute_operating_empty_weight")
         
         # Call the function
-        results = compute_operating_empty_weight(vehicle, self.settings) 
-        vehicle.mass_properties.weight_breakdown = results 
+        results = compute_operating_empty_weight(vehicle, self.settings)
+        vehicle.mass_properties.weight_breakdown = results
         return results        

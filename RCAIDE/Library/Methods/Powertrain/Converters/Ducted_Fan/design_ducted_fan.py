@@ -36,8 +36,6 @@ def design_ducted_fan(ducted_fan, new_regression_results = False, keep_files = T
     ----------
     ducted_fan : Ducted_Fan
         Ducted fan component to be designed
-    dfdc_bin_name : str, optional
-        Name of DFDC executable, defaults to 'dfdc'
     new_regression_results : bool, optional
         Flag to generate new regression results, defaults to False
     keep_files : bool, optional
@@ -186,15 +184,16 @@ def design_ducted_fan(ducted_fan, new_regression_results = False, keep_files = T
         # create performance surrogates 
         raw_data           = results.performance
         thrust             = clean_data(raw_data.thrust,mach,tip_mach,altitude,raw_data.converged_solution)               
-        power              = clean_data(raw_data.power,mach,tip_mach,altitude,raw_data.converged_solution)                
+        power              = clean_data(raw_data.power.propulsive,mach,tip_mach,altitude,raw_data.converged_solution)
         efficiency         = clean_data(raw_data.efficiency,mach,tip_mach,altitude,raw_data.converged_solution)           
         torque             = clean_data(raw_data.torque,mach,tip_mach,altitude,raw_data.converged_solution)               
         thrust_coefficient = clean_data(raw_data.thrust_coefficient,mach,tip_mach,altitude,raw_data.converged_solution)   
         power_coefficient  = clean_data(raw_data.power_coefficient,mach,tip_mach,altitude,raw_data.converged_solution)     
         
         surrogates =  Data()
-        surrogates.thrust              = interpolate.RegularGridInterpolator((mach,tip_mach,altitude),thrust               ,method = 'linear',   bounds_error=False, fill_value=None)      
-        surrogates.power               = interpolate.RegularGridInterpolator((mach,tip_mach,altitude),power                ,method = 'linear',   bounds_error=False, fill_value=None)
+        surrogates.thrust              = interpolate.RegularGridInterpolator((mach,tip_mach,altitude),thrust               ,method = 'linear',   bounds_error=False, fill_value=None)
+        surrogates.power               = Data()
+        surrogates.power.propulsive    = interpolate.RegularGridInterpolator((mach,tip_mach,altitude),power                ,method = 'linear',   bounds_error=False, fill_value=None)
         surrogates.efficiency          = interpolate.RegularGridInterpolator((mach,tip_mach,altitude),efficiency           ,method = 'linear',   bounds_error=False, fill_value=None)      
         surrogates.torque              = interpolate.RegularGridInterpolator((mach,tip_mach,altitude),torque               ,method = 'linear',   bounds_error=False, fill_value=None)
         surrogates.thrust_coefficient  = interpolate.RegularGridInterpolator((mach,tip_mach,altitude),thrust_coefficient   ,method = 'linear',   bounds_error=False, fill_value=None)      

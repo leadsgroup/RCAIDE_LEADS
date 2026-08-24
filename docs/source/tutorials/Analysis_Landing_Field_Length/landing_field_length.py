@@ -33,6 +33,7 @@ def main():
 
     # define vehicle 
     vehicle   = vehicle_setup()   
+    vehicle.mass_properties.landing = 40000
   
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
@@ -40,10 +41,9 @@ def main():
     # create analyses
     analyses = analyses_setup(configs)
     
-    landing_weight = 40000
     landing_field_length = estimate_landing_field_length( analyses = analyses.landing) 
     
-    print('Weight (kg): ', landing_weight)
+    print('Weight (kg): ', vehicle.mass_properties.landing)
     print('Landing Field Length (m): ',landing_field_length)
  
     return
@@ -486,9 +486,10 @@ def vehicle_setup():
     net                                         = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                     = RCAIDE.Library.Attributes.Propellants.Jet_A()
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel
@@ -498,25 +499,28 @@ def vehicle_setup():
     inboard_tank.segments_bounding_tank       = ['root','yehudi']  
     inboard_tank.segments_percent_chord_start = [0.15  ,0.15 ]
     inboard_tank.segments_percent_chord_end   = [0.625 ,0.625]  
-    fuel_line.fuel_tanks.append(inboard_tank)
-    
-    outboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
-    outboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
-    outboard_tank.segments_bounding_tank       = ['yehudi', 'section_2']  
-    outboard_tank.segments_percent_chord_start = [0.15 ,0.15 ]
-    outboard_tank.segments_percent_chord_end   = [0.625,0.625]  
-    fuel_line.fuel_tanks.append(outboard_tank)    
+    inboard_tank.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(inboard_tank)
 
-    fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()  
-    fuel_tank.lengths.external                      = 2 
+    outboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    outboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    outboard_tank.segments_bounding_tank       = ['yehudi', 'section_2']
+    outboard_tank.segments_percent_chord_start = [0.15 ,0.15 ]
+    outboard_tank.segments_percent_chord_end   = [0.625,0.625]
+    outboard_tank.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(outboard_tank)
+
+    fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()
+    fuel_tank.lengths.external                      = 2
     fuel_tank.widths.external                       = 2
-    fuel_tank.geometry_type                     = 'prismatic'   
+    fuel_tank.geometry_type                     = 'prismatic'
     fuel_tank.heights.external                      = 0.5
     fuel_tank.origin                            = [[15.0,0.0, 0.0]]
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A()
     fuel_tank.fuel.origin                       = [[15.0,0.0, 0.0]]
-    fuel_line.fuel_tanks.append(fuel_tank)     
-    
+    fuel_tank.assigned_distributors             = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
+
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Propulsor
@@ -622,32 +626,30 @@ def vehicle_setup():
     turbofan.fan_nozzle                         = fan_nozzle 
     
     # design turbofan
-    design_turbofan(turbofan)  
-    
+    design_turbofan(turbofan)
+
     # append propulsor to network
+    turbofan.assigned_distributors = [[fuel_line.tag]]
     net.propulsors.append(turbofan)
 
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Port Propulsor
-    #------------------------------------------------------------------------------------------------------------------------------------     
-    
+    #------------------------------------------------------------------------------------------------------------------------------------
+
     # copy turbofan
     turbofan_2                             = deepcopy(turbofan)
-    turbofan_2.tag                         = 'port_propulsor'  
-    turbofan_2.origin                      = [[13.15,-4.38,-2.1]]  # change origin  
-    turbofan_2.nacelle.origin              = [[12.15,-4.38,-2.1]]   
-    
+    turbofan_2.tag                         = 'port_propulsor'
+    turbofan_2.origin                      = [[13.15,-4.38,-2.1]]  # change origin
+    turbofan_2.nacelle.origin              = [[12.15,-4.38,-2.1]]
+
     # append propulsor to network
+    turbofan_2.assigned_distributors = [[fuel_line.tag]]
     net.propulsors.append(turbofan_2)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line    
-    fuel_line.assigned_propulsors =  [[turbofan.tag, turbofan_2.tag]]
-
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to fuel line to network
+    net.distributors.append(fuel_line)
     
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)     

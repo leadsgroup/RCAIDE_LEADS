@@ -16,5 +16,4 @@ See Also
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .compute_pump_performance     import compute_pump_performance
-from .design_pump                  import design_pump
 from .append_pump_conditions       import append_pump_conditions 

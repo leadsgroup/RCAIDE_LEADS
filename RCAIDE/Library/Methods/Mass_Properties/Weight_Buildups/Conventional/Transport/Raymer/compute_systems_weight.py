@@ -130,11 +130,11 @@ def compute_systems_weight(vehicle):
     Wuav    = 1400 # Uninstall avionics weight
 
     WSC     = 145.9*Nf**.554 * (1+Nm/Nf)**-1 * Scs**0.2 * (Iy*10e-6)**0.07 
-    WAPUG   = 8*(DG**0.4) # APU group weight from Commercial Airplane Design Principles by Pasquale Sforza eq. 8.27. Which is an improvment from Kroo's estimation
+    WAPU    = 8*(DG**0.4) # APU group weight from Commercial Airplane Design Principles by Pasquale Sforza eq. 8.27. Which is an improvment from Kroo's estimation
     WIN     = 4.509 * Kr * Ktp * flight_crew ** 0.541 * NENG * (L + Bw) ** 0.5
     WHYD    = 0.2673 * Nf * (L + Bw) ** 0.937
     WELEC   = 7.291 * Rkva ** 0.782 * (2*L) ** 0.346 * NENG ** 0.1
-    WAVONCG  = 0.09 * DG**0.8  # Avionics Group from Commercial Airplane Design Principles by Pasquale Sforza eq. 8.35. Which is an improvment from Kroo's estimation
+    WAVONC  = 0.09 * DG**0.8  # Avionics Group from Commercial Airplane Design Principles by Pasquale Sforza eq. 8.35. Which is an improvment from Kroo's estimation
 
     D       = (fuse_w + fuse_h) / 2.
     Sf      = np.pi * (L / D - 1.7) * D ** 2  # Fuselage wetted area, ft**2
@@ -147,52 +147,61 @@ def compute_systems_weight(vehicle):
 
     WAI = 0.002 * DG
 
-    # Update system component masses if not user defined. If user defined than update the outputs
-    for system in vehicle.systems:
-        if isinstance(system,Component):
+    W_water_tank = 0
+    Systems = RCAIDE.Library.Components.Powertrain.Systems 
+    for network in  vehicle.networks: 
+        for system in network.systems: 
             if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
-                    system.mass_properties.mass = WAVONCG * Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
+                if isinstance(system, Systems.Avionics):
+                    system.mass_properties.mass = WAVONC * Units.lbs
+                elif isinstance(system, Systems.Flight_Controls):
                     system.mass_properties.mass = WSC * Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
-                    system.mass_properties.mass = WAPUG * Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
+                elif isinstance(system, Systems.Auxiliary_Power_Unit):
+                    system.mass_properties.mass = WAPU * Units.lbs
+                elif isinstance(system, Systems.Electrical):
                     system.mass_properties.mass = WELEC * Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
+                elif isinstance(system, Systems.Hydraulics):
                     system.mass_properties.mass = WHYD * Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
-                    system.mass_properties.mass = WAC * Units.lbs + WAC * Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
+                elif isinstance(system, Systems.Environmental_Controls):
+                    system.mass_properties.mass = (WAC + WAI) * Units.lbs
+                elif isinstance(system, Systems.Furnishings):
+                    system.mass_properties.mass = WFURN * Units.lbs
+                elif isinstance(system, Systems.Instruments):
                     system.mass_properties.mass = WIN * Units.lbs
                 system.mass_properties.calculated_flag = True
             else:
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
-                    WAVONCG = system.mass_properties.mass / Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
+                if isinstance(system, Systems.Avionics):
+                    WAVONC = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Flight_Controls):
                     WSC    = system.mass_properties.mass / Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
-                    WAPUG   = system.mass_properties.mass / Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
+                elif isinstance(system, Systems.Auxiliary_Power_Unit):
+                    WAPU   += system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Electrical):
                     WELEC  = system.mass_properties.mass / Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
+                elif isinstance(system, Systems.Hydraulics):
                     WHYD   = system.mass_properties.mass / Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
+                elif isinstance(system, Systems.Environmental_Controls):
                     WAI    = system.mass_properties.mass * 0.5 / Units.lbs
                     WAC    = system.mass_properties.mass * 0.5 / Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
+                elif isinstance(system, Systems.Furnishings):
+                    WFURN  = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Instruments):
                     WIN    = system.mass_properties.mass / Units.lbs
-
+                elif isinstance(system, Systems.Water_Tank):
+                    W_water_tank = system.mass_properties.mass / Units.lbs
 
     output                     = Data()
     output.W_flight_control    = WSC * Units.lbs
-    output.W_apu               = WAPUG * Units.lbs
+    output.W_apu               = WAPU * Units.lbs
     output.W_hyd_pnu           = WHYD * Units.lbs
     output.W_instruments       = WIN * Units.lbs
-    output.W_avionics          = WAVONCG * Units.lbs
+    output.W_avionics          = WAVONC * Units.lbs
     output.W_electrical        = WELEC * Units.lbs
     output.W_ac                = WAC * Units.lbs
     output.W_furnish           = WFURN * Units.lbs
     output.W_anti_ice          = WAI * Units.lbs
-    output.W_systems           = (WSC + WAPUG + WIN + WHYD + WELEC + WAVONCG + WFURN + WAC + WAI)*Units.lbs
+    output.W_systems           = (WSC + WAPU + WIN + WHYD + WELEC + WAVONC + WFURN + WAC + WAI) * Units.lbs
+    if W_water_tank != 0:
+        output.W_water_tank    = W_water_tank * Units.lbs
+        output.total          += W_water_tank * Units.lbs
     return output

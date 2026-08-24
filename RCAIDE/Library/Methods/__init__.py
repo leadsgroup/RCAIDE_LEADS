@@ -26,7 +26,6 @@ from . import Aeroacoustics
 from . import Performance 
 from . import Powertrain
 from . import Stability
-from . import Thermal_Management
 from . import Utilities
 
 from .skip import skip

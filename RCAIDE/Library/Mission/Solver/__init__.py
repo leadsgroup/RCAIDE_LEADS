@@ -8,6 +8,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
  
-from .converge      import * 
-from .expand_state  import expand_state 
+from .solver             import *
+from .expand_state       import expand_state
+from .hp_decomposition   import compute_subsegment_layout, hp_decompose_segment
  

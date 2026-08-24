@@ -503,54 +503,24 @@ def vehicle_setup():
     vehicle.append_component(fuselage)
      
 
-    ##------------------------------------------------------------------------------------------------------------------------- 
-    ##  Systems
-    ##-------------------------------------------------------------------------------------------------------------------------   
-    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[4,0,0]]   
-    vehicle.append_component(avionics)
-
-    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()    
-    flight_controls.origin            = [[28,0,0]]  
-    vehicle.append_component(flight_controls)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
-    auxillary_power_unit.origin       = [[35,0,0]] 
-    vehicle.append_component(auxillary_power_unit)
-
-    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()      
-    electrical.origin                 = [[36,0,0]]  
-    vehicle.append_component(electrical)
-    
-    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()  
-    hydraulics.origin                 = [[30,0,0]]  
-    vehicle.append_component(hydraulics)
-    
-    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()  
-    environmental_controls.origin     = [[36,0,0]]   
-    vehicle.append_component(environmental_controls)
-    
-    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()  
-    instruments.origin                = [[30,0,0]]  
-    vehicle.append_component(instruments)
-        
-
-    # ################################################# Energy Network #######################################################          
+    # ################################################# Energy Network #######################################################
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
     net                                         = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                     = RCAIDE.Library.Attributes.Propellants.Jet_A1()
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan                                       = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
-    turbofan.tag                                   = 'propulsor_1' 
+    turbofan.tag                                   = 'propulsor_1'
+    turbofan.identical_propulsors                  = True
     turbofan.origin                                = [[14.8, 4.86,-1.1]] 
     turbofan.length                                = 2.71     
     turbofan.bypass_ratio                          = 5.4          
@@ -674,29 +644,60 @@ def vehicle_setup():
     #  Energy Source: Fuel Tank
     #------------------------------------------------------------------------------------------------------------------------- 
     # fuel tank
-    fuel_tank_1                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
-    fuel_tank_1.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()         
-    fuel_tank_1.segments_bounding_tank       = ['root','yehudi']
-    fuel_tank_1.segments_percent_chord_start = [0.1, 0.1]
-    fuel_tank_1.segments_percent_chord_end   = [0.7, 0.7] 
-    fuel_line.fuel_tanks.append(fuel_tank_1)
-    
-    fuel_tank_2                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
-    fuel_tank_2.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()         
-    fuel_tank_2.segments_bounding_tank       = ['yehudi', 'section_2']
-    fuel_tank_2.segments_percent_chord_start = [0.1, 0.1]
-    fuel_tank_2.segments_percent_chord_end   = [0.7, 0.7] 
-    fuel_line.fuel_tanks.append(fuel_tank_2)
-    
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [[turbofan.tag, turbofan_2.tag]]
+    fuel_tank_1                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    fuel_tank_1.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    fuel_tank_1.segments_bounding_tank        = ['root','yehudi']
+    fuel_tank_1.segments_percent_chord_start  = [0.1, 0.1]
+    fuel_tank_1.segments_percent_chord_end    = [0.7, 0.7]
+    fuel_tank_1.assigned_distributors         = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_1)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)        
-    
-    # Append energy network to aircraft 
+    fuel_tank_2                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    fuel_tank_2.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    fuel_tank_2.segments_bounding_tank        = ['yehudi', 'section_2']
+    fuel_tank_2.segments_percent_chord_start  = [0.1, 0.1]
+    fuel_tank_2.segments_percent_chord_end    = [0.7, 0.7]
+    fuel_tank_2.assigned_distributors         = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_2)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Assign distributors to propulsors and append fuel line
+    turbofan.assigned_distributors            = [[fuel_line.tag]]
+    turbofan_2.assigned_distributors          = [[fuel_line.tag]]
+    net.distributors.append(fuel_line)
+
+    ##-------------------------------------------------------------------------------------------------------------------------
+    ##  Systems
+    ##-------------------------------------------------------------------------------------------------------------------------
+    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[4,0,0]]
+    net.systems.append(avionics)
+
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[28,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[35,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[36,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[30,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[36,0,0]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[30,0,0]]
+    net.systems.append(instruments)
+
+    # Append energy network to aircraft
     vehicle.append_energy_network(net)
     
     return vehicle

@@ -84,4 +84,6 @@ nosetests.xml
 .vscode
 .idea
 *venv*
-*.png
+
+# Solver logs (IPOPT writes this to the cwd on every run, no way to disable)
+IPOPT.out

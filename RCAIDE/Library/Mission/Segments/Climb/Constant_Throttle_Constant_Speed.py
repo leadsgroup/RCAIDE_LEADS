@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Initialize Conditions
 # ----------------------------------------------------------------------------------------------------------------------
-def unpack_body_angle(segment):
+def unpack_pitch_angle(segment):
     """
     Unpacks and sets the proper value for body angle
 
@@ -51,13 +51,13 @@ def unpack_body_angle(segment):
 
     # Body Angle Control    
     if ctrls.pitch_angle.active: 
-        segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.pitch_angle[:,0] 
+        segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.mission.pitch_angle[:,0] 
     else:
         segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.angle_of_attack
         
     # Bank Angle 
     if ctrls.bank_angle.active: 
-        segment.state.conditions.frames.body.inertial_rotations[:,0] = segment.state.unknowns.bank_angle[:,0]
+        segment.state.conditions.frames.body.inertial_rotations[:,0] = segment.state.unknowns.mission.bank_angle[:,0]
     else:
         segment.state.conditions.frames.body.inertial_rotations[:,0] = segment.bank_angle
     
@@ -98,8 +98,8 @@ def initialize_conditions(segment):
     alt0       = segment.altitude_start 
     v_mag      = segment.air_speed 
     beta       = segment.sideslip_angle
-    alpha      = segment.state.unknowns.angle_of_attack[:,0][:,None]
-    theta      = segment.state.unknowns.pitch_angle[:,0][:,None]
+    alpha      = segment.state.unknowns.mission.angle_of_attack[:,0][:,None]
+    theta      = segment.state.unknowns.mission.pitch_angle[:,0][:,None]
     conditions = segment.state.conditions  
 
     # check for initial altitude
@@ -189,8 +189,8 @@ def update_velocity_vector_from_wind_angle(segment):
     conditions = segment.state.conditions 
     v_mag      = segment.air_speed 
     beta       = segment.sideslip_angle
-    alpha      = segment.state.unknowns.angle_of_attack[:,0][:,None]
-    theta      = segment.state.unknowns.pitch_angle[:,0][:,None]
+    alpha      = segment.state.unknowns.mission.angle_of_attack[:,0][:,None]
+    theta      = segment.state.unknowns.mission.pitch_angle[:,0][:,None]
     
     # Flight path angle
     gamma = theta-alpha

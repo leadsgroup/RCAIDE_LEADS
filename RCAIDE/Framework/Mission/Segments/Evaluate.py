@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
-from RCAIDE.Framework.Core import Units
+from RCAIDE.Framework.Core import Units, Data
 from RCAIDE.Framework.Mission.Segments         import Segment
 from RCAIDE.Framework.Mission.Common.Results   import Results
 from RCAIDE.Library.Mission                    import Common , Solver 
@@ -18,23 +18,22 @@ from RCAIDE.Framework.Analyses                 import Process
 #  ANALYSES
 # ---------------------------------------------------------------------------------------------------------------------- 
 class Evaluate(Segment):
-    """ Base process class used to analyze a vehicle in each flight segment  
-    
-    Assumptions:
-    None
+    """ Base process class used to analyze a vehicle in each flight segment.
 
-    Source:
-    N/A
+    Attributes
+    ----------
+    hybrid_power_split_ratio : float or None
+        Fraction of propulsive shaft power provided by the electrical motor
+        (phi). 0 = all fuel combustion, 1 = all electric. Required for Hybrid
+        networks; auto-set for Fuel (0), Electric (1), and Fuel_Cell (1)
+        networks if left as None.
 
-    Inputs:
-    None
-
-    Outputs:
-    None
-
-    Properties Used:
-    None
-    """     
+    battery_fuel_cell_power_split_ratio : float or None
+        Fraction of electrical bus power supplied by batteries vs fuel cells
+        (psi). 1 = all battery, 0 = all fuel cell. Required for Hybrid
+        networks; auto-set for Fuel (0), Electric (1), and Fuel_Cell (0)
+        networks if left as None.
+    """
     
     def __defaults__(self):
         """This sets the default values.
@@ -60,14 +59,19 @@ class Evaluate(Segment):
         # --------------------------------------------------------------
         
         # conditions
-        self.temperature_deviation                = 0.0
-        self.sideslip_angle                       = 0.0
-        self.crosswind_speed                      = 0.0
-        self.angle_of_attack                      = 1.0 *  Units.degree
-        self.bank_angle                           = 0.0
-        self.hybrid_power_split_ratio             = None
-        self.battery_fuel_cell_power_split_ratio  = None
-        self.lift_coefficient                     = None
+        self.temperature_deviation                             = 0.0
+        self.sideslip_angle                                    = 0.0
+        self.crosswind_speed                                   = 0.0
+        self.angle_of_attack                                   = 1.0 *  Units.degree
+        self.bank_angle                                        = 0.0
+        self.hybrid_power_split_ratio                          = None
+        self.battery_fuel_cell_power_split_ratio               = None
+        self.initial_battery_conditions                        = Data()
+        self.initial_battery_conditions.state_of_charge        = 1.0
+        self.initial_battery_conditions.cell_temperature       = None
+        self.initial_battery_conditions.charge_throughput      = None
+        self.initial_battery_conditions.increment_battery_age  = False
+        self.lift_coefficient                                  = None
         self.state.conditions.update(Results())       
         
         # ---------------------------------------------------------------
@@ -101,9 +105,10 @@ class Evaluate(Segment):
         iterate.initials.planet_position   = Common.Initialize.planet_position
         
         # Unpack Unknowns
-        iterate.unknowns                   = Process()
-        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces 
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
+        iterate.unknowns                         = Process()
+        iterate.unknowns.mission                 = Process()
+        iterate.unknowns.mission.controls        = Common.Unpack_Unknowns.control_surfaces
+        iterate.unknowns.mission.mission         = Common.Unpack_Unknowns.orientation
         
         # Update Conditions
         iterate.conditions = Process()
@@ -115,6 +120,7 @@ class Evaluate(Segment):
         iterate.conditions.atmosphere            = Common.Update.atmosphere
         iterate.conditions.gravity               = Common.Update.gravity
         iterate.conditions.freestream            = Common.Update.freestream
+        iterate.conditions.network               = Common.Update.network
         iterate.conditions.thrust                = Common.Update.thrust
         iterate.conditions.aerodynamics          = Common.Update.aerodynamics
         iterate.conditions.weights               = Common.Update.weights
@@ -124,8 +130,10 @@ class Evaluate(Segment):
         iterate.conditions.planet_position       = Common.Update.planet_position
 
         # Solve Residuals
-        iterate.residuals = Process()  
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics   
+        iterate.residuals                  = Process()
+        iterate.residuals.mission          = Process()
+        iterate.residuals.network          = Process()
+        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
 
         # --------------------------------------------------------------  
         #  Post Process   

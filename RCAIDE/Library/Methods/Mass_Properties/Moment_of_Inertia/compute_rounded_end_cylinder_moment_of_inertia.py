@@ -114,7 +114,7 @@ def compute_rounded_end_cylinder_moment_of_inertia(component,outer_length,outer_
 
     # depending on orientation of cylindrical tank     
     if isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-        if component.bwb_aft_tank:
+        if component.transverse_tank:
             I[0][0] = I_tot_long_axis
             I[1][1] = I_tot_cylin_axis
             I[2][2] = I_tot_cylin_axis

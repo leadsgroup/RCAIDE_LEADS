@@ -51,12 +51,16 @@ def generate_3d_propulsor_points(propulsor, tessellation = 24):
     """
     if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan:
         propulsor_geometry = generate_turbofan_geometry(propulsor)
-        G = generate_points_from_propulsor_geometry(propulsor_geometry, propulsor,tessellation) 
+        G = generate_points_from_propulsor_geometry(propulsor_geometry, propulsor,tessellation)
         return  G
     elif type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet:
-        propulsor_geometry = generate_turbojet_geometry(propulsor) 
-        G = generate_points_from_propulsor_geometry(propulsor_geometry, propulsor,tessellation) 
-        return  G 
+        propulsor_geometry = generate_turbojet_geometry(propulsor)
+        G = generate_points_from_propulsor_geometry(propulsor_geometry, propulsor,tessellation)
+        return  G
+    elif type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop:
+        propulsor_geometry = generate_turboprop_geometry(propulsor)
+        G = generate_points_from_propulsor_geometry(propulsor_geometry, propulsor, tessellation)
+        return G
 
 def generate_points_from_propulsor_geometry(propulsor_geometry, propulsor,tessellation):
     num_prop_segs = len(propulsor_geometry.segments.keys())
@@ -304,6 +308,64 @@ def generate_turbojet_geometry(propulsor):
     segment_9.width  = diameter/diameter_scale * 1 
     segment_9.percent_x_location = 1
     propulsor_geometry.segments.append(segment_9)
-  
+
+    return propulsor_geometry
+
+
+def generate_turboprop_geometry(propulsor):
+    """Generates a geometry data structure for a turboprop propulsor."""
+
+    propulsor_geometry = RCAIDE.Library.Components.Booms.Boom()
+    propulsor_geometry.origin = propulsor.origin
+    propulsor_geometry.lengths.total = propulsor.length
+
+    length_scale   = 10
+    diameter_scale = 2.0
+    diameter       = propulsor.diameter
+
+    segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+    segment.width = 0
+    segment.percent_x_location = 0
+    propulsor_geometry.segments.append(segment)
+
+    segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+    segment.width = diameter / diameter_scale * 0.6
+    segment.percent_x_location = 0.5 / length_scale
+    propulsor_geometry.segments.append(segment)
+
+    segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+    segment.width = diameter / diameter_scale * 2.0
+    segment.percent_x_location = 1.0 / length_scale
+    propulsor_geometry.segments.append(segment)
+
+    segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+    segment.width = diameter / diameter_scale * 2.0
+    segment.percent_x_location = 3.0 / length_scale
+    propulsor_geometry.segments.append(segment)
+
+    segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+    segment.width = diameter / diameter_scale * 1.6
+    segment.percent_x_location = 4.0 / length_scale
+    propulsor_geometry.segments.append(segment)
+
+    segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+    segment.width = diameter / diameter_scale * 1.3
+    segment.percent_x_location = 6.0 / length_scale
+    propulsor_geometry.segments.append(segment)
+
+    segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+    segment.width = diameter / diameter_scale * 1.5
+    segment.percent_x_location = 8.0 / length_scale
+    propulsor_geometry.segments.append(segment)
+
+    segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+    segment.width = diameter / diameter_scale * 0.8
+    segment.percent_x_location = 9.5 / length_scale
+    propulsor_geometry.segments.append(segment)
+
+    segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+    segment.width = 0
+    segment.percent_x_location = 1.0
+    propulsor_geometry.segments.append(segment)
 
     return propulsor_geometry

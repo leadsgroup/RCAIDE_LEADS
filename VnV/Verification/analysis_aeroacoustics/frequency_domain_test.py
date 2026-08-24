@@ -32,20 +32,24 @@ from APC_11x4_Propeller  import APC_11x4_Propeller
 # ----------------------------------------------------------------------
 #   Main
 # ---------------------------------------------------------------------- 
-def main(): 
+def main():
+    ti = time.time()
     '''This regression script is for validation and verification of the mid-fidelity acoustics
     analysis routine. "Experimental Data is obtained from Comparisons of predicted propeller
     noise with windtunnel ..." by Weir, D and Powers, J.
-    '''  
-    # define plotting parameters 
-    PP = plot_parameters() 
-       
-    # harmonic noise test 
+    '''
+    # define plotting parameters
+    PP = plot_parameters()
+
+    # harmonic noise test
     Harmonic_Noise_Validation(PP)
 
-    # broadband nosie test function 
+    # broadband nosie test function
     Broadband_Noise_Validation(PP)
-    
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
     
     
@@ -136,7 +140,7 @@ def Harmonic_Noise_Validation(PP):
     # Run simulation using different fidelities 
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     for fid in  range(len(fidelities)): 
-        rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
+        rotor.append_operating_conditions(segment)
         
         # Run BEMT
         segment.state.conditions.expand_rows(ctrl_pts)
@@ -292,7 +296,7 @@ def Broadband_Noise_Validation(PP):
     rotor.number_azimuthal_stations                        = 16
     rotor.use_2d_analysis                                  = True
      
-    rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
+    rotor.append_operating_conditions(segment)
     # Run BEMT
     segment.state.conditions.expand_rows(ctrl_pts)
     rotor_conditions             =  segment.state.conditions.energy.converters[rotor.tag]       

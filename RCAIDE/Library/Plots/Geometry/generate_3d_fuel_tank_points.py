@@ -9,7 +9,7 @@
 # ----------------------------------------------------------------------------------------------------------------------    
 import RCAIDE
 from RCAIDE.Framework.Core import Data 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank import compute_non_dimensional_rib_coordinates 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_non_integral_tank_volume import compute_non_dimensional_rib_coordinates 
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry, compute_naca_4series
 
 # python imports
@@ -294,8 +294,9 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
 
     N = 9
     fuel_tank_points = np.zeros((2*N,tessellation ,3))
-    R = fuel_tank.diameters.external / 2
-    L = fuel_tank.lengths.external    
+    R       = fuel_tank.diameters.external / 2
+    L_total = fuel_tank.lengths.external          # tip-to-tip
+    L_cyl   = L_total - 2 * R                     # cylinder-only
          
     # front segments
     front_angles = np.linspace(0, np.pi/2,N) 
@@ -322,7 +323,7 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
         tank_ypts =  (abs((np.cos(theta)))**(2/n))*a * ((np.cos(theta)>0)*1 - (np.cos(theta)<0)*1) 
         tank_zpts =  (abs((np.sin(theta)))**(2/n))*b * ((np.sin(theta)>0)*1 - (np.sin(theta)<0)*1)  
         
-        fuel_tank_points[i+1+j,:,0] = R *(np.cos(rear_angles[j]))  +  L + R
+        fuel_tank_points[i+1+j,:,0] = R * np.cos(rear_angles[j]) + R + L_cyl
         fuel_tank_points[i+1+j,:,1] = tank_ypts 
         fuel_tank_points[i+1+j,:,2] = tank_zpts 
 
@@ -351,9 +352,9 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
     fuel_tank_points = fuel_tank_points @ R_total.T 
     
     # translate to location on aircraft 
-    if fuel_tank.orientation_euler_angles   == [0.,0.,np.pi/2]:
+    if np.allclose(fuel_tank.orientation_euler_angles, [0., 0., np.pi/2]):
         fuel_tank_points[:, :, 0] +=  fuel_tank.origin[0][0] + fuel_tank.diameters.external/2
-        fuel_tank_points[:, :, 1] +=  fuel_tank.origin[0][1] - (R + L/2)
+        fuel_tank_points[:, :, 1] +=  fuel_tank.origin[0][1] - L_total / 2
         fuel_tank_points[:, :, 2] +=  fuel_tank.origin[0][2]
     else:
         fuel_tank_points[:, :, 0] += fuel_tank.origin[0][0]
@@ -376,11 +377,11 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
 
     return G 
 
-def aft_tank_root_chord_bounds(fuel_tank, tessalation = 24):
+def transverse_tank_chord_bounds(fuel_tank, tessalation = 24):
     """
     Returns aft tank root chord bounds used by aft BWB tank generators.
     """
-    return getattr(fuel_tank, "aft_tank_root_chord_bounds", None)
+    return getattr(fuel_tank, "transverse_tank_chord_bounds", None)
 
 
 def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_tank):
@@ -397,7 +398,7 @@ def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_ta
     if any(val is None for val in [
         segment_list[0],
         segment_list[1],
-        fuel_tank.aft_tank_segment_bound
+        fuel_tank.transverse_tank_segment_bound
     ]):
         raise ValueError("Aft tank bounds and segment bound must be defined.")
 
@@ -408,7 +409,7 @@ def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_ta
 
     segments = wing.segments
     seg_tags = list(segments.keys())
-    index = seg_tags.index(fuel_tank.aft_tank_segment_bound)
+    index = seg_tags.index(fuel_tank.transverse_tank_segment_bound)
     seg_names = seg_tags[:index + 1]
     num_tank_sections = len(seg_names)
 
