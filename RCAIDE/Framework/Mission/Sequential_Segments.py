@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports    
 from RCAIDE.Library.Mission.Common.Segments    import sequential_segments
-from RCAIDE.Library.Mission.Common.Pre_Process import geometry, aerodynamics,stability, energy,emissions,mass_properties, set_mission_residuals_and_unknowns, set_network_residuals_and_unknowns, hp_decompose_mission
+from RCAIDE.Library.Mission.Common.Pre_Process import geometry, aerodynamics,stability, energy,emissions,mass_properties, set_mission_residuals_and_unknowns, set_network_residuals_and_unknowns, hp_decompose_mission, merge_hp_decomposed_segments
 from RCAIDE.Framework.Core                     import Container as ContainerBase
 from RCAIDE.Framework.Analyses                 import Process 
 from . import Segments
@@ -60,13 +60,15 @@ class Sequential_Segments(Segments.Segment.Container):
         self.process.initialize.set_network_residuals_and_unknowns   = set_network_residuals_and_unknowns
 
 
-        #   Converge 
+        #   Converge
         self.process.converge    = sequential_segments
-         
-        #   Iterate     
-        del self.process.iterate  
 
-        return  
+        #   Iterate
+        del self.process.iterate
+
+        self.process.merge_hp_decomposed_segments = merge_hp_decomposed_segments
+
+        return
 
                         
     def evaluate(self,state=None):

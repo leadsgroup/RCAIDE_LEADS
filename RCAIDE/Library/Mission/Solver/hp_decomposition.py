@@ -71,6 +71,13 @@ def compute_subsegment_layout(number_of_control_points, number_of_unknowns, max_
     if number_of_control_points < 1 or number_of_unknowns < 1:
         raise ValueError("number_of_control_points and number_of_unknowns must be >= 1")
 
+    if number_of_control_points < min_control_points:
+        # Already below the floor a split piece would need to meet -- there's
+        # no way to divide this segment into >=1 pieces each with at least
+        # min_control_points points without a piece smaller than the whole
+        # segment itself, so leave it undecomposed rather than erroring.
+        return number_of_control_points, 1
+
     divisors   = [n for n in range(1, number_of_control_points + 1) if number_of_control_points % n == 0]
     candidates = [n for n in divisors if n >= min_control_points and n * number_of_unknowns < max_dimension]
 

@@ -68,45 +68,19 @@ class Numerics(Conditions):
         self.network_solver.print_output        = True
         self.network_solver.max_evaluations     = 200
         self.network_solver.step_size           = 1E-8   
-        self.network_solver.verbose             = False
-           
-        # static hp-decomposition (A.4) -- sibling to mission_solver/network_solver,
-        # not nested under either: total sub-problem dimension is mission +
-        # network unknowns together whenever network_solver.type is None, so this
-        # isn't a mission_solver-only setting.
-        self.hp_decomposition                    = Conditions()
-        # min_control_points is the calibrated, load-bearing lever: the Tiltrotor
-        # VTOL sweep showed control-point count (n) drives solver cost far more than
-        # the n*U dimension product (U 5->12 at fixed n=4 cost ~30%; n 4->8 at fixed
-        # U=5, a *smaller* dimension, cost ~3x). max_dimension is therefore only a
-        # pathological-U safety net, not independently calibrated; 64 is set generous
-        # enough that it never binds within the validated range (n=4, U up to 12,
-        # dimension up to 48 all converged cleanly).
+        self.network_solver.verbose             = False 
+        
+        self.hp_decomposition                    = Conditions() 
         self.hp_decomposition.max_dimension      = 64
-        self.hp_decomposition.min_control_points = 4
-        # enabled defaults True: wired into Sequential_Segments' process.initialize
-        # (RCAIDE.Library.Mission.Common.Pre_Process.hp_decompose_mission), auto-
-        # splitting any registered segment type (EXTENT_ATTRIBUTES) before the
-        # solve. Set False on a segment to opt it out individually.
-        self.hp_decomposition.enabled            = True
-        # tolerance/step_size for hp-decomposed pieces -- calibration found
-        # neither the parent segment's own settings (2.7% final-SOC discrepancy)
-        # nor the library mission_solver default (1.9%) were safe for the
-        # smaller, now-cheap sub-problem; these tuned values gave 0.3%. See
-        # hp_decompose_segment's docstring for the full comparison.
+        self.hp_decomposition.min_control_points = 4 
+        self.hp_decomposition.enabled            = False 
         self.hp_decomposition.tolerance          = 1E-4
-        self.hp_decomposition.step_size          = 1E-5
-        # set True only on pieces 1..K-1 by hp_decompose_segment itself (never
-        # by a user/mission-setup function): tells sequential_segments to seed
-        # this piece's initial unknown guess from the previous piece's
-        # converged final control point, instead of every piece starting from
-        # the same static default guess regardless of where in the original
-        # segment's extent it falls. Root cause of a real SLSQP convergence
-        # failure found investigating A.4: a piece mid-transition can be far
-        # from a flat default guess (e.g. thrust_vector_angle=0.5 rad
-        # everywhere) even when its neighbors aren't -- see hp_decompose_
-        # segment's docstring.
-        self.hp_decomposition.seed_guess_from_previous_piece = False
+        self.hp_decomposition.step_size          = 1E-5 
+        self.hp_decomposition.seed_guess_from_previous_piece = False 
+        self.hp_decomposition.original_tag      = None
+        self.hp_decomposition.piece_index       = None
+        self.hp_decomposition.piece_count       = None
+        self.hp_decomposition.original_segment  = None
 
         self.dimensionless                      = Conditions()
         self.dimensionless.control_points       = np.empty([0,0])

@@ -96,10 +96,16 @@ def hp_decompose_mission(mission):
         )
         if len(pieces) > 1:
             any_split = True
-            for piece in pieces:
+            for i, piece in enumerate(pieces):
                 # defensive: pieces inherit enabled=True via deepcopy: don't
                 # let a piece be decomposed again if this ever ran twice
-                piece.state.numerics.hp_decomposition.enabled = False
+                piece.state.numerics.hp_decomposition.enabled      = False
+                piece.state.numerics.hp_decomposition.original_tag = segment.tag
+                piece.state.numerics.hp_decomposition.piece_index  = i
+                piece.state.numerics.hp_decomposition.piece_count  = len(pieces)
+            # stashed on piece 0 only -- see Numerics.py's hp_decomposition.
+            # original_segment docstring
+            pieces[0].state.numerics.hp_decomposition.original_segment = segment
         for piece in pieces:
             new_container.append(piece)
 

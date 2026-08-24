@@ -9,6 +9,7 @@
 # ----------------------------------------------------------------------------------------------------------------------- 
    
 from .hp_decompose_mission                    import hp_decompose_mission
+from .merge_hp_decomposed_segments            import merge_hp_decomposed_segments
 from .aerodynamics                            import aerodynamics
 from .geometry                                import geometry, geometry_preprocess_routine
 from .stability                               import stability
