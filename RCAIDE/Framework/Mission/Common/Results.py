@@ -402,7 +402,68 @@ class Results(Conditions):
         self.static_stability.derivatives.CN_delta_r                           = ones_1col * 0
         self.static_stability.derivatives.CN_delta_f                           = ones_1col * 0
         self.static_stability.derivatives.CN_delta_s                           = ones_1col * 0
-        
+
+        # compound surface: Elevon primary (pitch)
+        self.static_stability.derivatives.Clift_delta_pe                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_pe                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_pe           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_pe                      = ones_1col * 0
+        # compound surface: Elevon secondary (roll)
+        self.static_stability.derivatives.Clift_delta_se                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_se                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_se           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_se                      = ones_1col * 0
+        # compound surface: Flaperon primary (flap)
+        self.static_stability.derivatives.Clift_delta_pf                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_pf                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_pf           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_pf                      = ones_1col * 0
+        # compound surface: Flaperon secondary (roll)
+        self.static_stability.derivatives.Clift_delta_sf                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_sf                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_sf           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_sf                      = ones_1col * 0
+        # compound surface: Ruddervator primary (pitch)
+        self.static_stability.derivatives.Clift_delta_pr                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_pr                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_pr           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_pr                      = ones_1col * 0
+        # compound surface: Ruddervator secondary (yaw)
+        self.static_stability.derivatives.Clift_delta_sr                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_sr                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_sr           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_sr                      = ones_1col * 0
+
         # body axis derivatives
         self.static_stability.derivatives.Clift_u                              = ones_1col * 0
         self.static_stability.derivatives.Clift_v                              = ones_1col * 0

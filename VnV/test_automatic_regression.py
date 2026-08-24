@@ -53,6 +53,7 @@ modules = [
     'Verification/network_internal_combustion_engine/ICE_test.py',
     'Verification/network_internal_combustion_engine/ICE_constant_speed_test.py',
     'Verification/optimization/optimization_packages.py',
+    'Verification/solver_numerics/hp_decomposition_test.py',
     'Verification/plots/plot_test.py', 
     'Verification/powertrain/rotor_performance_test.py',
     'Verification/powertrain/propeller_non_uniform_inflow.py',

@@ -9,3 +9,4 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 from .pyopt_setup import Pyoptsparse_Solve
+from .pyopt_setup import PyOpt_Problem
