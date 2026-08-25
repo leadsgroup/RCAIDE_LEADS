@@ -10,6 +10,7 @@ import copy
 
 from RCAIDE.Framework.Analyses                     import Process
 from RCAIDE.Library.Mission.Solver.hp_decomposition import hp_decompose_segment, EXTENT_ATTRIBUTES
+from .geometry                                      import geometry
 from .energy                                        import energy
 from .set_mission_residuals_and_unknowns            import set_mission_residuals_and_unknowns
 from .set_network_residuals_and_unknowns            import set_network_residuals_and_unknowns
@@ -82,8 +83,8 @@ def hp_decompose_mission(mission):
             new_container.append(segment)
             continue
 
-        # throwaway prototype, purely to learn the unknown count -- see docstring
         prototype = copy.deepcopy(segment)
+        geometry(SegmentListView([prototype]))
         energy(SegmentListView([prototype]))
         set_mission_residuals_and_unknowns(SegmentListView([prototype]))
         set_network_residuals_and_unknowns(SegmentListView([prototype]))
@@ -97,14 +98,11 @@ def hp_decompose_mission(mission):
         if len(pieces) > 1:
             any_split = True
             for i, piece in enumerate(pieces):
-                # defensive: pieces inherit enabled=True via deepcopy: don't
-                # let a piece be decomposed again if this ever ran twice
                 piece.state.numerics.hp_decomposition.enabled      = False
                 piece.state.numerics.hp_decomposition.original_tag = segment.tag
                 piece.state.numerics.hp_decomposition.piece_index  = i
                 piece.state.numerics.hp_decomposition.piece_count  = len(pieces)
-            # stashed on piece 0 only -- see Numerics.py's hp_decomposition.
-            # original_segment docstring
+                
             pieces[0].state.numerics.hp_decomposition.original_segment = segment
         for piece in pieces:
             new_container.append(piece)
