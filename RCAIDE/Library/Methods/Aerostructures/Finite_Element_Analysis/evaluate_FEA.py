@@ -8,6 +8,7 @@
 from RCAIDE.Framework.Core                                                          import Data
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.FEA              import FEA
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM                  import VLM
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES
 from RCAIDE.Library.Methods.Utilities                                                import Cubic_Spline_Blender
 
 import numpy as np
@@ -83,6 +84,44 @@ def evaluate_surrogate(state, settings, vehicle):
             conditions.aerostructures[wing.tag].elastic_twist[ti, :, 0] = q_dyn_ti * blend_structural(
                 sub_sur.elastic_twist[wing.tag], trans_sur.elastic_twist[wing.tag],
                 sup_sur.elastic_twist[wing.tag], h_sub, h_sup, mach_ti, node_pts)
+
+            # Control-surface correction: the base surrogate above is trained on a
+            # clean wing (all control surfaces stripped, see train_VLM_surrogates.py),
+            # so it has no flap/slat/etc. dependence on its own. Add each deployed
+            # surface's linear structural derivative, same pattern as evaluate_VLM.py's
+            # aero-coefficient correction (coefficient += d(coefficient)/d(delta) * deflection).
+            mach_node_pts = node_pts[:, 1:]  # (Mach, node_idx) -- these derivatives have no AoA axis
+            for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
+                cs_conditions = getattr(conditions.control_surfaces, name, None)
+                if cs_conditions is None:
+                    continue
+                deflection = float(getattr(cs_conditions, deflection_attr)[ti, 0])
+                if deflection == 0.0:
+                    continue
+
+                for axis, field in ((0, 'ddeflection_u_ddelta_'), (1, 'ddeflection_v_ddelta_'), (2, 'ddeflection_w_ddelta_')):
+                    key   = field + letter
+                    sub_d = getattr(sub_sur, key, None)
+                    if sub_d is None or wing.tag not in sub_d:
+                        continue
+                    trans_d = getattr(trans_sur, key, None)
+                    sup_d   = getattr(sup_sur,   key, None)
+                    conditions.aerostructures[wing.tag].deflection[ti, :, axis] += q_dyn_ti * deflection * blend_structural(
+                        sub_d[wing.tag],
+                        trans_d[wing.tag] if trans_d is not None and wing.tag in trans_d else None,
+                        sup_d[wing.tag]   if sup_d   is not None and wing.tag in sup_d   else None,
+                        h_sub, h_sup, mach_ti, mach_node_pts)
+
+                key_twist   = 'delastic_twist_ddelta_' + letter
+                sub_twist   = getattr(sub_sur, key_twist, None)
+                if sub_twist is not None and wing.tag in sub_twist:
+                    trans_twist = getattr(trans_sur, key_twist, None)
+                    sup_twist   = getattr(sup_sur,   key_twist, None)
+                    conditions.aerostructures[wing.tag].elastic_twist[ti, :, 0] += q_dyn_ti * deflection * blend_structural(
+                        sub_twist[wing.tag],
+                        trans_twist[wing.tag] if trans_twist is not None and wing.tag in trans_twist else None,
+                        sup_twist[wing.tag]   if sup_twist   is not None and wing.tag in sup_twist   else None,
+                        h_sub, h_sup, mach_ti, mach_node_pts)
     return
 
 

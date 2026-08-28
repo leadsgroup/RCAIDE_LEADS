@@ -47,8 +47,13 @@ class Aerostructures(Analysis):
         """           
         self.tag                    = 'aerostructures'   
         self.settings               = Data() 
-        self.settings.discretiation = 400
-        self.settings.load_factor   = 1.0  
+        self.settings.discretiation         = 400
+        self.settings.load_factor           = 1.0
+        # Verification-only override: replaces the VLM-derived aero load with a
+        # uniform pressure [Pa] so FEA.py's beam solver can be benchmarked against
+        # an independent reference implementation on identical loads. Leave None
+        # for production use (real aerodynamic loads).
+        self.settings.verification_pressure = None
         
     def evaluate(self,state, vehicle):
         """The default evaluate function.

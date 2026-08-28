@@ -102,6 +102,17 @@ class Finite_Element_Analysis(Aerostructures):
         dst_sub.deflection_v         = src_sub.deflection_v
         dst_sub.deflection_w         = src_sub.deflection_w
         dst_sub.elastic_twist        = src_sub.elastic_twist
+
+        # Control-surface structural derivatives (flap/slat/aileron/etc.), if any
+        # were trained -- see control_surface_registry.py for the letter/flag scheme.
+        from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES
+        for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
+            if getattr(aerodynamics, flag, False):
+                for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_'):
+                    key = field + letter
+                    if key in src_sub:
+                        dst_sub[key] = src_sub[key]
+
         self.training.angle_of_attack = aerodynamics.training.angle_of_attack
         self.training.Mach            = aerodynamics.training.Mach
         self.training.subsonic        = dst_sub

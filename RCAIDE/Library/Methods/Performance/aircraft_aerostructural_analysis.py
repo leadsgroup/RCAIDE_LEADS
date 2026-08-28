@@ -162,10 +162,10 @@ def aircraft_aerostructural_analysis(analyses                         = None,
     conditions.weights.components            = Data()
     conditions.weights.components.mass       = Data()
     for network in analyses.vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
-                fuel_tag = fuel_tank.fuel.tag
-                conditions.weights.components.mass[fuel_tag] = fuel_tank.mass_properties.mass * np.ones((ctrl_pts, 1))
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel_tag = source.fuel.tag
+                conditions.weights.components.mass[fuel_tag] = source.mass_properties.mass * np.ones((ctrl_pts, 1))
 
     for wing in analyses.vehicle.wings: 
         for control_surface in wing.control_surfaces: 

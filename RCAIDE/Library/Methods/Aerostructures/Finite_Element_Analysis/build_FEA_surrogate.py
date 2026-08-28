@@ -6,6 +6,7 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES
 
 from scipy.interpolate import RegularGridInterpolator
 import numpy as np
@@ -77,6 +78,24 @@ def build_surrogate(aerostructures, training, vehicle):
         surrogates.elastic_twist[wing.tag] = RegularGridInterpolator(
             (AoA_data, mach_data, node_idx), training.elastic_twist[wing.tag],
             method='linear', bounds_error=False, fill_value=None)
+
+    # Control-surface structural derivatives (Mach x node_idx, no AoA axis --
+    # same linear-in-deflection assumption already used for the aero coefficient
+    # derivatives). Only built for surfaces actually trained (see
+    # control_surface_registry.py for the letter/flag scheme).
+    for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
+        for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_'):
+            key = field + letter
+            if key not in training:
+                continue
+            surrogates[key] = Data()
+            for wing in vehicle.wings:
+                if wing.tag not in training[key]:
+                    continue
+                wing_node_idx = np.arange(training[key][wing.tag].shape[-1], dtype=float)
+                surrogates[key][wing.tag] = RegularGridInterpolator(
+                    (mach_data, wing_node_idx), training[key][wing.tag],
+                    method='linear', bounds_error=False, fill_value=None)
 
     return surrogates
 

@@ -46,7 +46,11 @@ class Generic_Battery_Module(Source):
         
     orientation_euler_angles : list
         Euler angles defining battery orientation [rad] (default: [0,0,0])
-        
+
+    wing_tag : str
+        Tag of the wing this module is mounted in/on, or None if not wing-mounted
+        (default: None)
+
     cell : Data
         Container for cell-specific attributes
             - chemistry : str
@@ -114,6 +118,7 @@ class Generic_Battery_Module(Source):
                  
         self.orientation_euler_angles                          = [0.,0.,0.]  # vector of angles defining default orientation of rotor
         self.heat_acquisition_system                           = None
+        self.wing_tag                                          = None
 
 
         self.cell                                              = Data()
