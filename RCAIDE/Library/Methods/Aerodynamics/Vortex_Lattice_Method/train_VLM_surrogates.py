@@ -420,6 +420,32 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
                     conditions.static_stability.pitch_rate= np.zeros_like(Machs)
                     conditions.static_stability.roll_rate = np.zeros_like(Machs)
                     conditions.static_stability.yaw_rate  = np.zeros_like(Machs)
+
+                    # Structural response to this control-surface deflection, so the
+                    # deflection/twist surrogate isn't blind to flaps/slats/etc. (the
+                    # base AoA x Mach surrogate above is trained on a clean wing with
+                    # all control surfaces stripped out). Reuses the same VLM call as
+                    # the aero-coefficient derivatives below: VLM's returned
+                    # coefficients (CLift, CP, ...) depend only on Mach/AoA/beta/rates,
+                    # not on conditions.freestream.velocity, so a single call at real
+                    # velocity V_cs serves both -- FEA needs V_cs for dynamic pressure,
+                    # and it doesn't change the aero derivatives at all.
+                    if aerostructural_analyses is not None:
+                        conditions.freestream.velocity                    = V_cs
+                        conditions.freestream.density                     = rho0 * np.ones_like(Machs)
+                        conditions.freestream.dynamic_pressure            = 0.5 * rho0 * V_cs**2
+                        conditions.freestream.gravitational_acceleration  = 9.81 * np.ones_like(Machs)
+                        conditions.aerostructures                         = Data()
+                        conditions.weights                                = Data()
+                        conditions.weights.components                     = Data()
+                        conditions.weights.components.mass                = Data()
+                        n_pts_cs = len(Machs)
+                        for network in vehicle.networks:
+                            for source in network.sources:
+                                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                                    conditions.weights.components.mass[source.fuel.tag] = (
+                                        source.mass_properties.mass * np.ones((n_pts_cs, 1)))
+
                     setattr(control_surface, deflection_attr, delta[d_i])
                     VLM_results   = call_VLM(conditions,settings,vehicle)
                     Clift_d[d_i,:] = VLM_results.CLift[:,0]         - Clift_alpha_0[0,:]
@@ -431,37 +457,9 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
                     CM_d[d_i,:]    = VLM_results.CM[:,0]            - CM_alpha_0[0,:]
                     CN_d[d_i,:]    = VLM_results.CN[:,0]            - CN_alpha_0[0,:]
 
-                    # Structural response to this control-surface deflection, so the
-                    # deflection/twist surrogate isn't blind to flaps/slats/etc. (the
-                    # base AoA x Mach surrogate above is trained on a clean wing with
-                    # all control surfaces stripped out).
                     if aerostructural_analyses is not None:
-                        cs_conditions                                        = RCAIDE.Framework.Mission.Common.Results()
-                        cs_conditions.expand_rows(len(Mach),override=False)
-                        cs_conditions.aerodynamics.angles.alpha              = np.ones_like(Machs) *1E-12
-                        cs_conditions.aerodynamics.angles.beta               = np.zeros_like(Machs)
-                        cs_conditions.freestream.mach_number                 = Machs
-                        cs_conditions.freestream.velocity                    = V_cs
-                        cs_conditions.freestream.density                     = rho0 * np.ones_like(Machs)
-                        cs_conditions.freestream.dynamic_pressure            = 0.5 * rho0 * V_cs**2
-                        cs_conditions.freestream.gravitational_acceleration  = 9.81 * np.ones_like(Machs)
-                        cs_conditions.static_stability.pitch_rate            = np.zeros_like(Machs)
-                        cs_conditions.static_stability.roll_rate             = np.zeros_like(Machs)
-                        cs_conditions.static_stability.yaw_rate              = np.zeros_like(Machs)
-                        cs_conditions.aerostructures                         = Data()
-                        cs_conditions.weights                                = Data()
-                        cs_conditions.weights.components                     = Data()
-                        cs_conditions.weights.components.mass                = Data()
-                        n_pts_cs = len(Machs)
-                        for network in vehicle.networks:
-                            for source in network.sources:
-                                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                                    cs_conditions.weights.components.mass[source.fuel.tag] = (
-                                        source.mass_properties.mass * np.ones((n_pts_cs, 1)))
-
-                        cs_VLM_results = call_VLM(cs_conditions, settings, vehicle)
                         q_dyn_cs       = 0.5 * rho0 * V_cs**2
-                        FEA_results_d  = FEA(cs_conditions, cs_VLM_results, settings.vortex_distribution,
+                        FEA_results_d  = FEA(conditions, VLM_results, settings.vortex_distribution,
                                              settings_str, vehicle)
                         for wing2 in vehicle.wings:
                             n_nodes = FEA_results_d[wing2.tag].deflection.shape[1]

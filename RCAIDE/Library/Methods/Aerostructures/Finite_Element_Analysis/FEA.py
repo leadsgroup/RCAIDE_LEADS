@@ -18,6 +18,8 @@ from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.discretize_wi
 # Python Imports
 import numpy as np
 import pyvista as pv
+from scipy.sparse         import coo_matrix
+from scipy.sparse.linalg  import spsolve
 
 # --- Global PyVista Theme ---
 pv.global_theme.font.family             = 'times'
@@ -185,11 +187,16 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             # All loads routed through T for correct bending-torsion coupling
             F_global_elem = compute_force_vector(w_x=w_x_aero, w_y=w_y_aero, w_z=w_z_aero + load_w_z_distributed, t_y=load_t_y_aero, Le=VD_structural_wing.Le, num_elem=num_elements, T=T_all)
             
-            # Global Assembly
+            # Global Assembly (sparse). This beam-chain stiffness matrix is
+            # banded -- each element only couples to its immediate neighbor,
+            # so a dense (total_dof x total_dof) matrix and O(n^3) dense solve
+            # spend nearly all their effort on structural zeros. COO sums
+            # duplicate (row,col) entries on conversion to CSC, which is
+            # exactly what np.add.at did for nodes shared between adjacent
+            # elements, so the assembled matrix is identical to the dense one.
             num_nodes     = num_elements + 1
             dofs_per_node = 6
             total_dof     = dofs_per_node * num_nodes
-            K_global      = np.zeros((total_dof, total_dof))
             F_global      = np.zeros(total_dof)
 
             global_indices        = np.zeros((num_elements, 12), dtype=int)
@@ -198,21 +205,21 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             global_indices[:, :6] = dofs_per_node * node_indices[:-1, np.newaxis] + dof_indices
             global_indices[:, 6:] = dofs_per_node * node_indices[1:, np.newaxis] + dof_indices
 
-            rows = global_indices[:, :, np.newaxis]
-            cols = global_indices[:, np.newaxis, :]
-            np.add.at(K_global, (rows, cols), K_global_elem)
+            rows     = np.repeat(global_indices, 12, axis=1).ravel()
+            cols     = np.tile(global_indices, 12).ravel()
+            K_global = coo_matrix((K_global_elem.ravel(), (rows, cols)),
+                                   shape=(total_dof, total_dof)).tocsc()
             np.add.at(F_global, global_indices, F_global_elem)
-            
-            # Solve boundary conditions (Cantilever)
-            constrained_dof  = np.arange(0, 6)
-            all_dofs         = np.arange(total_dof)
-            free_dof         = np.setdiff1d(all_dofs, constrained_dof)
-            K_reduced        = K_global[np.ix_(free_dof, free_dof)]
-            F_reduced        = F_global[free_dof]
-            
-            u_reduced        = np.linalg.solve(K_reduced, F_reduced)
+
+            # Solve boundary conditions (Cantilever): node 0's 6 DOFs are
+            # always the fixed root, so the free block is a contiguous slice
+            # -- no fancy indexing needed, sparse or dense.
+            K_reduced        = K_global[6:, 6:]
+            F_reduced        = F_global[6:]
+
+            u_reduced        = spsolve(K_reduced, F_reduced)
             u_full           = np.zeros(total_dof)
-            u_full[free_dof] = u_reduced  
+            u_full[6:]       = u_reduced
             twist_local      = ( u_full[3::6] * np.sin(VD_structural_wing.sweep_nodes) + u_full[4::6] * np.cos(VD_structural_wing.sweep_nodes))
 
             # ------------------------------------------------------------
