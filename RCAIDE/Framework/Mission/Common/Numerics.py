@@ -50,6 +50,7 @@ class Numerics(Conditions):
         # mission solver
         self.mission_solver                     = Conditions()
         self.mission_solver.type                = "optimize"
+        self.mission_solver.package             = "scipy"    # "scipy" or "pyopt" -- which package backs the "optimize" dispatch
         self.mission_solver.method              = "SLSQP"
         self.mission_solver.objective           = "energy"
         self.mission_solver.tolerance           = 1E-6
@@ -67,8 +68,20 @@ class Numerics(Conditions):
         self.network_solver.print_output        = True
         self.network_solver.max_evaluations     = 200
         self.network_solver.step_size           = 1E-8   
-        self.network_solver.verbose             = False
-           
+        self.network_solver.verbose             = False 
+        
+        self.hp_decomposition                    = Conditions() 
+        self.hp_decomposition.max_dimension      = 64
+        self.hp_decomposition.min_control_points = 4 
+        self.hp_decomposition.enabled            = False 
+        self.hp_decomposition.tolerance          = 1E-4
+        self.hp_decomposition.step_size          = 1E-5 
+        self.hp_decomposition.seed_guess_from_previous_piece = False 
+        self.hp_decomposition.original_tag      = None
+        self.hp_decomposition.piece_index       = None
+        self.hp_decomposition.piece_count       = None
+        self.hp_decomposition.original_segment  = None
+
         self.dimensionless                      = Conditions()
         self.dimensionless.control_points       = np.empty([0,0])
         self.dimensionless.differentiate        = np.empty([0,0])

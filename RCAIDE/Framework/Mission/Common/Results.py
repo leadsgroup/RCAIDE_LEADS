@@ -268,10 +268,52 @@ class Results(Conditions):
         self.control_surfaces.slat.static_stability.coefficients.e             = ones_1col * 0
 
         self.control_surfaces.spoiler                                          = Conditions()
-        self.control_surfaces.spoiler.deflection                               = ones_1col * 0         
+        self.control_surfaces.spoiler.deflection                               = ones_1col * 0
+
+        self.control_surfaces.flaperon                                         = Conditions()
+        self.control_surfaces.flaperon.deflection                              = ones_1col * 0
+        self.control_surfaces.flaperon.secondary_deflection                    = ones_1col * 0
+        self.control_surfaces.flaperon.hinge_moment                            = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability                        = Conditions()
+        self.control_surfaces.flaperon.static_stability.coefficients           = Conditions()
+        self.control_surfaces.flaperon.static_stability.coefficients.X         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.Y         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.Z         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.L         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.M         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.N         = ones_1col * 0
+        self.control_surfaces.flaperon.static_stability.coefficients.e         = ones_1col * 0
+
+        self.control_surfaces.elevon                                           = Conditions()
+        self.control_surfaces.elevon.deflection                                = ones_1col * 0
+        self.control_surfaces.elevon.secondary_deflection                      = ones_1col * 0
+        self.control_surfaces.elevon.hinge_moment                              = ones_1col * 0
+        self.control_surfaces.elevon.static_stability                          = Conditions()
+        self.control_surfaces.elevon.static_stability.coefficients             = Conditions()
+        self.control_surfaces.elevon.static_stability.coefficients.X           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.Y           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.Z           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.L           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.M           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.N           = ones_1col * 0
+        self.control_surfaces.elevon.static_stability.coefficients.e           = ones_1col * 0
+
+        self.control_surfaces.ruddervator                                       = Conditions()
+        self.control_surfaces.ruddervator.deflection                            = ones_1col * 0
+        self.control_surfaces.ruddervator.secondary_deflection                  = ones_1col * 0
+        self.control_surfaces.ruddervator.hinge_moment                          = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability                      = Conditions()
+        self.control_surfaces.ruddervator.static_stability.coefficients         = Conditions()
+        self.control_surfaces.ruddervator.static_stability.coefficients.X       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.Y       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.Z       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.L       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.M       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.N       = ones_1col * 0
+        self.control_surfaces.ruddervator.static_stability.coefficients.e       = ones_1col * 0
 
         # ----------------------------------------------------------------------------------------------------------------------
-        # Stability 
+        # Stability
         # ----------------------------------------------------------------------------------------------------------------------  
         self.static_stability                                                  = Conditions()
  
@@ -360,7 +402,68 @@ class Results(Conditions):
         self.static_stability.derivatives.CN_delta_r                           = ones_1col * 0
         self.static_stability.derivatives.CN_delta_f                           = ones_1col * 0
         self.static_stability.derivatives.CN_delta_s                           = ones_1col * 0
-        
+
+        # compound surface: Elevon primary (pitch)
+        self.static_stability.derivatives.Clift_delta_pe                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_pe                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_pe           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_pe                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_pe                      = ones_1col * 0
+        # compound surface: Elevon secondary (roll)
+        self.static_stability.derivatives.Clift_delta_se                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_se                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_se           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_se                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_se                      = ones_1col * 0
+        # compound surface: Flaperon primary (flap)
+        self.static_stability.derivatives.Clift_delta_pf                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_pf                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_pf           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_pf                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_pf                      = ones_1col * 0
+        # compound surface: Flaperon secondary (roll)
+        self.static_stability.derivatives.Clift_delta_sf                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_sf                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_sf           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_sf                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_sf                      = ones_1col * 0
+        # compound surface: Ruddervator primary (pitch)
+        self.static_stability.derivatives.Clift_delta_pr                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_pr                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_pr           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_pr                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_pr                      = ones_1col * 0
+        # compound surface: Ruddervator secondary (yaw)
+        self.static_stability.derivatives.Clift_delta_sr                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_sr                   = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_induced_delta_sr           = ones_1col * 0
+        self.static_stability.derivatives.CX_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CY_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CZ_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CL_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CM_delta_sr                      = ones_1col * 0
+        self.static_stability.derivatives.CN_delta_sr                      = ones_1col * 0
+
         # body axis derivatives
         self.static_stability.derivatives.Clift_u                              = ones_1col * 0
         self.static_stability.derivatives.Clift_v                              = ones_1col * 0

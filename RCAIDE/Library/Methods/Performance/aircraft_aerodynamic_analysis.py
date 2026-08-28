@@ -7,10 +7,11 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports 
+# RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core import  Data  
-from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
+from RCAIDE.Framework.Core import  Data
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES
  
 # Pacakge imports 
 import numpy as np  
@@ -153,46 +154,23 @@ def aircraft_aerodynamic_analysis(analyses                         = None,
     state.conditions.frames.wind.transform_to_inertial = np.tile( np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) , ( ctrl_pts,  1, 1)  ) 
     state.conditions.expand_rows(ctrl_pts)
     state.conditions.control_surfaces = Data()
-    analyses.aerodynamics.aileron_flag   = False
-    analyses.aerodynamics.rudder_flag    = False
-    analyses.aerodynamics.elevator_flag  = False
-    analyses.aerodynamics.flap_flag      = False
-    analyses.aerodynamics.slat_flag      = False
+    # see control_surface_registry.py for why every control surface is handled through one generic path here
+    for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
+        setattr(analyses.aerodynamics, flag, False)
 
-    for wing in analyses.vehicle.wings: 
-        for control_surface in wing.control_surfaces: 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
-                analyses.aerodynamics.aileron_flag  = True 
-                state.conditions.control_surfaces.aileron = Data()
-                state.conditions.control_surfaces.aileron.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
-                state.conditions.control_surfaces.aileron.static_stability = Data()
-                state.conditions.control_surfaces.aileron.static_stability.coefficients = Data()
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator:
-                analyses.aerodynamics.elevator_flag = True 
-                state.conditions.control_surfaces.elevator = Data()
-                state.conditions.control_surfaces.elevator.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
-                state.conditions.control_surfaces.elevator.static_stability = Data()
-                state.conditions.control_surfaces.elevator.static_stability.coefficients = Data()
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:
-                analyses.aerodynamics.rudder_flag   = True
-                state.conditions.control_surfaces.rudder = Data()
-                state.conditions.control_surfaces.rudder.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
-                state.conditions.control_surfaces.rudder.static_stability = Data()
-                state.conditions.control_surfaces.rudder.static_stability.coefficients = Data()
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
-                analyses.aerodynamics.flap_flag      = True
-                state.conditions.control_surfaces.flap = Data()
-                state.conditions.control_surfaces.flap.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
-                state.conditions.control_surfaces.flap.static_stability = Data()
-                state.conditions.control_surfaces.flap.static_stability.coefficients = Data() 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
-                analyses.aerodynamics.slat_flag      = True
-                state.conditions.control_surfaces.slat = Data()
-                state.conditions.control_surfaces.slat.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
-                state.conditions.control_surfaces.slat.static_stability = Data()
-                state.conditions.control_surfaces.slat.static_stability.coefficients = Data() 
-  
-    state.analyses  = analyses 
+    for wing in analyses.vehicle.wings:
+        for control_surface in wing.control_surfaces:
+            for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
+                setattr(analyses.aerodynamics, flag, True)
+                if name not in state.conditions.control_surfaces:
+                    cs_conditions                              = Data()
+                    cs_conditions.deflection                   = control_surface.deflection * np.ones_like(angle_of_attacks)
+                    cs_conditions.secondary_deflection          = control_surface.secondary_deflection * np.ones_like(angle_of_attacks)
+                    cs_conditions.static_stability              = Data()
+                    cs_conditions.static_stability.coefficients = Data()
+                    state.conditions.control_surfaces[name]     = cs_conditions
+
+    state.analyses  = analyses
     state.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "aerodynamic_training_data.pkl" )
     state.analyses.aerodynamics.initialize(state.analyses.vehicle)    
     state.conditions.freestream.mach_number                 = mach_numbers

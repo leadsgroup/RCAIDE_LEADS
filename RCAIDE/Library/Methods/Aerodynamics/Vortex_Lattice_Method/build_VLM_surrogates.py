@@ -5,9 +5,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
-from RCAIDE.Framework.Core import  Data 
+from RCAIDE.Framework.Core import  Data
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES
 
-# package imports 
+# package imports
 from scipy.interpolate   import RegularGridInterpolator
 from scipy import interpolate
 
@@ -128,36 +129,13 @@ def build_surrogate(aerodynamics, training, vehicle):
     surrogates.dCN_dr           = interpolate.interp1d(mach_data,training.dCN_dr, kind='linear', bounds_error=False, fill_value='extrapolate')      
    
 
-    if aerodynamics.aileron_flag: 
-        surrogates.dCY_ddelta_a     = interpolate.interp1d(mach_data,training.dCY_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value='extrapolate')  
-        surrogates.dCL_ddelta_a     = interpolate.interp1d(mach_data,training.dCL_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
-        surrogates.dCN_ddelta_a     = interpolate.interp1d(mach_data,training.dCN_ddelta_a        , kind = 'linear',   bounds_error=False, fill_value='extrapolate')             
-        surrogates.dCdrag_ddelta_a  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_a     , kind = 'linear',   bounds_error=False, fill_value='extrapolate')          
-    
-    if aerodynamics.elevator_flag: 
-        surrogates.dCM_ddelta_e     = interpolate.interp1d(mach_data,training.dCM_ddelta_e     ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
-        surrogates.dClift_ddelta_e  = interpolate.interp1d(mach_data,training.dClift_ddelta_e  ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
-        
-        surrogates.dCdrag_ddelta_e  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_e  ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')
-    
-    if aerodynamics.rudder_flag: 
-        surrogates.dCY_ddelta_r     = interpolate.interp1d(mach_data,training.dCY_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')   
-        surrogates.dCN_ddelta_r     = interpolate.interp1d(mach_data,training.dCN_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')    
-        surrogates.dCL_ddelta_r     = interpolate.interp1d(mach_data,training.dCL_ddelta_r       ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')    
+    # see control_surface_registry.py for why every control surface is handled through one generic path here
+    for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
+        if getattr(aerodynamics, flag):
+            for coeff in ('Clift', 'Cdrag', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN'):
+                key = 'd' + coeff + '_ddelta_' + letter
+                surrogates[key] = interpolate.interp1d(mach_data, training[key], kind='linear', bounds_error=False, fill_value='extrapolate')
 
-        surrogates.dCdrag_ddelta_r  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_r    ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')
-   
-    if aerodynamics.flap_flag:
-        surrogates.dCM_ddelta_f     = interpolate.interp1d(mach_data,training.dCM_ddelta_f     ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
-        surrogates.dClift_ddelta_f  = interpolate.interp1d(mach_data,training.dClift_ddelta_f  ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
-        surrogates.dCdrag_ddelta_f  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_f  ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')
-
-    if aerodynamics.slat_flag:    
-        surrogates.dCM_ddelta_s     = interpolate.interp1d(mach_data,training.dCM_ddelta_s     ,kind = 'linear',   bounds_error=False, fill_value='extrapolate') 
-        surrogates.dClift_ddelta_s  = interpolate.interp1d(mach_data,training.dClift_ddelta_s  ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')             
-     
-        surrogates.dCdrag_ddelta_s  = interpolate.interp1d(mach_data,training.dCdrag_ddelta_s  ,kind = 'linear',   bounds_error=False, fill_value='extrapolate')
-     
     return surrogates
  
  
@@ -204,32 +182,9 @@ def no_surrogate(aerodynamics, training, vehicle):
     surrogates.dCN_dp                 = None      
     surrogates.dCN_dr                 = None 
 
-    if aerodynamics.aileron_flag:  
-        surrogates.dCY_ddelta_a     = None 
-        surrogates.dCL_ddelta_a     = None 
-        surrogates.dCN_ddelta_a     = None        
-        surrogates.dCdrag_ddelta_a  = None       
-    
-    if aerodynamics.elevator_flag: 
-        surrogates.dClift_ddelta_e  = None 
-        surrogates.dCM_ddelta_e     = None 
-        surrogates.dClift_ddelta_e  = None  
-        surrogates.dCdrag_ddelta_e  = None 
-    
-    if aerodynamics.rudder_flag:  
-        surrogates.dCY_ddelta_r     = None 
-        surrogates.dCL_ddelta_r     = None 
-        surrogates.dCN_ddelta_r     = None
-        surrogates.dCdrag_ddelta_r  = None
-    
-    if aerodynamics.flap_flag:
-        surrogates.dClift_ddelta_f  = None 
-        surrogates.dCM_ddelta_f     = None 
-        surrogates.dCdrag_ddelta_f  = None
-    
-    if aerodynamics.slat_flag:
-        surrogates.dClift_ddelta_s  = None 
-        surrogates.dCM_ddelta_s     = None          
-        surrogates.dCdrag_ddelta_s  = None    
-   
-    return surrogates 
+    for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
+        if getattr(aerodynamics, flag):
+            for coeff in ('Clift', 'Cdrag', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN'):
+                surrogates['d' + coeff + '_ddelta_' + letter] = None
+
+    return surrogates
