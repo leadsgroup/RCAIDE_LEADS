@@ -36,11 +36,18 @@ def train_VLM_surrogates(aerodynamics, vehicle,aerostructural_analyses=None):
         None    
     """
  
-    Mach          = aerodynamics.training.Mach 
-    training      = aerodynamics.training  
-    sub_len       = int(sum(Mach<1.))  
-    sub_Mach      = Mach[:sub_len] 
-    sup_Mach      = Mach[sub_len:] 
+    Mach          = aerodynamics.training.Mach
+
+    # Skip supersonic training if the vehicle is known to stay subsonic.
+    design_mach = getattr(vehicle.flight_envelope, 'design_mach_number', None)
+    if design_mach is not None and design_mach < aerodynamics.surrogates.subsonic_smoothing_max and np.any(Mach >= 1.0):
+        Mach = Mach[Mach < 1.0]
+        aerodynamics.training.Mach = Mach
+
+    training      = aerodynamics.training
+    sub_len       = int(sum(Mach<1.))
+    sub_Mach      = Mach[:sub_len]
+    sup_Mach      = Mach[sub_len:]
 
     training.subsonic    =  train_model(aerodynamics, sub_Mach, vehicle, aerostructural_analyses)
 
@@ -421,15 +428,8 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
                     conditions.static_stability.roll_rate = np.zeros_like(Machs)
                     conditions.static_stability.yaw_rate  = np.zeros_like(Machs)
 
-                    # Structural response to this control-surface deflection, so the
-                    # deflection/twist surrogate isn't blind to flaps/slats/etc. (the
-                    # base AoA x Mach surrogate above is trained on a clean wing with
-                    # all control surfaces stripped out). Reuses the same VLM call as
-                    # the aero-coefficient derivatives below: VLM's returned
-                    # coefficients (CLift, CP, ...) depend only on Mach/AoA/beta/rates,
-                    # not on conditions.freestream.velocity, so a single call at real
-                    # velocity V_cs serves both -- FEA needs V_cs for dynamic pressure,
-                    # and it doesn't change the aero derivatives at all.
+                    # Structural derivative w.r.t. this control surface; reuses the
+                    # VLM call below since its coefficients don't depend on velocity.
                     if aerostructural_analyses is not None:
                         conditions.freestream.velocity                    = V_cs
                         conditions.freestream.density                     = rho0 * np.ones_like(Machs)

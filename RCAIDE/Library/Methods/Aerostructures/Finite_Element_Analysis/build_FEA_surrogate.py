@@ -79,10 +79,7 @@ def build_surrogate(aerostructures, training, vehicle):
             (AoA_data, mach_data, node_idx), training.elastic_twist[wing.tag],
             method='linear', bounds_error=False, fill_value=None)
 
-    # Control-surface structural derivatives (Mach x node_idx, no AoA axis --
-    # same linear-in-deflection assumption already used for the aero coefficient
-    # derivatives). Only built for surfaces actually trained (see
-    # control_surface_registry.py for the letter/flag scheme).
+    # Control-surface structural derivatives (Mach x node_idx, no AoA axis).
     for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
         for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_'):
             key = field + letter

@@ -152,9 +152,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             # Pass the VD_struct object to your properties calculator
             A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr = compute_wingbox_properties(wing, VD_structural_wing)
 
-            # Verification-only: override the VLM aero load with a uniform pressure
-            # field so the beam solver can be checked against an independent
-            # reference implementation on identical loads (settings.verification_pressure).
+            # Verification-only: override the aero load with a uniform pressure.
             if getattr(settings, 'verification_pressure', None) is not None:
                 w_x_aero      = np.zeros_like(w_box_arr)
                 w_y_aero      = np.zeros_like(w_box_arr)
@@ -174,26 +172,16 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             T_all         = compute_3d_transformation_matrix(VD_structural_wing.sweep_mid_elems, VD_structural_wing.dihedral_elems, VD_structural_wing.twist_elems, num_elements)
             K_local       = compute_element_stiffness_arrays(E, G, A_arr, J_arr, Ixx_arr, Izz_arr, VD_structural_wing.Le, num_elements)
 
-            # K_global = T @ K_local @ T^T, consistent with the u_global = T @ u_local
-            # / F_global = T @ F_local convention used throughout this module
-            # (see compute_force_vector.py). Verified against the closed-form
-            # decoupled-axis Euler-Bernoulli cantilever solution (local bending +
-            # axial stretch, rotated to global) for an arbitrarily swept/dihedral
-            # single element under a uniform global load: matches to machine
-            # precision, whereas the previous T^T @ K_local @ T order did not.
+            # K_global = T @ K_local @ T^T, consistent with u_global = T @ u_local.
             K_temp        = np.matmul(K_local, np.transpose(T_all, (0, 2, 1)))
             K_global_elem = np.matmul(T_all, K_temp)
             
             # All loads routed through T for correct bending-torsion coupling
             F_global_elem = compute_force_vector(w_x=w_x_aero, w_y=w_y_aero, w_z=w_z_aero + load_w_z_distributed, t_y=load_t_y_aero, Le=VD_structural_wing.Le, num_elem=num_elements, T=T_all)
             
-            # Global Assembly (sparse). This beam-chain stiffness matrix is
-            # banded -- each element only couples to its immediate neighbor,
-            # so a dense (total_dof x total_dof) matrix and O(n^3) dense solve
-            # spend nearly all their effort on structural zeros. COO sums
-            # duplicate (row,col) entries on conversion to CSC, which is
-            # exactly what np.add.at did for nodes shared between adjacent
-            # elements, so the assembled matrix is identical to the dense one.
+            # Sparse assembly: this beam-chain stiffness matrix is banded, so a
+            # dense solve wastes effort on structural zeros. COO sums duplicate
+            # (row,col) entries on conversion to CSC, same as np.add.at did.
             num_nodes     = num_elements + 1
             dofs_per_node = 6
             total_dof     = dofs_per_node * num_nodes
@@ -211,9 +199,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
                                    shape=(total_dof, total_dof)).tocsc()
             np.add.at(F_global, global_indices, F_global_elem)
 
-            # Solve boundary conditions (Cantilever): node 0's 6 DOFs are
-            # always the fixed root, so the free block is a contiguous slice
-            # -- no fancy indexing needed, sparse or dense.
+            # Cantilever: node 0's 6 DOFs are the fixed root, so the free block is a contiguous slice.
             K_reduced        = K_global[6:, 6:]
             F_reduced        = F_global[6:]
 
@@ -225,13 +211,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             # ------------------------------------------------------------
             # Internal loads and stress recovery (per element)
             # ------------------------------------------------------------
-            # Member-end actions (local coords) = K_local @ u_local - F_local, where
-            # F_local is the local equivalent-nodal-load vector for the distributed
-            # load on this element (same formula as compute_force_vector.py, kept
-            # local here rather than exposed from that function since it is only
-            # needed for this internal-force recovery). Validated numerically
-            # against the closed-form cantilever-beam UDL solution (tip deflection
-            # wL^4/(8EI) and root moment wL^2/2) to machine precision.
+            # Member-end actions (local) = K_local @ u_local - F_local (fixed-end load vector).
             Le               = VD_structural_wing.Le
             loads_global_e   = np.column_stack((w_x_aero, w_y_aero, w_z_aero + load_w_z_distributed))
             R_blocks         = T_all[:, 0:3, 0:3]
@@ -262,8 +242,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             # Conservative: assumes the worst bending corner coincides with peak axial stress.
             normal_stress = np.abs(sigma_axial) + sigma_bend_x + sigma_bend_z
 
-            # Torsional shear (Bredt-Batho closed single-cell): shear flow is
-            # uniform around the perimeter, so peak stress occurs at the thinnest wall.
+            # Bredt-Batho: uniform shear flow, so peak stress is at the thinnest wall.
             skin_t_top = wing.structural.top_skin_thickness    + wing.structural.stringer_smeared_thickness
             skin_t_bot = wing.structural.bottom_skin_thickness + wing.structural.stringer_smeared_thickness
             t_min = np.minimum(np.minimum(skin_t_top, skin_t_bot),

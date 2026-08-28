@@ -85,12 +85,8 @@ def evaluate_surrogate(state, settings, vehicle):
                 sub_sur.elastic_twist[wing.tag], trans_sur.elastic_twist[wing.tag],
                 sup_sur.elastic_twist[wing.tag], h_sub, h_sup, mach_ti, node_pts)
 
-            # Control-surface correction: the base surrogate above is trained on a
-            # clean wing (all control surfaces stripped, see train_VLM_surrogates.py),
-            # so it has no flap/slat/etc. dependence on its own. Add each deployed
-            # surface's linear structural derivative, same pattern as evaluate_VLM.py's
-            # aero-coefficient correction (coefficient += d(coefficient)/d(delta) * deflection).
-            mach_node_pts = node_pts[:, 1:]  # (Mach, node_idx) -- these derivatives have no AoA axis
+            # Control-surface correction, same pattern as evaluate_VLM.py.
+            mach_node_pts = node_pts[:, 1:]  # (Mach, node_idx), no AoA axis
             for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
                 cs_conditions = getattr(conditions.control_surfaces, name, None)
                 if cs_conditions is None:
