@@ -80,9 +80,9 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
             fuel_tank.wing_root_twist = segments[seg_names[seg_i]].twist
         if segment.airfoil != None:
             if type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-                geometry = compute_naca_4series(segment.airfoil.NACA_4_Series_code)
+                geometry = compute_naca_4series(segment.airfoil.NACA_4_Series_code, thickness_multiplier = segment.airfoil.thickness_multiplier)
             elif type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil:
-                geometry = import_airfoil_geometry(segment.airfoil.coordinate_file)
+                geometry = import_airfoil_geometry(segment.airfoil.coordinate_file, thickness_multiplier = segment.airfoil.thickness_multiplier)
         else:
             geometry = compute_naca_4series('0012')
         # Get segment chord

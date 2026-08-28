@@ -69,6 +69,7 @@ class Fuel_Tank(Source):
         self.fuselage_tag                   = None
         self.transverse_tank                = False
         self.gravimetric_efficiency         = 1.0
+        self.packs_after_tank               = None  # tag of a tank to pack sequentially after (see compute_wing_non_integral_tank_volume)
         self.lengths                        = Data()
         self.lengths.external               = 0.0
         self.lengths.internal               = 0.0  

@@ -193,7 +193,6 @@
     "diameter": 0.0,
     "length": 0.0,
     "height": 0.0,
-    "active_crypgenic_tanks_tanks": null,
     "electronic_speed_controller": {
         "tag": "esc_1",
         "mass_properties": {
@@ -349,7 +348,7 @@
         "assigned_converters": null,
         "assigned_modulators": null,
         "assigned_distributors": null,
-        "identical_converters": true,
+        "identical_converters": false,
         "efficiency": 1.0,
         "provides_domain": null,
         "number_of_blades": 3,
@@ -14376,7 +14375,7 @@
         "assigned_converters": null,
         "assigned_modulators": null,
         "assigned_distributors": null,
-        "identical_converters": true,
+        "identical_converters": false,
         "efficiency": 0.95,
         "provides_domain": null,
         "diameter": 0.0,

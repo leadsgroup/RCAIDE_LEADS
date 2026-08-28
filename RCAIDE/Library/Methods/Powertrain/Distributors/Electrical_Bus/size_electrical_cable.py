@@ -54,9 +54,6 @@ def size_electrical_cable(bus):
         Thermal resistivity of the insulation material in K*m/W, defaults to 5.0
         (1/Thermal_Conductivity)
         
-    T4 : float, optional
-        External thermal resistance of the environment, defaults to 1.0
-
     Returns
     -------
     dict
@@ -78,50 +75,86 @@ def size_electrical_cable(bus):
     breakdown based on the maximum electric field threshold.
     """
     P_max_watts         = bus.design_power
-    V_sys               = bus.design_voltage 
-    L                   = bus.length 
+    V_sys               = bus.design_voltage
+    L                   = bus.length
     theta_a             = bus.design_ambient_temperature
-    theta_max           = bus.maximum_temperature 
-    N                   = bus.number_of_parallel_wires  # Number of parallel wires in the cable bundle (assumed)
-    rho_elec            = bus.conductor.material.compute_electrical_resistivity(theta_max)
+    theta_max           = bus.maximum_temperature
+    COPPER_ALPHA_20C    = 0.00393  # 1/K
+    theta_ref           = 293.15   # K, 20 C
+    rho_elec            = bus.conductor.material.electrical_resistivity * (1 + COPPER_ALPHA_20C * (theta_max - theta_ref))
     E0                  = bus.insulator.material.dielectric_strength
     rho_cond            = bus.conductor.material.density
     rho_insul           = bus.insulator.material.density
     rho_theta_insul     = bus.insulator.material.thermal_resistivity
-    T4                  = bus.environmental_external_thermal_resistance
-    
-    # 1. Max design current
-    I_max = P_max_watts / V_sys
-    I_wire = I_max/N
 
-    # 2. Iteratively solve for conductor radius (r_cond) based on thermal limits
-    def thermal_residual(r):
-        # Electrical resistance per meter (R_prime)
-        R_prime = rho_elec / (np.pi * r**2)
-        # Thermal resistance of insulation (T1) using substitution from Eq 18
-        T1 = (rho_theta_insul / (2 * np.pi)) * (V_sys / (E0 * r))
-        # The residual should be 0 when thermal equilibrium is met
-        return (theta_max - theta_a) - (I_wire**2 * R_prime * (T1 + T4))
-    
-    # Using fsolve with an initial guess of 2mm (0.002 meters)
-    r_cond_m = fsolve(thermal_residual, 0.002)[0]
-    
+    I_max = P_max_watts / V_sys
+
+    def insulation_radius(r_cond):
+        # Eq 18: dielectric breakdown sets r_insul from r_cond
+        return r_cond * np.exp(V_sys / (E0 * r_cond))
+
+    # External thermal resistance (T4): resistance from the cable's outer
+    # surface to the surrounding air, decreasing as the cable's own outer
+    # diameter grows (more surface area to shed heat). IEC 60287-2-1's duct
+    # formula T4 = U / (1 + 0.1*(V + Y*theta_m)*D_e) captures this D_e
+    # dependence; U/V/Y = 2.2/0.4/0.004 is its general-purpose duct/conduit
+    # compromise (<6% error vs measured, Moreau & Courset 2007, JICABLE).
+    # Treated here as a proxy for a bundled/conduit-routed aircraft harness --
+    # not a validated aerospace-specific value.
+    duct_U, duct_V, duct_Y = 2.2, 0.4, 0.004
+    theta_m_C = (theta_max + theta_a) / 2 - 273.15
+
+    def solve_conductor_radius(I_wire):
+        # Solve for conductor radius (r_cond) based on thermal limits
+        def thermal_residual(r):
+            # Electrical resistance per meter (R_prime)
+            R_prime = rho_elec / (np.pi * r**2)
+            # Thermal resistance of insulation (T1) using substitution from Eq 18
+            T1 = (rho_theta_insul / (2 * np.pi)) * (V_sys / (E0 * r))
+            D_e_mm = 2 * insulation_radius(r) * 1e3
+            T4 = duct_U / (1 + 0.1 * (duct_V + duct_Y * theta_m_C) * D_e_mm)
+            # The residual should be 0 when thermal equilibrium is met
+            return (theta_max - theta_a) - (I_wire**2 * R_prime * (T1 + T4))
+        # Using fsolve with an initial guess of 2mm (0.002 meters)
+        return fsolve(thermal_residual, 0.002)[0]
+
+    N = bus.number_of_parallel_wires
+    if N is None:
+        # Auto-select the number of parallel conductors: real aircraft (and
+        # NEC 310.10(H)) split a feeder into parallel conductors once a single
+        # conductor gets impractically large to bend/install/terminate -- in
+        # practice around 500 kcmil (~9mm radius), beyond which paralleling
+        # smaller conductors is standard rather than continuing to a single
+        # oversized one. Grow N until the resulting per-wire radius clears
+        # that practical ceiling.
+        MAX_PRACTICAL_CONDUCTOR_RADIUS = 9e-3  # m, ~500 kcmil
+        N = 1
+        while N < 1000:
+            r_cond_m = solve_conductor_radius(I_max / N)
+            if r_cond_m <= MAX_PRACTICAL_CONDUCTOR_RADIUS:
+                break
+            N += 1
+        bus.number_of_parallel_wires = N
+    else:
+        r_cond_m = solve_conductor_radius(I_max / N)
+
     # 3. Calculate insulation radius based on dielectric breakdown (Eq 18)
-    r_insul_m = r_cond_m * np.exp(V_sys / (E0 * r_cond_m))
-    
-    # 4. Calculate Total Cable Mass (Eq 22)
+    r_insul_m = insulation_radius(r_cond_m)
+
+    # 4. Calculate Total Cable Mass (Eq 22), summed over all N parallel wires
     vol_cond = np.pi * L * r_cond_m**2
     vol_insul = np.pi * L * (r_insul_m**2 - r_cond_m**2)
-    cond_mass_kg = (vol_cond * rho_cond) 
+    cond_mass_kg = (vol_cond * rho_cond)
     ins_mass_kg = (vol_insul * rho_insul)
-    cable_mass_kg = cond_mass_kg + ins_mass_kg
-    
-    # 5. Calculate Fixed Total Resistance for the mission solver
+    cable_mass_kg = (cond_mass_kg + ins_mass_kg) * N
+
+    # 5. Calculate per-wire resistance for the mission solver (used with each
+    # wire's own share of current/power in compute_electrical_bus_distribution_losses)
     R_total_ohms = (rho_elec * L) / (np.pi * r_cond_m**2)
-    
+
     bus.conductor.radius        = r_cond_m
     bus.insulator.radius        = r_insul_m
     bus.mass_properties.mass    = cable_mass_kg
     bus.conductor.resistance    = R_total_ohms
-    
+
     return

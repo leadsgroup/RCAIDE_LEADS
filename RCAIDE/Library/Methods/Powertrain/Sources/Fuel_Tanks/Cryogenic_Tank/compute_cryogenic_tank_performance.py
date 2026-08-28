@@ -79,8 +79,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     tank_conditions = state.conditions.energy.sources[tag]
     fuel            = tank.fuel
 
-    t        = np.ravel(state.numerics.time.control_points)
-    duration = t[-1] - t[0]
+    t = np.ravel(state.numerics.time.control_points)
 
     (T_l_lo, T_l_hi), (P_lo, P_hi) = fuel.property_table_range(phase='liquid')
     (T_g_lo, T_g_hi), _            = fuel.property_table_range(phase='vapor')
@@ -97,6 +96,30 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     nu_air_pts = state.conditions.freestream.kinematic_viscosity[:,0]
     Pr_air_pts = state.conditions.freestream.prandtl_number[:,0]
     k_air_pts  = state.conditions.freestream.thermal_conductivity[:,0]
+
+    if t.size < 2:
+        m_g0 = np.array([tank_conditions.ullage_mass[0,0]])
+        m_l0 = np.array([tank_conditions.fuel_mass[0,0]])
+        T_g0 = np.array([tank_conditions.ullage_temperature[0,0]])
+        T_l0 = np.array([tank_conditions.fuel_temperature[0,0]])
+        V_g0 = np.array([tank_conditions.ullage_volume[0,0]])
+        V_l0 = np.array([tank_conditions.fuel_volume[0,0]])
+
+        _, diag = _tank_state_rates(
+            tank, fuel, R_specific, m_g0, m_l0, T_g0, T_l0, V_g0, V_l0,
+            chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts,
+            T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi)
+
+        tank_conditions.pressure[:,0]           = diag['P']
+        tank_conditions.vent_rate[:,0]          = diag['m_dot_vent']
+        tank_conditions.boil_off_flow_rate[:,0] = diag['m_dot_bo_final']
+        tank_conditions.heater_power[:,0]       = diag['heater_power']
+        tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent']
+        tank_conditions.outputs.power.chemical[:,0] = diag['m_dot_l_engine'] * fuel.lower_heating_value
+
+        return tank_conditions.inputs, tank_conditions.outputs, True, tank.tag
+
+    duration = t[-1] - t[0]
 
     y0 = np.array([
         tank_conditions.ullage_mass[0,0],
