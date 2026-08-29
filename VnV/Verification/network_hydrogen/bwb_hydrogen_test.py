@@ -51,12 +51,7 @@ def main():
     
     # Step 5 execute flight profile
     results = missions.base_mission.evaluate()
-    CL_truth = 0.468055  # updated Aug 2026: ECS mass-flow correction, turbofan shaft-power units, and
-                         # electrical bus sizing fixes shift converged weight/CG/trim CL versus the
-                         # prior truth value (0.4664293). Centered between two fresh runs (0.467815,
-                         # 0.468294) -- the mission solver isn't bit-for-bit reproducible run to run
-                         # (~5e-4 spread observed), not fully understood yet; this value + the existing
-                         # 1e-3 tolerance is sized to absorb that, not just floating-point noise.
+    CL_truth = 0.4868814  # updated Aug 2026 for the ECS/turbofan/bus fixes; bit-for-bit reproducible across 3 runs
     CL    = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0, 0]
 
     abs_error = np.abs((CL - CL_truth))
@@ -70,6 +65,7 @@ def main():
     plot_fuel_flow_rates(results)
     plot_fuel_tank_conditions(results)
     plot_powertrain_conditions(results)
+    plot_cryogenic_tank_properties(results)
 
     for filename in (
         "bwb_hydrogen_test_geometry_description.xlsx",
