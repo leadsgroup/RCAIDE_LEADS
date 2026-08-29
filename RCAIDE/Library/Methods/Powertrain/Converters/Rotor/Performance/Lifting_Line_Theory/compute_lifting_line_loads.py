@@ -299,7 +299,10 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Cp        = power/(rho_0*(n**3)*(D**5))
     Cp_rotor  = power  / (rho_0 * A * (np.abs(omega)*R)**3)
     Crd       = rotor_drag/(rho_0*(n**2)*(D**4))
-    etap      = V*thrust/power
+    # abs() -- thrust reverses sign near hover-transition/windmilling conditions
+    # (V*T/P otherwise reports a spurious negative "efficiency" there); same fix
+    # applied to BEMT_Helmholtz_performance.py's identical formula.
+    etap      = np.abs(V*thrust/power)
     FM       = thrust*np.sqrt(thrust/(2*rho_0*A))/power
 
     # prevent things from breaking

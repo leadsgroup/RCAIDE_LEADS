@@ -437,7 +437,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     # blade is analyzed during the mission itself.
     # radius_distribution must be set explicitly before design_electric_rotor(), since
     # initialize_lifting_line() needs it upfront (BEMT can auto-generate it, LL cannot).
-    prop_rotor.fidelity                                = 'Lifting_Line_Theory'#'Lifting_Line_Theory'
+    prop_rotor.fidelity                                = 'Lifting_Line_Theory' #'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     prop_rotor.rc                                      = 0.05
     prop_rotor.variable_pitch                          = True
     prop_rotor.radius_distribution                     = np.linspace(prop_rotor.hub_radius, prop_rotor.tip_radius, len(prop_rotor.airfoil_polar_stations))
@@ -447,7 +447,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     prop_rotor.wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
     prop_rotor.wake_inputs.wake_model_FF                = 4                 # 4 undistorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
     prop_rotor.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
-    prop_rotor.wake_inputs.dpsi                         = np.radians(30.0)    # filament length [rad]
+    prop_rotor.wake_inputs.dpsi                         = np.radians(10.0)    # filament length [rad]
     prop_rotor.wake_inputs.n_turns                      = 3.0               # Number of wake turns
     prop_rotor.wake_inputs.thrust_coeff_initial_guess   = 0.00654           # initial guess for CT to intialize the wake geometry
     prop_rotor.wake_inputs.lamb_oseen_rc_0              = 0.028             # initial core radius for the wake filaments [fraction of R]
@@ -567,7 +567,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
         # right after, so the .res file reflects the BEMT-optimized geometry analyzed at
         # whatever fidelity the mission actually wants.
         mission_fidelity            = propulsor.rotor.fidelity
-        propulsor.rotor.fidelity    = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
+        propulsor.rotor.fidelity    = 'Blade_Element_Momentum_Theory_Helmholtz_Wake' # 'Lifting_Line_Theory'
         design_electric_rotor(propulsor, iterations=design_iterations, print_iterations=True)
         propulsor.rotor.fidelity    = mission_fidelity
         save_propulsor(propulsor, os.path.join(local_path, 'tilt_rotor_propulsor.res'))
@@ -801,12 +801,33 @@ def configs_setup(vehicle):
     #   Cruise Configuration
     # ------------------------------------------------------------------
     config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    config.tag                                        = 'cruise'   
-    vector_angle                                      = 0.0 * Units.degrees   
-    for network in  config.networks:  
+    config.tag                                        = 'cruise'
+    vector_angle                                      = 0.0 * Units.degrees
+    for network in  config.networks:
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
-            propulsor.rotor.blade_pitch_command   = propulsor.rotor.cruise.design_blade_pitch_command  
+            propulsor.rotor.blade_pitch_command   = propulsor.rotor.cruise.design_blade_pitch_command
+    configs.append(config)
+
+    # ------------------------------------------------------------------
+    #   Descent Cruise Configuration
+    # ------------------------------------------------------------------
+    # 0 deg tilt (no rotor-tilt assist needed -- confirmed on descent_1/descent_2, the
+    # wing has plenty of AoA margin down to ~115mph), but with a reduced fixed pitch
+    # instead of the full 36 deg cruise.design_blade_pitch_command. Cruise's pitch is
+    # tuned for its own 170mph design point (rotor.cruise.design_freestream_velocity);
+    # descent_1/descent_2 fly progressively slower than that (avg ~150mph / ~122mph),
+    # which was leaving the rotor off-design and inflating eta (V*T/P) well above 1
+    # (1.3 / 1.65) even though thrust/power/RPM all stayed smooth and well-behaved --
+    # same idea as the departure-side transition configs reducing pitch as speed drops
+    # below cruise, just without any tilt since the wing carries the load here.
+    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
+    config.tag                                        = 'descent_cruise'
+    vector_angle                                      = 0.0 * Units.degrees
+    for network in  config.networks:
+        for propulsor in  network.propulsors:
+            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.86
     configs.append(config)
              
 

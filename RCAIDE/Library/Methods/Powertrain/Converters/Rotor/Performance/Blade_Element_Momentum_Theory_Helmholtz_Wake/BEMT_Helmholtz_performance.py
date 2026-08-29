@@ -439,7 +439,10 @@ def BEMT_Helmholtz_performance(rotor, conditions):
     Ct       = thrust/(rho_0*(n*n)*(D*D*D*D))
     Cp       = power/(rho_0*(n*n*n)*(D*D*D*D*D))
     Crd      = rotor_drag/(rho_0*(n*n)*(D*D*D*D))
-    etap     = V*thrust/power
+    # abs() -- thrust reverses sign near hover-transition/windmilling conditions
+    # (V*T/P otherwise reports a spurious negative "efficiency" there); same fix
+    # applied to Lifting_Line_Theory's identical formula.
+    etap     = np.abs(V*thrust/power)
     A        = np.pi*(R**2 - rotor.hub_radius**2)
     FoM      = thrust*np.sqrt(thrust/(2*rho_0*A))/power  
 

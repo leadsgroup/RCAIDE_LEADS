@@ -444,15 +444,12 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
             residual_Gamma_b = np.max(np.abs(Gamma_b_new - Gamma_b)[valid_cp]) if np.any(valid_cp) else 0.0
 
-            if it1 % 200 == 0:
-                print(f"Gamma_b inner iter {it1}: residual={residual_Gamma_b}", file=sys.__stdout__, flush=True)
-
             # Only update Gamma_b for valid control points -- invalid ones stay frozen at
             # their initial freestream-only guess rather than being iteratively (and pointlessly) refined.
             Gamma_b[valid_cp] = Gamma_b[valid_cp] + relax_Gammab[valid_cp]*(Gamma_b_new[valid_cp] - Gamma_b[valid_cp])
 
             if residual_Gamma_b < tol:
-                print("Gamma_b converged after", it1+1, "iterations")
+                #print("Gamma_b converged after", it1+1, "iterations")
                 conv1 = True
                 break
 
@@ -482,7 +479,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             tol_CT = wake_inputs.get('tol_CT', tol)
             residual_CT = np.max(np.abs(Ct_rotor_new - wake_inputs.thrust_coeff_initial_guess)[valid_cp]) if np.any(valid_cp) else 0.0
             if residual_CT < tol_CT:
-                print("CT converged after", it+1, "outer iterations")
+                #print("CT converged after", it+1, "outer iterations")
                 conv = True
                 break
 

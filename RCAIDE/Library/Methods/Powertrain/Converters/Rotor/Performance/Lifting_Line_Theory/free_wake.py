@@ -320,11 +320,11 @@ def free_wake(rotor, wake_inputs, conditions):
             r_wake_grid_new = relax*r_wake_grid_new + (1.0-relax)*r_wake_grid
 
             residual = np.sqrt(np.mean((r_wake_grid_new[valid_cp] - r_wake_grid[valid_cp])**2)) / R
-            print(f"[free_wake] iteration {n+1}: rms(delta r)/R = {residual:.3e}")
+            #print(f"[free_wake] iteration {n+1}: rms(delta r)/R = {residual:.3e}")
 
             r_wake_grid = r_wake_grid_new
             if residual < tol:
-                print(f"[free_wake] converged after {n+1} iterations")
+                #print(f"[free_wake] converged after {n+1} iterations")
                 break
         else:
             print(f"[free_wake] did not converge after {max_iter} iterations, residual = {residual:.3e}")
