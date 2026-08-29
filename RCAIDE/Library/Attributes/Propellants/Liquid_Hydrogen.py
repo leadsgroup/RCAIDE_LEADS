@@ -12,7 +12,8 @@ from .Propellant import Propellant
 
 import os
 import numpy as np
-from scipy.interpolate  import interp1d 
+from functools          import lru_cache
+from scipy.interpolate  import interp1d
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Liquid Hydrogen
@@ -229,6 +230,7 @@ class Liquid_Hydrogen(Propellant):
         rho_sat = self.cryogen_properties(T, "Density (kg/m3)", phase=phase)
         return P_sat / (rho_sat * R_specific * T)
 
+@lru_cache(maxsize=1)
 def load_hydrogen_properties():
     """
     Load hydrogen property data from the RES file.

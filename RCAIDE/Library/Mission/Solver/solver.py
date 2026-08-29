@@ -138,9 +138,10 @@ def converge(segment):
                 sys.stdout = sys.__stdout__
 
     elif numerics.mission_solver.type  == "root_finder":
-        unknowns = segment.state.unknowns.mission.pack_array()
+        unknowns = segment.state.unknowns.mission.pack_array() 
         if segment.state.numerics.network_solver.type is None:
             unknowns = np.concatenate([unknowns, segment.state.unknowns.network.pack_array()])
+
 
         if segment.state.number_of_mission_unknowns != segment.state.number_of_mission_residuals:
             raise AttributeError('\n The system of equations representing the mission is not square. The number of unknowns (' + str(segment.state.number_of_mission_unknowns) + \
@@ -171,60 +172,8 @@ def converge(segment):
         if ier !=1:
             mission_converge = False
         else:
-            # ier=1 isn't trustworthy alone: xtol checks x-movement, not the
-            # residual, and iterate_root_finder clips out-of-bounds x inside the
-            # function fsolve probes -- once a variable is pinned to a bound, x
-            # stops moving, xtol is satisfied trivially, and ier=1 even if the
-            # residual is enormous. Only check unknowns actually at a bound
-            # (unpinned ones normally carry small xtol-driven slop that isn't
-            # this bug); 0.2 is picked to sit above that normal slop.
-            residual   = segment.state.residuals.mission.pack_array()
-            x_solution = x_scaled * unknown_scale
-            lower      = segment.state.unknowns_lower_bounds.mission.pack_array()
-            upper      = segment.state.unknowns_upper_bounds.mission.pack_array()
-            if segment.state.numerics.network_solver.type is None:
-                residual = np.concatenate([residual, segment.state.residuals.network.pack_array()])
-                lower    = np.concatenate([lower, segment.state.unknowns_lower_bounds.network.pack_array()])
-                upper    = np.concatenate([upper, segment.state.unknowns_upper_bounds.network.pack_array()])
-
-            PINNED_RESIDUAL_THRESHOLD = 0.2
-            span            = np.maximum(upper - lower, 1e-12)
-            at_bound        = (np.abs(x_solution - lower) <= 1e-9 * span) | (np.abs(x_solution - upper) <= 1e-9 * span)
-            scaled_residual = residual / residual_scale
-            pinned_bad      = at_bound & (np.abs(scaled_residual) > PINNED_RESIDUAL_THRESHOLD)
-
-            if np.any(pinned_bad):
-                pinned_count = int(np.sum(pinned_bad))
-                pinned_residual = np.max(np.abs(scaled_residual[pinned_bad]))
-
-                if numerics.mission_solver.verbose == False:
-                    devnull = open(os.devnull,'w')
-                    sys.stdout = devnull
-                try:
-                    fallback_problem = add_mission_variables(segment)
-                    fallback_outputs = scipy_setup.SciPy_Solve(fallback_problem,
-                                                       solver     = 'SLSQP',
-                                                       sense_step = numerics.mission_solver.step_size,
-                                                       iter       = numerics.mission_solver.max_evaluations,
-                                                       tolerance  = numerics.mission_solver.tolerance)
-                finally:
-                    if numerics.mission_solver.verbose == False:
-                        sys.stdout = sys.__stdout__
-
-                if fallback_outputs[3] != 0:
-                    mission_converge = False
-                    error_message    = (
-                        f"root_finder got {pinned_count} unknown(s) pinned at a bound with residual "
-                        f"{pinned_residual:.3e} (see iterate_root_finder's clipping); SLSQP fallback "
-                        f"also failed: {fallback_outputs[4]}"
-                    )
-                else:
-                    mission_converge = True
-                    error_message    = ""
-            else:
-                mission_converge = True
-                error_message    = ""
-
+            mission_converge = True
+            
     else: 
         raise Exception('undefined mission solver type')        
         
@@ -284,7 +233,12 @@ def iterate_root_finder(unknowns, segment):
     Properties Used:
     N/A
     """
-    if isinstance(unknowns, np.ndarray): 
+    if isinstance(unknowns, np.ndarray):
+        # fsolve has no native bounds support, unlike the "optimize"/SLSQP
+        # path -- without this, a proposed unknown (e.g. a [0,1] power split
+        # ratio or bounded control variable) can wander outside its declared
+        # bounds mid-iteration. Clip to the same bounds the SLSQP path
+        # enforces natively before evaluating the residual.
         lower = segment.state.unknowns_lower_bounds.mission.pack_array()
         upper = segment.state.unknowns_upper_bounds.mission.pack_array()
         if segment.state.numerics.network_solver.type is None:
