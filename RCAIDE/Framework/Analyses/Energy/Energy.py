@@ -7,8 +7,9 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports
+import RCAIDE
 from RCAIDE.Framework.Core     import Data
-from RCAIDE.Framework.Analyses import Analysis 
+from RCAIDE.Framework.Analyses import Analysis
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -58,8 +59,19 @@ class Energy(Analysis):
 
         network.evaluate(state, vehicle)
 
+        net_electrical_power = state.conditions.energy.net_electrical_power
+
+        # Ground ops: heater draws from external ground power, not the bus -- keep its
+        # own conditions but exclude it from the balance residual.
+        if getattr(segment, 'ground_operations', False):
+            for net in vehicle.networks:
+                for converter in net.converters:
+                    if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater):
+                        c = state.conditions.energy.converters[converter.tag]
+                        net_electrical_power = net_electrical_power - (c.outputs.power.electrical - c.inputs.power.electrical)
+
         if 'electrical_power' in state.unknowns.network:
-            state.residuals.network['electrical_power'] = state.conditions.energy.net_electrical_power
+            state.residuals.network['electrical_power'] = net_electrical_power
 
         # Unpack Residuals
         residual_keys = list(state.residuals.network.keys())

@@ -20,8 +20,8 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_conformal_tank_volume         import compute_cryogenic_conformal_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_performance               import compute_cryogenic_tank_performance
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.append_cryogenic_tank_unknown_and_residual       import append_cryogenic_tank_unknown_and_residual
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.append_cryogenic_tank_conditions                 import append_cryogenic_tank_conditions
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions                                     import append_fuel_tank_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.append_cryogenic_tank_conditions                 import append_cryogenic_tank_conditions, append_cryogenic_tank_segment_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions                                     import append_fuel_tank_conditions, append_fuel_tank_segment_conditions
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_tank_performance                                   import compute_fuel_tank_performance
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cylinder_center_of_gravity
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia, compute_cuboid_moment_of_inertia
@@ -218,6 +218,12 @@ class Cryogenic_Tank(Non_Integral_Tank):
             # (boil_off_flow_rate stays at append_fuel_tank_conditions' own
             # default of 0), not a simplified estimate.
             append_fuel_tank_conditions(self, segment)
+        return
+
+    def append_segment_conditions(self, segment):
+        append_fuel_tank_segment_conditions(self, segment)
+        if self.boil_off_model == 'quasi_steady':
+            append_cryogenic_tank_segment_conditions(self, segment)
         return
 
     def append_unknowns_and_residuals(self, segment):

@@ -13,6 +13,12 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute
 
 R_UNIVERSAL = 8314.462618  # J/(kmol*K), i.e. J/(kg*K) per unit molecular weight in g/mol
 
+# Skips re-solving when a fsolve probe couldn't have changed this tank's inputs.
+def _cache_key_matches(cached, current):
+    if cached is None or len(cached) != len(current):
+        return False
+    return all(np.array_equal(a, b) for a, b in zip(cached, current))
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Tank In-Flight Boil-Off Performance
 # ----------------------------------------------------------------------------------------------------------------------
@@ -73,7 +79,9 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     -----
     Not modeled here (out of scope for this port): active-heater dynamics (treated as
     quasi-steady, no lag), bulk boiling / cloud condensation corrections, and pump
-    power for active re-liquefaction.
+    power for active re-liquefaction. Refueling (``refuel_mass_flow_rate``) assumes
+    incoming fuel enters already at the tank's own bulk liquid temperature -- no
+    chill-down transient.
     """
     tag             = tank.tag
     tank_conditions = state.conditions.energy.sources[tag]
@@ -92,34 +100,11 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     # ------------------------------------------------------------------
     chemical_power_pts = tank_conditions.power_split_ratio[:,0] * \
         state.conditions.energy.distributors[tank.assigned_distributors[0][0]].outputs.power.chemical[:,0]
-    T_env_pts  = state.conditions.freestream.temperature[:,0]
-    nu_air_pts = state.conditions.freestream.kinematic_viscosity[:,0]
-    Pr_air_pts = state.conditions.freestream.prandtl_number[:,0]
-    k_air_pts  = state.conditions.freestream.thermal_conductivity[:,0]
-
-    if t.size < 2:
-        m_g0 = np.array([tank_conditions.ullage_mass[0,0]])
-        m_l0 = np.array([tank_conditions.fuel_mass[0,0]])
-        T_g0 = np.array([tank_conditions.ullage_temperature[0,0]])
-        T_l0 = np.array([tank_conditions.fuel_temperature[0,0]])
-        V_g0 = np.array([tank_conditions.ullage_volume[0,0]])
-        V_l0 = np.array([tank_conditions.fuel_volume[0,0]])
-
-        _, diag = _tank_state_rates(
-            tank, fuel, R_specific, m_g0, m_l0, T_g0, T_l0, V_g0, V_l0,
-            chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts,
-            T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi)
-
-        tank_conditions.pressure[:,0]           = diag['P']
-        tank_conditions.vent_rate[:,0]          = diag['m_dot_vent']
-        tank_conditions.boil_off_flow_rate[:,0] = diag['m_dot_bo_final']
-        tank_conditions.heater_power[:,0]       = diag['heater_power']
-        tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent']
-        tank_conditions.outputs.power.chemical[:,0] = diag['m_dot_l_engine'] * fuel.lower_heating_value
-
-        return tank_conditions.inputs, tank_conditions.outputs, True, tank.tag
-
-    duration = t[-1] - t[0]
+    T_env_pts   = state.conditions.freestream.temperature[:,0]
+    nu_air_pts  = state.conditions.freestream.kinematic_viscosity[:,0]
+    Pr_air_pts  = state.conditions.freestream.prandtl_number[:,0]
+    k_air_pts   = state.conditions.freestream.thermal_conductivity[:,0]
+    refuel_pts  = tank_conditions.refuel_mass_flow_rate[:,0]
 
     y0 = np.array([
         tank_conditions.ullage_mass[0,0],
@@ -130,6 +115,36 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         tank_conditions.fuel_volume[0,0],
     ])
 
+    cache_key = (t, chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts, y0)
+    cached    = getattr(tank_conditions, '_boil_off_solve_cache', None)
+    if cached is not None and _cache_key_matches(cached[0], cache_key):
+        return cached[1]
+
+    if t.size < 2:
+        m_g0, m_l0, T_g0, T_l0, V_g0, V_l0 = (np.array([v]) for v in y0)
+
+        _, diag = _tank_state_rates(
+            tank, fuel, R_specific, m_g0, m_l0, T_g0, T_l0, V_g0, V_l0,
+            chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts,
+            T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi)
+
+        tank_conditions.pressure[:,0]           = diag['P']
+        tank_conditions.vent_rate[:,0]          = diag['m_dot_vent']
+        tank_conditions.boil_off_flow_rate[:,0] = diag['m_dot_bo_final']
+        tank_conditions.heater_power[:,0]       = diag['heater_power']
+        tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] - refuel_pts
+        tank_conditions.outputs.power.chemical[:,0] = diag['m_dot_l_engine'] * fuel.lower_heating_value
+
+        result = tank_conditions.inputs, tank_conditions.outputs, True, tank.tag
+        tank_conditions._boil_off_solve_cache = (tuple(np.array(k, copy=True) for k in cache_key), result)
+        return result
+
+    duration = t[-1] - t[0]
+
+    # Scale atol per-state instead of one scalar across mass/temp/volume.
+    state_floors = np.array([1e-3, 1e-3, 1.0, 1.0, 1e-3, 1e-3])
+    atol_vec = atol * np.maximum(np.abs(y0), state_floors)
+
     def rhs(t_i, y):
         m_g, m_l, T_g, T_l, V_g, V_l = y
         chemical_power = np.interp(t_i, t, chemical_power_pts)
@@ -137,14 +152,15 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         nu_air         = np.interp(t_i, t, nu_air_pts)
         Pr_air         = np.interp(t_i, t, Pr_air_pts)
         k_air          = np.interp(t_i, t, k_air_pts)
+        refuel         = np.interp(t_i, t, refuel_pts)
         (dm_g, dm_l, dT_g, dT_l, dV_g, dV_l), _ = _tank_state_rates(
             tank, fuel, R_specific,
             np.array([m_g]), np.array([m_l]), np.array([T_g]), np.array([T_l]), np.array([V_g]), np.array([V_l]),
-            np.array([chemical_power]), np.array([T_env]), np.array([nu_air]), np.array([Pr_air]), np.array([k_air]),
+            np.array([chemical_power]), np.array([T_env]), np.array([nu_air]), np.array([Pr_air]), np.array([k_air]), np.array([refuel]),
             T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi)
         return [dm_g[0], dm_l[0], dT_g[0], dT_l[0], dV_g[0], dV_l[0]]
 
-    sol = solve_ivp(rhs, (t[0], t[-1]), y0, method=method, t_eval=t, rtol=rtol, atol=atol)
+    sol = solve_ivp(rhs, (t[0], t[-1]), y0, method=method, t_eval=t, rtol=rtol, atol=atol_vec)
     if not sol.success:
         raise RuntimeError(
             f"Cryogenic tank '{tag}' internal boil-off IVP failed to integrate: {sol.message}")
@@ -157,7 +173,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     # collocation points, using their own real (not re-interpolated) inputs.
     _, diag = _tank_state_rates(
         tank, fuel, R_specific, m_g, m_l, T_g, T_l, V_g, V_l,
-        chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts,
+        chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts,
         T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi)
 
     # ------------------------------------------------------------------
@@ -174,18 +190,19 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     tank_conditions.boil_off_flow_rate[:,0] = diag['m_dot_bo_final']
     tank_conditions.heater_power[:,0]       = diag['heater_power']
 
-    # Total mass leaving the tank system (engine offtake + vented boil-off) --
-    # what drives vehicle weight/CG bookkeeping in Common/Update/weights.py
-    tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent']
+    # Net mass leaving the tank system (engine offtake + vented boil-off - refuel inflow)
+    tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] - refuel_pts
     tank_conditions.outputs.power.chemical[:,0] = diag['m_dot_l_engine'] * fuel.lower_heating_value
 
     stored_results_flag = True
     stored_source_tag    = tank.tag
-    return tank_conditions.inputs, tank_conditions.outputs, stored_results_flag, stored_source_tag
+    result = tank_conditions.inputs, tank_conditions.outputs, stored_results_flag, stored_source_tag
+    tank_conditions._boil_off_solve_cache = (tuple(np.array(k, copy=True) for k in cache_key), result)
+    return result
 
 
 def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l, V_g, V_l,
-                       chemical_power, T_env, nu_air, Pr_air, k_air,
+                       chemical_power, T_env, nu_air, Pr_air, k_air, m_dot_refuel,
                        T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi):
     """Evaluates the tank's 6-state ODE right-hand side plus diagnostic outputs
     (pressure, boil-off/vent split, heater power) at one or more instants. All
@@ -361,7 +378,10 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l, V_g, V_l,
     #  Mass / volume / energy balances (the ODE right-hand side)
     # ------------------------------------------------------------------
     dm_g = m_dot_bo_final - m_dot_vent
-    dm_l = -m_dot_bo_final - m_dot_l_engine
+    # Incoming fuel assumed thermally equilibrated with the tank's own bulk liquid,
+    # so no separate enthalpy term is needed here (see compute_cryogenic_tank_performance's
+    # docstring for the refuel simplification this assumes).
+    dm_l = -m_dot_bo_final - m_dot_l_engine + m_dot_refuel
     dV_g = -dm_l / rho_l
     dV_l = dm_l / rho_l
 
