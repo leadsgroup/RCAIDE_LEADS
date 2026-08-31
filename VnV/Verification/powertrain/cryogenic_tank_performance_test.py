@@ -124,6 +124,18 @@ def run_case(fuel, design_inlet_temperature, chemical_power_demand, label, n_nod
     assert mass_error < 1e-3, f"{label}: mass conservation violated by {mass_error:.3e} kg"
     assert np.all(m_g > 0) and np.all(m_l > 0), f"{label}: non-physical negative mass in solution"
 
+    (T_l_lo, T_l_hi), _ = fuel.property_table_range(phase='liquid')
+    T_l_clamped  = np.clip(tank_conditions.fuel_temperature[:,0], T_l_lo, T_l_hi)
+    rho_l_check  = fuel.cryogen_properties(T_l_clamped, "Density (kg/m3)", phase='liquid')
+    V_l_expected = m_l / rho_l_check
+    vol_drift    = np.abs(tank_conditions.fuel_volume[:,0] - V_l_expected).max()
+    print(f"  Max fuel_volume drift from m_l/rho_l(T_l): {vol_drift:.3e} m^3")
+    assert vol_drift < 1e-6, f"{label}: fuel_volume drifted from m_l/rho_l(T_l) by {vol_drift:.3e} m^3"
+
+    assert not np.any(tank_conditions.temperature_out_of_range[:,0]), (
+        f"{label}: temperature_out_of_range tripped unexpectedly in a nominal case"
+    )
+
     if check_truth:
         # Independent cross-check: re-solve the identical problem at a much tighter
         # IVP tolerance (fresh tank/state, since compute_cryogenic_tank_performance
@@ -153,6 +165,121 @@ def run_case(fuel, design_inlet_temperature, chemical_power_demand, label, n_nod
     return tank, state
 
 
+def refuel_cutoff_test():
+    print('\n----- Refuel event cutoff -----')
+
+    lh2 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    tank, state = build_case(lh2, design_inlet_temperature=20.0, chemical_power_demand=0.0,
+                              n_nodes=10, diameter=2.0, length=6.0, duration_hr=2.0)
+    tank_conditions = state.conditions.energy.sources[tank.tag]
+
+    full_mass   = tank.design_full_liquid_mass
+    m_l_current = 0.2 * full_mass
+    tank_conditions.fuel_mass[:, 0] = m_l_current
+
+    T_g0  = tank_conditions.ullage_temperature[0, 0]
+    rho_l0 = tank.fuel.cryogen_properties(tank_conditions.fuel_temperature[0, 0],
+                                           "Density (kg/m3)", phase='liquid')
+    V_l0  = m_l_current / rho_l0
+    V_g0  = tank.volume_properties.gross_volume - V_l0
+    P_sat0 = tank.fuel.cryogen_properties(T_g0, "Pressure (MPa)", phase='vapor') * 1e6
+    R_specific = 8314.462618 / tank.fuel.molecular_weight
+    tank_conditions.ullage_mass[:, 0] = P_sat0 * V_g0 / (R_specific * T_g0)
+
+    target_mass = full_mass
+    duration    = np.ravel(state.numerics.time.control_points)[-1] - np.ravel(state.numerics.time.control_points)[0]
+    naive_rate  = max(0.0, target_mass - m_l_current) / duration
+    tank_conditions.refuel_mass_flow_rate[:, 0] = 1.2 * naive_rate
+    tank_conditions.refuel_target_mass[:, 0]    = target_mass
+
+    compute_cryogenic_tank_performance(tank, state, network=None)
+
+    m_l             = tank_conditions.fuel_mass[:, 0]
+    V_l             = tank_conditions.fuel_volume[:, 0]
+    refuel_rate     = tank_conditions.refuel_mass_flow_rate[:, 0]
+    volume_capped   = bool(tank_conditions.refuel_volume_capped[0, 0])
+    net_volume      = tank.volume_properties.net_volume
+    heater_saturated = tank_conditions.heater_saturated[:, 0]
+
+    rel_error = abs(m_l[-1] - target_mass) / target_mass
+    print(f"  Final fuel_mass: {m_l[-1]:.4f} kg vs target {target_mass:.4f} kg (rel. error {rel_error:.2e})")
+    print(f"  Final fuel_volume: {V_l[-1]:.4f} m^3 vs net_volume {net_volume:.4f} m^3")
+    print(f"  volume-limited cutoff: {volume_capped}")
+    print(f"  refuel_mass_flow_rate at segment end: {refuel_rate[-1]:.6e} kg/s")
+    print(f"  heater saturated at any point: {bool(np.any(heater_saturated))}")
+
+    (T_l_lo_r, T_l_hi_r), _ = tank.fuel.property_table_range(phase='liquid')
+    T_l_clamped_r = np.clip(tank_conditions.fuel_temperature[:, 0], T_l_lo_r, T_l_hi_r)
+    rho_l_check_r = tank.fuel.cryogen_properties(T_l_clamped_r, "Density (kg/m3)", phase='liquid')
+    m_l_clamped_r = np.clip(m_l, 1e-6, None)
+    vol_drift_r   = np.abs(V_l - m_l_clamped_r / rho_l_check_r).max()
+    assert vol_drift_r < 1e-6, f"fuel_volume drifted from m_l/rho_l(T_l) by {vol_drift_r:.3e} m^3"
+    assert np.any(heater_saturated), (
+        "Expected the pressure-regulation heater to saturate during this fast, "
+        "low-pressure-start refuel"
+    )
+
+    if volume_capped:
+        assert V_l.max() <= net_volume * (1 + 1e-3), f"Refuel overshot net_volume, max V_l = {V_l.max():.4f} m^3"
+    else:
+        assert rel_error < 1e-3, f"Refuel should end at target_mass, rel. error {rel_error:.2e}"
+        assert m_l.max() <= target_mass * (1 + 1e-3), f"Refuel overshot target_mass, max = {m_l.max():.4f} kg"
+    assert refuel_rate[-1] == 0.0, f"refuel_mass_flow_rate should cut off to zero once done, got {refuel_rate[-1]:.6e} kg/s"
+    assert np.any(refuel_rate == 0.0) and np.any(refuel_rate > 0.0), \
+        "Expected a fill phase followed by a zero-rate hold phase, not a single constant rate"
+
+    tank2, state2 = build_case(lh2, design_inlet_temperature=20.0, chemical_power_demand=0.0,
+                                n_nodes=10, diameter=2.0, length=6.0, duration_hr=2.0)
+    tc2 = state2.conditions.energy.sources[tank2.tag]
+    tc2.refuel_mass_flow_rate[:, 0] = 1.2 * naive_rate
+    tc2.refuel_target_mass[:, 0]    = tc2.fuel_mass[0, 0]
+
+    compute_cryogenic_tank_performance(tank2, state2, network=None)
+    assert np.all(tc2.refuel_mass_flow_rate[:, 0] == 0.0), (
+        "A tank already at/above target shouldn't have any refuel flow applied, got "
+        f"{tc2.refuel_mass_flow_rate[:, 0]}"
+    )
+
+    print('  PASSED')
+    return
+
+
+def near_empty_dormancy_test():
+    print('\n----- Near-empty tank, long dormancy -----')
+
+    lh2 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    tank, state = build_case(lh2, design_inlet_temperature=20.0, chemical_power_demand=0.0,
+                              n_nodes=16, diameter=2.6, length=4.5, duration_hr=5.0)
+    tank_conditions = state.conditions.energy.sources[tank.tag]
+
+    almost_empty = 0.10 * tank.design_full_liquid_mass
+    tank_conditions.fuel_mass[:, 0]   = almost_empty
+
+    compute_cryogenic_tank_performance(tank, state, network=None)
+
+    m_l = tank_conditions.fuel_mass[:, 0]
+    pressure = tank_conditions.pressure[:, 0]
+    floor_active = tank_conditions.liquid_thermal_floor_active[:, 0]
+    gate         = tank_conditions.liquid_availability_gate[:, 0]
+    print(f"  fuel_mass range: [{m_l.min():.4f}, {m_l.max():.4f}] kg")
+    print(f"  pressure range:  [{pressure.min():.3e}, {pressure.max():.3e}] Pa")
+    print(f"  liquid_thermal_floor_active any: {bool(np.any(floor_active))}")
+    print(f"  liquid_availability_gate min: {gate.min():.4f}")
+
+    assert m_l.min() >= 0.0, f"fuel_mass went negative: min = {m_l.min():.4f} kg"
+    assert pressure.max() < 5 * tank.design_pressure, (
+        f"pressure ran away: max = {pressure.max():.3e} Pa vs design {tank.design_pressure:.3e} Pa"
+    )
+    assert np.any(floor_active) or gate.min() < 0.999, (
+        "Expected the near-empty floor/gate mechanisms to engage at some point "
+        "in this near-empty dormancy test -- if they never activate, this test "
+        "isn't actually exercising what it claims to"
+    )
+
+    print('  PASSED')
+    return
+
+
 def main():
     lh2 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     run_case(lh2, design_inlet_temperature=20.0, chemical_power_demand=2.0e5, label="LH2 cryogenic tank")
@@ -167,6 +294,9 @@ def main():
     run_case(lh2, design_inlet_temperature=20.0, chemical_power_demand=1.0e3,
               label="LH2 large tank, near-dormancy", diameter=2.6, length=4.5, duration_hr=1.0,
               check_truth=True)
+
+    refuel_cutoff_test()
+    near_empty_dormancy_test()
 
     print("\nAll cryogenic tank performance tests passed.")
 

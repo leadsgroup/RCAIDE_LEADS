@@ -68,12 +68,18 @@ def compute_fuel_tank_performance(tank,state,distributor):
     fuel_mass_flow_rate = chemical_power / tank.fuel.lower_heating_value
 
     m_0_fuel                               = state.conditions.weights.components.mass[fuel.tag][0,0]
-    total_mass_flow_rate                   = fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
-    tank_conditions.mass_flow_rate         = total_mass_flow_rate
+    total_mass_flow_rate                   = fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate
     tank_conditions.outputs.power.chemical = total_mass_flow_rate * tank.fuel.lower_heating_value
-    
-    if len(total_mass_flow_rate) > 1: 
-        tank_conditions.fuel_mass[:,0]  = m_0_fuel +  np.dot(I, -total_mass_flow_rate).flatten()  
+
+    net_mass_flow_rate                     = total_mass_flow_rate - tank_conditions.refuel_mass_flow_rate
+    tank_conditions.mass_flow_rate         = net_mass_flow_rate
+
+    if len(net_mass_flow_rate) > 1:
+        fuel_mass     = m_0_fuel + np.dot(I, -net_mass_flow_rate).flatten()
+        refuel_target = tank_conditions.refuel_target_mass[0,0]
+        if np.isfinite(refuel_target) and m_0_fuel < refuel_target:
+            fuel_mass = np.minimum(fuel_mass, refuel_target)
+        tank_conditions.fuel_mass[:,0] = fuel_mass
 
     stored_results_flag            = True
     stored_source_tag              = tank.tag   

@@ -6,6 +6,7 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions
+import numpy as np
 
 R_UNIVERSAL = 8314.462618  # J/(kmol*K)
 
@@ -37,12 +38,21 @@ def append_cryogenic_tank_conditions(tank, segment):
     else in this model (``fuel.cryogen_properties(..., phase='liquid')``) makes it
     correct regardless of Pre_Process ordering, exactly like m_g_0 below.
 
-    Initial ullage mass is set from ``tank.design_pressure`` via the same real-gas
-    EOS used by ``compute_cryogenic_tank_performance`` (rather than from saturated
-    vapor density) so the initial state already satisfies the runtime model's
-    constant-pressure regulation constraint -- otherwise node 0 is over-determined
-    (T_g, V_g, and m_g would all be independently pinned to values that generally
-    don't satisfy P(m_g,T_g,V_g) = design_pressure exactly).
+    Initial ullage mass is set from the saturation pressure at
+    ``design_inlet_temperature`` (``P_sat(T)``, via the same real-gas EOS used by
+    ``compute_cryogenic_tank_performance``), NOT from ``tank.design_pressure``
+    (``= P_sat(T) + pressure_margin``). Liquid and ullage both start at the same
+    temperature, and a liquid/vapor pair at a single temperature has exactly one
+    physically achievable equilibrium pressure -- P_sat(T). Seeding at
+    design_pressure instead (strictly above P_sat) would describe vapor that's
+    already over-pressurized relative to its own liquid at that same T, which
+    isn't a state the two phases could actually be found in at rest: real vapor
+    that supersaturated in contact with its liquid condenses immediately, driving
+    P back toward P_sat(T). design_pressure remains the runtime target
+    m_dot_reg regulates the ullage toward once the mission starts (matching a
+    real tank being pressurized up after fill) -- it's a regulation setpoint,
+    not an achievable instantaneous phase-equilibrium state, so it has no
+    business seeding node 0.
 
     This runs once, mission-wide, before any segment has actually converged, so it
     always sets the design-basis full tank -- cross-segment continuity is handled
@@ -69,7 +79,8 @@ def append_cryogenic_tank_conditions(tank, segment):
 
     R_specific = R_UNIVERSAL / tank.fuel.molecular_weight
     Z_0        = tank.fuel.compressibility_factor(T_g_0, phase='vapor')
-    m_g_0      = tank.design_pressure * V_g_0 / (Z_0 * R_specific * T_g_0)
+    P_sat_0    = tank.fuel.cryogen_properties(T_g_0, "Pressure (MPa)", phase='vapor') * 1e6  # Pa
+    m_g_0      = P_sat_0 * V_g_0 / (Z_0 * R_specific * T_g_0)
 
     tank_conditions.ullage_mass             = m_g_0 * ones_row(1)
     tank_conditions.fuel_mass               = m_l_0 * ones_row(1)
@@ -81,6 +92,18 @@ def append_cryogenic_tank_conditions(tank, segment):
     tank_conditions.vent_rate               = 0 * ones_row(1)
     tank_conditions.heater_power            = 0 * ones_row(1)
     tank_conditions.refuel_mass_flow_rate   = 0 * ones_row(1)
+    tank_conditions.environmental_heat_leak_liquid = 0 * ones_row(1)
+    tank_conditions.environmental_heat_leak_ullage = 0 * ones_row(1)
+    tank_conditions.temperature_out_of_range    = 0 * ones_row(1)
+    tank_conditions.liquid_thermal_floor_active = 0 * ones_row(1)
+    tank_conditions.liquid_mass_floor_blend     = 0 * ones_row(1)
+    tank_conditions.liquid_availability_gate    = 1 * ones_row(1)
+    tank_conditions.heater_saturated            = 0 * ones_row(1)
+    tank_conditions.refuel_volume_capped        = 0 * ones_row(1)
+
+    tank_conditions.refuel_target_mass      = np.nan * ones_row(1)
+
+    segment.state.conditions.weights.components.mass[tank.fuel.tag] = m_l_0 * ones_row(1)
 
     return
 
@@ -100,6 +123,12 @@ def append_cryogenic_tank_segment_conditions(tank, segment):
     already-solved trajectory on every call after the first. Shifting by
     (target - current[0,0]) is a no-op once node 0 already matches, since
     compute_cryogenic_tank_performance's own y0 read is what put it there.
+
+    ullage_volume/fuel_volume are NOT shifted here -- they're algebraic outputs
+    of compute_cryogenic_tank_performance (V_l = m_l/rho_l(T_l)), not
+    independent states, so they get recomputed correctly and consistently the
+    moment that function runs for this segment; shifting a stale value here
+    would just be overwritten anyway.
     """
     if not segment.state.initials.keys():
         return
@@ -107,8 +136,7 @@ def append_cryogenic_tank_segment_conditions(tank, segment):
     tank_conditions = segment.state.conditions.energy.sources[tank.tag]
     prior           = segment.state.initials.conditions.energy.sources[tank.tag]
 
-    for field in ('ullage_mass', 'fuel_mass', 'ullage_temperature',
-                  'fuel_temperature', 'ullage_volume', 'fuel_volume'):
+    for field in ('ullage_mass', 'fuel_mass', 'ullage_temperature', 'fuel_temperature'):
         current = tank_conditions[field]
         target  = prior[field][-1,0]
         tank_conditions[field][:,:] = current + (target - current[0,0])

@@ -1,3 +1,18 @@
+# SUPERSEDED REFERENCE COPY -- not part of the active package (.py.bak, not imported).
+#
+# This is the 6-state version of compute_cryogenic_tank_performance.py, where
+# fuel_volume/ullage_volume (V_l/V_g) were integrated as their own independent
+# ODE states (dV_l = dm_l/rho_l) rather than derived algebraically from
+# m_l/T_l. Kept for reference/revert -- see the live file for why this was
+# replaced: confirmed directly (RESEARCH/12_PtX_Boeing/Task_2/Component_Validation/
+# cryogenic_tank_long_drain_isolated_test.py) that V_l drifts from m_l/rho_l(T_l)
+# during completely ordinary draining (no near-empty floors engaged, present
+# within ~15 minutes at 90%+ fill), not just as a near-empty edge case -- the
+# two integrated states can accumulate independent numerical error relative to
+# each other over a long adaptive-IVP solve. The live version instead computes
+# V_l = m_l/rho_l(T_l) fresh at every evaluation (a 4-state system: m_g, m_l,
+# T_g, T_l), which structurally rules out this drift rather than damping it.
+#
 # RCAIDE/Library/Methods/Powertrain/Sources/Fuel_Tanks/Cryogenic_Tank/compute_cryogenic_tank_performance.py
 #
 # Created: Jun 2026, M. Clarke
@@ -32,9 +47,9 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     Solved as its own internal, decoupled initial-value-problem integration (adaptive
     stiff-ODE Radau via scipy), NOT as mission-level Newton unknowns/residuals -- see
     ``append_cryogenic_tank_unknown_and_residual.py`` for the earlier coupled-unknown
-    version and why it was abandoned. Each call integrates the tank's 4-state ODE
-    system (ullage/liquid mass, ullage/liquid temperature) forward from its known
-    node-0 initial condition across the segment's full time span, using the mission's own
+    version and why it was abandoned. Each call integrates the tank's 6-state ODE
+    system (ullage/liquid mass, temperature, volume) forward from its known node-0
+    initial condition across the segment's full time span, using the mission's own
     driving-input trajectory (engine fuel demand, freestream conditions) interpolated
     between the mission's (sparse, e.g. 16-point Chebyshev) collocation nodes so the
     adaptive integrator can resolve dynamics between them, then samples the result
@@ -93,17 +108,15 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     a constant rate sized to reach the target by segment end (ignoring the boil-off
     that keeps draining liquid mass throughout the same window, since ground ops
     still have ambient heat leak) systematically undershoots -- the tank never
-    actually reads full. A second terminal event watches V_l against
-    tank.volume_properties.net_volume and can cut the fill off first (flagged in
-    ``refuel_volume_capped``): refuel_target_mass is a fixed mass computed at
-    design temperature, but a tank that has warmed during the day holds more
-    volume per kg of liquid, so the mass target alone can let V_l run past
-    net_volume and collapse the ullage.
+    actually reads full.
     """
     tag             = tank.tag
     tank_conditions = state.conditions.energy.sources[tag]
     fuel            = tank.fuel
 
+    # Real heater's rated power caps how much duty the regulation law below
+    # can actually demand; falls back to a data-driven default (10x design
+    # heat leak) if no Heater component is wired up (e.g. isolated tests).
     max_heater_power = 10.0 * tank.design_total_heat_transfer
     if network is not None:
         for converter in getattr(network, 'converters', []):
@@ -136,6 +149,8 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         tank_conditions.fuel_mass[0,0],
         tank_conditions.ullage_temperature[0,0],
         tank_conditions.fuel_temperature[0,0],
+        tank_conditions.ullage_volume[0,0],
+        tank_conditions.fuel_volume[0,0],
     ])
 
     refuel_target_arr = tank_conditions.refuel_target_mass[:,0]
@@ -145,15 +160,13 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         return cached[1]
 
     if t.size < 2:
-        m_g0, m_l0, T_g0, T_l0 = (np.array([v]) for v in y0)
+        m_g0, m_l0, T_g0, T_l0, V_g0, V_l0 = (np.array([v]) for v in y0)
 
         _, diag = _tank_state_rates(
-            tank, fuel, R_specific, m_g0, m_l0, T_g0, T_l0,
+            tank, fuel, R_specific, m_g0, m_l0, T_g0, T_l0, V_g0, V_l0,
             chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts,
             T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power)
 
-        tank_conditions.ullage_volume[:,0]      = diag['V_g']
-        tank_conditions.fuel_volume[:,0]        = diag['V_l']
         tank_conditions.pressure[:,0]           = diag['P']
         tank_conditions.vent_rate[:,0]          = diag['m_dot_vent']
         tank_conditions.boil_off_flow_rate[:,0] = diag['m_dot_bo_final']
@@ -167,7 +180,6 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         tank_conditions.liquid_mass_floor_blend[:,0]   = diag['m_barrier_blend']
         tank_conditions.liquid_availability_gate[:,0]  = diag['m_dot_avail']
         tank_conditions.heater_saturated[:,0]          = diag['heater_saturated']
-        tank_conditions.refuel_volume_capped[:,0]      = 0.0
 
         result = tank_conditions.inputs, tank_conditions.outputs, True, tank.tag
         tank_conditions._boil_off_solve_cache = (tuple(np.array(k, copy=True) for k in cache_key), result)
@@ -175,34 +187,32 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
 
     duration = t[-1] - t[0]
 
-    # Scale atol per-state instead of one scalar across mass/temp.
-    state_floors = np.array([1e-3, 1e-3, 1.0, 1.0])
+    # Scale atol per-state instead of one scalar across mass/temp/volume.
+    state_floors = np.array([1e-3, 1e-3, 1.0, 1.0, 1e-3, 1e-3])
     atol_vec = atol * np.maximum(np.abs(y0), state_floors)
 
     def _build_rhs(refuel_pts_local):
         def rhs(t_i, y):
-            m_g, m_l, T_g, T_l = y
+            m_g, m_l, T_g, T_l, V_g, V_l = y
             chemical_power = np.interp(t_i, t, chemical_power_pts)
             T_env          = np.interp(t_i, t, T_env_pts)
             nu_air         = np.interp(t_i, t, nu_air_pts)
             Pr_air         = np.interp(t_i, t, Pr_air_pts)
             k_air          = np.interp(t_i, t, k_air_pts)
             refuel         = np.interp(t_i, t, refuel_pts_local)
-            (dm_g, dm_l, dT_g, dT_l), _ = _tank_state_rates(
+            (dm_g, dm_l, dT_g, dT_l, dV_g, dV_l), _ = _tank_state_rates(
                 tank, fuel, R_specific,
-                np.array([m_g]), np.array([m_l]), np.array([T_g]), np.array([T_l]),
+                np.array([m_g]), np.array([m_l]), np.array([T_g]), np.array([T_l]), np.array([V_g]), np.array([V_l]),
                 np.array([chemical_power]), np.array([T_env]), np.array([nu_air]), np.array([Pr_air]), np.array([k_air]), np.array([refuel]),
                 T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power)
-            return [dm_g[0], dm_l[0], dT_g[0], dT_l[0]]
+            return [dm_g[0], dm_l[0], dT_g[0], dT_l[0], dV_g[0], dV_l[0]]
         return rhs
 
     refuel_target = tank_conditions.refuel_target_mass[0, 0]
-    net_volume    = tank.volume_properties.net_volume
     filling       = np.isfinite(refuel_target) and y0[1] < refuel_target
-    volume_capped = False
 
     if filling:
-        # Terminal event 1: stop the "filling" phase the instant fuel_mass reaches
+        # Terminal event: stop the "filling" phase the instant fuel_mass reaches
         # the target, the same cutoff Battery_Recharge applies at cutoff_SOC.
         # direction=1 requires an upward crossing, so a tank already above target
         # (handled by the `filling` guard above) can't spuriously retrigger it.
@@ -211,36 +221,16 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         _tank_full.terminal  = True
         _tank_full.direction = 1
 
-        # Terminal event 2: stop early if V_l reaches net_volume regardless of
-        # mass. refuel_target_mass is a fixed density-at-design-temperature
-        # figure, but the tank's real physical limit is volume -- V_l grows
-        # faster than the mass target alone implies whenever T_l has warmed
-        # above the design temperature (liquid is less dense), which is
-        # exactly the case for a tank that has been draining/warming all day
-        # before an end-of-day refuel. Without this, the mass-only cutoff can
-        # let V_l run past net_volume, collapsing the ullage and blowing up
-        # P = m_g*R*T_g/V_g as V_g -> 0.
-        def _tank_volume_full(t_i, y):
-            m_l, T_l = y[1], y[3]
-            T_l_c = np.clip(T_l, T_l_lo, T_l_hi)
-            rho_l = fuel.cryogen_properties(np.array([T_l_c]), "Density (kg/m3)", phase='liquid')[0]
-            return m_l / rho_l - net_volume
-        _tank_volume_full.terminal  = True
-        _tank_volume_full.direction = 1
-
         rhs_fill = _build_rhs(refuel_pts)
         sol      = solve_ivp(rhs_fill, (t[0], t[-1]), y0, method=method, t_eval=t,
-                              rtol=rtol, atol=atol_vec, events=[_tank_full, _tank_volume_full])
+                              rtol=rtol, atol=atol_vec, events=_tank_full)
         if not sol.success:
             raise RuntimeError(
                 f"Cryogenic tank '{tag}' internal boil-off IVP failed to integrate: {sol.message}")
 
         refuel_pts_eff = refuel_pts
-        fired_events = [i for i, te in enumerate(sol.t_events) if te.size]
-        if fired_events:  # reached target or volume limit before segment end -> splice in a zero-fill hold
-            event_idx        = fired_events[0]
-            volume_capped    = (event_idx == 1)
-            t_event, y_event = sol.t_events[event_idx][0], sol.y_events[event_idx][0]
+        if sol.status == 1:  # reached target before segment end -> splice in a zero-fill hold
+            t_event, y_event = sol.t_events[0][0], sol.y_events[0][0]
 
             t_before = t[t <= t_event]
             t_after  = t[t >  t_event]
@@ -262,10 +252,10 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
             else:
                 y_all = sol_before.y
 
-            m_g, m_l, T_g, T_l = y_all
+            m_g, m_l, T_g, T_l, V_g, V_l = y_all
             refuel_pts_eff = np.where(t <= t_event, refuel_pts, 0.0)
         else:
-            m_g, m_l, T_g, T_l = sol.y
+            m_g, m_l, T_g, T_l, V_g, V_l = sol.y
     else:
         if np.isfinite(refuel_target):
             # Already at/above target (e.g. topping off a nearly-full tank) -- don't add fuel.
@@ -275,7 +265,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         if not sol.success:
             raise RuntimeError(
                 f"Cryogenic tank '{tag}' internal boil-off IVP failed to integrate: {sol.message}")
-        m_g, m_l, T_g, T_l = sol.y
+        m_g, m_l, T_g, T_l, V_g, V_l = sol.y
         refuel_pts_eff = refuel_pts
 
     # One extra vectorized call (cheap -- same array-length-n_nodes shape the
@@ -283,7 +273,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     # outputs (pressure, vent/boil-off split, heater power) at exactly the
     # collocation points, using their own real (not re-interpolated) inputs.
     _, diag = _tank_state_rates(
-        tank, fuel, R_specific, m_g, m_l, T_g, T_l,
+        tank, fuel, R_specific, m_g, m_l, T_g, T_l, V_g, V_l,
         chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts_eff,
         T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power)
 
@@ -292,10 +282,8 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     # ------------------------------------------------------------------
     tank_conditions.ullage_mass[:,0]           = m_g
     tank_conditions.fuel_mass[:,0]             = m_l
-    # fuel_volume/ullage_volume are algebraic outputs (V_l = m_l/rho_l(T_l)),
-    # not integrated states -- see y0 construction above.
-    tank_conditions.ullage_volume[:,0]         = diag['V_g']
-    tank_conditions.fuel_volume[:,0]           = diag['V_l']
+    tank_conditions.ullage_volume[:,0]         = V_g
+    tank_conditions.fuel_volume[:,0]           = V_l
     tank_conditions.ullage_temperature[:,0]    = T_g
     tank_conditions.fuel_temperature[:,0]      = T_l
     tank_conditions.pressure[:,0]              = diag['P']
@@ -313,7 +301,6 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     tank_conditions.liquid_mass_floor_blend[:,0]        = diag['m_barrier_blend']
     tank_conditions.liquid_availability_gate[:,0]       = diag['m_dot_avail']
     tank_conditions.heater_saturated[:,0]               = diag['heater_saturated']
-    tank_conditions.refuel_volume_capped[:,0]           = float(volume_capped)
 
     # Net mass leaving the tank system (engine offtake + vented boil-off - refuel inflow)
     tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] - refuel_pts_eff
@@ -326,30 +313,19 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     return result
 
 
-def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
+def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l, V_g, V_l,
                        chemical_power, T_env, nu_air, Pr_air, k_air, m_dot_refuel,
                        T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power):
-    """Evaluates the tank's 4-state ODE right-hand side plus diagnostic outputs
-    (pressure, volume, boil-off/vent split, heater power) at one or more
-    instants. All state/input arguments are 1-D arrays of the same length --
-    length 1 for a single adaptive-integrator evaluation (``rhs`` above), or
-    length n_nodes for the final diagnostic pass at the mission's own
-    collocation points. This is the same physics ``compute_cryogenic_tank_performance``
-    always used, factored out so it can be called both as an ODE right-hand
-    side and as a one-shot diagnostic evaluator without duplicating the model.
+    """Evaluates the tank's 6-state ODE right-hand side plus diagnostic outputs
+    (pressure, boil-off/vent split, heater power) at one or more instants. All
+    state/input arguments are 1-D arrays of the same length -- length 1 for a
+    single adaptive-integrator evaluation (``rhs`` above), or length n_nodes
+    for the final diagnostic pass at the mission's own collocation points.
+    This is the same physics ``compute_cryogenic_tank_performance`` always
+    used, factored out so it can be called both as an ODE right-hand side and
+    as a one-shot diagnostic evaluator without duplicating the model.
 
-    fuel_volume/ullage_volume (V_l/V_g) are NOT states here -- V_l = m_l/rho_l(T_l)
-    is computed fresh from the current mass/temperature every call, and
-    V_g = gross_volume - V_l, rather than being integrated independently
-    (see compute_cryogenic_tank_performance_v1_integrated_volume_states.py.bak
-    for the earlier 6-state version this replaced: confirmed directly that the
-    two integrated volume states could drift out of consistency with mass
-    during completely ordinary draining, not just as a near-empty edge case).
-    Because -P*dV_l appears in the liquid energy balance, and dV_l is itself a
-    function of dT_l through the chain rule on V_l(m_l, T_l), dT_l is solved
-    in closed form as a linear equation rather than substituted naively.
-
-    Clamps m to a small positive floor and T to the property table's valid
+    Clamps m/V to a small positive floor and T to the property table's valid
     range before any lookup or EOS evaluation: Radau's internal trial steps
     and Jacobian estimation can transiently query states outside the
     physically valid domain (e.g. slightly negative mass), and the property
@@ -360,27 +336,10 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     """
     m_g_c = np.clip(m_g, 1e-6, None)
     m_l_c = np.clip(m_l, 1e-6, None)
+    V_g_c = np.clip(V_g, 1e-6, None)
+    V_l_c = np.clip(V_l, 1e-6, None)
     T_g_c = np.clip(T_g, T_g_lo, T_g_hi)
     T_l_c = np.clip(T_l, T_l_lo, T_l_hi)
-
-    # ------------------------------------------------------------------
-    #  Liquid volume/density and their derivative, needed both for V_g below
-    #  and for the -P*dV_l coupling in the liquid energy balance further down.
-    #  drho_l_dT_l is a centered finite difference (clipped to the table's
-    #  valid range on both sides) -- the property tables don't expose an
-    #  analytic derivative, and rho_l(T) is smooth enough over this scale for
-    #  a simple FD to be adequate.
-    # ------------------------------------------------------------------
-    rho_l = fuel.cryogen_properties(T_l_c, "Density (kg/m3)", phase='liquid')
-    V_l_c = m_l_c / rho_l
-    V_g_c = np.clip(tank.volume_properties.gross_volume - V_l_c, 1e-6, None)
-
-    dT_fd   = 0.01  # K
-    T_plus  = np.clip(T_l_c + dT_fd, T_l_lo, T_l_hi)
-    T_minus = np.clip(T_l_c - dT_fd, T_l_lo, T_l_hi)
-    rho_l_plus  = fuel.cryogen_properties(T_plus,  "Density (kg/m3)", phase='liquid')
-    rho_l_minus = fuel.cryogen_properties(T_minus, "Density (kg/m3)", phase='liquid')
-    drho_l_dT_l = (rho_l_plus - rho_l_minus) / np.clip(T_plus - T_minus, 1e-6, None)
 
     # ------------------------------------------------------------------
     #  Engine fuel offtake demand (same derivation the base explicit-
@@ -412,6 +371,7 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # ------------------------------------------------------------------
     #  Bulk liquid/vapor properties at the current bulk temperatures
     # ------------------------------------------------------------------
+    rho_l  = fuel.cryogen_properties(T_l_c, "Density (kg/m3)",     phase='liquid')
     cp_liq = fuel.cryogen_properties(T_l_c, "Cp (J/g*K)",          phase='liquid') * 1000.0
     mu_liq = fuel.cryogen_properties(T_l_c, "Viscosity (Pa*s)",    phase='liquid')
     k_liq  = fuel.cryogen_properties(T_l_c, "Therm. Cond. (W/m*K)", phase='liquid')
@@ -597,27 +557,30 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     m_barrier_blend = m_barrier_blend**2 * (3 - 2 * m_barrier_blend)  # smoothstep
     dm_l = dm_l + m_barrier_blend * (m_l_floor - m_l) / tau
 
-    # V_l = m_l/rho_l(T_l) is algebraic (see docstring), so dV_l is its TOTAL
-    # derivative by the chain rule:
-    #   dV_l = dm_l/rho_l - (m_l/rho_l^2)*drho_l_dT_l*dT_l
-    # dV_l appears in dT_l's own energy balance via the -P*dV_l work term, so
-    # substituting the line above turns dT_l into a linear equation in itself
-    # rather than something we can evaluate directly -- solved in closed form:
-    #   dT_l*(m_l_thermal*cp_liq) = RHS0 + P*(m_l_c/rho_l^2)*drho_l_dT_l*dT_l
-    #   dT_l = RHS0 / (m_l_thermal*cp_liq - P*(m_l_c/rho_l^2)*drho_l_dT_l)
-    # where RHS0 is everything else (the dV_l chain-rule mass-flow term folded
-    # in, dT_l-dependence pulled out). See near-empty thermal-mass floor note
-    # below for why m_l_thermal (not m_l_c) is used as the denominator's mass.
-    m_l_thermal = np.maximum(m_l_c, m_l_floor)
-    A_thermal   = m_l_thermal * cp_liq
-    B_coupling  = P * m_l_c / rho_l**2 * drho_l_dT_l
-    RHS0        = -Q_l_i + Q_e_l + Q_h_to_liquid - P * dm_l / rho_l + dm_l * (h_l - u_l)
-    dT_l = RHS0 / (A_thermal - B_coupling)
-
-    dV_l = dm_l / rho_l - (m_l_c / rho_l**2) * drho_l_dT_l * dT_l
-    dV_g = -dV_l
+    dV_g = -dm_l / rho_l
+    dV_l = dm_l / rho_l
 
     dT_g = (-Q_g_i + Q_e_g - P * dV_g + dm_g * (h_g - u_g)) / (m_g_c * cv_g)
+
+    # Near-empty liquid thermal mass: m_l_c is clamped down to a numerical-safety
+    # floor of 1e-6 kg for property lookups above, but using that same tiny value
+    # as the liquid's *thermal mass* here is what actually drives the runaway --
+    # m_dot_avail (above) correctly throttles boil-off to protect m_l from going
+    # unboundedly negative, but boil-off is also the tank's only real
+    # heat-rejection pathway (it carries heat away as latent heat), so throttling
+    # it near-empty leaves the same ambient heat leak (Q_e_l, which doesn't
+    # depend on how much liquid remains) with nowhere to go but into raising the
+    # liquid's *sensible* temperature -- and dividing that fixed heat input by a
+    # thermal mass shrinking toward 1e-6 kg is exactly what pushed dT_l past the
+    # property table's valid range (confirmed directly: T_l climbed to and above
+    # hydrogen's ~33 K critical temperature during a near-empty drain, at which
+    # point rho_l/V_l lose all physical meaning). Flooring the thermal mass at
+    # m_l_floor (the same near-empty threshold m_dot_avail already uses) instead
+    # of the 1e-6 kg numerical floor keeps a physically-reasonable residual
+    # thermal capacity in the denominator without touching the mass-floor
+    # protection (dm_l) or the property-lookup clamp (m_l_c) at all.
+    m_l_thermal = np.maximum(m_l_c, m_l_floor)
+    dT_l = (-Q_l_i + Q_e_l + Q_h_to_liquid - P * dV_l + dm_l * (h_l - u_l)) / (m_l_thermal * cp_liq)
 
     # Soft restoring term outside the property table's range. The table's edges are
     # not arbitrary data cutoffs -- e.g. hydrogen's upper bound is its actual critical
@@ -639,13 +602,10 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     T_out_of_range      = (T_g < T_g_lo) | (T_g > T_g_hi) | (T_l < T_l_lo) | (T_l > T_l_hi)
     m_l_thermal_floored = m_l_c < m_l_floor
 
-    derivatives = (dm_g, dm_l, dT_g, dT_l)
+    derivatives = (dm_g, dm_l, dT_g, dT_l, dV_g, dV_l)
     diagnostics = dict(P=P, m_dot_vent=m_dot_vent, m_dot_bo_final=m_dot_bo_final,
                         heater_power=heater_power, m_dot_l_engine=m_dot_l_engine,
                         Q_e_l=Q_e_l, Q_e_g=Q_e_g,
-                        # V_l/V_g are algebraic outputs here (not states) -- returned so
-                        # the caller can store them without recomputing the density lookup.
-                        V_l=V_l_c, V_g=V_g_c,
                         # Diagnostic-only additions for tracing dT_l's individual terms:
                         Q_l_i=Q_l_i, P_dV_l_term=-P * dV_l, enthalpy_flux_l=dm_l * (h_l - u_l),
                         Q_h_to_liquid=Q_h_to_liquid, dT_l=dT_l, rho_l=rho_l, m_l_thermal=m_l_thermal,

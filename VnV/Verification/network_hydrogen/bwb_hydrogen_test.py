@@ -60,6 +60,7 @@ def main():
     )
 
     verify_powertrain(results)
+    verify_ground_ops(results, vehicle)
 
     plot_aircraft_cg_weight_bubbles(results,vehicle,show_figure=False)
     plot_fuel_flow_rates(results)
@@ -125,9 +126,13 @@ def verify_powertrain(results):
         energy.propulsors[tag].fuel_mass_flow_rate if tag in energy.propulsors else energy.converters[tag].fuel_mass_flow_rate
         for tag in fuel_consumers
     )
+    vent_mdot = sum(
+        source.vent_rate for tag, source in energy.sources.items() if 'vent_rate' in source
+    )
     total_mdot = results.segments.cruise.conditions.weights.vehicle.mass_rate
-    assert np.allclose(fuel_line_mdot, total_mdot, rtol=1e-6), (
-        f"fuel_line consumers' fuel_mass_flow_rate ({fuel_line_mdot[-1, 0]:.6e} kg/s) doesn't match "
+    assert np.allclose(fuel_line_mdot + vent_mdot, total_mdot, rtol=1e-6), (
+        f"fuel_line consumers' fuel_mass_flow_rate + vented boil-off "
+        f"({fuel_line_mdot[-1, 0]:.6e} + {vent_mdot[-1, 0]:.6e} kg/s) doesn't match "
         f"the vehicle's total mass burn rate ({total_mdot[-1, 0]:.6e} kg/s)"
     )
 
@@ -141,6 +146,42 @@ def verify_powertrain(results):
         assert np.all(np.isfinite(converter.inputs.power.electrical)), f"NaN/inf in {tag}.inputs.power.electrical"
 
     return
+
+def verify_ground_ops(results, vehicle):
+    dormancy_energy = results.segments.dormancy.conditions.energy.sources
+    refuel_energy   = results.segments.refuel.conditions.energy.sources
+
+    for network in vehicle.networks:
+        for source in network.sources:
+            if not isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank):
+                continue
+
+            dormancy_mass = dormancy_energy[source.tag].fuel_mass[:, 0]
+            assert dormancy_mass[-1] < dormancy_mass[0], (
+                f"{source.tag}: dormancy should drain some liquid mass to ambient boil-off, "
+                f"got {dormancy_mass[0]:.4f} kg -> {dormancy_mass[-1]:.4f} kg"
+            )
+
+            refuel_mass = refuel_energy[source.tag].fuel_mass[:, 0]
+            refuel_rate = refuel_energy[source.tag].refuel_mass_flow_rate[:, 0]
+            target_mass = refuel_energy[source.tag].refuel_target_mass[0, 0]
+
+            rel_error = abs(refuel_mass[-1] - target_mass) / target_mass
+            assert rel_error <= 1e-3, (
+                f"{source.tag}: refuel should end at design_full_liquid_mass, got "
+                f"{refuel_mass[-1]:.4f} kg vs target {target_mass:.4f} kg (rel. error {rel_error:.2e})"
+            )
+            assert refuel_mass.max() <= target_mass * (1 + 1e-3), (
+                f"{source.tag}: refuel overshot target, max fuel_mass = {refuel_mass.max():.4f} kg "
+                f"vs target {target_mass:.4f} kg"
+            )
+            assert refuel_rate[-1] == 0.0, (
+                f"{source.tag}: refuel_mass_flow_rate should have cut off to zero once full, "
+                f"got {refuel_rate[-1]:.6e} kg/s at segment end"
+            )
+
+    return
+
 
 # ----------------------------------------------------------------------
 #   Define the Configurations
@@ -254,32 +295,52 @@ def mission_setup(analyses):
 
     mission = RCAIDE.Framework.Mission.Sequential_Segments()
     mission.tag = 'the_mission'
-  
-    Segments = RCAIDE.Framework.Mission.Segments 
+
+    Segments = RCAIDE.Framework.Mission.Segments
     base_segment = Segments.Segment()
     base_segment.state.numerics.mission_solver.type = 'root_finder'
     base_segment.state.numerics.mission_solver.max_evaluations = 800 # default 200 is too few for this many unknowns
 
-    # ------------------------------------------------------------------    
+    # ------------------------------------------------------------------
     #   Cruise Segment: Constant Speed Constant Altitude
-    # ------------------------------------------------------------------    
+    # ------------------------------------------------------------------
 
     segment = Segments.Cruise.Constant_Mach_Constant_Altitude(base_segment)
-    segment.tag = "Cruise" 
-    segment.analyses.extend( analyses.cruise ) 
-    segment.altitude                                                 = 40000 * Units['ft']  
+    segment.tag = "Cruise"
+    segment.analyses.extend( analyses.cruise )
+    segment.altitude                                                 = 40000 * Units['ft']
     segment.mach_number                                              = 0.78
-    segment.distance                                                 = 7370 * Units.km  + 626 *Units.nmi  
-            
-    # define flight dynamics to model             
-    segment.flight_dynamics.force_x                                  = True  
-    segment.flight_dynamics.force_z                                  = True     
+    segment.distance                                                 = 7370 * Units.km  + 626 *Units.nmi
 
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                                  = True
+    segment.flight_dynamics.force_z                                  = True
 
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Dormancy Segment
+    # ------------------------------------------------------------------
+
+    segment = Segments.Ground.Dormancy(base_segment)
+    segment.tag = "dormancy"
+    segment.analyses.extend( analyses.dormancy )
+    segment.time = 5.0 * Units.hours
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Refuel Segment
+    # ------------------------------------------------------------------
+
+    segment = Segments.Ground.Refuel(base_segment)
+    segment.tag = "refuel"
+    segment.analyses.extend( analyses.refuel )
+    segment.time = 2.0 * Units.hours
     mission.append_segment(segment)
 
 

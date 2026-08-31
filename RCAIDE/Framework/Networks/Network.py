@@ -279,13 +279,18 @@ class Network(Component):
         # Sources 
         # ----------------------------------------------------------
         stored_results_flag  = False
-        for source in sources: 
-            if source.active:    
-                inputs, outputs, _, _  = source.compute_performance(state,network)   
+        for source in sources:
+            if source.active:
+                inputs, outputs, _, _  = source.compute_performance(state,network)
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                    source_conditions = state.conditions.energy.sources[source.tag]
+                    total_mdot -= source_conditions.refuel_mass_flow_rate
+                    if 'vent_rate' in source_conditions:
+                        total_mdot += source_conditions.vent_rate
 
                 if source.assigned_distributors != None:
                     for distributor_tag in source.assigned_distributors[0]:

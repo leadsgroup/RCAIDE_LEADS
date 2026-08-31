@@ -95,14 +95,16 @@ class Cryogenic_Tank(Non_Integral_Tank):
     pressure_regulation_time_constant : float
         Characteristic response time [s] of the tank's heater/vent regulation
         system correcting a ullage pressure deviation from ``design_pressure``
-        (default: 60 s). Drives the regulation flow explicitly, m_dot_reg =
+        (default: 400 s). Drives the regulation flow explicitly, m_dot_reg =
         V_g/(R_specific*T_g*tau) * (design_pressure - P) -- a finite-gain
-        feedback law, not an exact/instantaneous constraint, matching the
-        finite authority of a real heater (c.f. Adler & Martins (2025)'s own
-        heater thermal-inertia constant C_h, Eq. 33-34) rather than assuming
-        infinite regulation authority. Smaller values regulate pressure more
-        tightly at the cost of a stiffer system; not yet validated against
-        real hardware response times.
+        feedback law, not an exact/instantaneous constraint. Adler & Martins
+        (2025) tuned their analogous heater thermal-inertia constant C_h to
+        5e-3 /s (~200 s response) against real extraction-test data (their
+        Sec. IV.B); their open-source reference implementation's own example/
+        default is slower still (500-1000 s). 400 s is chosen in that range;
+        the previous 60 s default was untuned and, combined with heater_power
+        having no cap of its own, could demand unphysically large heater
+        power for an ordinary pressure deficit (see Heater.rated_power).
     """
 
     def __defaults__(self):
@@ -123,7 +125,7 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.heater_direct_boiloff_fraction = 0.1
         self.pressure_margin                = 2 * Units.bar
         self.design_pressure                = None  # set from pressure_margin during design-time sizing
-        self.pressure_regulation_time_constant = 60.0
+        self.pressure_regulation_time_constant = 400.0
 
     def compute_volume(self, wings, fuselages, fuel_tanks):
         """Computes the net fuel volume and cryogenic structure/insulation sizing.

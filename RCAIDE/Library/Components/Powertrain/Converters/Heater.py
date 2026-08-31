@@ -33,6 +33,7 @@ class Heater(Converter):
         self.tag            = 'Heater'
         self.efficiency     = 0.95   # electrical -> thermal conversion efficiency of the heating element
         self.assigned_tank  = None   # tag of the Cryogenic_Tank source this heater supplies
+        self.rated_power    = None   # max thermal power [W]; None -> tank sizes a default cap (see compute_cryogenic_tank_performance)
 
         return
 

@@ -789,12 +789,23 @@ def configs_setup(vehicle):
 
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'cruise'
-    configs.append(config) 
+    configs.append(config)
 
+    # ------------------------------------------------------------------
+    #   Dormancy / Refuel Configuration (stationary, ground ops)
+    # ------------------------------------------------------------------
+
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'dormancy'
+    configs.append(config)
+
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'refuel'
+    configs.append(config)
 
     # ------------------------------------------------------------------
     #   Initialize Configurations
-    # ------------------------------------------------------------------ 
+    # ------------------------------------------------------------------
     config = RCAIDE.Library.Components.Configs.Config(vehicle)
     config.tag = 'idle' 
     config.networks.fuel.propulsors['propulsor_1'].combustor.fuel_data.emission_indices.NOx      = 4.85 /1000

@@ -61,6 +61,7 @@ class Fuel_Tank(Source):
         self.domain                         = 'chemical'
         self.fuel                           = None
         self.secondary_mass_flow_rate       = 0.0
+        self.design_full_liquid_mass        = None
         self.wall_clearance                 = 0.0
         self.wall_thickness                 = 1E-3
         self.fuel_flow_split_ratio          = None

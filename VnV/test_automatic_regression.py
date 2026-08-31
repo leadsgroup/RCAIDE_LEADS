@@ -65,6 +65,7 @@ modules = [
     'Verification/powertrain/battery_cell.py',
     'Verification/powertrain/fuel_cell.py',
     'Verification/powertrain/fuel_tank_volume_test.py',
+    'Verification/powertrain/cryogenic_tank_performance_test.py',
     'Validation/converters/test_dc_motor_validation.py',
     'Validation/converters/test_pmsm_motor_validation.py',
     'Validation/converters/test_rotor_validation.py',
