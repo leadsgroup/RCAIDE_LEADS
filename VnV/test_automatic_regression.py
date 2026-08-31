@@ -46,6 +46,7 @@ modules = [
     'Verification/network_fuel_cell/hydrogen_fuel_cell_aircraft_test.py', 
     'Verification/network_hybrid/hybrid_network_test.py',  
     'Verification/network_hydrogen/bwb_hydrogen_test.py',
+    'Verification/network_hydrogen/bwb_hydrogen_boil_off_fidelity_test.py',
     'Verification/network_turbofan/turbofan_network_test.py',  
     'Verification/network_turbojet/turbojet_network_test.py',
     'Verification/network_turboprop/turboprop_network_test.py',
