@@ -51,6 +51,9 @@ class Aerostructures(Analysis):
         self.settings.load_factor           = 1.0
         # Uniform pressure [Pa] override for beam-solver verification; None in production.
         self.settings.verification_pressure = None
+        # 'decoupled' (default): rigid-wing loads only, today's behavior unchanged.
+        # 'coupled': iterate VLM<->FEA to convergence at every training sample.
+        self.settings.aeroelastic_coupling  = 'decoupled'
         
     def evaluate(self,state, vehicle):
         """The default evaluate function.

@@ -20,7 +20,7 @@ import numpy as np
 #  Vortex Lattice
 # ----------------------------------------------------------------------
 
-def VLM(conditions,settings,geometry):
+def VLM(conditions,settings,geometry,precomputed_VD=None):
     """Uses the vortex lattice method to compute the lift, induced drag and moment coefficients.
      
     The user should be forwarned that this will cause very slight differences in results for 0 deflection due to
@@ -127,7 +127,7 @@ def VLM(conditions,settings,geometry):
     # ---------------------------------------------------------------------------------------
     # Generate Panelization and Vortex Distribution
     # ------------------ -------------------------------------------------------------------- 
-    VD                                                    = generate_vortex_distribution(conditions,settings,geometry) 
+    VD = precomputed_VD if precomputed_VD is not None else generate_vortex_distribution(conditions,settings,geometry)
     settings.vortex_distribution.chord_lengths            = VD.chord_lengths[VD.leading_edge_indices].reshape(len(VD.n_sw),np.sum(VD.n_sw[0]))
     settings.vortex_distribution.n_sw                     = VD.n_sw 
     settings.vortex_distribution.n_cw                     = VD.n_cw 

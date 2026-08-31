@@ -9,7 +9,9 @@ import RCAIDE
 from RCAIDE.Framework.Core import  Data
 from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_vortex_distribution
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.FEA   import FEA
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.discretize_wing import deform_vortex_distribution
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES
 from copy import deepcopy
 
@@ -148,10 +150,8 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
     for wing in clean_wing_vehicle.wings:
         wing.control_surfaces = []
 
-    # run VLM for all conditions
-    VLM_results = call_VLM(conditions, settings, clean_wing_vehicle)
-
-    # run FEA alongside VLM training if aerostructural_analyses is provided
+    # populate conditions fields FEA needs (point loads, structural container)
+    # before call_solvers runs, so a coupled call can slice them per row too
     if aerostructural_analyses is not None:
         n_pts = int(AoAs.shape[0])
         conditions.aerostructures                    = Data()
@@ -165,8 +165,23 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
                     conditions.weights.components.mass[source.fuel.tag] = (
                         source.mass_properties.mass * np.ones((n_pts, 1)))
 
-        FEA_results = FEA(conditions, VLM_results, settings.vortex_distribution,
-                          settings_str, clean_wing_vehicle)
+    # run VLM (and, if coupled, VLM<->FEA to convergence) for all conditions
+    coupled = (aerostructural_analyses is not None
+               and settings_str.aeroelastic_coupling == 'coupled')
+    VLM_results = call_solvers(conditions, settings, clean_wing_vehicle,
+                                aerostructural_analyses=aerostructural_analyses,
+                                coupled=coupled)
+
+    # run FEA alongside VLM training if aerostructural_analyses is provided
+    if aerostructural_analyses is not None:
+        if coupled:
+            # call_solvers already converged VLM<->FEA per row; reuse its result
+            # instead of a second batched FEA pass (which would only see the
+            # LAST row's deformed mesh - wrong once the mesh varies per row).
+            FEA_results = VLM_results.structural
+        else:
+            FEA_results = FEA(conditions, VLM_results, settings.vortex_distribution,
+                              settings_str, clean_wing_vehicle)
 
         # Normalise by dynamic pressure so the surrogate stores δ/q_dyn.
         # At query time evaluate_surrogate multiplies by the mission q_dyn,
@@ -230,7 +245,7 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
     conditions.static_stability.roll_rate           = np.zeros_like(Machs)   
     conditions.static_stability.yaw_rate            = np.zeros_like(Machs)    
     
-    VLM_results = call_VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results = call_solvers(conditions,settings,clean_wing_vehicle)
     
     Clift_res   = VLM_results.CLift
     Cdrag_res   = VLM_results.CDrag_induced
@@ -263,7 +278,7 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
     conditions.static_stability.pitch_rate          = np.zeros_like(Machs)   
     conditions.static_stability.roll_rate           = np.zeros_like(Machs)   
     conditions.static_stability.yaw_rate            = np.zeros_like(Machs)   
-    VLM_results = call_VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results = call_solvers(conditions,settings,clean_wing_vehicle)
     CX_res    = VLM_results.CX
     CZ_res    = VLM_results.CZ
     CM_res    = VLM_results.CM
@@ -285,7 +300,7 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
     conditions.static_stability.roll_rate           = np.zeros_like(Machs)   
     conditions.static_stability.yaw_rate            = np.zeros_like(Machs)    
     
-    VLM_results = call_VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results = call_solvers(conditions,settings,clean_wing_vehicle)
     CM_res      = VLM_results.CM  
     CM_q        = np.reshape(CM_res,(len_Mach,len_q)).T   # - CM_alpha_0    
     CZ_q        = np.reshape(CZ_res,(len_Mach,len_q)).T   # - CZ_alpha_0
@@ -303,7 +318,7 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
     conditions.static_stability.pitch_rate          = np.zeros_like(Machs) 
     conditions.static_stability.roll_rate           = np.ones_like(Machs)*p_s     
     conditions.static_stability.yaw_rate            = np.zeros_like(Machs)         
-    VLM_results =  call_VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results =  call_solvers(conditions,settings,clean_wing_vehicle)
     CL_res      =  VLM_results.CL
     CN_res      =  VLM_results.CN
     CY_res      =  VLM_results.CY
@@ -326,7 +341,7 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
     conditions.static_stability.roll_rate           = np.zeros_like(Machs)  
     conditions.static_stability.yaw_rate            = np.ones_like(Machs)*r_s  
     
-    VLM_results = call_VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results = call_solvers(conditions,settings,clean_wing_vehicle)
     CL_res      = VLM_results.CL
     CN_res      = VLM_results.CN
     CY_res      = VLM_results.CY
@@ -447,7 +462,7 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
                                         source.mass_properties.mass * np.ones((n_pts_cs, 1)))
 
                     setattr(control_surface, deflection_attr, delta[d_i])
-                    VLM_results   = call_VLM(conditions,settings,vehicle)
+                    VLM_results   = call_solvers(conditions,settings,vehicle)
                     Clift_d[d_i,:] = VLM_results.CLift[:,0]         - Clift_alpha_0[0,:]
                     Cdrag_d[d_i,:] = VLM_results.CDrag_induced[:,0] - Cdrag_alpha_0[0,:]
                     CX_d[d_i,:]    = VLM_results.CX[:,0]            - CX_alpha_0[0,:]
@@ -671,35 +686,120 @@ def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_n
     return  abs(dCM_dalpha)
 
 
-def call_VLM(full_conditions,settings,vehicle): 
+def _converge_aeroelastic(conditions, settings, vehicle, aerostructural_analyses, jig_vd, tol, max_iter):
+    """Iterate VLM<->FEA on a single (AoA,Mach) row until deflection converges.
+
+    Returns the converged VLM_results, structural_results (keyed by wing.tag,
+    same shape FEA() returns), and a 1D history array of the relative
+    (delta-deflection / span) convergence metric at each iteration - the
+    rigid-wing (iteration 0) solve is the starting point, not part of the
+    history, since there is no prior iterate to diff it against.
+    """
+    span = vehicle.reference_span
+
+    # FEA() returns conditions.aerostructures itself (not a copy) - calling FEA
+    # again on the SAME conditions object rebinds its wing-tag entries out from
+    # under any earlier reference. Wrap each result in Data(...) (a shallow
+    # copy of the outer dict, per RCAIDE.Framework.Core.Data's Data(d) ==
+    # copy-of-d semantics) so the convergence check below diffs a real
+    # snapshot of the previous iterate, not the same live-mutating object
+    # against itself (which always reads delta==0 and "converges" instantly).
+    VLM_results        = VLM(conditions, settings, vehicle, precomputed_VD=jig_vd)
+    structural_results = Data(FEA(conditions, VLM_results, settings.vortex_distribution,
+                                   aerostructural_analyses.settings, vehicle))
+
+    history = []
+    for it in range(max_iter):
+        VD_deformed             = deform_vortex_distribution(jig_vd, vehicle, structural_results, ti=0)
+        VLM_results_new         = VLM(conditions, settings, vehicle, precomputed_VD=VD_deformed)
+        structural_results_new  = Data(FEA(conditions, VLM_results_new, settings.vortex_distribution,
+                                            aerostructural_analyses.settings, vehicle))
+
+        delta = 0.0
+        for wing_tag in structural_results_new.keys():
+            d_old = structural_results[wing_tag].deflection
+            d_new = structural_results_new[wing_tag].deflection
+            delta = max(delta, float(np.max(np.abs(d_new - d_old))) / span)
+        history.append(delta)
+
+        VLM_results, structural_results = VLM_results_new, structural_results_new
+        if delta < tol:
+            break
+
+    return VLM_results, structural_results, np.array(history)
+
+
+def call_solvers(full_conditions,settings,vehicle,aerostructural_analyses=None,coupled=False,jig_vd=None,tol=1e-4,max_iter=15):
 
     num_cases =  len(full_conditions.aerodynamics.angles.alpha)
-    for i in  range(num_cases): 
-        conditions                                      = RCAIDE.Framework.Mission.Common.Results() 
-        conditions.freestream.mach_number               = np.atleast_2d(full_conditions.freestream.mach_number[i,:])    
-        conditions.aerodynamics.angles.alpha            = np.atleast_2d(full_conditions.aerodynamics.angles.alpha[i,:])  
-        conditions.aerodynamics.angles.beta             = np.atleast_2d(full_conditions.aerodynamics.angles.beta[i,:])     
-        conditions.freestream.velocity                  = np.atleast_2d(full_conditions.freestream.velocity[i,:])          
-        conditions.static_stability.pitch_rate          = np.atleast_2d(full_conditions.static_stability.pitch_rate[i,:])  
-        conditions.static_stability.roll_rate           = np.atleast_2d(full_conditions.static_stability.roll_rate[i,:])   
-        conditions.static_stability.yaw_rate            = np.atleast_2d(full_conditions.static_stability.yaw_rate[i,:])   
+    for i in  range(num_cases):
+        conditions                                      = RCAIDE.Framework.Mission.Common.Results()
+        conditions.freestream.mach_number               = np.atleast_2d(full_conditions.freestream.mach_number[i,:])
+        conditions.aerodynamics.angles.alpha            = np.atleast_2d(full_conditions.aerodynamics.angles.alpha[i,:])
+        conditions.aerodynamics.angles.beta             = np.atleast_2d(full_conditions.aerodynamics.angles.beta[i,:])
+        conditions.freestream.velocity                  = np.atleast_2d(full_conditions.freestream.velocity[i,:])
+        conditions.static_stability.pitch_rate          = np.atleast_2d(full_conditions.static_stability.pitch_rate[i,:])
+        conditions.static_stability.roll_rate           = np.atleast_2d(full_conditions.static_stability.roll_rate[i,:])
+        conditions.static_stability.yaw_rate            = np.atleast_2d(full_conditions.static_stability.yaw_rate[i,:])
 
-        VLM_results         = VLM(conditions,settings,vehicle)         
-        if i == 0: 
+        if coupled and aerostructural_analyses is not None:
+            # FEA() also needs these freestream/point-load fields, which the
+            # other (rigid-loads-only) callers of call_solvers never populate
+            conditions.freestream.density                    = np.atleast_2d(full_conditions.freestream.density[i,:])
+            conditions.freestream.dynamic_pressure           = np.atleast_2d(full_conditions.freestream.dynamic_pressure[i,:])
+            conditions.freestream.gravitational_acceleration = np.atleast_2d(full_conditions.freestream.gravitational_acceleration[i,:])
+            conditions.aerostructures = Data()
+            if 'weights' in full_conditions:
+                conditions.weights = Data()
+                conditions.weights.components = Data()
+                conditions.weights.components.mass = Data()
+                for tag in full_conditions.weights.components.mass.keys():
+                    conditions.weights.components.mass[tag] = np.atleast_2d(
+                        full_conditions.weights.components.mass[tag][i,:])
+            # Jig-shape VD is pure geometry - independent of (AoA,Mach) - so it is
+            # built once, on the first row, and reused unchanged for every row.
+            if jig_vd is None:
+                jig_vd = generate_vortex_distribution(conditions, settings, vehicle)
+            VLM_results, structural_results, history = _converge_aeroelastic(
+                conditions, settings, vehicle, aerostructural_analyses, jig_vd, tol, max_iter)
+            row_convergence           = np.full(max_iter, np.nan)
+            row_convergence[:len(history)] = history
+        else:
+            # while convergence or until max iterations reached, run VLM and FEA
+            VLM_results         = VLM(conditions,settings,vehicle)
+            structural_results  = None
+            row_convergence     = None
+
+        if i == 0:
             RES                 = Data()
             RES.CLift           = VLM_results.CLift
             RES.CDrag_induced   = VLM_results.CDrag_induced
-            RES.CP              = VLM_results.CP 
+            RES.CP              = VLM_results.CP
             RES.CX              = VLM_results.CX
             RES.CY              = VLM_results.CY
             RES.CZ              = VLM_results.CZ
             RES.CL              = VLM_results.CL
             RES.CM              = VLM_results.CM
-            RES.CN              = VLM_results.CN      
-            RES.sectional_CLift = VLM_results.sectional_CLift         
-            settings.vortex_distribution  = settings.vortex_distribution    
-        else: 
-            RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift)) 
+            RES.CN              = VLM_results.CN
+            RES.sectional_CLift = VLM_results.sectional_CLift
+            settings.vortex_distribution  = settings.vortex_distribution
+            if structural_results is not None:
+                RES.structural = Data()
+                for wing_tag in structural_results.keys():
+                    RES.structural[wing_tag] = Data(
+                        structural_node_data = structural_results[wing_tag].structural_node_data,
+                        load                  = structural_results[wing_tag].load,
+                        deflection            = structural_results[wing_tag].deflection,
+                        elastic_twist         = structural_results[wing_tag].elastic_twist,
+                        normal_stress         = structural_results[wing_tag].normal_stress,
+                        shear_stress          = structural_results[wing_tag].shear_stress,
+                        margin_of_safety      = structural_results[wing_tag].margin_of_safety)
+                # convergence.delta[row, iteration] = max(|delta-deflection|)/span at
+                # that iteration, NaN-padded past the row's own convergence point
+                RES.convergence          = Data()
+                RES.convergence.delta    = row_convergence[None, :]
+        else:
+            RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift))
             RES.CDrag_induced   = np.vstack((RES.CDrag_induced  ,VLM_results.CDrag_induced))
             RES.CP              = np.vstack((RES.CP             ,VLM_results.CP))
             RES.CX              = np.vstack((RES.CX             ,VLM_results.CX))
@@ -708,6 +808,16 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CL              = np.vstack((RES.CL             ,VLM_results.CL))
             RES.CM              = np.vstack((RES.CM             ,VLM_results.CM))
             RES.CN              = np.vstack((RES.CN             ,VLM_results.CN))
-            RES.sectional_CLift = np.vstack((RES.sectional_CLift,VLM_results.sectional_CLift))   
-    
+            RES.sectional_CLift = np.vstack((RES.sectional_CLift,VLM_results.sectional_CLift))
+            if structural_results is not None:
+                for wing_tag in structural_results.keys():
+                    s = RES.structural[wing_tag]
+                    s.load             = np.vstack((s.load            , structural_results[wing_tag].load))
+                    s.deflection       = np.vstack((s.deflection      , structural_results[wing_tag].deflection))
+                    s.elastic_twist    = np.vstack((s.elastic_twist   , structural_results[wing_tag].elastic_twist))
+                    s.normal_stress    = np.vstack((s.normal_stress   , structural_results[wing_tag].normal_stress))
+                    s.shear_stress     = np.vstack((s.shear_stress    , structural_results[wing_tag].shear_stress))
+                    s.margin_of_safety = np.vstack((s.margin_of_safety, structural_results[wing_tag].margin_of_safety))
+                RES.convergence.delta = np.vstack((RES.convergence.delta, row_convergence[None, :]))
+
     return RES

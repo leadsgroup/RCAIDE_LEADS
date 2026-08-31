@@ -237,17 +237,29 @@ def evaluate_no_surrogate(state,settings,vehicle):
         None  
     """          
 
-    # unpack 
-    conditions    = state.conditions 
-    aerodynamics  = state.analyses.aerodynamics 
+    # unpack
+    conditions    = state.conditions
+    aerodynamics  = state.analyses.aerodynamics
     n_cpts        = len(conditions.aerodynamics.angles.alpha)
     alt           =  conditions.freestream.altitude
     g             =  conditions.freestream.gravity
     V             =  conditions.freestream.velocity
     MAC           = vehicle.reference_chord
     b             =  vehicle.reference_span
-    
-    VLM_results = VLM(conditions,settings,vehicle)
+
+    # Only the baseline (undeflected-query) VLM solve below is aeroelastically
+    # coupled. The stability-derivative perturbations further down this
+    # function stay rigid - converging each of those too would multiply the
+    # cost of every mission point several times over for a second-order
+    # correction to an already-approximate finite-difference slope.
+    aerostructural_analyses = getattr(state.analyses, 'aerostructures', None)
+    coupled = (aerostructural_analyses is not None
+               and aerostructural_analyses.settings.aeroelastic_coupling == 'coupled')
+    if coupled:
+        VLM_results, convergence = _evaluate_coupled_baseline(conditions, settings, vehicle, aerostructural_analyses)
+        conditions.aerostructures.convergence = convergence
+    else:
+        VLM_results = VLM(conditions,settings,vehicle)
     Clift = VLM_results.CLift
     Cdrag = VLM_results.CDrag_induced
     CX    = VLM_results.CX
@@ -694,6 +706,87 @@ def evaluate_no_surrogate(state,settings,vehicle):
                         derivative_value = np.abs(derivative_value)
                     conditions.static_stability.derivatives[key] = derivative_value
     return
+
+
+def _stack_vortex_distribution_rows(row_vds):
+    """Recombine single-row settings.vortex_distribution snapshots (one per
+    per-row VLM call in the coupled baseline path) into one multi-row Data,
+    matching the (n_cpts, N) shape VLM() normally produces for a full batch.
+    """
+    stacked = Data()
+    for key in row_vds[0].keys():
+        stacked[key] = np.vstack([row[key] for row in row_vds])
+    return stacked
+
+
+def _evaluate_coupled_baseline(full_conditions, settings, vehicle, aerostructural_analyses, tol=1e-4, max_iter=15):
+    """Per-control-point VLM<->FEA convergence for the baseline (no-surrogate)
+    aerodynamic evaluation only - see the call site in evaluate_no_surrogate
+    for why the stability-derivative perturbations are excluded.
+
+    Returns (VLM_results, convergence) where VLM_results carries just the
+    fields evaluate_no_surrogate reads from the baseline call, and
+    convergence.delta is a (n_cpts, max_iter) NaN-padded relative-deflection
+    trace (see _converge_aeroelastic).
+    """
+    from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import _converge_aeroelastic
+    from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_vortex_distribution
+
+    num_cases  = len(full_conditions.aerodynamics.angles.alpha)
+    jig_vd     = None
+    conv_delta = np.full((num_cases, max_iter), np.nan)
+
+    result_fields = ('CLift','CDrag_induced','CX','CY','CZ','CL','CM','CN',
+                      'CLift_wings','sectional_CLift','CDrag_induced_wings',
+                      'sectional_CDrag_induced','CP','alpha_induced','spanwise_stations')
+    stacked_results = {f: [] for f in result_fields}
+    vd_rows         = []
+
+    for i in range(num_cases):
+        conditions = RCAIDE.Framework.Mission.Common.Results()
+        conditions.freestream.mach_number                = np.atleast_2d(full_conditions.freestream.mach_number[i,:])
+        conditions.freestream.velocity                   = np.atleast_2d(full_conditions.freestream.velocity[i,:])
+        conditions.freestream.density                    = np.atleast_2d(full_conditions.freestream.density[i,:])
+        conditions.freestream.dynamic_pressure            = np.atleast_2d(full_conditions.freestream.dynamic_pressure[i,:])
+        # FEA() expects gravitational_acceleration; mission conditions carry
+        # the same quantity as freestream.gravity.
+        conditions.freestream.gravitational_acceleration  = np.atleast_2d(full_conditions.freestream.gravity[i,:])
+        conditions.aerodynamics.angles.alpha              = np.atleast_2d(full_conditions.aerodynamics.angles.alpha[i,:])
+        conditions.aerodynamics.angles.beta               = np.atleast_2d(full_conditions.aerodynamics.angles.beta[i,:])
+        conditions.static_stability.pitch_rate            = np.atleast_2d(full_conditions.static_stability.pitch_rate[i,:])
+        conditions.static_stability.roll_rate             = np.atleast_2d(full_conditions.static_stability.roll_rate[i,:])
+        conditions.static_stability.yaw_rate              = np.atleast_2d(full_conditions.static_stability.yaw_rate[i,:])
+        conditions.aerostructures = Data()
+        if 'weights' in full_conditions:
+            conditions.weights = Data()
+            conditions.weights.components = Data()
+            conditions.weights.components.mass = Data()
+            for tag in full_conditions.weights.components.mass.keys():
+                conditions.weights.components.mass[tag] = np.atleast_2d(
+                    full_conditions.weights.components.mass[tag][i,:])
+
+        if jig_vd is None:
+            jig_vd = generate_vortex_distribution(conditions, settings, vehicle)
+
+        VLM_i, _, history_i = _converge_aeroelastic(
+            conditions, settings, vehicle, aerostructural_analyses, jig_vd, tol, max_iter)
+
+        conv_delta[i, :len(history_i)] = history_i
+        for f in result_fields:
+            stacked_results[f].append(VLM_i[f])
+        # settings.vortex_distribution is overwritten by the next row's VLM
+        # call, so snapshot this row's deformed mesh before it's clobbered.
+        vd_rows.append(deepcopy(settings.vortex_distribution))
+
+    VLM_results = Data()
+    for f in result_fields:
+        VLM_results[f] = np.vstack(stacked_results[f])
+
+    settings.vortex_distribution = _stack_vortex_distribution_rows(vd_rows)
+
+    return VLM_results, Data(delta=conv_delta)
+
+
 def create_conditions(n_cpts,altitude,g,V,MAC,energy_conditions):
     
     atmosphere                                                         = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()

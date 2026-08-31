@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 import numpy as np
 from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.postprocess_vortex_distribution import compute_panel_area, compute_unit_normal
 
 def discretize_wing(wing, num_elements):
     """
@@ -246,3 +247,251 @@ def map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts):
         fea_moments[idx_r] += w_r * np.cross(p_vlm - fea_pts[idx_r], f_vlm)
 
     return fea_forces, fea_moments
+
+
+def prepare_deflection_row_mapping(row_Y, fea_pts):
+    """
+    One-time (per jig shape) half of the structure-to-aero kinematic transfer:
+    for a set of spanwise station Y-values, bracket each between the two nearest
+    FEA nodes and cache everything that depends only on the undeformed geometry
+    (bracket indices, interpolation weights, the elastic-axis position, and the
+    beam's local tangent direction). None of this changes between aeroelastic
+    iterations -- only the FEA deflection/twist values looked up through it do --
+    so it is computed once and reused every iteration via apply_deflection_row_mapping.
+
+    Args:
+        row_Y   : (R,) spanwise Y-value of each station (e.g. one per VLM mesh row)
+        fea_pts : (M,3) undeformed FEA node positions, ordered along the beam
+                  (Y must be monotonic in the array's own order)
+
+    Returns:
+        Data(idx_l, idx_r, w_l, w_r, a0, tangent), each length R (a0/tangent (R,3))
+    """
+    row_Y   = np.asarray(row_Y)
+    num_fea = len(fea_pts)
+    Y_fea   = fea_pts[:, 1]
+
+    idx_r = np.searchsorted(Y_fea, row_Y)
+    idx_r = np.clip(idx_r, 1, num_fea - 1)
+    idx_l = idx_r - 1
+
+    dy  = Y_fea[idx_r] - Y_fea[idx_l]
+    w_r = np.where(dy > 1e-12, (row_Y - Y_fea[idx_l]) / np.where(dy > 1e-12, dy, 1.0), 0.5)
+    w_l = 1.0 - w_r
+
+    a0      = w_l[:, None] * fea_pts[idx_l] + w_r[:, None] * fea_pts[idx_r]
+    tangent = fea_pts[idx_r] - fea_pts[idx_l]
+    tangent = tangent / np.linalg.norm(tangent, axis=1, keepdims=True)
+
+    return Data(idx_l=idx_l, idx_r=idx_r, w_l=w_l, w_r=w_r, a0=a0, tangent=tangent)
+
+
+def apply_deflection_row_mapping(mapping, pts_grid, deflection, elastic_twist):
+    """
+    Cheap, per-iteration half of the structure-to-aero kinematic transfer: apply a
+    mapping already prepared by prepare_deflection_row_mapping to actual 3D points,
+    given the current iteration's FEA deflection/elastic_twist. Every point sharing
+    a row (e.g. all chordwise points of a VLM strip, which share the same spanwise
+    Y in the rigid mesh) reuses that row's cached bracket/weights/tangent.
+
+    Rotation is Rodrigues' about the beam's own local tangent (not a fixed global
+    axis), which is what makes this correct automatically for a beam running in
+    either spanwise direction (e.g. the mirrored half of an xz-symmetric wing) --
+    a rotation is a pseudovector, so a fixed-axis assumption would get the mirrored
+    side's chirality wrong, while rotating about the true local tangent self-corrects.
+
+    Args:
+        mapping       : Data from prepare_deflection_row_mapping, length R
+        pts_grid      : (R, C, 3) undeformed point positions, C points per row
+        deflection    : (M,3) FEA nodal translation (dx,dy,dz)
+        elastic_twist : (M,)  FEA nodal rotation about the local beam tangent
+
+    Returns:
+        (R, C, 3) deformed point positions
+    """
+    idx_l, idx_r = mapping.idx_l, mapping.idx_r
+    w_l, w_r     = mapping.w_l[:, None], mapping.w_r[:, None]
+
+    trans = w_l * deflection[idx_l]    + w_r * deflection[idx_r]                  # (R,3)
+    theta = w_l[:, 0] * elastic_twist[idx_l] + w_r[:, 0] * elastic_twist[idx_r]    # (R,)
+
+    a0      = mapping.a0[:, None, :]        # (R,1,3), broadcasts over C
+    tangent = mapping.tangent[:, None, :]   # (R,1,3)
+    trans   = trans[:, None, :]             # (R,1,3)
+    cos_t   = np.cos(theta)[:, None, None]  # (R,1,1)
+    sin_t   = np.sin(theta)[:, None, None]
+
+    r   = pts_grid - a0                                    # (R,C,3)
+    dot = np.sum(tangent * r, axis=-1, keepdims=True)       # (R,C,1)
+    r_rot = r * cos_t + np.cross(tangent, r) * sin_t + tangent * dot * (1.0 - cos_t)
+
+    return a0 + trans + r_rot
+
+
+def apply_structural_deflection_to_vd(pts, fea_pts, deflection, elastic_twist):
+    """
+    Point-wise convenience wrapper around prepare/apply_deflection_row_mapping,
+    for arbitrary (unstructured) points that don't share rows -- see those two
+    functions for the batched form used across a VLM mesh's point-sets.
+
+    Args:
+        pts           : (N,3) point positions in the undeformed (jig) shape
+        fea_pts       : (M,3) undeformed FEA node positions, ordered along the beam
+        deflection    : (M,3) FEA nodal translation (dx,dy,dz)
+        elastic_twist : (M,)  FEA nodal rotation about the local beam tangent
+
+    Returns:
+        (N,3) deformed point positions
+    """
+    pts     = np.atleast_2d(pts)
+    mapping = prepare_deflection_row_mapping(pts[:, 1], fea_pts)
+    return apply_deflection_row_mapping(mapping, pts[:, None, :], deflection, elastic_twist)[:, 0, :]
+
+
+def _mirror_fea_reference(fea_pts, deflection, elastic_twist):
+    """
+    Build the FEA reference arrays for an xz-symmetric wing's mirrored half from
+    the solved (positive) half: reverse node order and negate Y (a true vector,
+    both for node position and the deflection's Y-component) so Y stays monotonic
+    increasing in the mirrored array; elastic_twist is left unchanged (a rotation
+    about the local tangent is a pseudovector -- reversing the node order already
+    flips the tangent direction, which is what correctly flips the physical sense
+    of the rotation; negating the angle itself would double-flip it).
+    """
+    fea_pts_m       = fea_pts[::-1].copy()
+    fea_pts_m[:, 1] *= -1
+    deflection_m    = deflection[::-1].copy()
+    deflection_m[:, 1] *= -1
+    elastic_twist_m = elastic_twist[::-1].copy()
+    return fea_pts_m, deflection_m, elastic_twist_m
+
+
+def deform_vortex_distribution(VD, geometry, structural_results, ti=0):
+    """
+    Apply each wing's current FEA deflection/elastic_twist to every point-set in a
+    jig-shape (rigid) vortex distribution, returning a deformed copy. This is the
+    structure-to-aero half of the two-way aeroelastic coupling loop: it does not
+    recompute the mesh from wing geometry (that stays fixed, the jig shape), it
+    only rigidly displaces/rotates the existing points -- see
+    prepare_/apply_deflection_row_mapping for the per-point transform.
+
+    Point-sets sharing a spanwise row (confirmed against generate_wing_vortex_
+    distribution.py) are transformed together via one shared row mapping rather
+    than independently:
+      - "A" family (row i of the raw (n_sw+1) grid): XA1, XA2, XAH, XAC
+      - "B" family (row i+1):                        XB1, XB2, XBH, XBC
+      - "center" family (midpoint of rows i, i+1):    XC,  XCH
+      - the raw grid itself (all n_sw+1 rows):        X, Y, Z
+
+    Symmetric (xz_plane_symmetric) wings get a second, mirrored group per the
+    generation-order convention already used in FEA.py (surface_ID = +ID for the
+    positive half, -ID for the mirrored half; vd_idx advances by 2 for such wings).
+
+    Args:
+        VD                  : jig-shape vortex distribution (unmodified; a deformed copy is returned)
+        geometry            : vehicle (wings iterated in the same order used to build VD)
+        structural_results  : Data keyed by wing.tag, each holding .structural_node_data
+                               (from discretize_wing) and .deflection / .elastic_twist
+        ti                  : control-point row to use from .deflection / .elastic_twist
+
+    Returns:
+        deformed copy of VD
+    """
+    A_FAMILY  = [('XA1','YA1','ZA1'), ('XA2','YA2','ZA2'), ('XAH','YAH','ZAH'), ('XAC','YAC','ZAC')]
+    B_FAMILY  = [('XB1','YB1','ZB1'), ('XB2','YB2','ZB2'), ('XBH','YBH','ZBH'), ('XBC','YBC','ZBC')]
+    C_FAMILY  = [('XC','YC','ZC'), ('XCH','YCH','ZCH')]
+    RAW_GRID  = ('X','Y','Z')
+
+    # generate_vortex_distribution() (unlike generate_aircraft_vortex_distribution())
+    # wraps every field with a leading condition-batch dimension, e.g. XAH is
+    # shape (n_conditions, N) not (N,). This function is only ever called with a
+    # single-condition VD (one row at a time, matching how call_solvers uses it),
+    # so we work on the flat [0] row and re-wrap into that same (1,N) convention
+    # for whatever VLM()'s downstream code expects.
+    assert VD.XAH.shape[0] == 1, "deform_vortex_distribution expects a single-condition VD"
+
+    VD_new = Data(VD)
+    flat = {}  # flat (N,) working copies, indexed by field name
+    for prefix_tuple in [RAW_GRID] + A_FAMILY + B_FAMILY + C_FAMILY:
+        for key in prefix_tuple:
+            flat[key] = VD[key][0].copy()
+
+    n_sw_flat = VD.n_sw[0]
+    n_cw_flat = VD.n_cw[0]
+    panel_sizes = n_sw_flat * n_cw_flat
+    panel_offsets = np.concatenate(([0], np.cumsum(panel_sizes)))
+    grid_sizes = (n_sw_flat + 1) * (n_cw_flat + 1)
+    grid_offsets = np.concatenate(([0], np.cumsum(grid_sizes)))
+
+    def stack(prefix_tuple, sl):
+        x, y, z = prefix_tuple
+        return np.column_stack((flat[x][sl], flat[y][sl], flat[z][sl]))
+
+    def unstack_into(prefix_tuple, sl, pts):
+        x, y, z = prefix_tuple
+        flat[x][sl], flat[y][sl], flat[z][sl] = pts[:, 0], pts[:, 1], pts[:, 2]
+
+    vd_idx = 0
+    for wing in geometry.wings.values():
+        sr = structural_results[wing.tag]
+        node = sr.structural_node_data
+        fea_pts_jig   = np.column_stack((node.X_nodes, node.Y_nodes, node.Z_nodes))
+        deflection    = sr.deflection[ti]        # (n_nodes, 3)
+        elastic_twist = sr.elastic_twist[ti, :, 0]  # (n_nodes,)
+
+        groups = [(vd_idx, fea_pts_jig, deflection, elastic_twist)]
+        if wing.xz_plane_symmetric:
+            groups.append((vd_idx + 1, *_mirror_fea_reference(fea_pts_jig, deflection, elastic_twist)))
+
+        for g_idx, fea_pts, defl, twist in groups:
+            n_sw = int(n_sw_flat[g_idx])
+            n_cw = int(n_cw_flat[g_idx])
+
+            panel_sl = slice(int(panel_offsets[g_idx]), int(panel_offsets[g_idx + 1]))
+            grid_sl  = slice(int(grid_offsets[g_idx]),  int(grid_offsets[g_idx + 1]))
+
+            # raw grid: (n_sw+1) rows
+            grid_pts = stack(RAW_GRID, grid_sl).reshape(n_sw + 1, n_cw + 1, 3)
+            row_Y_raw = grid_pts[:, 0, 1]
+            mapping_raw = prepare_deflection_row_mapping(row_Y_raw, fea_pts)
+            grid_def = apply_deflection_row_mapping(mapping_raw, grid_pts, defl, twist)
+            unstack_into(RAW_GRID, grid_sl, grid_def.reshape(-1, 3))
+
+            mapping_A = Data(idx_l=mapping_raw.idx_l[:-1], idx_r=mapping_raw.idx_r[:-1],
+                              w_l=mapping_raw.w_l[:-1],     w_r=mapping_raw.w_r[:-1],
+                              a0=mapping_raw.a0[:-1],       tangent=mapping_raw.tangent[:-1])
+            mapping_B = Data(idx_l=mapping_raw.idx_l[1:],  idx_r=mapping_raw.idx_r[1:],
+                              w_l=mapping_raw.w_l[1:],      w_r=mapping_raw.w_r[1:],
+                              a0=mapping_raw.a0[1:],        tangent=mapping_raw.tangent[1:])
+
+            for family, mapping in ((A_FAMILY, mapping_A), (B_FAMILY, mapping_B)):
+                for prefix in family:
+                    pts = stack(prefix, panel_sl).reshape(n_sw, n_cw, 3)
+                    pts_def = apply_deflection_row_mapping(mapping, pts, defl, twist)
+                    unstack_into(prefix, panel_sl, pts_def.reshape(-1, 3))
+
+            row_Y_mid = 0.5 * (row_Y_raw[:-1] + row_Y_raw[1:])
+            mapping_C = prepare_deflection_row_mapping(row_Y_mid, fea_pts)
+            for prefix in C_FAMILY:
+                pts = stack(prefix, panel_sl).reshape(n_sw, n_cw, 3)
+                pts_def = apply_deflection_row_mapping(mapping_C, pts, defl, twist)
+                unstack_into(prefix, panel_sl, pts_def.reshape(-1, 3))
+
+        vd_idx += 2 if wing.xz_plane_symmetric else 1
+
+    # normals/panel_areas depend only on the (now deformed) panel corners --
+    # compute_panel_area/compute_unit_normal only read XA1/XA2/XB1/XB2, so a
+    # minimal flat proxy is enough; must run on flat arrays, not the (1,N) form.
+    flat_corners = Data(XA1=flat['XA1'], YA1=flat['YA1'], ZA1=flat['ZA1'],
+                         XA2=flat['XA2'], YA2=flat['YA2'], ZA2=flat['ZA2'],
+                         XB1=flat['XB1'], YB1=flat['YB1'], ZB1=flat['ZB1'],
+                         XB2=flat['XB2'], YB2=flat['YB2'], ZB2=flat['ZB2'])
+    VD_new.panel_areas = np.atleast_2d(compute_panel_area(flat_corners))
+    VD_new.normals     = compute_unit_normal(flat_corners)[None, :, :]
+
+    # re-wrap into the (1,N) condition-batch convention generate_vortex_distribution uses
+    for prefix_tuple in [RAW_GRID] + A_FAMILY + B_FAMILY + C_FAMILY:
+        for key in prefix_tuple:
+            VD_new[key] = np.atleast_2d(flat[key])
+
+    return VD_new

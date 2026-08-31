@@ -194,15 +194,100 @@ def aircraft_aerostructural_analysis(analyses                         = None,
                 conditions.control_surfaces.flap.static_stability = Data()
                 conditions.control_surfaces.flap.static_stability.coefficients = Data()
             
-    # run aerodynamics analyses
-    VLM_results =  VLM(conditions,
-                      analyses.aerodynamics.settings,
-                      analyses.vehicle)
-    
-    # run aerostructures analyses
-    FEA_results = FEA(conditions,
-                      VLM_results,
-                      analyses.aerodynamics.settings.vortex_distribution,
-                      analyses.aerostructures.settings,analyses.vehicle)  
-          
-    return FEA_results 
+    coupled = (analyses.aerostructures.settings.aeroelastic_coupling == 'coupled')
+
+    if coupled:
+        FEA_results = _run_coupled_rows(conditions, analyses.aerodynamics.settings,
+                                        analyses.vehicle, analyses.aerostructures)
+    else:
+        # run aerodynamics analyses
+        VLM_results =  VLM(conditions,
+                          analyses.aerodynamics.settings,
+                          analyses.vehicle)
+
+        # run aerostructures analyses
+        FEA_results = FEA(conditions,
+                          VLM_results,
+                          analyses.aerodynamics.settings.vortex_distribution,
+                          analyses.aerostructures.settings,analyses.vehicle)
+
+    return FEA_results
+
+
+def _run_coupled_rows(full_conditions, settings, vehicle, aerostructural_analyses, tol=1e-4, max_iter=15):
+    """Per-(AoA,Mach)-row VLM<->FEA convergence for a direct (no-surrogate,
+    no-mission) analysis, e.g. a benchmark comparison case. Reuses the same
+    per-row iteration used for surrogate training (train_VLM_surrogates.py's
+    _converge_aeroelastic) so both paths solve the identical fixed-point
+    problem; only the row-slicing differs, since this function's conditions
+    carries fields (frames.wind, freestream.u/v/w) the surrogate trainer
+    never populates.
+
+    Returns a Data keyed by wing.tag (deflection, elastic_twist, stresses -
+    same shape FEA() returns), plus a .convergence.delta (n_cases, max_iter)
+    NaN-padded relative-deflection trace for plotting iteration vs. deflection.
+    """
+    from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import _converge_aeroelastic
+    from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_vortex_distribution
+
+    num_cases  = len(full_conditions.aerodynamics.angles.alpha)
+    jig_vd     = None
+    conv_delta = np.full((num_cases, max_iter), np.nan)
+    structural_results = None
+
+    for i in range(num_cases):
+        conditions = RCAIDE.Framework.Mission.Common.Results()
+        conditions.freestream.density                     = np.atleast_2d(full_conditions.freestream.density[i,:])
+        conditions.freestream.dynamic_viscosity            = np.atleast_2d(full_conditions.freestream.dynamic_viscosity[i,:])
+        conditions.freestream.temperature                  = np.atleast_2d(full_conditions.freestream.temperature[i,:])
+        conditions.freestream.pressure                     = np.atleast_2d(full_conditions.freestream.pressure[i,:])
+        conditions.freestream.dynamic_pressure             = np.atleast_2d(full_conditions.freestream.dynamic_pressure[i,:])
+        conditions.freestream.velocity                     = np.atleast_2d(full_conditions.freestream.velocity[i,:])
+        conditions.freestream.gravitational_acceleration   = np.atleast_2d(full_conditions.freestream.gravitational_acceleration[i,:])
+        conditions.freestream.mach_number                  = np.atleast_2d(full_conditions.freestream.mach_number[i,:])
+        conditions.aerodynamics.angles.alpha                = np.atleast_2d(full_conditions.aerodynamics.angles.alpha[i,:])
+        conditions.aerodynamics.angles.beta                 = np.atleast_2d(full_conditions.aerodynamics.angles.beta[i,:])
+        conditions.static_stability.roll_rate               = np.atleast_2d(full_conditions.static_stability.roll_rate[i,:])
+        conditions.static_stability.pitch_rate              = np.atleast_2d(full_conditions.static_stability.pitch_rate[i,:])
+        conditions.static_stability.yaw_rate                = np.atleast_2d(full_conditions.static_stability.yaw_rate[i,:])
+        conditions.control_surfaces                         = full_conditions.control_surfaces
+        conditions.aerostructures                           = Data()
+        conditions.weights = Data()
+        conditions.weights.components = Data()
+        conditions.weights.components.mass = Data()
+        for tag in full_conditions.weights.components.mass.keys():
+            conditions.weights.components.mass[tag] = np.atleast_2d(
+                full_conditions.weights.components.mass[tag][i,:])
+
+        if jig_vd is None:
+            jig_vd = generate_vortex_distribution(conditions, settings, vehicle)
+
+        _, structural_i, history_i = _converge_aeroelastic(
+            conditions, settings, vehicle, aerostructural_analyses, jig_vd, tol, max_iter)
+
+        conv_delta[i, :len(history_i)] = history_i
+
+        if structural_results is None:
+            structural_results = Data()
+            for wing_tag in structural_i.keys():
+                structural_results[wing_tag] = Data(
+                    structural_node_data = structural_i[wing_tag].structural_node_data,
+                    load                  = structural_i[wing_tag].load,
+                    deflection            = structural_i[wing_tag].deflection,
+                    elastic_twist         = structural_i[wing_tag].elastic_twist,
+                    normal_stress         = structural_i[wing_tag].normal_stress,
+                    shear_stress          = structural_i[wing_tag].shear_stress,
+                    margin_of_safety      = structural_i[wing_tag].margin_of_safety)
+        else:
+            for wing_tag in structural_i.keys():
+                s = structural_results[wing_tag]
+                s.load             = np.vstack((s.load            , structural_i[wing_tag].load))
+                s.deflection       = np.vstack((s.deflection      , structural_i[wing_tag].deflection))
+                s.elastic_twist    = np.vstack((s.elastic_twist   , structural_i[wing_tag].elastic_twist))
+                s.normal_stress    = np.vstack((s.normal_stress   , structural_i[wing_tag].normal_stress))
+                s.shear_stress     = np.vstack((s.shear_stress    , structural_i[wing_tag].shear_stress))
+                s.margin_of_safety = np.vstack((s.margin_of_safety, structural_i[wing_tag].margin_of_safety))
+
+    structural_results.convergence       = Data()
+    structural_results.convergence.delta = conv_delta
+    return structural_results
