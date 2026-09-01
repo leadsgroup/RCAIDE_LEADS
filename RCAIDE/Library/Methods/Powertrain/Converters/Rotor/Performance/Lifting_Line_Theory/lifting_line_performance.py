@@ -171,29 +171,38 @@ def lifting_line_performance(rotor, conditions):
     # much per call.
     wake_inputs.max_iter_Gammab     = min(int(wake_inputs.max_iter_Gammab_0 * (1 + np.max(mu_tot))), 5000)   # sized for the worst-case (highest advance ratio) control point
     wake_inputs.relax_CT            = wake_inputs.relax_0_CT
-    # Same 5x cap as max_iter_Gammab above (500 = 5x the base 100) -- 1100 at mu_max=10 was too
-    # expensive, each outer CT iteration rebuilds the wake geometry/Biot-Savart matrices.
-    wake_inputs.max_iter_CT         = min(int(wake_inputs.max_iter_CT_0    * (1 + np.max(mu_tot))), 500)   # sized for the worst-case (highest advance ratio) control point
+    # Lowered from 500 -- each outer CT iteration rebuilds the wake geometry/Biot-Savart
+    # matrices, and when free_wake is enabled it also runs a full free_wake_max_iter-iteration
+    # relaxation on every one of these outer iterations, so the old 500 cap could multiply out
+    # to tens of thousands of wake sweeps for a single high-mu control point.
+    wake_inputs.max_iter_CT         = min(int(wake_inputs.max_iter_CT_0    * (1 + np.max(mu_tot))), 50)   # sized for the worst-case (highest advance ratio) control point
 
-    # reusing the value of the converged CT from the previous entry if exists
+    # Warm-start from the previous converged solve on this rotor (e.g. the base point of an
+    # SLSQP finite-difference Jacobian, or the previous control point/segment piece) instead of
+    # always cold-starting CT and the wake geometry -- cold free_wake relaxations dominate the
+    # mission solve time (every function evaluation was paying the full iteration budget even
+    # for a tiny perturbation of the base point). Guarded by an exact shape match since
+    # ctrl_pts/B/N_wake can differ across hp-decomposed pieces; falls back to the existing
+    # cold-start path (initialize_wake_geometry below, thrust_coeff_initial_guess's own default)
+    # whenever there's no prior value or the shape doesn't match.
     # 1. Fetch the specific converter object to keep the code readable
     rotor_obj = conditions.energy.converters[rotor.tag]
 
     # 2. Safely get the attribute or None if it's missing
-    #thrust_coeff = getattr(rotor_obj, "thrust_coefficient_rotor", None)
-    #wake_nodes_body = getattr(rotor_obj, "wake_nodes_body", None)
+    thrust_coeff    = getattr(rotor_obj, "thrust_coefficient_rotor", None)
+    wake_nodes_body = getattr(rotor_obj, "wake_nodes_body", None)
 
-    # 3. Apply the value if it exists and is not None
-    #if thrust_coeff is not None:
-    #    wake_inputs.thrust_coeff_initial_guess = thrust_coeff
+    # 3. Apply the value if it exists, is not None, and matches this call's shape
+    if thrust_coeff is not None and np.shape(thrust_coeff) == (ctrl_pts, 1):
+        wake_inputs.thrust_coeff_initial_guess = thrust_coeff
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 2: Wake geometry
     # ------------------------------------------------------------------------------------------------------------------
     initialize_wake_geometry(rotor, wake_inputs, conditions)
-    # overwriting if already exists
-    #if wake_nodes_body is not None:
-    #    rotor.blades.wake.nodes_body = wake_nodes_body 
+    # overwriting the cold-start geometry with the previous converged one if shape-compatible
+    if wake_nodes_body is not None and np.shape(wake_nodes_body) == np.shape(rotor.blades.wake.nodes_body):
+        rotor.blades.wake.nodes_body = wake_nodes_body
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 3: Bound vortex circulation iteration

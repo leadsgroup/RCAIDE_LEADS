@@ -447,7 +447,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     prop_rotor.wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
     prop_rotor.wake_inputs.wake_model_FF                = 4                 # 4 undistorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
     prop_rotor.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
-    prop_rotor.wake_inputs.dpsi                         = np.radians(10.0)    # filament length [rad]
+    prop_rotor.wake_inputs.dpsi                         = np.radians(15.0)    # filament length [rad]
     prop_rotor.wake_inputs.n_turns                      = 3.0               # Number of wake turns
     prop_rotor.wake_inputs.thrust_coeff_initial_guess   = 0.00654           # initial guess for CT to intialize the wake geometry
     prop_rotor.wake_inputs.lamb_oseen_rc_0              = 0.028             # initial core radius for the wake filaments [fraction of R]
@@ -465,14 +465,14 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     # there's room in the 5000-iteration cap.
     prop_rotor.wake_inputs.relax_0_Gammab               = 0.1
     prop_rotor.wake_inputs.relax_0_CT                   = 0.2
-    prop_rotor.wake_inputs.max_iter_Gammab_0            = 1000
-    prop_rotor.wake_inputs.max_iter_CT_0                = 100
+    prop_rotor.wake_inputs.max_iter_Gammab_0            = 100
+    prop_rotor.wake_inputs.max_iter_CT_0                = 50
     prop_rotor.wake_inputs.CT_iter                      = True
     prop_rotor.wake_inputs.aerofoil_aero                = 2                # 1 simplified aerofoil aero, detailed panel aerofoil aero
     prop_rotor.wake_inputs.mu_max                       = 10.0
     prop_rotor.wake_inputs.mu_edgewise_threshold        = 1e-3 # in-plane advance ratio at/above which a control point uses the forward-flight wake model instead of hover
-    prop_rotor.wake_inputs.free_wake                    = False
-    prop_rotor.wake_inputs.free_wake_max_iter           = 40    
+    prop_rotor.wake_inputs.free_wake                    = True
+    prop_rotor.wake_inputs.free_wake_max_iter           = 20
     prop_rotor.wake_inputs.free_wake_tol                = 1e-4
     prop_rotor.wake_inputs.free_wake_relax              = 0.7
 
