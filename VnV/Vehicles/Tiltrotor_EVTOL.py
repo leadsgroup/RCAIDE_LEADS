@@ -354,27 +354,36 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     #====================================================================================================================================          
     bus                           = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
     bus.tag                       = 'bus'
-    bus.number_of_battery_modules =  4
+    bus.number_of_battery_modules =  6
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Bus Battery
-    #------------------------------------------------------------------------------------------------------------------------------------ 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Imported from Digital_Hangar/Tiltrotor_EVTOL/Tiltrotor.py 2026-09-01 -- the version
+    # that had been here (4 modules, 60s/60p, uniform geometric_configuration) was rendering
+    # the battery pack outside the vehicle body; this is the correct/current sizing and
+    # per-module placement.
     battery_pack                                                      = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
     battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     battery_module.tag                                                = 'bus_battery'
-    battery_module.electrical_configuration.series                    = 60
-    battery_module.electrical_configuration.parallel                  = 60
-    battery_module.geometric_configuration.normal_count              = 60
-    battery_module.geometric_configuration.parallel_count            = 60
-    battery_module.geometric_configuration.stacking_rows             = 2
+    battery_module.origin                                             = [[2.5, 0,  0.]]
+    battery_module.electrical_configuration.series                    = 40
+    battery_module.electrical_configuration.parallel                  = 50
 
-                       # starboard   | port        | front  | rear
-    modules_origins = [[1.8, 2.0,1.0 ],[1.8, -2.0, 1.0  ],[0.3, 0.0, 0.0 ],[2, 0.0, 0.0]]
-    orientation     = [[0, 0.0, np.pi],[0, 0.0, np.pi ],[0, 0.0, 0 ],[0, 0.0,0 ]]
+                       # front stbd         | front port          | outboard stbd       | outboard port        | behind seats stbd  | above wing
+    modules_origins = [[0.8, 2.2, 1.195]   ,[0.8, -2.2, 1.195]  ,[1.5, 5.0, 1.320]  ,[1.5, -5.0, 1.320]  ,[3.0, 0.0, 0.5]   ,[2, 0.0, 1.1]]
+    orientation     = [[0, 0.0, 0]     ,[0, 0.0,0]     ,[0, 0.0, 0]    ,[0, 0.0,0]     ,[0, 0.0, 0]       ,[0, 0.0, 0]]
+    normal_count    = [200, 200, 200, 200, 100, 40]
+    parallel_count  = [10, 10, 10, 10, 20, 50]
+    stacking_rows   = [5, 5, 5, 5, 8, 2]
+
     for m_i in range(bus.number_of_battery_modules):
         module =  deepcopy(battery_module)
         module.tag = 'nmc_module_' + str(m_i+1)
         module.origin = [modules_origins[m_i]]
+        module.geometric_configuration.normal_count               = normal_count[m_i]
+        module.geometric_configuration.parallel_count             = parallel_count[m_i]
+        module.geometric_configuration.stacking_rows              = stacking_rows[m_i]
         module.orientation_euler_angles  = orientation[m_i]
         battery_pack.append_module(module)
     battery_pack.assigned_distributors = [[bus.tag]]

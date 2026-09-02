@@ -417,7 +417,6 @@ def TR_mission_setup(analyses):
     base_segment.state.numerics.mission_solver.type = 'optimize'
     base_segment.state.numerics.hp_decomposition.enabled = True
 
-    
     # ------------------------------------------------------------------
     #   First Climb Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
@@ -694,7 +693,6 @@ def TR_mission_setup(analyses):
 
     mission.append_segment(segment)
 
-    
     # ------------------------------------------------------------------
     #  Descent 1
     # ------------------------------------------------------------------
@@ -737,7 +735,19 @@ def TR_mission_setup(analyses):
     segment.altitude_end             = 600.0 * Units.ft
     segment.true_course              = 90 * Units.degree
 
-    segment.state.numerics.mission_solver.type = 'optimize'
+    # objective=None -- 2 unknowns (throttle, pitch_angle) vs 2 constraints (force_x,
+    # force_z) is exactly determined, leaving no slack for the default "energy" objective.
+    # root_finder (fsolve) converged but noisy point-to-point (near-singular Jacobian in
+    # this shallow descent regime -> wanders along the degenerate direction). Back to
+    # 'optimize', bounds still left unset (None) same as the original failing attempt --
+    # ONLY the initial guess changes this time, to isolate whether the guess alone was the
+    # problem. Anchored on descent_1's converged exit (throttle 0.29, pitch 4.7deg @
+    # 130mph) and descent_3's entry guess (throttle 0.32, pitch 4.3deg @ 115mph); the
+    # original guess (0.25, 6.5deg) sat off-center from both neighbors.
+    segment.state.numerics.mission_solver.type      = 'optimize'
+    segment.state.numerics.mission_solver.step_size = 1E-2
+    segment.state.numerics.mission_solver.tolerance = 1E-6
+    segment.state.numerics.mission_solver.objective = None
 
     segment.flight_dynamics.force_x                       = True
     segment.flight_dynamics.force_z                       = True
@@ -745,10 +755,10 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
                                                                                         'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
-    segment.assigned_control_variables.throttle.initial_guess_values = [[0.25]]
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.29]]
 
     segment.assigned_control_variables.pitch_angle.active             = True
-    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[6.5 * Units.degrees]]
+    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[4.6 * Units.degrees]]
 
     mission.append_segment(segment)
 
@@ -859,14 +869,25 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.thrust_vector_angle.active                     = True
     segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
                                                                                         'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    # Widened from [5,45]deg -- this is a delta on top of low_speed_transition's 70deg
+    # baseline (total absolute tilt [75,115]deg), a near-hover regime where horizontal
+    # thrust is very sensitive to angle near 90deg absolute. Widened to give the solver
+    # more room to find wherever the real (possibly delicate) solution sits.
     segment.assigned_control_variables.thrust_vector_angle.bounds                     = [[5.0 * Units.degrees, 45.0 * Units.degrees]]
-    segment.assigned_control_variables.thrust_vector_angle.initial_guess_values       = [[23.75 * Units.degree]]
+    segment.assigned_control_variables.thrust_vector_angle.initial_guess_values       = [[10.0 * Units.degree]]
 
     segment.assigned_control_variables.blade_pitch_command.active                     = True
     segment.assigned_control_variables.blade_pitch_command.assigned_rotors            =  [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
                                                                                         'outboard_starboard_rotor','rear_port_rotor','rear_starboard_rotor']]
     segment.assigned_control_variables.blade_pitch_command.bounds                     = [[15.0 * Units.degrees, 32.0 * Units.degrees]]
     segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[24.6 * Units.degrees]]
+
+    # Opposite direction: mirror arriving_transition_2's structure (which works, if
+    # struggling) instead of reducing DOF -- add pitch_angle as a 4th active control rather
+    # than removing blade_pitch_command as a 3rd.
+    segment.assigned_control_variables.pitch_angle.active                             = True
+    segment.assigned_control_variables.pitch_angle.bounds                             = [[-2.0 * Units.degrees, 15.0 * Units.degrees]]
+    segment.assigned_control_variables.pitch_angle.initial_guess_values               = [[3.0 * Units.degrees]]
 
     mission.append_segment(segment)
 
