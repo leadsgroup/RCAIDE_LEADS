@@ -17,6 +17,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine              import co
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle     import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan             import compute_thrust
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance_surrogate import compute_turbofan_performance_surrogate
 
 import  numpy as  np
 from copy import  deepcopy
@@ -184,7 +185,13 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """ 
-    conditions                = state.conditions   
+
+    if turbofan.surrogate is not None:
+        return compute_turbofan_performance_surrogate(turbofan, state, network, center_of_gravity)
+
+    # else: analytical cycle model (below)
+
+    conditions                = state.conditions
     noise_conditions          = conditions.aeroacoustics.propulsors[turbofan.tag] 
     turbofan_conditions       = conditions.energy.propulsors[turbofan.tag] 
     U0                        = conditions.freestream.velocity

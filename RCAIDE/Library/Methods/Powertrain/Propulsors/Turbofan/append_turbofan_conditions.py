@@ -77,8 +77,9 @@ def append_turbofan_conditions(propulsor, segment):
     
     # add propulsor conditions          
     segment.state.conditions.energy.propulsors[propulsor.tag]                               = Conditions()  
-    segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)      
-    segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
+    segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
+    segment.state.conditions.energy.propulsors[propulsor.tag].rating_code                   = None
     segment.state.conditions.energy.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
     segment.state.conditions.energy.propulsors[propulsor.tag].moment                        = 0. * ones_row(3) 
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()

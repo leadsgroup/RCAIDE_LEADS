@@ -118,9 +118,19 @@ def setup_operating_conditions(component,distributor,velocity_range=np.array([10
     a                                                 = atmo_data.speed_of_sound    
     mu                                                = atmo_data.dynamic_viscosity 
                                                       
-    conditions                                        = Results() 
+    # velocity_range is a 1-D array of num_ctrl_pts flight speeds sharing this altitude.
+    # It's reshaped to a (num_ctrl_pts, 1) column here -- matching the (rows, 1) shape
+    # every other freestream field ends up with after expand_rows() below -- rather than
+    # np.atleast_2d's (1, num_ctrl_pts) row, which previously left mach_number/velocity
+    # oriented transposed relative to pressure/temperature/etc. Undetected for the common
+    # num_ctrl_pts=1 case, but for num_ctrl_pts>1 it left conditions.freestream.mach_number
+    # corrupted (expand_rows tiled the (1,N) row into an (N,N) matrix) and caused shape
+    # mismatches downstream (e.g. Pt_out[Pt_out<P0] against a (1,1) P0 in expansion nozzles).
+    velocity_column = np.asarray(velocity_range, dtype=float).reshape(-1, 1)
+
+    conditions                                        = Results()
     conditions.freestream.altitude                    = np.atleast_2d(altitude)
-    conditions.freestream.mach_number                 = np.atleast_2d(velocity_range/a)
+    conditions.freestream.mach_number                 = velocity_column/a
     conditions.freestream.pressure                    = np.atleast_2d(p)
     conditions.freestream.temperature                 = np.atleast_2d(T)
     conditions.freestream.density                     = np.atleast_2d(rho)
@@ -131,14 +141,14 @@ def setup_operating_conditions(component,distributor,velocity_range=np.array([10
     conditions.freestream.R                           = np.atleast_2d(working_fluid.gas_specific_constant)
     conditions.freestream.speed_of_sound              = np.atleast_2d(a)
     conditions.freestream.delta_ISA                   = np.atleast_2d(temperature_deviation)
-    
-    num_ctrl_pts      = len(velocity_range)    
+
+    num_ctrl_pts      = len(velocity_range)
     conditions._size  = num_ctrl_pts
     conditions.expand_rows(num_ctrl_pts)
-     
-    conditions.freestream.velocity                    = np.atleast_2d(velocity_range) 
+
+    conditions.freestream.velocity                    = velocity_column
     conditions.frames.body.inertial_rotations[:, 1]   = angle_of_attack
-    conditions.frames.inertial.velocity_vector[:, 0]  = np.atleast_2d(velocity_range)
+    conditions.frames.inertial.velocity_vector[:, 0]  = velocity_column[:, 0]
 
     # setup conditions   
     segment                                          = RCAIDE.Framework.Mission.Segments.Segment()
@@ -149,8 +159,13 @@ def setup_operating_conditions(component,distributor,velocity_range=np.array([10
     
     # append component-specific operating conditions
     distributor.append_operating_conditions(segment)
-    component.append_operating_conditions(segment)    
-    segment.state.conditions.expand_rows(num_ctrl_pts)              
+    component.append_operating_conditions(segment)
+    # expand_rows must run on segment.state itself (not just segment.state.conditions):
+    # State.expand_rows sets state._size, which state.ones_row(cols) reads directly --
+    # calling it only on .conditions left state._size at its class default of 1, so any
+    # code using state.ones_row(...) (e.g. compute_turbofan_performance's thrust_vector)
+    # silently got shape (1, cols) regardless of num_ctrl_pts.
+    segment.state.expand_rows(num_ctrl_pts)
     return segment.state
  
     

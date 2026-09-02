@@ -173,6 +173,10 @@ class Turbofan(Propulsor):
         self.design_mass_flow_rate                      = 0.0
         self.design_voltage                             = 0.0
         self.OpenVSP_flow_through                       = False
+        self.surrogate                                  = None    # None -> analytical cycle model (default).
+                                                                    # Set to a Turbofan_Surrogate instance to use
+                                                                    # table-driven performance instead; see
+                                                                    # RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate
         
     def append_operating_conditions(self, segment):
         """

@@ -125,7 +125,7 @@ class Air(Gas):
 
     def compute_cp(self,T=300.,p=101325.):
         """
-        Computes specific heat capacity at constant pressure using a 3rd-order polynomial fit.
+        Computes specific heat capacity at constant pressure using a 7th-order polynomial fit.
 
         Parameters
         ----------
@@ -142,25 +142,37 @@ class Air(Gas):
         Notes
         -----
         **Major Assumptions**
-            * Valid for temperature range: 123 K < T < 673 K
+            * Valid for temperature range: 166.7 K < T < 2222.2 K (300 R < T < 4000 R),
+              i.e. from freestream/inlet conditions through compressor and turbine exit
+              (combustion products are not modeled separately; "air alone" curve fit is
+              used for the full engine, per the source below)
 
         **Theory**
-        .. math::
-            c_p(T) = c_1T^3 + c_2T^2 + c_3T + c_4
+        The original curve fit, :math:`c_p(T) = \\sum_{i=0}^{7} A_i T_{R}^i` with
+        :math:`T_R` in degrees Rankine and :math:`c_p` in Btu/(lbm-R), is converted here
+        to SI units so that :math:`c_p(T) = \\sum_{i=0}^{7} B_i T^i` with :math:`T` in
+        Kelvin and :math:`c_p` in J/(kg-K), where :math:`B_i = A_i \\cdot 4186.8 \\cdot 1.8^i`.
 
         References
         ----------
-        [1] Ekin, J. (2006). Experimental techniques for low-temperature measurements: Cryostat design, material properties and superconductor critical-current testing. Oxford University Press.         
-        """   
+        [1] Mattingly, J.D., "Elements of Gas Turbine Propulsion", 2nd Edition, AIAA
+            Education Series, 2005, Table 2-4 ("Air alone" coefficients for program
+            AFPROP, after J.S. McKinney, USAF Aero Propulsion Laboratory).
+        """
 
-        c = [-7.357e-007, 0.001307, -0.5558, 1074.0]
-        cp = c[0]*T*T*T + c[1]*T*T + c[2]*T + c[3]
+        # Table 2-4 coefficients (Btu/(lbm-R), T in Rankine), converted to SI (J/(kg-K), T in Kelvin)
+        A = [2.5020051e-1, -5.1536879e-5, 6.5519486e-8, -6.7178376e-12,
+             -1.5128259e-14, 7.6215767e-18, -1.4526770e-21, 1.0115540e-25]
+        BTU_LBM_R_TO_J_KG_K = 1055.06 / 0.45359237 * 1.8
+        B = [Ai * BTU_LBM_R_TO_J_KG_K * (1.8 ** i) for i, Ai in enumerate(A)]
+
+        cp = sum(Bi * T**i for i, Bi in enumerate(B))
 
         return cp
 
     def compute_gamma(self,T=300.,p=101325.):
         """
-        Computes specific heat ratio using a 3rd-order polynomial fit.
+        Computes specific heat ratio from the specific heat and gas constant.
 
         Parameters
         ----------
@@ -177,13 +189,24 @@ class Air(Gas):
         Notes
         -----
         **Major Assumptions**
-        * Valid for temperature range: 233 K < T < 1273 K
-        """     
+            * Valid for temperature range: 166.7 K < T < 2222.2 K (300 R < T < 4000 R),
+              matching :func:`compute_cp`
+            * Calorically ideal gas with constant, composition-fixed gas constant R:
+              :math:`c_p - c_v = R \\Rightarrow \\gamma = c_p/(c_p - R)`.
+              Deriving gamma this way (rather than an independently-fit polynomial)
+              guarantees it stays thermodynamically consistent with cp and R at every
+              temperature.
 
-        c = [1.629e-010, -3.588e-007, 0.0001418, 1.386]
-        g = c[0]*T*T*T + c[1]*T*T + c[2]*T + c[3]
+        References
+        ----------
+        [1] Mattingly, J.D., "Elements of Gas Turbine Propulsion", 2nd Edition, AIAA
+            Education Series, 2005, Table 2-4.
+        """
 
-        return g
+        cp = self.compute_cp(T,p)
+        R  = self.gas_specific_constant
+
+        return cp/(cp - R)
 
     def compute_absolute_viscosity(self,T=300.,p=101325.):
         """
@@ -288,12 +311,11 @@ class Air(Gas):
 
         Notes
         -----
-        **Theory**
-        .. math::
-            R = \\frac{\\gamma - 1}{\\gamma}c_p
-        """ 
-        
-        gamma = self.compute_gamma(T,p)
-        cp = self.compute_cp(T,p)
-        R  = ((gamma - 1)/gamma)*cp
-        return  R          
+        For a fixed-composition ideal gas, R is independent of temperature and
+        pressure; it is returned here as the stored specific gas constant, shaped
+        to match T. (Previously this recomputed R from gamma and cp, which made
+        gamma's definition circular now that gamma is derived from cp and R --
+        see :func:`compute_gamma`.)
+        """
+
+        return self.gas_specific_constant*np.ones_like(T)
