@@ -351,6 +351,7 @@
         "identical_converters": false,
         "efficiency": 1.0,
         "provides_domain": null,
+        "externally_powered": false,
         "number_of_blades": 3,
         "tip_radius": 0.8875,
         "hub_radius": 0.08875,
@@ -14188,7 +14189,8 @@
                 },
                 "prev": null,
                 "next": null,
-                "number_of_points": 201
+                "number_of_points": 201,
+                "thickness_multiplier": 1.0
             }
         },
         "airfoil_polar_stations": [
@@ -14378,6 +14380,7 @@
         "identical_converters": false,
         "efficiency": 0.95,
         "provides_domain": null,
+        "externally_powered": false,
         "diameter": 0.0,
         "length": 0.0,
         "gearbox": {

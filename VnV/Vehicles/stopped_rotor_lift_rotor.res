@@ -351,6 +351,7 @@
         "identical_converters": false,
         "efficiency": 1.0,
         "provides_domain": null,
+        "externally_powered": false,
         "number_of_blades": 3,
         "tip_radius": 1.4,
         "hub_radius": 0.1,
@@ -14375,6 +14376,7 @@
         "identical_converters": false,
         "efficiency": 0.9,
         "provides_domain": null,
+        "externally_powered": false,
         "diameter": 0.0,
         "length": 0.0,
         "gearbox": {
