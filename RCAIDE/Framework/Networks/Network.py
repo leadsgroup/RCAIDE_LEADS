@@ -143,9 +143,9 @@ class Network(Component):
         self.systems                             = Container()
          
 
-    def evaluate(network,state,vehicle):
+    def evaluate(network,state,vehicle,ground_operations=False):
         """ Computes the performance of the network.
-        
+
             Notes
             -----
             * Power balance uses the sign convention: 
@@ -157,7 +157,6 @@ class Network(Component):
         conditions        = state.conditions
         propulsors        = network.propulsors
         converters        = network.converters  
-        nacelles          = network.nacelles
         distributors      = network.distributors
         sources           = network.sources
         systems           = network.systems
@@ -254,19 +253,21 @@ class Network(Component):
                 else:
                     inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_converter_tag)
                 total_mdot             += state.conditions.energy.converters[converter.tag].fuel_mass_flow_rate
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                externally_powered_now  = ground_operations and converter.externally_powered
+                if not externally_powered_now:
+                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)       
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)  
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
 
                 for input_power_type in inputs.power.keys():
-                    state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type] 
+                    state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type]
 
                 for output_power_type in outputs.power.keys():
-                    state.conditions.energy.outputs.power[output_power_type] += outputs.power[output_power_type] 
-                
+                    state.conditions.energy.outputs.power[output_power_type] += outputs.power[output_power_type]
+
                 # compute losses for assigned distributors
-                if converter.assigned_distributors != None:
+                if converter.assigned_distributors != None and not externally_powered_now:
                     for distributor_tag in converter.assigned_distributors[0]:
                         distributor = network.distributors[distributor_tag]
                         if not isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Pump):
@@ -286,11 +287,11 @@ class Network(Component):
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
-                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                    source_conditions = state.conditions.energy.sources[source.tag]
+                source_conditions = state.conditions.energy.sources[source.tag]
+                if 'refuel_mass_flow_rate' in source_conditions:
                     total_mdot -= source_conditions.refuel_mass_flow_rate
-                    if 'vent_rate' in source_conditions:
-                        total_mdot += source_conditions.vent_rate
+                if 'vent_rate' in source_conditions:
+                    total_mdot += source_conditions.vent_rate
 
                 if source.assigned_distributors != None:
                     for distributor_tag in source.assigned_distributors[0]:

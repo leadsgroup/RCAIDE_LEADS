@@ -6,9 +6,9 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions
+from RCAIDE.Framework.Core.Physical_Constants import UNIVERSAL_GAS_CONSTANT
+from RCAIDE.Framework.Core import Units
 import numpy as np
-
-R_UNIVERSAL = 8314.462618  # J/(kmol*K)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
@@ -77,9 +77,9 @@ def append_cryogenic_tank_conditions(tank, segment):
     # a fraction of this, not a fraction recomputed from a drifted current temperature.
     tank.design_full_liquid_mass = m_l_0
 
-    R_specific = R_UNIVERSAL / tank.fuel.molecular_weight
+    R_specific = UNIVERSAL_GAS_CONSTANT / tank.fuel.molecular_weight
     Z_0        = tank.fuel.compressibility_factor(T_g_0, phase='vapor')
-    P_sat_0    = tank.fuel.cryogen_properties(T_g_0, "Pressure (MPa)", phase='vapor') * 1e6  # Pa
+    P_sat_0    = tank.fuel.cryogen_properties(T_g_0, "Pressure (MPa)", phase='vapor') * Units.MPa  # Pa
     m_g_0      = P_sat_0 * V_g_0 / (Z_0 * R_specific * T_g_0)
 
     tank_conditions.ullage_mass             = m_g_0 * ones_row(1)

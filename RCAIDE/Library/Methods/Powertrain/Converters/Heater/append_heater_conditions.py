@@ -3,6 +3,7 @@
 # Created:  Aug 2026, M. Clarke
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_conditions import append_converter_power_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  append_heater_conditions
@@ -39,25 +40,7 @@ def append_heater_conditions(heater,segment):
     RCAIDE.Library.Methods.Powertrain.Converters.Heater.compute_heater_performance
     """
 
-    ones_row                                                          = segment.state.ones_row
-    segment.state.conditions.energy.converters[heater.tag]                          = Conditions()
-    segment.state.conditions.energy.converters[heater.tag].fuel_mass_flow_rate      = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].inputs                   = Conditions()
-    segment.state.conditions.energy.converters[heater.tag].outputs                  = Conditions()
-    segment.state.conditions.energy.converters[heater.tag].inputs.power             = Conditions()
-    segment.state.conditions.energy.converters[heater.tag].inputs.power.propulsive  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].inputs.power.mechanical  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].inputs.power.electrical  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].inputs.power.chemical    = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].inputs.power.pneumatic   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].inputs.power.hydraulic   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].inputs.power.thermal     = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].outputs.power            = Conditions()
-    segment.state.conditions.energy.converters[heater.tag].outputs.power.propulsive = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].outputs.power.mechanical = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].outputs.power.electrical = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].outputs.power.chemical   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].outputs.power.pneumatic  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].outputs.power.hydraulic  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[heater.tag].outputs.power.thermal    = 0 * ones_row(1)
+    ones_row                         = segment.state.ones_row
+    heater_conditions                = append_converter_power_conditions(heater, segment)
+    heater_conditions.fuel_mass_flow_rate = 0. * ones_row(1)
     return

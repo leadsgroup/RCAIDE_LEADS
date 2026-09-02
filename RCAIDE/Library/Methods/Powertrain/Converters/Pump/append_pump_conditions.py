@@ -3,6 +3,7 @@
 # Created:  Sep. 2025, M. Clarke
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_conditions import append_converter_power_conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_pump_conditions
@@ -34,27 +35,9 @@ def append_pump_conditions(pump,segment):
     RCAIDE.Library.Methods.Powertrain.Converters.Pump.compute_pump_performance
     """
 
-    ones_row                                                        = segment.state.ones_row
-    segment.state.conditions.energy.converters[pump.tag]                          = Conditions()
-    segment.state.conditions.energy.converters[pump.tag].fuel_mass_flow_rate      = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].inputs                   = Conditions()
-    segment.state.conditions.energy.converters[pump.tag].outputs                  = Conditions()
-    segment.state.conditions.energy.converters[pump.tag].inputs.p_in              = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].outputs.p_out            = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].inputs.power             = Conditions()
-    segment.state.conditions.energy.converters[pump.tag].inputs.power.propulsive  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].inputs.power.mechanical  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].inputs.power.electrical  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].inputs.power.chemical    = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].inputs.power.pneumatic   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].inputs.power.hydraulic   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].inputs.power.thermal     = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].outputs.power            = Conditions()
-    segment.state.conditions.energy.converters[pump.tag].outputs.power.propulsive = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].outputs.power.mechanical = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].outputs.power.electrical = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].outputs.power.chemical   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].outputs.power.pneumatic  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].outputs.power.hydraulic  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[pump.tag].outputs.power.thermal    = 0 * ones_row(1)
+    ones_row                    = segment.state.ones_row
+    pump_conditions             = append_converter_power_conditions(pump, segment)
+    pump_conditions.fuel_mass_flow_rate = 0. * ones_row(1)
+    pump_conditions.inputs.p_in         = 0. * ones_row(1)
+    pump_conditions.outputs.p_out       = 0. * ones_row(1)
     return

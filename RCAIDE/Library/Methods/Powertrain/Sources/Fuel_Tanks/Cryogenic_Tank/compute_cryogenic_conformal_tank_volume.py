@@ -10,7 +10,8 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units
 
 import numpy as np
-from .compute_cryogenic_cylindrical_tank_volume import _find_root, _bracket_root
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.solve_insulation import _solve_insulation
 from .compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak_cuboid
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -179,7 +180,7 @@ def _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_all
     # Insulation thickness: outer convection/radiation balanced against
     # wall+insulation conduction, solved via the shared cuboid heat-leak model
     # (also used at runtime by compute_cryogenic_tank_performance.py)
-    t_ins = _solve_insulation(therm, fuel_tank, l_o, w_o, h_o, th)
+    t_ins = _solve_insulation(_insulation_residual, therm, fuel_tank, l_o, w_o, h_o, th)
 
     # Total outer dimensions (structure + insulation)
     h_o_o = h_o + 2 * t_ins
@@ -193,19 +194,6 @@ def _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_all
                a_ins * fuel_tank.insulation.material.specific_density
 
     return V_total, h_i, w_i, l_i, th, h_o, w_o, l_o, t_ins, mass_ins, h_o_o, w_o_o, l_o_o
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  Insulation thickness solver
-#
-#  Brackets the root first (geometric expansion), then solves with _find_root.
-# ----------------------------------------------------------------------------------------------------------------------
-def _solve_insulation(therm, fuel_tank, l_o, w_o, h_o, th):
-    ins_args = (therm, fuel_tank, l_o, w_o, h_o, th)
-    bracket  = _bracket_root(_insulation_residual, start=1e-6, factor=5, limit=1e2, args=ins_args)
-    if bracket:
-        return _find_root(_insulation_residual, bracket[0], bracket[1], args=ins_args, xtol=1e-9)
-    return _find_root(_insulation_residual, 1e-6, 1e2, args=ins_args, xtol=1e-9)
 
 
 # ----------------------------------------------------------------------------------------------------------------------

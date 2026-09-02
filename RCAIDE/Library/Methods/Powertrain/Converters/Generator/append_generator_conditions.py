@@ -2,6 +2,7 @@
 # 
 # Created:  Feb 2025, M. Guidotti 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_conditions import append_converter_power_conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_generator_conditions
@@ -57,32 +58,13 @@ def append_generator_conditions(generator, segment):
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance
     """
-    ones_row                                                           = segment.state.ones_row                  
-    segment.state.conditions.energy.converters[generator.tag]                 = Conditions()
-    segment.state.conditions.energy.converters[generator.tag].inputs          = Conditions()
-    segment.state.conditions.energy.converters[generator.tag].inputs.power    = Conditions()
-    segment.state.conditions.energy.converters[generator.tag].inputs.torque   = 0. * ones_row(1) 
-    segment.state.conditions.energy.converters[generator.tag].inputs.omega    = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].outputs         = Conditions()
-    segment.state.conditions.energy.converters[generator.tag].outputs.power   = Conditions()
-    segment.state.conditions.energy.converters[generator.tag].outputs.current = 0. * ones_row(1) 
-    segment.state.conditions.energy.converters[generator.tag].outputs.voltage = 0. * ones_row(1) 
- 
-    segment.state.conditions.energy.converters[generator.tag].inputs.power.propulsive   = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].inputs.power.mechanical  = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].inputs.power.electrical  = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].inputs.power.chemical    = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].inputs.power.pneumatic   = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].inputs.power.hydraulic   = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].inputs.power.thermal     = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].outputs.power.propulsive = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].outputs.power.mechanical = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].outputs.power.electrical = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].outputs.power.chemical   = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].outputs.power.pneumatic  = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].outputs.power.hydraulic  = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].outputs.power.thermal    = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[generator.tag].outputs.efficiency       = 0. * ones_row(1)
+    ones_row             = segment.state.ones_row
+    generator_conditions = append_converter_power_conditions(generator, segment)
+    generator_conditions.inputs.torque    = 0. * ones_row(1)
+    generator_conditions.inputs.omega     = 0. * ones_row(1)
+    generator_conditions.outputs.current  = 0. * ones_row(1)
+    generator_conditions.outputs.voltage  = 0. * ones_row(1)
+    generator_conditions.outputs.efficiency = 0. * ones_row(1)
 
     return
 

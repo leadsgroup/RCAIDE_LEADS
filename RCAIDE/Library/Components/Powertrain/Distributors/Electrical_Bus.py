@@ -121,6 +121,7 @@ class Electrical_Bus(Distributor):
         self.maximum_operating_temperature             = 0 
         self.maximum_current                           = 0  
         self.maximum_temperature                       = 423
+        self.environmental_external_thermal_resistance = None  # None -> IEC 60287-2-1 generic duct formula (see size_electrical_cable); set explicitly to override for a specific installation
         self.conductor                                 = Component()
         self.conductor.radius                          = None
         self.conductor.material                        = Copper()  

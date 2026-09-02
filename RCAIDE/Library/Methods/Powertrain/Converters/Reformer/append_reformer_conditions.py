@@ -3,6 +3,7 @@
 # Created:  Jan 2025, M. Clarke, M. Guidotti
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_conditions import append_converter_power_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  append_reformer_conditions
@@ -55,29 +56,11 @@ def append_reformer_conditions(reformer, segment):
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Reformer.compute_reformer_performance
     """
-    ones_row                                                                              = segment.state.ones_row
-    segment.state.conditions.energy.converters[reformer.tag]                              = Conditions()
-    segment.state.conditions.energy.converters[reformer.tag].inputs                       = Conditions()
-    segment.state.conditions.energy.converters[reformer.tag].outputs                      = Conditions()
-    segment.state.conditions.energy.converters[reformer.tag].inputs.power                 = Conditions()
-    segment.state.conditions.energy.converters[reformer.tag].outputs.power                = Conditions()
-    segment.state.conditions.energy.converters[reformer.tag].inputs.power.propulsive      = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].inputs.power.mechanical      = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].inputs.power.electrical      = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].inputs.power.chemical        = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].inputs.power.pneumatic       = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].inputs.power.hydraulic       = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].inputs.power.thermal         = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].outputs.power.propulsive     = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].outputs.power.mechanical     = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].outputs.power.electrical     = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].outputs.power.chemical       = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].outputs.power.pneumatic      = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].outputs.power.hydraulic      = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].outputs.power.thermal        = 0. * ones_row(1)
+    ones_row             = segment.state.ones_row
+    reformer_conditions  = append_converter_power_conditions(reformer, segment)
 
-    segment.state.conditions.energy.converters[reformer.tag].fuel_volume_flow_rate   = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].steam_volume_flow_rate  = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].air_volume_flow_rate    = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].hydrogen_mass_flow_rate = 0. * ones_row(1)
+    reformer_conditions.fuel_volume_flow_rate   = 0. * ones_row(1)
+    reformer_conditions.steam_volume_flow_rate  = 0. * ones_row(1)
+    reformer_conditions.air_volume_flow_rate    = 0. * ones_row(1)
+    reformer_conditions.hydrogen_mass_flow_rate = 0. * ones_row(1)
     return

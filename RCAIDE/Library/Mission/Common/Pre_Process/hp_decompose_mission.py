@@ -77,14 +77,19 @@ def hp_decompose_mission(mission):
     new_container      = Process()
     any_split          = False
 
+    prototypes = {tag: copy.deepcopy(segment) for tag, segment in original_segments
+                  if segment.state.numerics.hp_decomposition.enabled and type(segment) in EXTENT_ATTRIBUTES}
+
+    if prototypes:
+        geometry(SegmentListView(list(prototypes.values())))
+
     for tag, segment in original_segments:
         numerics = segment.state.numerics
-        if (not numerics.hp_decomposition.enabled) or (type(segment) not in EXTENT_ATTRIBUTES):
+        if tag not in prototypes:
             new_container.append(segment)
             continue
 
-        prototype = copy.deepcopy(segment)
-        geometry(SegmentListView([prototype]))
+        prototype = prototypes[tag]
         energy(SegmentListView([prototype]))
         set_mission_residuals_and_unknowns(SegmentListView([prototype]))
         set_network_residuals_and_unknowns(SegmentListView([prototype]))

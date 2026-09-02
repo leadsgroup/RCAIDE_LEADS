@@ -7,7 +7,9 @@
 #  Imports
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
-from .Propellant import Propellant   
+from .Propellant import Propellant
+from RCAIDE.Framework.Core.Physical_Constants import UNIVERSAL_GAS_CONSTANT
+from RCAIDE.Framework.Core import Units
 
 import os
 import numpy as np
@@ -223,13 +225,7 @@ class Liquid_Natural_Gas(Propellant):
         --------
         load_lng_properties
         """
-        data = load_lng_properties()
-        phase_mask = np.array(data["Phase"]) == phase
-        temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
-        props = np.array(data[prop_name], dtype=float)[phase_mask]
-        interp = interp1d(temps, props, kind="linear", fill_value=None)
-
-        return interp(T)
+        return _property_interpolator(prop_name, phase)(T)
 
     def saturation_temperature(self, P):
         """
@@ -246,13 +242,7 @@ class Liquid_Natural_Gas(Propellant):
         T_sat : float or ndarray
             Saturation temperature(s) [K].
         """
-        data = load_lng_properties()
-        phase_mask = np.array(data["Phase"]) == 'liquid'
-        temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
-        pressures = np.array(data["Pressure (MPa)"], dtype=float)[phase_mask]
-        interp = interp1d(pressures, temps, kind="linear", fill_value=None)
-
-        return interp(P)
+        return _saturation_temperature_interpolator()(P)
 
     def property_table_range(self, phase='liquid'):
         """
@@ -287,8 +277,8 @@ class Liquid_Natural_Gas(Propellant):
         Z : float or ndarray
             Compressibility factor (dimensionless).
         """
-        R_specific = 8314.462618 / self.molecular_weight  # J/(kg*K)
-        P_sat   = self.cryogen_properties(T, "Pressure (MPa)", phase=phase) * 1e6  # Pa
+        R_specific = UNIVERSAL_GAS_CONSTANT / self.molecular_weight  # J/(kg*K)
+        P_sat   = self.cryogen_properties(T, "Pressure (MPa)", phase=phase) * Units.MPa
         rho_sat = self.cryogen_properties(T, "Density (kg/m3)", phase=phase)
         return P_sat / (rho_sat * R_specific * T)
 
@@ -320,6 +310,23 @@ def load_lng_properties():
     """
     ospath    = os.path.abspath(__file__)
     separator = os.path.sep
-    rel_path  = os.path.dirname(ospath) + separator     
+    rel_path  = os.path.dirname(ospath) + separator
 
     return RCAIDE.load(rel_path+ 'LNG_properties.res')
+
+# Cached: cryogen_properties calls this many times per boil-off RHS evaluation.
+@lru_cache(maxsize=None)
+def _property_interpolator(prop_name, phase):
+    data = load_lng_properties()
+    phase_mask = np.array(data["Phase"]) == phase
+    temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
+    props = np.array(data[prop_name], dtype=float)[phase_mask]
+    return interp1d(temps, props, kind="linear", fill_value=None)
+
+@lru_cache(maxsize=None)
+def _saturation_temperature_interpolator():
+    data = load_lng_properties()
+    phase_mask = np.array(data["Phase"]) == 'liquid'
+    temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
+    pressures = np.array(data["Pressure (MPa)"], dtype=float)[phase_mask]
+    return interp1d(pressures, temps, kind="linear", fill_value=None)

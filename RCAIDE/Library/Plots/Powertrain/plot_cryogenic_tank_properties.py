@@ -53,6 +53,9 @@ def plot_cryogenic_tank_properties(results,
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank):
                 tanks.append(source)
 
+    if not tanks:
+        return []
+
     fields = ['fuel_mass', 'ullage_mass', 'fuel_temperature', 'ullage_temperature',
               'fuel_volume', 'ullage_volume', 'pressure', 'vent_rate', 'boil_off_flow_rate']
 
@@ -78,8 +81,8 @@ def plot_cryogenic_tank_properties(results,
         pad  = 0.05 * (vals.max() - vals.min() if vals.max() > vals.min() else max(abs(vals.max()), 1.0))
         return vals.min() - pad, vals.max() + pad
 
-    mass_lim   = limits('fuel_mass') if not tanks else (
-        min(limits('fuel_mass')[0], limits('ullage_mass')[0]), max(limits('fuel_mass')[1], limits('ullage_mass')[1]))
+    mass_lim   = (min(limits('fuel_mass')[0], limits('ullage_mass')[0]),
+                  max(limits('fuel_mass')[1], limits('ullage_mass')[1]))
     temp_lim   = (min(limits('fuel_temperature')[0], limits('ullage_temperature')[0]),
                   max(limits('fuel_temperature')[1], limits('ullage_temperature')[1]))
     vol_lim    = (min(limits('fuel_volume')[0], limits('ullage_volume')[0]),

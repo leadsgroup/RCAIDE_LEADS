@@ -6,7 +6,8 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
-from scipy.optimize import brentq, minimize_scalar
+from RCAIDE.Framework.Core.Physical_Constants import STEFAN_BOLTZMANN
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Tank Environmental Heat Leak
@@ -54,15 +55,8 @@ def compute_cryogenic_tank_heat_leak(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_a
     * Conduction uses concentric-cylinder and concentric-sphere resistance networks
       through the structural wall and insulation layer.
     """
-    if abs(T_env - T_cold) < 1e-9:
-        Te = T_cold
-    else:
-        lo, hi = (T_cold, T_env) if T_env > T_cold else (T_env, T_cold)
-        args = (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li)
-        Te = _find_root(lambda x, *a: _heat_balance_residual(x, *a)[0], lo, hi, args=args)
-
-    _, Q = _heat_balance_residual(Te, t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li)
-    return Te, Q
+    args = (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li)
+    return _solve_heat_leak(_heat_balance_residual, T_env, T_cold, args)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -86,7 +80,7 @@ def _heat_balance_residual(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha
     h_cyl  = Nu_cyl * k_air / D_out
     A_cyl  = np.pi * D_out * li                                       # lateral surface area
     Qv_cyl = h_cyl * A_cyl * (Ta - Te)                                # convective heat gain
-    Qr_cyl = 5.67e-8 * 0.03 * A_cyl * (Ta**4 - Te**4)                # radiative heat gain (emissivity = 0.03)
+    Qr_cyl = STEFAN_BOLTZMANN * 0.03 * A_cyl * (Ta**4 - Te**4)      # radiative heat gain (emissivity = 0.03)
     Qc_cyl = (Te - Ti) / (np.log(ro / ri)         / (2 * np.pi * li * k_mat) +       # conduction: structural wall
                            np.log((ro + t_ins) / ro) / (2 * np.pi * li * k_ins_mat))  # conduction: insulation layer
 
@@ -95,7 +89,7 @@ def _heat_balance_residual(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha
     h_sph  = Nu_sph * k_air / D_out
     A_sph  = np.pi * D_out**2                                         # surface area of full sphere
     Qv_sph = h_sph * A_sph * (Ta - Te)
-    Qr_sph = 5.67e-8 * 0.03 * A_sph * (Ta**4 - Te**4)
+    Qr_sph = STEFAN_BOLTZMANN * 0.03 * A_sph * (Ta**4 - Te**4)
     Qc_sph = (Te - Ti) / ((ro - ri) / (4 * np.pi * k_mat * ri * ro) +                # conduction: structural wall
                            t_ins     / (4 * np.pi * k_ins_mat * ro * (ro + t_ins)))    # conduction: insulation layer
 
@@ -161,15 +155,8 @@ def compute_cryogenic_tank_heat_leak_cuboid(t_ins, T_env, T_cold, k_mat, k_ins_m
     * Conduction uses a single planar wall/insulation resistance network,
       referenced to the structural (pre-insulation) outer surface area.
     """
-    if abs(T_env - T_cold) < 1e-9:
-        Te = T_cold
-    else:
-        lo, hi = (T_cold, T_env) if T_env > T_cold else (T_env, T_cold)
-        args = (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
-        Te = _find_root(lambda x, *a: _heat_balance_residual_cuboid(x, *a)[0], lo, hi, args=args)
-
-    _, Q = _heat_balance_residual_cuboid(Te, t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
-    return Te, Q
+    args = (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
+    return _solve_heat_leak(_heat_balance_residual_cuboid, T_env, T_cold, args)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -187,7 +174,7 @@ def _heat_balance_residual_cuboid(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu
     h_v     = Nu_v * k_air / h_oo
     A_side  = 2 * l_oo * h_oo + 2 * w_oo * h_oo
     Qv_side = h_v * A_side * (Ta - Te)
-    Qr_side = 5.67e-8 * 0.03 * A_side * (Ta**4 - Te**4)
+    Qr_side = STEFAN_BOLTZMANN * 0.03 * A_side * (Ta**4 - Te**4)
 
     # ---- Horizontal top/bottom faces ----
     A_horiz = l_oo * w_oo
@@ -199,14 +186,14 @@ def _heat_balance_residual_cuboid(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu
     Nu_bot  = 0.54 * Ra_h**(1 / 4) if Ra_h <= 1e7 else 0.15 * Ra_h**(1 / 3)
     h_bot   = Nu_bot * k_air / L_c
     Qv_bot  = h_bot * A_horiz * (Ta - Te)
-    Qr_bot  = 5.67e-8 * 0.03 * A_horiz * (Ta**4 - Te**4)
+    Qr_bot  = STEFAN_BOLTZMANN * 0.03 * A_horiz * (Ta**4 - Te**4)
 
     # Top face: cold surface facing up (stably stratified, same correlation
     # family as a hot plate facing down)
     Nu_top  = 0.27 * Ra_h**(1 / 4)
     h_top   = Nu_top * k_air / L_c
     Qv_top  = h_top * A_horiz * (Ta - Te)
-    Qr_top  = 5.67e-8 * 0.03 * A_horiz * (Ta**4 - Te**4)
+    Qr_top  = STEFAN_BOLTZMANN * 0.03 * A_horiz * (Ta**4 - Te**4)
 
     # ---- Conduction through wall + insulation (planar, area-referenced to
     #      the structural outer surface) ----
@@ -218,17 +205,17 @@ def _heat_balance_residual_cuboid(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Bounded 1D root finder
+#  Shared solve: equilibrium outer-surface temperature (Te), then heat leak (Q) at Te
 #
-#  Tries brentq first (fast, guaranteed convergence when a sign change exists).
-#  Falls back to minimizing f(x)^2 with minimize_scalar when brentq fails
-#  (no sign change in the bracket, e.g. the root is a tangent zero).
+#  Common to the cylindrical and cuboid cases -- only the residual function and its
+#  geometry args differ between them.
 # ----------------------------------------------------------------------------------------------------------------------
-def _find_root(func, a, b, args=(), xtol=1e-9):
-    try:
-        return brentq(func, a, b, xtol=xtol, args=args)
-    except ValueError:
-        res = minimize_scalar(lambda x: func(x, *args)**2,
-                              bounds=(a, b), method="bounded",
-                              options={"xatol": xtol})
-        return float(res.x)
+def _solve_heat_leak(residual_func, T_env, T_cold, args):
+    if abs(T_env - T_cold) < 1e-9:
+        Te = T_cold
+    else:
+        lo, hi = (T_cold, T_env) if T_env > T_cold else (T_env, T_cold)
+        Te = _find_root(lambda x, *a: residual_func(x, *a)[0], lo, hi, args=args)
+
+    _, Q = residual_func(Te, *args)
+    return Te, Q

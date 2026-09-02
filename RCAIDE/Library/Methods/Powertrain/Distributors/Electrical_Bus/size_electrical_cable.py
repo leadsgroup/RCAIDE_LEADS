@@ -53,7 +53,13 @@ def size_electrical_cable(bus):
     rho_theta_insul : float, optional
         Thermal resistivity of the insulation material in K*m/W, defaults to 5.0
         (1/Thermal_Conductivity)
-        
+
+    bus.environmental_external_thermal_resistance : float or None, optional
+        External thermal resistance of the environment (T4) [K*m/W], defaults to
+        None -> computed from the IEC 60287-2-1 generic duct formula. Set an
+        explicit value to override for a known installation (e.g. open air vs.
+        enclosed conduit).
+
     Returns
     -------
     dict
@@ -79,9 +85,7 @@ def size_electrical_cable(bus):
     L                   = bus.length
     theta_a             = bus.design_ambient_temperature
     theta_max           = bus.maximum_temperature
-    COPPER_ALPHA_20C    = 0.00393  # 1/K
-    theta_ref           = 293.15   # K, 20 C
-    rho_elec            = bus.conductor.material.electrical_resistivity * (1 + COPPER_ALPHA_20C * (theta_max - theta_ref))
+    rho_elec            = bus.conductor.material.compute_electrical_resistivity(theta_max)
     E0                  = bus.insulator.material.dielectric_strength
     rho_cond            = bus.conductor.material.density
     rho_insul           = bus.insulator.material.density
@@ -103,6 +107,7 @@ def size_electrical_cable(bus):
     # not a validated aerospace-specific value.
     duct_U, duct_V, duct_Y = 2.2, 0.4, 0.004
     theta_m_C = (theta_max + theta_a) / 2 - 273.15
+    T4_override = bus.environmental_external_thermal_resistance  # None -> use the duct formula below
 
     def solve_conductor_radius(I_wire):
         # Solve for conductor radius (r_cond) based on thermal limits
@@ -111,8 +116,11 @@ def size_electrical_cable(bus):
             R_prime = rho_elec / (np.pi * r**2)
             # Thermal resistance of insulation (T1) using substitution from Eq 18
             T1 = (rho_theta_insul / (2 * np.pi)) * (V_sys / (E0 * r))
-            D_e_mm = 2 * insulation_radius(r) * 1e3
-            T4 = duct_U / (1 + 0.1 * (duct_V + duct_Y * theta_m_C) * D_e_mm)
+            if T4_override is not None:
+                T4 = T4_override
+            else:
+                D_e_mm = 2 * insulation_radius(r) * 1e3
+                T4 = duct_U / (1 + 0.1 * (duct_V + duct_Y * theta_m_C) * D_e_mm)
             # The residual should be 0 when thermal equilibrium is met
             return (theta_max - theta_a) - (I_wire**2 * R_prime * (T1 + T4))
         # Using fsolve with an initial guess of 2mm (0.002 meters)

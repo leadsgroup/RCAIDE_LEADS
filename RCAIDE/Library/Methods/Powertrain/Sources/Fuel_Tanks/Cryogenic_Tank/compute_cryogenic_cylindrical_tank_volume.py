@@ -8,7 +8,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak, _find_root
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.solve_insulation import _solve_insulation
 
 import numpy as np
 
@@ -135,7 +137,12 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     r_inner = (V_total / (2 * np.pi * (aspect_ratio - 1 / 3)))**(1 / 3)
     L_inner = 2 * r_inner * (aspect_ratio - 1)
     r_outer = ro_ri * r_inner
-    t_ins   = _solve_insulation(therm, fuel_tank, r_outer, r_inner, L_inner)
+    t_ins   = _solve_insulation(_insulation_residual, therm, fuel_tank, r_outer, r_inner, L_inner)
+
+    # compute design total heat transfer if not already set (used for boil-off model)
+    if fuel_tank.design_total_heat_transfer is None:
+        _, Qc_total = compute_cryogenic_tank_heat_leak(t_ins, Ta, T_inlet, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, r_outer, r_inner, L_inner)
+        fuel_tank.design_total_heat_transfer = Qc_total
 
     fuel_tank.volume_properties.net_volume   = V_guess
     fuel_tank.volume_properties.gross_volume = V_total
@@ -218,19 +225,6 @@ def _tank_stress(ro_ri, P_internal, P_external, sigma_allow):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Insulation thickness solver
-#
-#  Brackets the root first (geometric expansion), then solves with _find_root.
-# ----------------------------------------------------------------------------------------------------------------------
-def _solve_insulation(therm, fuel_tank, r_o, r_i, l_i):
-    ins_args = (therm, fuel_tank, r_o, r_i, l_i)
-    bracket  = _bracket_root(_insulation_residual, start=1e-6, factor=5, limit=1e2, args=ins_args)
-    if bracket:
-        return _find_root(_insulation_residual, bracket[0], bracket[1], args=ins_args, xtol=1e-9)
-    return _find_root(_insulation_residual, 1e-6, 1e2, args=ins_args, xtol=1e-9)
-
-
-# ----------------------------------------------------------------------------------------------------------------------
 #  Outer volume residual: V_outer_true - V_outer(V_guess)
 #
 #  Maps a fuel volume guess through the full sizing chain (ullage → geometry →
@@ -242,7 +236,7 @@ def _volume_residual(V_guess, ullage_frac, aspect_ratio, ro_ri, L_true, V_outer_
     r_inner = (V_total / (2 * np.pi * (aspect_ratio - 1 / 3)))**(1 / 3)
     L_inner = 2 * r_inner * (aspect_ratio - 1)
     r_outer = ro_ri * r_inner
-    t_ins   = _solve_insulation(therm, fuel_tank, r_outer, r_inner, L_inner)
+    t_ins   = _solve_insulation(_insulation_residual, therm, fuel_tank, r_outer, r_inner, L_inner)
     R_calc  = r_outer + t_ins
     V_outer_calc = np.pi * R_calc**2 * L_true + (4 / 3) * np.pi * R_calc**3
     return V_outer_true - V_outer_calc
@@ -264,20 +258,3 @@ def _insulation_residual(t_ins, therm, fuel_tank, r_o, r_i, l_i):
     # Compare conductive heat flux (per unit inner surface area) to allowable
     A_inner = 2 * np.pi * r_i * l_i + 4 * np.pi * r_i**2
     return PI_Q * Qc / A_inner - Qo
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  Bracket a root by geometric expansion of the search interval
-# ----------------------------------------------------------------------------------------------------------------------
-def _bracket_root(func, start=1e-6, factor=10, limit=1e2, args=()):
-    a  = start
-    fa = func(a, *args)
-    b  = a * factor
-    fb = func(b, *args)
-    while np.sign(fa) == np.sign(fb) and b < limit:
-        a, fa = b, fb
-        b    *= factor
-        fb    = func(b, *args)
-    if np.sign(fa) == np.sign(fb):
-        return None
-    return a, b

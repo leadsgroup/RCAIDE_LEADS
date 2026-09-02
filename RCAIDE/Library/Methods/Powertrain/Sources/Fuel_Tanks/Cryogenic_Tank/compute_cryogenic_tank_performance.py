@@ -11,8 +11,8 @@ from scipy.integrate import solve_ivp
 
 import RCAIDE
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak, compute_cryogenic_tank_heat_leak_cuboid
-
-R_UNIVERSAL = 8314.462618  # J/(kmol*K), i.e. J/(kg*K) per unit molecular weight in g/mol
+from RCAIDE.Framework.Core.Physical_Constants import UNIVERSAL_GAS_CONSTANT
+from RCAIDE.Framework.Core import Units
 
 # Skips re-solving when a fsolve probe couldn't have changed this tank's inputs.
 def _cache_key_matches(cached, current):
@@ -104,19 +104,11 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     tank_conditions = state.conditions.energy.sources[tag]
     fuel            = tank.fuel
 
-    max_heater_power = 10.0 * tank.design_total_heat_transfer
-    if network is not None:
-        for converter in getattr(network, 'converters', []):
-            if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) and \
-               getattr(converter, 'assigned_tank', None) == tag and converter.rated_power is not None:
-                max_heater_power = converter.rated_power
-                break
-
     t = np.ravel(state.numerics.time.control_points)
 
     (T_l_lo, T_l_hi), (P_lo, P_hi) = fuel.property_table_range(phase='liquid')
     (T_g_lo, T_g_hi), _            = fuel.property_table_range(phase='vapor')
-    R_specific = R_UNIVERSAL / fuel.molecular_weight  # J/(kg*K)
+    R_specific = UNIVERSAL_GAS_CONSTANT / fuel.molecular_weight  # J/(kg*K)
 
     # ------------------------------------------------------------------
     #  Driving-input trajectories at the mission's own (sparse) collocation
@@ -143,6 +135,14 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     cached    = getattr(tank_conditions, '_boil_off_solve_cache', None)
     if cached is not None and _cache_key_matches(cached[0], cache_key):
         return cached[1]
+
+    max_heater_power = 10.0 * tank.design_total_heat_transfer
+    if network is not None:
+        for converter in getattr(network, 'converters', []):
+            if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) and \
+               getattr(converter, 'assigned_tank', None) == tag and converter.rated_power is not None:
+                max_heater_power = converter.rated_power
+                break
 
     if t.size < 2:
         m_g0, m_l0, T_g0, T_l0 = (np.array([v]) for v in y0)
@@ -340,11 +340,11 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
 
     fuel_volume/ullage_volume (V_l/V_g) are NOT states here -- V_l = m_l/rho_l(T_l)
     is computed fresh from the current mass/temperature every call, and
-    V_g = gross_volume - V_l, rather than being integrated independently
-    (see compute_cryogenic_tank_performance_v1_integrated_volume_states.py.bak
-    for the earlier 6-state version this replaced: confirmed directly that the
-    two integrated volume states could drift out of consistency with mass
-    during completely ordinary draining, not just as a near-empty edge case).
+    V_g = gross_volume - V_l, rather than being integrated independently.
+    An earlier 6-state version integrated volume directly and was replaced
+    after confirming the two volume states could drift out of consistency
+    with mass during completely ordinary draining, not just as a near-empty
+    edge case (see git history for that version).
     Because -P*dV_l appears in the liquid energy balance, and dV_l is itself a
     function of dT_l through the chain rule on V_l(m_l, T_l), dT_l is solved
     in closed form as a linear equation rather than substituted naively.
@@ -401,7 +401,7 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # ------------------------------------------------------------------
     Z         = fuel.compressibility_factor(T_g_c, phase='vapor')
     P         = Z * (m_g_c / V_g_c) * R_specific * T_g_c   # Pa
-    P_clamped = np.clip(P / 1e6, P_lo, P_hi)                # table pressure column is in MPa
+    P_clamped = np.clip(P / Units.MPa, P_lo, P_hi)          # table pressure column is in MPa
     T_int     = fuel.saturation_temperature(P_clamped)
 
     # ------------------------------------------------------------------
@@ -549,8 +549,12 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # temperature (their Eq. 17 Q_h(1-eta_h) term) rather than boiling it
     # outright. m_dot_heater_boi*(h_g-h_l) is therefore only the eta_h-share
     # of the total heater power, not the total.
+    # eta_h=0.0 is a valid setting (heater only warms the bulk liquid, no direct
+    # flash-boiling) -- guarded against 0/0 here since m_dot_heater_boi is itself
+    # 0 whenever there's no regulation demand, which is most of a well-regulated
+    # mission. The physical limit there is 0 required power, not NaN.
     eta_h                 = tank.heater_direct_boiloff_fraction
-    heater_power_uncapped = m_dot_heater_boi * (h_g - h_l) / eta_h
+    heater_power_uncapped = m_dot_heater_boi * (h_g - h_l) / np.maximum(eta_h, 1e-9)
 
     # Cap at the real heater's rated power (max_heater_power) -- m_dot_reg has
     # no actuator limit of its own, so a large pressure error can otherwise
