@@ -53,3 +53,13 @@
 # warm-start block (thrust_coeff/wake_nodes_body read from conditions.energy.converters)
 # re-enabled (not commented out) -- without these, free_wake is prohibitively slow
 # regardless of which wake_inputs setup above is used.
+#
+# FULL-MISSION VALIDATION (2026-09-02/03): with the corrected battery pack configuration
+# (imported from Digital_Hangar/Tiltrotor_EVTOL) and descent_2 fixed (optimize, not
+# root_finder, objective=None, guess re-anchored to descent_1/descent_3), the complete
+# 14-segment Tiltrotor mission converges cleanly end-to-end under BOTH:
+#   - LL_prescribed (free_wake = False)
+#   - LL_free_wake, HYBRID setup above (free_wake = True, dpsi=15deg, n_turns=3.0,
+#     max_iter_Gammab_0=100, max_iter_CT_0=50, free_wake_max_iter=20)
+# confirmed by clean, continuous plots (throttle, AoA, CL/CD, altitude/airspeed) across
+# all segments with no jaggedness or convergence failures.
