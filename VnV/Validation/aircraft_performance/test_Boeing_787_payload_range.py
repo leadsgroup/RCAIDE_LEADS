@@ -52,12 +52,15 @@ def main():
     # ########################################### WARNING #################################################
     # #####################################################################################################
         
+    # Updated Aug 2026 after checking against the APM (see `apm` above): the ECS fix
+    # raises OEW ~470kg; payload/oew_plus_payload moved closer to real APM data,
+    # range slightly further (pre-existing cruise-efficiency gap, not from this PR).
     truth_values = {
-        "range":            np.array([       0.        , 10090424.13008407, 17488065.51305655, 18153977.03778774]),
-        "payload":          np.array([44000.        , 44000.        , 10271.2719788,     0.        ]),
-        "oew_plus_payload": np.array([160289.63081657, 160289.63081657, 126607.        , 116289.63081657]),
-        "fuel":             np.array([     0.        ,  67640.36918343, 101323.        , 101323.        ]),
-        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 217612.63081657]),
+        "range":            np.array([       0.        , 10002583.96824006, 17525602.70221074, 18079348.52693751]),
+        "payload":          np.array([44000.        , 44000.        ,  9847.68563847,     0.        ]),
+        "oew_plus_payload": np.array([160759.31436153, 160759.31436153, 126607.        , 116759.31436153]),
+        "fuel":             np.array([     0.        ,  67170.68563847, 101323.        , 101323.        ]),
+        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 218082.31436153]),
     }
     # ########################################### WARNING #################################################
     ###### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ################

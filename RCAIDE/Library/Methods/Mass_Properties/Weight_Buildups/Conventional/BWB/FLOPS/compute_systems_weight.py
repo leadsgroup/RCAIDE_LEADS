@@ -165,9 +165,16 @@ def compute_systems_weight(vehicle):
     RSPSOB      = 1.0
     ACABIN      = 0.5 * WF * (XLP + 0.6*XLW) #eq. 196
     FPAREA      = WF * (XL+XLW)/(2*RSPSOB)
-    NPASS       = vehicle.number_of_passengers
-    WAPU        = 54 * FPAREA ** 0.3 + 5.4 * NPASS ** 0.9  # apu weight
-    if vehicle.number_of_passengers >= 150:
+    NPASS       = vehicle.number_of_seats or vehicle.number_of_passengers
+
+    Systems     = RCAIDE.Library.Components.Powertrain.Systems
+    apus        = [s for network in vehicle.networks for s in network.systems if isinstance(s, Systems.Auxiliary_Power_Unit)]
+    apus_defined = [a for a in apus if not (a.mass_properties.mass == 0 or a.mass_properties.calculated_flag)]
+    if apus_defined:
+        WAPU = sum(a.mass_properties.mass for a in apus_defined) / Units.lbs  # use the real, defined APU mass(es)
+    else:
+        WAPU = 54 * FPAREA ** 0.3 + 5.4 * NPASS ** 0.9  # apu weight
+    if NPASS >= 150:
         NFLCR = 3  # number of flight crew
     else:
         NFLCR = 2
@@ -188,10 +195,9 @@ def compute_systems_weight(vehicle):
     WAC     = (3.2 * (FPAREA * DF) ** 0.6 + 9 * NPASS ** 0.83) * VMAX + 0.075 * WAVONC  # ac weight
     WAI     = ref_wing.spans.projected / Units.ft * 1. / np.cos(ref_wing.sweeps.quarter_chord) + 3.8 * FNAC * NENG + 1.5 * WF  # anti-ice weight
     
-    Systems = RCAIDE.Library.Components.Powertrain.Systems 
     W_water_tank = 0
 
-    for network in  vehicle.networks: 
+    for network in  vehicle.networks:
         for system in network.systems: 
             if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:   
                 if isinstance(system, Systems.Avionics):
@@ -216,8 +222,6 @@ def compute_systems_weight(vehicle):
                     WAVONC = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Flight_Controls):
                     WSC    = system.mass_properties.mass / Units.lbs
-                elif isinstance(system, Systems.Auxiliary_Power_Unit):
-                    WAPU   += system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Electrical):
                     WELEC  = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Hydraulics):

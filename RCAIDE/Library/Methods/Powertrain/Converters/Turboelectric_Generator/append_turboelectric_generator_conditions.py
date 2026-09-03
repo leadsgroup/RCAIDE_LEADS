@@ -2,6 +2,7 @@
 # 
 # Created:  Feb 2025, M. Clarke  
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_conditions import append_converter_power_conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_turboelectric_generator_conditions
@@ -29,30 +30,10 @@ def append_turboelectric_generator_conditions(turboelectric_generator,segment):
     the respective append_operating_conditions methods for each subcomponent.
     """
 
-    ones_row    = segment.state.ones_row   
- 
-    segment.state.conditions.energy.converters[turboelectric_generator.tag] = Conditions()
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs                         = Conditions()
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].fuel_mass_flow_rate     = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs                        = Conditions() 
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs.power                   = Conditions()
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs.power                  = Conditions()
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs.power.propulsive        = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs.power.mechanical        = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs.power.electrical        = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs.power.chemical          = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs.power.pneumatic         = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs.power.hydraulic         = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs.power.thermal           = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs.power.propulsive       = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs.power.mechanical       = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs.power.electrical       = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs.power.chemical         = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs.power.pneumatic        = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs.power.hydraulic        = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs.power.thermal          = 0 * ones_row(1)
+    ones_row  = segment.state.ones_row
+    teg_conditions = append_converter_power_conditions(turboelectric_generator, segment)
+    teg_conditions.fuel_mass_flow_rate = 0. * ones_row(1)
 
-  
     turboshaft = turboelectric_generator.turboshaft
     generator  = turboelectric_generator.generator
     turboshaft.append_operating_conditions(segment)

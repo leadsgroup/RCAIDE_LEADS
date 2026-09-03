@@ -222,6 +222,14 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     # ----------------------------------------------------------------------------
     external_shaft_work       =  0*state.ones_row(1)
     lpc_conditions.omega      = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
+    # external_shaft_work below is a power (W), but compute_turbine_performance
+    # sums it with compressor/fan work, which is specific work (J/kg) -- divide
+    # by mass flow to convert. core_mass_flow_rate isn't set yet this early in
+    # the cycle (compute_thrust sets it later), so use the previous iterate's
+    # value, falling back to the design mass flow rate before any iterate has run.
+    shaft_power_mass_flow_rate = getattr(turbofan_conditions, 'core_mass_flow_rate', None)
+    if shaft_power_mass_flow_rate is None or np.all(shaft_power_mass_flow_rate == 0):
+        shaft_power_mass_flow_rate = turbofan.design_mass_flow_rate * state.ones_row(1)
 
     # Motor: consumes electrical power from the bus, delivers mechanical power to the shaft
     if integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
@@ -246,8 +254,8 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
         motor_conditions.outputs.omega                     = lpc_conditions.omega
         motor_conditions.outputs.torque                    = motor_mechanical_power / lpc_conditions.omega
 
-        # Motor delivers power to shaft (negative = reduces turbine burden)
-        external_shaft_work -= motor_mechanical_power
+        # Motor delivers power to shaft 
+        external_shaft_work -= motor_mechanical_power / shaft_power_mass_flow_rate
             
     if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
         IDG_conditions = conditions.energy.converters[integrated_drive_generator.tag]
@@ -269,8 +277,8 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
         IDG_conditions.inputs.omega                        = lpc_conditions.omega
         IDG_conditions.inputs.torque                       = generator_mechanical_power / lpc_conditions.omega
 
-        # Generator extracts mechanical power from the shaft (positive = more turbine work needed)
-        external_shaft_work += generator_mechanical_power
+        # Generator extracts mechanical power from the shaft 
+        external_shaft_work += generator_mechanical_power / shaft_power_mass_flow_rate
 
     # ----------------------------------------------------------------------------
     # Compute Turbofan Performance

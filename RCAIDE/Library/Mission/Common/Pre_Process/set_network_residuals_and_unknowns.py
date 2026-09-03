@@ -62,8 +62,9 @@ def set_network_residuals_and_unknowns(mission):
                             return True
                 return False
 
+            # Ground ops: no real IDG demand to solve for, skip the circularity unknown.
             has_electrical_power_circularity = False
-            for network in segment.analyses.vehicle.networks:
+            for network in ([] if getattr(segment, 'ground_operations', False) else segment.analyses.vehicle.networks):
                 for propulsor in network.propulsors:
                     idg = getattr(propulsor, 'integrated_drive_generator', None)
                     idm = getattr(propulsor, 'integrated_drive_motor', None)

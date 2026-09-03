@@ -48,3 +48,4 @@ from .Vacuum_Cellular_Multilayer_Insulation import Vacuum_Cellular_Multilayer_In
 from .Vacuum_Jacketed_Multilayer_Insulation import Vacuum_Jacketed_Multilayer_Insulation
 from .Polyurethane_Foam                     import Polyurethane_Foam
 from .Stainless_Steel_304                   import Stainless_Steel_304
+from .Stainless_Steel_316                   import Stainless_Steel_316
