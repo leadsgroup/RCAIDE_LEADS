@@ -5,6 +5,8 @@
 # ----------------------------------------------------------------------
 from RCAIDE.Framework.Core import  Data
 from .apply_airfoil_thickness_multiplier import apply_airfoil_thickness_multiplier
+from functools import lru_cache
+from copy import deepcopy
 import numpy as np
 from scipy import interpolate
 
@@ -38,7 +40,12 @@ def import_airfoil_geometry(airfoil_geometry_file, npoints = 201, surface_interp
     Properties Used:
     N/A
     """
+    # Callers store/mutate the returned Data freely (e.g. wing.airfoil.geometry = ...), so the
+    # cached result is deep-copied out -- caching only skips the repeated file parse + spline fit.
+    return deepcopy(_import_airfoil_geometry_cached(airfoil_geometry_file, npoints, surface_interpolation, thickness_multiplier))
 
+@lru_cache(maxsize=None)
+def _import_airfoil_geometry_cached(airfoil_geometry_file, npoints = 201, surface_interpolation = 'cubic', thickness_multiplier = 1.0):
     if npoints%2 != 1:
         npoints+= 1
         print('Number of points must be odd, changing to ' + str(npoints) + ' points')

@@ -146,7 +146,7 @@ def form_drag(state,settings,geometry):
     CL               = conditions.aerodynamics.coefficients.lift.total
     high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number
     low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number
-    CD_form          = 0
+    CD_form          = np.zeros_like(Mach)
 
     # supersonic smoothing
     sup_spline = Cubic_Spline_Blender(low_mach_cutoff,high_mach_cutoff)
@@ -167,12 +167,10 @@ def form_drag(state,settings,geometry):
                               0.01136504, 0.01303240, 0.01495724, 0.01845308, 0.02204719, 0.02544638,
                               0.02673925, 0.02979446, 0.03389191])
 
-    # The values in CD_sep_data are already scaled by the Mach-spline and area weighting,
-    # so we don't need to apply those again here.
 
     for wing in geometry.wings:
         is_bwb = isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body)
-        if not wing.vertical: #and not is_bwb:
+        if not wing.vertical and not is_bwb:
             CD_form_wing = 0
             CD_sep       = np.interp(CL, CD_sep_CL, CD_sep_data)
             segs = list(wing.segments.keys())
