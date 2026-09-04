@@ -113,6 +113,12 @@ def flight_dynamics(segment):
     ground_seg_flag =  (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Landing) or\
         (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Takeoff) or \
         (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Ground)
+    # Taxi holds a fixed ground_velocity (no velocity-ramp unknown), so it
+    # doesn't need ground_seg_flag's final_velocity_error residual -- but it
+    # still needs the inertial-frame force balance, since that's the frame
+    # Update.ground_forces adds rolling friction into (the wind-frame total
+    # force never sees that term).
+    taxi_seg_flag = type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Taxi
 
     if transition_seg_flag or ground_seg_flag: 
         v       = segment.state.conditions.frames.inertial.velocity_vector
@@ -142,11 +148,14 @@ def flight_dynamics(segment):
             
     if ground_seg_flag:
         vf = segment.velocity_end
-        if vf == 0.0: vf = 0.01 
-        segment.state.residuals.mission.force_x[:,0] = FT_i[1:,0]/m[1:,0] - a_i[1:,0] 
+        if vf == 0.0: vf = 0.01
+        segment.state.residuals.mission.force_x[:,0] = FT_i[1:,0]/m[1:,0] - a_i[1:,0]
         segment.state.residuals.mission.final_velocity_error = (v[-1,0] - vf)
-    else: 
-        if segment.flight_dynamics.force_x: 
+    elif taxi_seg_flag:
+        if segment.flight_dynamics.force_x:
+            segment.state.residuals.mission.force_x[:,0] = FT_i[:,0]/m[:,0] - a_i[:,0]
+    else:
+        if segment.flight_dynamics.force_x:
             segment.state.residuals.mission.force_x[:,0] = FT_w[:,0]/m[:,0] - a_w[:,0]  
         if segment.flight_dynamics.force_y: 
             segment.state.residuals.mission.force_y[:,0] = FT_w[:,1]/m[:,0] - a_w[:,1]  

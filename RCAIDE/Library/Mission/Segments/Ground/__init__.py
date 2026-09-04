@@ -20,4 +20,7 @@ RCAIDE.Library.Mission.Segments.Descent
 from . import Takeoff
 from . import Landing
 from . import Battery_Charge_Discharge
+from . import Dormancy
+from . import Refuel
+from . import Taxi
 from . import Test_Stand

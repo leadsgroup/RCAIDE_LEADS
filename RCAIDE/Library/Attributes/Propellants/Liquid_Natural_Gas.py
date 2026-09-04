@@ -7,11 +7,14 @@
 #  Imports
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
-from .Propellant import Propellant   
+from .Propellant import Propellant
+from RCAIDE.Framework.Core.Physical_Constants import UNIVERSAL_GAS_CONSTANT
+from RCAIDE.Framework.Core import Units
 
 import os
 import numpy as np
-from scipy.interpolate  import interp1d 
+from functools          import lru_cache
+from scipy.interpolate  import interp1d
 # ----------------------------------------------------------------------------------------------------------------------
 #  Liquid_Natural_Gas Class
 # ----------------------------------------------------------------------------------------------------------------------
@@ -174,7 +177,7 @@ class Liquid_Natural_Gas(Propellant):
 
         self.materials_properties = self.cryogen_properties()
 
-    def cryogen_properties(self, T, prop_name):
+    def cryogen_properties(self, T, prop_name, phase='liquid'):
         """
         Return an interpolated LNG thermophysical property value at a given temperature.
 
@@ -200,6 +203,8 @@ class Liquid_Natural_Gas(Propellant):
                 - ``"Viscosity (Pa*s)"``
                 - ``"Therm. Cond. (W/m*K)"``
                 - ``"Phase"``
+        phase : str
+            Saturation branch to interpolate along, 'liquid' or 'vapor' (default 'liquid').
 
         Returns
         -------
@@ -210,24 +215,75 @@ class Liquid_Natural_Gas(Propellant):
         -----
         * Property data is loaded from ``LNG_properties.res`` via
           :func:`load_lng_properties`.
+        * The table holds both saturated-liquid and saturated-vapor rows at the same
+          temperatures, so it is filtered to ``phase`` before interpolating.
         * Linear interpolation is applied between tabulated data points.
         * Extrapolation outside the tabulated temperature range is not supported
           (``fill_value=None``).
-        * The ``"Phase"`` column is categorical and is not suitable for
-          numerical interpolation.
 
         See Also
         --------
         load_lng_properties
         """
-        data = load_lng_properties()
-        temps = np.array(data["Temperature (K)"], dtype=float)
-        props = np.array(data[prop_name], dtype=float)
-        interp = interp1d(temps, props, kind="linear", fill_value=None)
-        
-        return interp(T)
+        return _property_interpolator(prop_name, phase)(T)
 
-def load_lng_properties(): 
+    def saturation_temperature(self, P):
+        """
+        Invert the saturated-liquid branch of the property table to return the
+        saturation temperature at a given pressure.
+
+        Parameters
+        ----------
+        P : float or ndarray
+            Pressure(s) in MPa at which the saturation temperature is requested.
+
+        Returns
+        -------
+        T_sat : float or ndarray
+            Saturation temperature(s) [K].
+        """
+        return _saturation_temperature_interpolator()(P)
+
+    def property_table_range(self, phase='liquid'):
+        """
+        Valid (min, max) temperature [K] and pressure [MPa] range of the
+        saturated-property table, for clamping solver iterates before they hit
+        the table's hard edges (the table does not extrapolate).
+        """
+        data = load_lng_properties()
+        phase_mask = np.array(data["Phase"]) == phase
+        temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
+        pressures = np.array(data["Pressure (MPa)"], dtype=float)[phase_mask]
+        return (temps.min(), temps.max()), (pressures.min(), pressures.max())
+
+    def compressibility_factor(self, T, phase='vapor'):
+        """
+        Real-gas compressibility factor Z = P/(rho*R*T), evaluated along the
+        saturation dome from the table's own (real) saturated density and
+        pressure at temperature T. An ideal-gas EOS (Z=1) underpredicts
+        pressure substantially near saturation; multiplying an ideal-gas
+        pressure estimate by this Z corrects for that without a new fluid-
+        property dependency.
+
+        Parameters
+        ----------
+        T : float or ndarray
+            Temperature(s) in Kelvin.
+        phase : str
+            Saturation branch to evaluate on (default 'vapor', the ullage).
+
+        Returns
+        -------
+        Z : float or ndarray
+            Compressibility factor (dimensionless).
+        """
+        R_specific = UNIVERSAL_GAS_CONSTANT / self.molecular_weight  # J/(kg*K)
+        P_sat   = self.cryogen_properties(T, "Pressure (MPa)", phase=phase) * Units.MPa
+        rho_sat = self.cryogen_properties(T, "Density (kg/m3)", phase=phase)
+        return P_sat / (rho_sat * R_specific * T)
+
+@lru_cache(maxsize=1)
+def load_lng_properties():
     """
     Load liquid natural gas property data from the RES file.
 
@@ -254,6 +310,23 @@ def load_lng_properties():
     """
     ospath    = os.path.abspath(__file__)
     separator = os.path.sep
-    rel_path  = os.path.dirname(ospath) + separator     
+    rel_path  = os.path.dirname(ospath) + separator
 
     return RCAIDE.load(rel_path+ 'LNG_properties.res')
+
+# Cached: cryogen_properties calls this many times per boil-off RHS evaluation.
+@lru_cache(maxsize=None)
+def _property_interpolator(prop_name, phase):
+    data = load_lng_properties()
+    phase_mask = np.array(data["Phase"]) == phase
+    temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
+    props = np.array(data[prop_name], dtype=float)[phase_mask]
+    return interp1d(temps, props, kind="linear", fill_value=None)
+
+@lru_cache(maxsize=None)
+def _saturation_temperature_interpolator():
+    data = load_lng_properties()
+    phase_mask = np.array(data["Phase"]) == 'liquid'
+    temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
+    pressures = np.array(data["Pressure (MPa)"], dtype=float)[phase_mask]
+    return interp1d(pressures, temps, kind="linear", fill_value=None)

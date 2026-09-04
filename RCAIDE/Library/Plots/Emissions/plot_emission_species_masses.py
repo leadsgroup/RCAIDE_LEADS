@@ -88,7 +88,11 @@ def plot_emission_species_masses(results,
         t = seg.conditions.frames.inertial.time[:, 0] / Units.min
         time_all.append(t)
         for k, attr in [('CO2', 'CO2'), ('CO', 'CO'), ('NOx', 'NOx'), ('H2O', 'H2O')]:
-            seg_vals = getattr(seg.conditions.emissions.mass, attr)[:, 0] / 1E3
+            if hasattr(seg.conditions.emissions.mass, attr):
+                seg_vals = getattr(seg.conditions.emissions.mass, attr)[:, 0] / 1E3
+            else:
+                # ground segment (e.g. Dormancy, Refuel): no combustion, zero emissions
+                seg_vals = np.zeros_like(t)
             mass[k].append(seg_vals + running[k])
             running[k] += seg_vals[-1]
 

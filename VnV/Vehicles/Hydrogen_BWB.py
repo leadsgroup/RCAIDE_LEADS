@@ -735,6 +735,26 @@ def vehicle_setup() :
     reserve_pump.distributor_split                = 0
     net.converters.append(reserve_pump)
 
+    #-------------------------------------------------------------------------------------------------------------------------
+    #  HEATERS (draw electrical power off electrical_line for each tank's pressure-builder heater duty,
+    #  already computed by that tank's own quasi-steady boil-off physics -- see compute_heater_performance)
+    #-------------------------------------------------------------------------------------------------------------------------
+    for tank_tag in ['tank_1l_1r', 'tank_2l_2r', 'tank_3l_3r']:
+        tank_heater                        = RCAIDE.Library.Components.Powertrain.Converters.Heater()
+        tank_heater.tag                    = tank_tag + '_heater'
+        tank_heater.assigned_tank          = tank_tag
+        tank_heater.assigned_distributors  = [[electrical_line.tag]]
+        tank_heater.identical_converters   = False
+        net.converters.append(tank_heater)
+
+    if rotor_burst_bound >= cabin_bound:
+        aft_tank_heater                       = RCAIDE.Library.Components.Powertrain.Converters.Heater()
+        aft_tank_heater.tag                   = 'aft_tank_heater'
+        aft_tank_heater.assigned_tank         = 'aft_tank'
+        aft_tank_heater.assigned_distributors = [[electrical_line.tag]]
+        aft_tank_heater.identical_converters  = False
+        net.converters.append(aft_tank_heater)
+
     #------------------------------------------------------------------------------------------------------------------------------------
     # Append fuel line and electrical buses to network
     net.distributors.append(fuel_line)
@@ -769,12 +789,23 @@ def configs_setup(vehicle):
 
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'cruise'
-    configs.append(config) 
+    configs.append(config)
 
+    # ------------------------------------------------------------------
+    #   Dormancy / Refuel Configuration (stationary, ground ops)
+    # ------------------------------------------------------------------
+
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'dormancy'
+    configs.append(config)
+
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'refuel'
+    configs.append(config)
 
     # ------------------------------------------------------------------
     #   Initialize Configurations
-    # ------------------------------------------------------------------ 
+    # ------------------------------------------------------------------
     config = RCAIDE.Library.Components.Configs.Config(vehicle)
     config.tag = 'idle' 
     config.networks.fuel.propulsors['propulsor_1'].combustor.fuel_data.emission_indices.NOx      = 4.85 /1000
