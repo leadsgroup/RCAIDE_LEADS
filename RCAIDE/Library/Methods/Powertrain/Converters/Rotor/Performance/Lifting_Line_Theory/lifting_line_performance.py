@@ -189,8 +189,8 @@ def lifting_line_performance(rotor, conditions):
     rotor_obj = conditions.energy.converters[rotor.tag]
 
     # 2. Safely get the attribute or None if it's missing
-    thrust_coeff    = getattr(rotor_obj, "thrust_coefficient_rotor", None)
-    wake_nodes_body = getattr(rotor_obj, "wake_nodes_body", None)
+    thrust_coeff           = getattr(rotor_obj, "thrust_coefficient_rotor", None)
+    wake_nodes_hub_relaxed = getattr(rotor_obj, "wake_nodes_hub_relaxed", None)
 
     # 3. Apply the value if it exists, is not None, and matches this call's shape
     if thrust_coeff is not None and np.shape(thrust_coeff) == (ctrl_pts, 1):
@@ -200,9 +200,21 @@ def lifting_line_performance(rotor, conditions):
     #  Step 2: Wake geometry
     # ------------------------------------------------------------------------------------------------------------------
     initialize_wake_geometry(rotor, wake_inputs, conditions)
-    # overwriting the cold-start geometry with the previous converged one if shape-compatible
-    if wake_nodes_body is not None and np.shape(wake_nodes_body) == np.shape(rotor.blades.wake.nodes_body):
-        rotor.blades.wake.nodes_body = wake_nodes_body
+    # Warm-start via the HUB-FRAME (orientation-independent) shape, not the body-frame array
+    # directly. rotor.origin (translation) never changes with commanded tilt, and neither does
+    # the blade-tip position in the rotor's own disk-plane frame -- only the rotation
+    # T_thrust2body changes when thrust_vector_angle is solved/varies point-to-point (climb,
+    # transitions). Pasting the OLD body-frame array in directly (previous approach) carried the
+    # OLD rotation baked in: correct when orientation happens to be unchanged between calls
+    # (cruise, hover, Vertical_Climb/Descent), silently wrong when it isn't. Un-rotating the
+    # warm-started shape back to hub frame with the CURRENT T_thrust2body, then re-rotating with
+    # the CURRENT T_thrust2body, keeps the relaxed deformation pattern (the actual expensive
+    # part to (re)compute -- speed preserved) while making the wake root and every other point
+    # consistently anchored/oriented for THIS call, with no translation gap or rotational kink.
+    if wake_nodes_hub_relaxed is not None and np.shape(wake_nodes_hub_relaxed) == np.shape(rotor.blades.wake.nodes_hub):
+        T_thrust2body = orientation_transpose(wake_inputs.T_body2thrust)
+        hub_origin    = np.array(rotor.origin[0]).reshape(1, 1, 1, 3)
+        rotor.blades.wake.nodes_body = np.einsum('cij,cwbj->cwbi', T_thrust2body, wake_nodes_hub_relaxed) + hub_origin
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 3: Bound vortex circulation iteration

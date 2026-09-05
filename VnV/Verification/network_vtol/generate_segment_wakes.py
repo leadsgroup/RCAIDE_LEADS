@@ -23,6 +23,7 @@ import sys
 import pickle
 import time
 
+import numpy as np
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots import plot_3d_vehicle
@@ -77,7 +78,7 @@ def extract_wakes(vehicle_config, debug=False):
     return wakes
 
 
-def main(segments_to_run=None, pop_up_plot=False, wake_control_point=0, wake_tube_radius=0.03):
+def main(segments_to_run=None, pop_up_plot=False, wake_control_point=3, wake_tube_radius=0.02):
     vehicle  = TR_vehicle_setup(redesign_rotors=False)
     configs  = TR_configs_setup(vehicle)
     analyses = TR_analyses_setup(configs)
@@ -117,6 +118,39 @@ def main(segments_to_run=None, pop_up_plot=False, wake_control_point=0, wake_tub
         solved_vehicle = getattr(seg_result.analyses, 'vehicle', None) or configs[config_name]
         wakes          = extract_wakes(solved_vehicle, debug=True)
 
+        # Absolute (total) commanded thrust vector angle per point/rotor. IMPORTANT:
+        # conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle is the RAW
+        # SOLVED DELTA ONLY (confirmed in Unpack_Unknowns/energy.py:32 -- it's a straight
+        # assignment from segment.state.unknowns.mission["thrust_vector_angle_i"], never
+        # combined with the config's own orientation_euler_angles[1] baseline). The real
+        # aero transform (Rotor.body_to_prop_vel) adds the baseline internally, but this
+        # reported field never does -- so we must add the baseline ourselves here to get
+        # the true absolute angle. Read the baseline BEFORE any mutation (this loop runs
+        # before the plot-time override below touches orientation_euler_angles).
+        #
+        # Also iterate ALL propulsors here, not just wakes.keys() -- whether a rotor got its
+        # own nodes_body array and whether it has solved orientation conditions are two
+        # separate questions (plot_3d_vehicle can borrow another rotor's wake shape for
+        # display when a rotor's own nodes_body is missing, so wakes.keys() alone doesn't
+        # tell us which rotors actually have real per-rotor conditions).
+        tilt_deg = {}
+        converters = getattr(getattr(seg_result, 'conditions', None), 'energy', {}).get('converters', {}) if hasattr(seg_result, 'conditions') else {}
+        for prop_tag, propulsor in solved_vehicle.networks.electric.propulsors.items():
+            rotor_tag    = propulsor.rotor.tag
+            baseline_deg = np.degrees(propulsor.rotor.orientation_euler_angles[1])
+            has_wake     = prop_tag in wakes
+            conv         = converters.get(rotor_tag, None) if converters else None
+            delta        = conv.get('commanded_thrust_vector_angle', None) if conv is not None else None
+            if delta is not None:
+                delta_deg = np.degrees(np.asarray(delta)).flatten()
+                tilt_deg[prop_tag] = (baseline_deg + delta_deg).tolist()
+                print(f"  [debug] {prop_tag}: has_wake={has_wake}, baseline={baseline_deg:.1f} deg, "
+                      f"delta[0]={delta_deg[0]:.1f} deg, absolute[0]={tilt_deg[prop_tag][0]:.1f} deg", flush=True)
+            else:
+                print(f"  [debug] {prop_tag}: has_wake={has_wake}, has_tilt_condition=False "
+                      f"(rotor_tag='{rotor_tag}', converters keys={list(converters.keys()) if converters else '[]'})",
+                      flush=True)
+
         payload = {
             'segment_tag':  tag,
             'config_name':  config_name,
@@ -124,6 +158,7 @@ def main(segments_to_run=None, pop_up_plot=False, wake_control_point=0, wake_tub
             'elapsed_min':  elapsed,
             'wake_inputs':  dict(configs[config_name].networks.electric.propulsors['front_port_propulsor'].rotor.wake_inputs),
             'wakes':        wakes,   # {propulsor_tag: nodes_body array, shape (ctrl_pts, N_wake+1, B, 3)}
+            'thrust_vector_angle_deg': tilt_deg,  # {propulsor_tag: [deg per control point]}
         }
 
         out_path = os.path.join(out_dir, f"{tag}.pkl")
@@ -137,9 +172,32 @@ def main(segments_to_run=None, pop_up_plot=False, wake_control_point=0, wake_tub
             # continue to the next segment (plotter.show() blocks until closed).
             # Uses solved_vehicle (see note above), not configs[config_name], so the
             # wake actually shows up for hp-decomposed segments too.
+            point = wake_control_point
+
+            # plot_3d_vehicle draws the rotor BLADES from the static config
+            # orientation_euler_angles (baseline tilt only) -- it has no access to the
+            # per-point solved commanded_thrust_vector_angle, unlike the wake filaments
+            # (which already bake the true solved tilt into nodes_body). For any segment
+            # where thrust_vector_angle is actively solved away from the config baseline,
+            # that makes the rendered blades visibly disagree with the wake direction.
+            # Fix here (not in the shared plot_3d_vehicle.py) by overwriting each rotor's
+            # orientation to match the actual solved angle at the plotted control point.
+            print(f"  applying orientation overrides at control point {point}:", flush=True)
+            for prop_tag, propulsor in solved_vehicle.networks.electric.propulsors.items():
+                rotor  = propulsor.rotor
+                before = np.degrees(rotor.orientation_euler_angles[1])
+                if prop_tag in tilt_deg:
+                    angles = tilt_deg[prop_tag]
+                    idx    = min(point, len(angles) - 1)
+                    rotor.orientation_euler_angles[1] = np.radians(angles[idx])
+                    after  = angles[idx]
+                    print(f"    {prop_tag}: {before:.1f} deg -> {after:.1f} deg", flush=True)
+                else:
+                    print(f"    {prop_tag}: SKIPPED (no tilt_deg entry -- still at {before:.1f} deg)", flush=True)
+
             plot_3d_vehicle(solved_vehicle,
                              plot_wake           = True,
-                             wake_control_point   = wake_control_point,
+                             wake_control_point   = point,
                              wake_tube_radius     = wake_tube_radius,
                              show_figure          = True,
                              save_figure          = False)
@@ -152,11 +210,11 @@ if __name__ == '__main__':
     # run a subset, e.g.: python generate_segment_wakes.py cruise
     # Add --plot to pop up an interactive 3D wake view (mouse rotate/zoom) after each
     # segment, e.g.: python generate_segment_wakes.py Vertical_Climb --plot
-    # Add --radius=<value> to override the default wake_tube_radius (0.03 m), e.g.:
+    # Add --radius=<value> to override the default wake_tube_radius (0.02 m), e.g.:
     # python generate_segment_wakes.py Vertical_Climb --plot --radius=0.05
     args   = sys.argv[1:]
     pop_up = '--plot' in args
-    radius = 0.03
+    radius = 0.02
     for a in args:
         if a.startswith('--radius='):
             radius = float(a.split('=', 1)[1])

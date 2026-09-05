@@ -428,9 +428,16 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 rotor_drag_coefficient            = Crd,
                 blade_pitch_command               = pitch_c,
                 commanded_thrust_vector_angle     = commanded_TV, 
-                figure_of_merit                   = FM, 
-                wake_nodes_body                   = rotor.blades.wake.nodes_body,
-        )  
+                figure_of_merit                   = FM,
+                # Saved in HUB frame (orientation-independent), not body frame -- see the
+                # warm-start read side in lifting_line_performance.py for why: un-rotating here
+                # with THIS call's own T_body2thrust (still valid/consistent at this point,
+                # before any later call changes the commanded orientation) lets the next call
+                # re-rotate with ITS current orientation instead of inheriting this one's.
+                wake_nodes_hub_relaxed            = np.einsum('cij,cwbj->cwbi', T_body2thrust,
+                                                               rotor.blades.wake.nodes_body
+                                                               - np.array(rotor.origin[0]).reshape(1, 1, 1, 3)),
+        )
 
     return 
 
