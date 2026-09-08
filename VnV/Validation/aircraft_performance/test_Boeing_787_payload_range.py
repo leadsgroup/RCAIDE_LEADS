@@ -55,8 +55,16 @@ def main():
     # Updated Aug 2026 after checking against the APM (see `apm` above): the ECS fix
     # raises OEW ~470kg; payload/oew_plus_payload moved closer to real APM data,
     # range slightly further (pre-existing cruise-efficiency gap, not from this PR).
+    #
+    # Updated Sep 2026 after the form_drag.py CD_sep rework (CRM-derived CL lookup table,
+    # no aspect-ratio correction for non-CRM airframes -- see form_drag.py docstring).
+    # payload/oew_plus_payload/fuel/takeoff_weight are unaffected (exact match); only range
+    # moved, flipping the pre-existing cruise-efficiency gap from under-predicting the APM
+    # (-1.8% to -2.4%) to over-predicting it (+0.9% to +2.7%) -- a comparable-magnitude,
+    # opposite-sign gap, not a fix. Accepted as the expected tradeoff of a correlation fit
+    # to one reference aircraft (CRM) being applied to a different planform (787).
     truth_values = {
-        "range":            np.array([       0.        , 10002583.96824006, 17525602.70221074, 18079348.52693751]),
+        "range":            np.array([       0.        , 10358662.01764413, 18070001.55248218, 18689954.83624262]),
         "payload":          np.array([44000.        , 44000.        ,  9847.68563847,     0.        ]),
         "oew_plus_payload": np.array([160759.31436153, 160759.31436153, 126607.        , 116759.31436153]),
         "fuel":             np.array([     0.        ,  67170.68563847, 101323.        , 101323.        ]),

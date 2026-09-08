@@ -59,7 +59,7 @@ def main():
     cruise_elevator       = results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
     cruise_aileron        = results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
     cruise_rudder         = results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
-    cruise_elevator_true  = -1.2801567533653204
+    cruise_elevator_true  = -1.2899769221036859
     cruise_aileron_true   = -7.660066661814855
     cruise_rudder_true    = 14.06335960790088
     print('Cruise elevator:', cruise_elevator, 'aileron:', cruise_aileron, 'rudder:', cruise_rudder)
@@ -71,7 +71,7 @@ def main():
     # Cruise 2 segment (2-DOF longitudinal only)
     # ------------------------------------------------------------------
     cruise2_throttle       = results.segments.cruise_2.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    cruise2_throttle_true  = 0.5282772484484782
+    cruise2_throttle_true  = 0.491661137864161
     print('Cruise 2 throttle:', cruise2_throttle)
     assert np.abs((cruise2_throttle - cruise2_throttle_true) / cruise2_throttle_true) < 5e-3
 
@@ -79,7 +79,7 @@ def main():
     # Cruise 3 segment (6-DOF with sideslip = 10 deg)
     # ------------------------------------------------------------------
     cruise3_throttle       = results.segments.cruise_3.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    cruise3_throttle_true  = 0.7179143078154885
+    cruise3_throttle_true  = 0.6729500171889758
     print('Cruise 3 throttle:', cruise3_throttle)
     assert np.abs((cruise3_throttle - cruise3_throttle_true) / cruise3_throttle_true) < 5e-3
 
@@ -89,7 +89,7 @@ def main():
     cw_elevator       = results.segments.cruise_crosswind.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
     cw_aileron        = results.segments.cruise_crosswind.conditions.control_surfaces.aileron.deflection[0,0]  / Units.deg
     cw_rudder         = results.segments.cruise_crosswind.conditions.control_surfaces.rudder.deflection[0,0]   / Units.deg
-    cw_elevator_true  = -1.2925852612272133
+    cw_elevator_true  = -1.3019677531930047
     cw_aileron_true   = -7.655548544445317
     cw_rudder_true    = 14.064149405090152
     print('Crosswind elevator:', cw_elevator, 'aileron:', cw_aileron, 'rudder:', cw_rudder)
@@ -104,7 +104,7 @@ def main():
     fs_elevator       = results.segments.cruise_free_sideslip.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
     fs_aileron        = results.segments.cruise_free_sideslip.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
     fs_rudder         = results.segments.cruise_free_sideslip.conditions.control_surfaces.rudder.deflection[0,0]  / Units.deg
-    fs_elevator_true  = -1.28807396586814
+    fs_elevator_true  = -1.296188721309234
     print('Free sideslip beta:', fs_sideslip, 'elevator:', fs_elevator, 'rudder:', fs_rudder, 'aileron:', fs_aileron)
     assert np.abs(fs_sideslip) < 1e-6
     assert np.abs(fs_aileron)  < 1e-6

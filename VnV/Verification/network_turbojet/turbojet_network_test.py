@@ -61,7 +61,7 @@ def main():
     L_D = (CL / CD).mean()
 
     # Truth values
-    L_D_truth = 7.503217086474397
+    L_D_truth = 7.520213799129358
 
     # Store errors
     error     = Data()
