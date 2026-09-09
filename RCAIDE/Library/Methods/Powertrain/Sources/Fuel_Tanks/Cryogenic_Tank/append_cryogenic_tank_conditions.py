@@ -23,20 +23,28 @@ def append_cryogenic_tank_conditions(tank, segment):
     (``tank.volume_properties.net_volume`` is the liquid fuel volume, ullage excluded).
     The ullage is initialized at the same temperature as the liquid.
 
-    Initial liquid mass is computed directly from ``net_volume x liquid density at
-    design_inlet_temperature`` -- NOT read from ``tank.fuel.mass_properties.mass`` --
-    for the same reason ullage mass is computed from the real-gas EOS below rather
-    than from a stored attribute: this method runs during the ``energy`` Pre_Process
-    step (``RCAIDE.Library.Mission.Common.Pre_Process.energy``), which executes
-    *before* the ``mass_properties`` step
+    Initial liquid mass defaults to the design-basis full tank (``net_volume x
+    liquid density at design_inlet_temperature``), computed directly rather than
+    read from ``tank.fuel.mass_properties.mass``: this method runs during the
+    ``energy`` Pre_Process step (``RCAIDE.Library.Mission.Common.Pre_Process.energy``),
+    which executes *before* the ``mass_properties`` step
     (``RCAIDE.Library.Mission.Common.Pre_Process.mass_properties``) that calls
-    ``compute_fuel_mass`` to populate ``tank.fuel.mass_properties.mass``. Reading that
-    attribute here would silently pick up whatever stale/zero value it happened to
-    hold before sizing -- confirmed directly: it read back as exactly 0 kg for two of
-    the Hydrogen_BWB's three active tanks, which then integrated negative from the
-    very first engine offtake. Deriving m_l_0 the same way rho_l is derived everywhere
-    else in this model (``fuel.cryogen_properties(..., phase='liquid')``) makes it
-    correct regardless of Pre_Process ordering, exactly like m_g_0 below.
+    ``compute_fuel_mass`` to (re)populate ``tank.fuel.mass_properties.mass`` from
+    tank geometry -- reading that attribute unconditionally here would silently
+    pick up whatever stale/zero value it happened to hold before sizing;
+    confirmed directly: it read back as exactly 0 kg for two of the
+    Hydrogen_BWB's three active tanks, which then integrated negative from the
+    very first engine offtake.
+
+    A caller wanting a partially-filled tank (a specific loading/CG case, not
+    the design-basis full tank) can still set ``tank.fuel.mass_properties.mass``
+    explicitly -- same ``!= 0`` sentinel convention already used for this field
+    in ``compute_wing_transverse_integral_tank_volume.py`` -- as long as it's set
+    before ``evaluate()`` is called (i.e. before ``compute_fuel_mass`` would next
+    run and overwrite it): a value set that early survives untouched through to
+    this method, since nothing between vehicle construction and this Pre_Process
+    step reaches ``compute_fuel_mass``. That value is validated against this
+    tank's own capacity and used directly instead of the full-tank default.
 
     Initial ullage mass is set from the saturation pressure at
     ``design_inlet_temperature`` (``P_sat(T)``, via the same real-gas EOS used by
@@ -55,8 +63,9 @@ def append_cryogenic_tank_conditions(tank, segment):
     business seeding node 0.
 
     This runs once, mission-wide, before any segment has actually converged, so it
-    always sets the design-basis full tank -- cross-segment continuity is handled
-    separately by append_cryogenic_tank_segment_conditions (called per-segment, when
+    sets the design-basis full tank unless a partial fuel mass was requested (see
+    above) -- cross-segment continuity is handled separately by
+    append_cryogenic_tank_segment_conditions (called per-segment, when
     state.initials is actually populated).
     """
     append_fuel_tank_conditions(tank, segment)
@@ -66,16 +75,32 @@ def append_cryogenic_tank_conditions(tank, segment):
 
     T_l_0 = tank.design_inlet_temperature
     T_g_0 = tank.design_inlet_temperature
-    V_l_0 = tank.volume_properties.net_volume
-    V_g_0 = tank.volume_properties.gross_volume - tank.volume_properties.net_volume
 
-    rho_l_0 = tank.fuel.cryogen_properties(T_l_0, "Density (kg/m3)", phase='liquid')
-    m_l_0   = V_l_0 * rho_l_0
+    rho_l_0         = tank.fuel.cryogen_properties(T_l_0, "Density (kg/m3)", phase='liquid')
+    max_liquid_mass = tank.volume_properties.net_volume * rho_l_0
 
     # Fixed design-basis full-tank mass (at design_inlet_temperature), independent of
     # whatever temperature the tank is actually at later -- e.g. Ground.Refuel targets
     # a fraction of this, not a fraction recomputed from a drifted current temperature.
-    tank.design_full_liquid_mass = m_l_0
+    tank.design_full_liquid_mass = max_liquid_mass
+
+    # Only the first segment can honor a partial-fill request -- later segments get
+    # overwritten by append_cryogenic_tank_segment_conditions's continuity shift anyway.
+    is_first_segment = not segment.state.initials.keys()
+
+    if is_first_segment and tank.fuel.mass_properties.mass != 0:
+        m_l_0 = tank.fuel.mass_properties.mass
+        if m_l_0 > max_liquid_mass * (1 + 1e-6):
+            print(f"Warning: {tank.tag} requested fuel mass ({m_l_0:.1f} kg) exceeds "
+                  f"this tank's capacity ({max_liquid_mass:.1f} kg); clamping to capacity.")
+            m_l_0 = max_liquid_mass
+            tank.fuel.mass_properties.mass = m_l_0  # keep mass_properties Pre_Process in sync
+        V_l_0 = m_l_0 / rho_l_0
+    else:
+        m_l_0 = max_liquid_mass
+        V_l_0 = tank.volume_properties.net_volume
+
+    V_g_0 = tank.volume_properties.gross_volume - V_l_0
 
     R_specific = UNIVERSAL_GAS_CONSTANT / tank.fuel.molecular_weight
     Z_0        = tank.fuel.compressibility_factor(T_g_0, phase='vapor')

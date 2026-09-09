@@ -53,7 +53,7 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     fuel_tank.volume_properties.net_volume   : usable fuel volume [m³]
     fuel_tank.volume_properties.gross_volume : total internal volume incl. ullage [m³]
     fuel_tank.inner_structure.*              : pressure vessel geometry
-    fuel_tank.insulation_thickness           : required insulation thickness [m]
+    fuel_tank.insulation.thickness            : required insulation thickness [m]
     fuel_tank.structural.mass_properties.mass: structural shell mass [kg]
     fuel_tank.insulation.mass_properties.mass: insulation mass [kg]
     fuel_tank.mass_properties.mass           : total tank mass (structure + insulation) [kg]
