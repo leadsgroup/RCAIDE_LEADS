@@ -306,14 +306,8 @@ def set_powertrain_residuals_and_unknowns(segment):
                 segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] = ctrls.throttle.bounds[i][0] * ones_row(1)
                 segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] = ctrls.throttle.bounds[i][1] * ones_row(1)
             else:
-                # Unlike the other control variables here, throttle has one universal
-                # physical meaning (a fraction of max power/thrust) across every vehicle,
-                # so [0, 1] is a safe implicit default rather than leaving it unbounded --
-                # an unbounded throttle can wander to nonsensical values (seen driving a
-                # "positive directional derivative"/singular-matrix SLSQP failure on an
-                # hp-decomposed piece) with nothing physically stopping it.
-                segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] =  0.0 * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] =  1.0 * ones_row(1)
+                segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] =  -np.inf * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] =   np.inf * ones_row(1)
 
     # Thrust Vector
     if ctrls.thrust_vector_angle.active:
