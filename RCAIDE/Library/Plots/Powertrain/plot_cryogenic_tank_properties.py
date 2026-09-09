@@ -46,11 +46,12 @@ def plot_cryogenic_tank_properties(results,
     n_segments  = len(results.segments)
     line_colors = cm.viridis(np.linspace(0, 0.9, n_segments))
 
-    # Collect every tank source once, and every field, per tank, per segment.
+ 
     tanks = []
     for network in results.segments[0].analyses.vehicle.networks:
         for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank):
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank) \
+                    and source.boil_off_model == 'quasi_steady':
                 tanks.append(source)
 
     if not tanks:

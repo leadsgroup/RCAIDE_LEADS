@@ -72,7 +72,9 @@ def compute_fuel_mass(vehicle, update_fuel_mass = True, update_max_fuel_mass=Tru
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 max_fuel_tank_mass += source.volume_properties.net_volume * source.fuel.density
-                if update_fuel_mass:
+                # Skip if already explicitly set (partial load) -- same "!= 0" convention as
+                # append_cryogenic_tank_conditions.py.
+                if update_fuel_mass and source.fuel.mass_properties.mass == 0:
                     source.fuel.mass_properties.mass = source.volume_properties.net_volume * source.fuel.density
                 fuel_mass += source.fuel.mass_properties.mass
                 

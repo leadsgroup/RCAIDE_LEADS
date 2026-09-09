@@ -44,7 +44,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     ------------------
     fuel_tank.volume_properties.net_volume / gross_volume
     fuel_tank.inner_structure.*
-    fuel_tank.insulation_thickness, total_thickness
+    fuel_tank.insulation.thickness, wall_thickness
     fuel_tank.structural / insulation / mass_properties.mass
     """
     fuel_tank.wall_thickness = None

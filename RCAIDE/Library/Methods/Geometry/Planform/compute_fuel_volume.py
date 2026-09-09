@@ -116,29 +116,7 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = F
                 if fuel_tank.assigned_distributors:
                     distributor_tag = fuel_tank.assigned_distributors[0][0]
                     distributor_tanks.setdefault(distributor_tag, []).append(fuel_tank)
-
-         # Multiple tanks can be assigned to the same distributor (fuel line), each
-         # independently drawing down at power_split_ratio * that distributor's
-         # chemical power demand (see compute_fuel_tank_performance). Left at the
-         # Source class default of 1.0 for every tank, this makes every tank on a
-         # shared line behave as if it alone supplies the full demand -- smaller
-         # tanks on the same line run dry mid-mission while larger ones barely
-         # deplete. Set each tank's share proportional to its sized net volume so
-         # tanks sharing a line draw down proportionally to their capacity instead.
-         #
-         # Deliberately NOT gated on the compute_fuel_volume flag: this function is
-         # called repeatedly through the vehicle's weight/geometry convergence loop,
-         # and later calls pass compute_fuel_volume=False to reuse already-sized
-         # volumes without re-running the (expensive, iterative) geometry solve.
-         # Net volumes can still be unequal placeholders on an early pass (e.g.
-         # before wing-derived sizing constraints are applied) and only settle to
-         # their final values on a later pass; gating this block the same way left
-         # power_split_ratio permanently locked at whatever an early, not-yet-final
-         # snapshot produced (confirmed: every tank ended up at exactly 1/N,
-         # consistent with them still reading as equal at that early pass).
-         # Recomputing from whatever net_volume currently holds on every call keeps
-         # it consistent with the final sizing without needing to know which call is
-         # "the last one."
+ 
          for tanks in distributor_tanks.values():
              total_volume = sum(t.volume_properties.net_volume for t in tanks)
              if total_volume > 0:

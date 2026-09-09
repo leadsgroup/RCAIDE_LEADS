@@ -194,7 +194,7 @@ class Cryogenic_Tank(Non_Integral_Tank):
         elif self.geometry_type == 'conformal' and self.transverse_tank:
             pass
         elif self.geometry_type == 'conformal' and self.transverse_tank is False:
-            thickness = self.inner_structure.thickness + self.insulation_thickness
+            thickness = self.inner_structure.thickness + self.insulation.thickness
             _, _ = compute_cuboid_moment_of_inertia(
                 self,
                 outer_length=self.lengths.external,

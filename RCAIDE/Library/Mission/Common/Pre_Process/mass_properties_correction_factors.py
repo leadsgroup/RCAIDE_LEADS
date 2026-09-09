@@ -79,7 +79,12 @@ def apply_component_weights(analyses):
             for boom in analyses.vehicle.booms:
                 boom.mass_properties.mass *= structural.get('boom', 1.0)
         elif key == 'systems':
-            for system in analyses.vehicle.systems:
+            # Systems are attached via network.systems (see every vehicle_setup()
+            # in this codebase), not vehicle.systems.
+            all_systems = []
+            for network in analyses.vehicle.networks:
+                all_systems.extend(network.systems)
+            for system in all_systems:
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
                     if system.mass_properties.calculated_flag:
                         system.mass_properties.mass *= systems.get('avionics', 1.0)
