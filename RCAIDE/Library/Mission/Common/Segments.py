@@ -81,11 +81,26 @@ def sequential_segments(mission):
     A segment with ``state.numerics.hp_decomposition.seed_guess_from_previous_
     piece`` set (only ever true for pieces 1..K-1 of an hp-decomposed segment,
     set by ``hp_decompose_segment``) has its initial unknown guess seeded from
-    the previous segment's converged final control point, instead of keeping
+    the previous piece's converged final control point, instead of keeping
     whatever static default guess ``set_mission_residuals_and_unknowns``/
     ``set_network_residuals_and_unknowns`` assigned it. Ordinary (non-
     decomposed) segments never have this flag set, so their behavior is
     unchanged. See ``seed_unknowns_from_previous_piece``'s docstring.
+
+    That seeding is skipped when the previous piece did NOT converge --
+    seeding an unknown from a piece that itself failed hands the next piece a
+    starting guess with no particular relationship to a real trim point
+    (whatever SLSQP's last iterate happened to be), which was observed to
+    cascade the same "Singular matrix C in LSQ subproblem" failure through
+    every subsequent piece of a decomposed segment even when the first
+    piece's own failure was an isolated, otherwise-recoverable case. Skipping
+    the seed falls back to the piece's own static default guess instead.
+    ``state.initials`` (the physical boundary state: position, altitude,
+    velocity, battery charge, etc.) is still always carried forward
+    regardless of convergence -- unlike the unknown guess, it is a required
+    continuity condition, not just a search starting point, so there is no
+    safe fallback if it's wrong; the warning above is the only guard against
+    that case.
     """
     print(r"""
           +----------------------------------------------------+
@@ -112,7 +127,8 @@ def sequential_segments(mission):
 
             if last_state is not None:
                 segment.state.initials = last_state
-                if segment.state.numerics.hp_decomposition.seed_guess_from_previous_piece:
+                if (segment.state.numerics.hp_decomposition.seed_guess_from_previous_piece
+                        and last_state.numerics.mission_solver.converged is not False):
                     seed_unknowns_from_previous_piece(segment, last_state)
             last_state = segment.state
 

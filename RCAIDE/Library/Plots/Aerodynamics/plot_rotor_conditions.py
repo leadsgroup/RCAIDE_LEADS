@@ -225,33 +225,40 @@ def plot_propulsor_data(results, propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1
             axis_1_1.plot(time,DL, color = line_colors[i], marker = ps.markers[p_i], linewidth = ps.line_width) 
             axis_2_1.plot(time,rpm, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width)
     
+        axis_1_1.set_xlabel('Time (mins)')
         axis_1_1.set_ylabel(r'Disc Loading (N/m^2)')
-        set_axes(axis_1_1)    
+        set_axes(axis_1_1)
+        axis_2_1.set_xlabel('Time (mins)')
         axis_2_1.set_ylabel(r'RPM')
-        set_axes(axis_2_1)    
-        
+        set_axes(axis_2_1)
+
         axis_1_2.plot(time,PL, color = line_colors[i], marker = ps.markers[p_i], linewidth = ps.line_width)
         axis_1_2.set_xlabel('Time (mins)')
         axis_1_2.set_ylabel(r'Power Loading (N/W)')
-        set_axes(axis_1_2) 
- 
+        set_axes(axis_1_2)
+
         axis_1_3.plot(time,thrust, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_1_3.set_xlabel('Time (mins)')
         axis_1_3.set_ylabel(r'Thrust (N)')
-        set_axes(axis_1_3) 
-         
+        set_axes(axis_1_3)
+
         axis_1_4.plot(time,torque, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_1_4.set_xlabel('Time (mins)')
         axis_1_4.set_ylabel(r'Torque (N-m)')
         set_axes(axis_1_4)
- 
-        axis_2_2.plot(time, angle/Units.degrees, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width) 
+
+        axis_2_2.plot(time, angle/Units.degrees, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width)
+        axis_2_2.set_xlabel('Time (mins)')
         axis_2_2.set_ylabel(r'Thrust Vector (deg)')
-        set_axes(axis_2_2) 
+        set_axes(axis_2_2)
 
         axis_2_3.plot(time,beta/Units.degrees, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_2_3.set_xlabel('Time (mins)')
         axis_2_3.set_ylabel(r'Pitch Command  (deg)')
         set_axes(axis_2_3)
 
         axis_2_4.plot(time,eta, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_2_4.set_xlabel('Time (mins)')
         axis_2_4.set_ylabel(r'Efficiency')
         set_axes(axis_2_4)
                 
