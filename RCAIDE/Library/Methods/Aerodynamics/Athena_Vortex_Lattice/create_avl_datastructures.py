@@ -155,7 +155,7 @@ def populate_wing_sections(avl_wing,rcaide_wing):
                 if type(segments[current_seg].airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
                     section.naca_airfoil         = segments[current_seg].airfoil.NACA_4_Series_code
                 else:
-                    section.airfoil_coord_file   = write_avl_airfoil_file(segments[current_seg].airfoil.coordinate_file)
+                    section.airfoil_coord_file   = write_avl_airfoil_file(segments[current_seg].airfoil.coordinate_file, thickness_multiplier = segments[current_seg].airfoil.thickness_multiplier)
                     
             # append section to wing
             avl_wing.append_section(section)   
@@ -397,7 +397,7 @@ def append_avl_wing_control_surfaces(rcaide_wing,avl_wing,semispan,root_chord_pe
             if type(tip_airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
                 section.naca_airfoil         = tip_airfoil.NACA_4_Series_code 
             else:
-                section.airfoil_coord_file   = write_avl_airfoil_file(tip_airfoil.coordinate_file) 
+                section.airfoil_coord_file   = write_avl_airfoil_file(tip_airfoil.coordinate_file, thickness_multiplier = tip_airfoil.thickness_multiplier)
 
         avl_wing.append_section(section)  
                         

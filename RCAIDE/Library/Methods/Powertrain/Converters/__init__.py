@@ -16,6 +16,7 @@ RCAIDE.Library.Methods.Powertrain.Sources
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
+from . import Common
 from . import Combustor
 from . import Compression_Nozzle
 from . import Compressor

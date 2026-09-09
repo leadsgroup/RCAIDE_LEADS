@@ -33,6 +33,13 @@ class Evaluate(Segment):
         (psi). 1 = all battery, 0 = all fuel cell. Required for Hybrid
         networks; auto-set for Fuel (0), Electric (1), and Fuel_Cell (0)
         networks if left as None.
+
+    ground_operations : bool
+        True for stationary ground segments (e.g. Ground.Dormancy) where
+        thermal/pressure-regulation loads (tank heaters) are assumed to be
+        met by an external ground power unit rather than the aircraft's own
+        generators -- see RCAIDE.Framework.Analyses.Energy.Energy.evaluate.
+        False (default) for every flight segment.
     """
     
     def __defaults__(self):
@@ -66,6 +73,7 @@ class Evaluate(Segment):
         self.bank_angle                                        = 0.0
         self.hybrid_power_split_ratio                          = None
         self.battery_fuel_cell_power_split_ratio               = None
+        self.ground_operations                                 = False
         self.initial_battery_conditions                        = Data()
         self.initial_battery_conditions.state_of_charge        = 1.0
         self.initial_battery_conditions.cell_temperature       = None

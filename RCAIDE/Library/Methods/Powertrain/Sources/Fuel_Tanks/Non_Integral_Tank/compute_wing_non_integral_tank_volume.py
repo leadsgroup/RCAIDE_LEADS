@@ -65,22 +65,22 @@ def compute_wing_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
         * At least one wing segment has fuel tank capability
         * Tank placement constraints are reasonable
     """ 
-    seg_tags = fuel_tank.segments_bounding_tank  
+    tank_percent_span_location = 0
+    if fuel_tank.packs_after_tank is not None:
+        tank_percent_span_location = fuel_tanks[fuel_tank.packs_after_tank].tank_percent_span_location
+    seg_tags = fuel_tank.segments_bounding_tank
     for i in range(len(seg_tags)-1):
         inner_segment = wing.segments[seg_tags[i]]
-        outer_segment = wing.segments[seg_tags[i+1]] 
+        outer_segment = wing.segments[seg_tags[i+1]]
         try:
-            try:
-                tank_percent_span_location = inner_segment.tank_percent_span_location    
-            except:
-                tank_percent_span_location = 0
-            inner_segment.tank_percent_span_location, tank_volume_o, tank_volume_i\
+            tank_percent_span_location, tank_volume_o, tank_volume_i\
                                     = compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,outer_segment,tank_percent_span_location)
         except:
             print(f"[WARNING] Tank '{fuel_tank.tag}' does not fit in the segment. Removing from list.")
             fuel_tanks.pop(fuel_tank.tag)
-            return 
-            
+            return
+
+    fuel_tank.tank_percent_span_location              = tank_percent_span_location
     fuel_tank.volume_properties.net_volume            = tank_volume_i
     fuel_tank.volume_properties.gross_volume          = tank_volume_o
     fuel_tank.fuel.mass_properties.center_of_gravity  =  [[fuel_tank.lengths.external / 2, 0, 0]]
@@ -342,9 +342,9 @@ def compute_non_dimensional_rib_coordinates(compoment,fuel_tank,front_rib_nondim
 
     if compoment.airfoil != None: 
         if type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-            geometry = compute_naca_4series(compoment.airfoil.NACA_4_Series_code)
-        elif type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil: 
-            geometry = import_airfoil_geometry(compoment.airfoil.coordinate_file)
+            geometry = compute_naca_4series(compoment.airfoil.NACA_4_Series_code, thickness_multiplier = compoment.airfoil.thickness_multiplier)
+        elif type(compoment.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil:
+            geometry = import_airfoil_geometry(compoment.airfoil.coordinate_file, thickness_multiplier = compoment.airfoil.thickness_multiplier)
     else:
         geometry = compute_naca_4series('0012')
 
