@@ -528,15 +528,30 @@ def add_mission_variables(segment):
         aliases.append(residual_aliases[jj].tolist())
     
     # Step 5: Objective function
-    if segment.state.numerics.mission_solver.objective == None:     
-        aliases.append([ 'nothing'                   , 'postprocess.nothing']) 
-        optimization_problem.objective = np.array([ [  'nothing'  ,  1   ,    1*Units.less]  ],dtype=object)            
+    # Scale factor was hardcoded to 1 for every objective choice below, unlike inputs/
+    # constraints just above (both auto-scaled via _magnitude_scale). energy_consumed
+    # (integral of power over the segment) is easily O(1e5-1e7) J for a multi-minute
+    # segment; feeding that raw magnitude into SLSQP's merit function alongside O(1)-scaled
+    # constraints is a severe imbalance -- a well-known cause of "positive directional
+    # derivative for linesearch" failures, independent of bounds/guess/step_size. Computed
+    # from the segment.state already populated by the segment.process.iterate(segment) call
+    # above (no extra solve needed) -- mirrors segment_post_process's own math.
+    if segment.state.numerics.mission_solver.objective == None:
+        aliases.append([ 'nothing'                   , 'postprocess.nothing'])
+        optimization_problem.objective = np.array([ [  'nothing'  ,  1   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "energy":
-        aliases.append([ 'energy_consumed'          , 'postprocess.energy_consumed']) 
-        optimization_problem.objective = np.array([ [  'energy_consumed'  ,  1   ,    1*Units.less]  ],dtype=object)            
+        power_now             = segment.state.conditions.energy.outputs.power.propulsive
+        I_now                 = segment.state.numerics.time.integrate
+        initial_energy        = np.array([np.dot(I_now, power_now)[-1][0]])
+        energy_scale          = _magnitude_scale(initial_energy)[0]
+        aliases.append([ 'energy_consumed'          , 'postprocess.energy_consumed'])
+        optimization_problem.objective = np.array([ [  'energy_consumed'  ,  energy_scale   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "power":
+        power_now             = segment.state.conditions.energy.outputs.power.propulsive
+        initial_max_power     = np.array([np.max(power_now)])
+        power_scale           = _magnitude_scale(initial_max_power)[0]
         aliases.append([ 'maximum_power'          , 'postprocess.maximum_power'])
-        optimization_problem.objective = np.array([ [  'maximum_power'  ,  1   ,    1*Units.less]  ],dtype=object)   
+        optimization_problem.objective = np.array([ [  'maximum_power'  ,  power_scale   ,    1*Units.less]  ],dtype=object)
     else:
         raise Exception('undefined objective function')
     
