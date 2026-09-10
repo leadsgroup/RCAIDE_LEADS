@@ -209,7 +209,12 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
             ## Landgrebe - Kocurek & Tangler
             BB  = (-0.000729 * theta_tip_deg)
             CC  = (-2.3 + 0.206  * theta_tip_deg)
-            mm  = (1.-0.25 * np.exp(-0.04 * theta_tip_deg))
+            # Kocurek & Tangler 1977, Eq. 5: m = 1.0 - 0.25*exp(+0.040*theta_1) -- positive
+            # exponent. Was a sign error here (-0.04), which for a typical washout twist
+            # (theta_1 < 0) shifts m substantially (e.g. ~0.83 vs ~0.63 at theta_1=-10deg),
+            # feeding directly into k1's CT exponent -- only affects this KT branch, not
+            # Landgrebe (wake_model_hov==2), which doesn't use m at all.
+            mm  = (1.-0.25 * np.exp(0.04 * theta_tip_deg))
             nn  = (0.5-0.0172* theta_tip_deg)
             CT0 = B**nn * (-BB/CC)**(1/mm)   # scalar -- depends only on rotor geometry
             k1  = -(BB + CC * (CT/B**nn)**mm)   # (ctrl_pts,)
