@@ -45,17 +45,24 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     #   Vehicle-level Properties
     # ------------------------------------------------------------------    
     # mass properties   
-    vehicle.mass_properties.max_takeoff               = 2404  
-    vehicle.mass_properties.takeoff                   = 2404  
-    vehicle.mass_properties.max_payload               = 350  
-    vehicle.mass_properties.min_payload               = 350  
-    vehicle.mass_properties.center_of_gravity         = [[2.0144,   0.  ,  0. ]]      
+    vehicle.mass_properties.max_takeoff               = 2404
+    vehicle.mass_properties.takeoff                   = 2404
+    vehicle.mass_properties.landing                   = 2404
+    vehicle.mass_properties.max_payload               = 350
+    vehicle.mass_properties.min_payload               = 350
+    vehicle.mass_properties.center_of_gravity         = [[2.0144,   0.  ,  0. ]]
     vehicle.mass_properties.moments_of_inertia.tensor = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
     vehicle.reference_area                            = 10.39
-    vehicle.flight_envelope.ultimate_load             = 5.7   
-    vehicle.flight_envelope.positive_limit_load       = 3.  
+    vehicle.flight_envelope.ultimate_load             = 5.7
+    vehicle.flight_envelope.positive_limit_load       = 3.
+    vehicle.flight_envelope.FAR_part_number           = '23'
+    vehicle.flight_envelope.design_mach_number        = 0.3
+    vehicle.flight_envelope.negative_limit_load       = -1.52
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.0
+    vehicle.flight_envelope.maximum_lift_coefficient  = 1.5
     vehicle.number_of_passengers                      = 5
-    vehicle.neutral_point                             = 2.600 
+    vehicle.neutral_point                             = 2.600
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # ##################################################### Landing Gear ################################################################    
@@ -111,15 +118,16 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
 
     ospath                                = os.path.abspath(__file__)
     separator                             = os.path.sep
+    airfoil_file_path                     = local_path + 'Airfoils' + separator
     airfoil                               = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
-    airfoil.NACA_4_Series_code            = '2312'       
-                                              
-    # Segment                                              
+    airfoil.NACA_4_Series_code            = '2312'
+
+    # Segment
     segment                                   = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                               = 'root'   
+    segment.tag                               = 'root'
     segment.percent_span_location             = 0.0
     segment.twist                             = 0. * Units.degrees
-    segment.root_chord_percent                = 1 
+    segment.root_chord_percent                = 1
     segment.dihedral_outboard                 = 0.  * Units.degrees
     segment.sweeps.quarter_chord              = 0. * Units.degrees
     segment.append_airfoil(airfoil)
@@ -132,20 +140,24 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     segment.root_chord_percent                = 0.6496
     segment.twist                             = 0. * Units.degrees
     segment.dihedral_outboard                 = 0. * Units.degrees
-    segment.sweeps.quarter_chord              = 0. * Units.degrees 
-    segment.append_airfoil(airfoil)
-    wing.append_segment(segment)                                 
-                                              
-    # Segment                                              
+    segment.sweeps.quarter_chord              = 0. * Units.degrees
+    airfoil_63412                             = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil_63412.coordinate_file             = airfoil_file_path + 'NACA_63_412.txt'
+    segment.append_airfoil(airfoil_63412)
+    wing.append_segment(segment)
+
+    # Segment
     segment                                   = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                               = 'tip'   
+    segment.tag                               = 'tip'
     segment.percent_span_location             = 1.0
-    segment.twist                             = 0. 
+    segment.twist                             = 0.
     segment.root_chord_percent                = 0.42038
-    segment.dihedral_outboard                 = 0.  * Units.degrees 
-    segment.sweeps.quarter_chord              = 0.  * Units.degrees  
-    segment.append_airfoil(airfoil)
-    wing.append_segment(segment)    
+    segment.dihedral_outboard                 = 0.  * Units.degrees
+    segment.sweeps.quarter_chord              = 0.  * Units.degrees
+    airfoil_63412                             = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil_63412.coordinate_file             = airfoil_file_path + 'NACA_63_412.txt'
+    segment.append_airfoil(airfoil_63412)
+    wing.append_segment(segment)
     
 
     aileron                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron()
@@ -190,20 +202,24 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     segment.twist                             = 0 
     segment.root_chord_percent                = 1 
     segment.dihedral_outboard                 = wing.dihedral
-    segment.sweeps.quarter_chord              =  wing.sweeps.quarter_chord  
-    segment.append_airfoil(airfoil)
-    wing.append_segment(segment)                           
-                                              
-    # Segment                                               
+    segment.sweeps.quarter_chord              =  wing.sweeps.quarter_chord
+    airfoil_63412                             = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil_63412.coordinate_file             = airfoil_file_path + 'NACA_63_412.txt'
+    segment.append_airfoil(airfoil_63412)
+    wing.append_segment(segment)
+
+    # Segment
     segment                                   = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                               = 'Section_2'    
+    segment.tag                               = 'Section_2'
     segment.percent_span_location             = 1
     segment.twist                             = 0
     segment.root_chord_percent                = wing.taper
     segment.dihedral_outboard                 = 0. * Units.degrees
-    segment.sweeps.quarter_chord              = 0 * Units.degrees  
-    segment.append_airfoil(airfoil)
-    wing.append_segment(segment)                                 
+    segment.sweeps.quarter_chord              = 0 * Units.degrees
+    airfoil_63412                             = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil_63412.coordinate_file             = airfoil_file_path + 'NACA_63_412.txt'
+    segment.append_airfoil(airfoil_63412)
+    wing.append_segment(segment)
          
     elevator                               = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
     elevator.tag                           = 'elevator'
@@ -844,9 +860,25 @@ def configs_setup(vehicle):
     for network in  config.networks:
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
-            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.86
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.9
     configs.append(config)
-             
+
+    # ------------------------------------------------------------------
+    #   Descent Cruise Configuration (slow) -- for descent_3, ~103-115mph, further
+    #   below cruise's 170mph design point than descent_1/descent_2 -- same off-design
+    #   eta inflation as descent_cruise, just needs a lower pitch fraction since it's
+    #   even further from the design speed. Starting guess (0.8); tune from eta once
+    #   descent_3 converges.
+    # ------------------------------------------------------------------
+    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
+    config.tag                                        = 'descent_cruise_slow'
+    vector_angle                                      = 0.0 * Units.degrees
+    for network in  config.networks:
+        for propulsor in  network.propulsors:
+            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.8
+    configs.append(config)
+
 
     return configs
 
