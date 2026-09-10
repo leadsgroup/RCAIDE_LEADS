@@ -208,11 +208,17 @@ def plot_propulsor_data(results, propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1
     elif 'propeller' in  propulsor:
         thrustor = propulsor.propeller
         
-    for i in range(len(results.segments)):  
-        time         =  results.segments[i].conditions.frames.inertial.time[:,0] / Units.min   
+    for i in range(len(results.segments)):
+        time         =  results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
         rpm          =  results.segments[i].conditions.energy.converters[thrustor.tag].rpm[:,0]
         eta          =  results.segments[i].conditions.energy.converters[thrustor.tag].efficiency[:,0]
-        angle        =  results.segments[i].conditions.energy.converters[thrustor.tag].commanded_thrust_vector_angle[:,0]
+        base_tilt = 0.0
+        for seg_network in results.segments[i].analyses.vehicle.networks:
+            for seg_propulsor in seg_network.propulsors:
+                if seg_propulsor.tag == propulsor.tag:
+                    seg_thrustor = seg_propulsor.rotor if 'rotor' in seg_propulsor else seg_propulsor.propeller
+                    base_tilt    = seg_thrustor.orientation_euler_angles[1]
+        angle        =  results.segments[i].conditions.energy.converters[thrustor.tag].commanded_thrust_vector_angle[:,0] + base_tilt
         beta         =  results.segments[i].conditions.energy.converters[thrustor.tag].blade_pitch_command[:,0] 
         DL           =  results.segments[i].conditions.energy.converters[thrustor.tag].disc_loading[:,0]
         PL           = results.segments[i].conditions.energy.converters[thrustor.tag].power_loading[:,0]  
@@ -224,34 +230,36 @@ def plot_propulsor_data(results, propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1
         else:
             axis_1_1.plot(time,DL, color = line_colors[i], marker = ps.markers[p_i], linewidth = ps.line_width) 
             axis_2_1.plot(time,rpm, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width)
-    
+     
         axis_1_1.set_ylabel(r'Disc Loading (N/m^2)')
-        set_axes(axis_1_1)    
+        set_axes(axis_1_1) 
         axis_2_1.set_ylabel(r'RPM')
-        set_axes(axis_2_1)    
-        
+        set_axes(axis_2_1)
+
         axis_1_2.plot(time,PL, color = line_colors[i], marker = ps.markers[p_i], linewidth = ps.line_width)
-        axis_1_2.set_xlabel('Time (mins)')
         axis_1_2.set_ylabel(r'Power Loading (N/W)')
         set_axes(axis_1_2) 
- 
+        axis_2_2.plot(time, angle/Units.degrees, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width)
+        axis_2_2.set_ylabel(r'Thrust Vector (deg)')
+        set_axes(axis_2_2)
+
         axis_1_3.plot(time,thrust, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_1_3.set_xlabel('Time (mins)')
         axis_1_3.set_ylabel(r'Thrust (N)')
-        set_axes(axis_1_3) 
-         
+        set_axes(axis_1_3)
+
         axis_1_4.plot(time,torque, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_1_4.set_xlabel('Time (mins)')
         axis_1_4.set_ylabel(r'Torque (N-m)')
         set_axes(axis_1_4)
- 
-        axis_2_2.plot(time, angle/Units.degrees, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width) 
-        axis_2_2.set_ylabel(r'Thrust Vector (deg)')
-        set_axes(axis_2_2) 
 
         axis_2_3.plot(time,beta/Units.degrees, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_2_3.set_xlabel('Time (mins)')
         axis_2_3.set_ylabel(r'Pitch Command  (deg)')
         set_axes(axis_2_3)
 
         axis_2_4.plot(time,eta, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
+        axis_2_4.set_xlabel('Time (mins)')
         axis_2_4.set_ylabel(r'Efficiency')
         set_axes(axis_2_4)
                 

@@ -7,13 +7,14 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
 
-from RCAIDE.Framework.Core import Data   
+from RCAIDE.Framework.Core import Data
+from .apply_airfoil_thickness_multiplier import apply_airfoil_thickness_multiplier
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_naca_4series
-# ----------------------------------------------------------------------------------------------------------------------    
-def compute_naca_4series(airfoil_geometry_file,npoints= 201, leading_and_trailing_edge_resolution_factor = 1.5 ):
+# ----------------------------------------------------------------------------------------------------------------------
+def compute_naca_4series(airfoil_geometry_file, npoints = 201, leading_and_trailing_edge_resolution_factor = 1.5, thickness_multiplier = 1.0):
     """Computes the points of NACA 4-series airfoil
 
     Assumptions:
@@ -98,6 +99,8 @@ def compute_naca_4series(airfoil_geometry_file,npoints= 201, leading_and_trailin
     geometry.y_upper_surface    = np.append(0,y_up_surf) 
     geometry.y_lower_surface    = y_lo_surf[::-1]           
     geometry.camber_coordinates = c_us         
-    geometry.thickness_to_chord = t_c 
-    
+    geometry.thickness_to_chord = t_c
+
+    apply_airfoil_thickness_multiplier(geometry, thickness_multiplier)
+
     return geometry
