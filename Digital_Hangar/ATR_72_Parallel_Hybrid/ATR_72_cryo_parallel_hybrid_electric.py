@@ -666,6 +666,7 @@ def vehicle_setup():
     starboard_propulsor.design_thrust                = 15000.0 * Units.N
     starboard_propulsor.design_altitude              = 25000*Units.ft
     starboard_propulsor.design_freestream_velocity   = 270 * Units.kts
+    starboard_propulsor.design_power                 = 2619 * Units.horsepower  # PW127M, max continuous
     starboard_propulsor.length                       = 2.0
     starboard_propulsor.diameter                     = 0.60
 

@@ -10,7 +10,7 @@
 from RCAIDE.Framework.Core import Data
 
 # Python package imports
-import math
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  mfp
@@ -27,7 +27,7 @@ def mfp(mach_number, gamma, gas_constant):
     [1] Mattingly, J. D., "Elements of Gas Turbine Propulsion", 2nd ed., AIAA Education
         Series, 2005, Eq. (2.76).
     """
-    mfp = math.sqrt(gamma / gas_constant) * mach_number * \
+    mfp = np.sqrt(gamma / gas_constant) * mach_number * \
         (1 + (gamma - 1) / 2 * mach_number ** 2) ** (-(gamma + 1) / (2 * (gamma - 1)))
     return mfp
 
@@ -36,7 +36,7 @@ def area_from_mass_flow_rate(mass_flow_rate, static_pressure, static_temperature
     """Back out nozzle exit area from mass flow rate (needed for the pressure-thrust term)."""
     stagnation_pressure    = static_pressure * (1 + (gamma - 1) / 2 * mach_number ** 2) ** (gamma / (gamma - 1))
     stagnation_temperature = static_temperature * (1 + (gamma - 1) / 2 * mach_number ** 2)
-    return mass_flow_rate * math.sqrt(stagnation_temperature) / (stagnation_pressure * mfp(mach_number, gamma, gas_constant))
+    return mass_flow_rate * np.sqrt(stagnation_temperature) / (stagnation_pressure * mfp(mach_number, gamma, gas_constant))
 
 
 def compressor_pressure_ratio(temperature_ratio, constant_efficiency, gamma, compressor_map=None):
@@ -100,7 +100,7 @@ def nozzle_state(stagnation_to_ambient_pressure_ratio, gamma):
         static_to_ambient_pressure_ratio, exit_mach_number = 1.0, 0.0
     elif stagnation_to_ambient_pressure_ratio < pi_crit:
         static_to_ambient_pressure_ratio = 1.0  # unchoked: exit static pressure = ambient
-        exit_mach_number = math.sqrt(2 / (gamma - 1) * (stagnation_to_ambient_pressure_ratio ** ((gamma - 1) / gamma) - 1))
+        exit_mach_number = np.sqrt(2 / (gamma - 1) * (stagnation_to_ambient_pressure_ratio ** ((gamma - 1) / gamma) - 1))
     else:
         static_to_ambient_pressure_ratio = stagnation_to_ambient_pressure_ratio / pi_crit  # choked
         exit_mach_number = 1.0
@@ -339,7 +339,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
     Rc = (gamma_c - 1) / gamma_c * dc.cpc
     Rt = (gamma_t - 1) / gamma_t * dc.cpt
 
-    a0 = math.sqrt(gamma_c * Rc * T0)
+    a0 = np.sqrt(gamma_c * Rc * T0)
     V0 = a0 * M0
     tau_r = 1 + (gamma_c - 1) / 2 * M0 ** 2
     pi_r = tau_r ** (gamma_c / (gamma_c - 1))
@@ -408,7 +408,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         P9_P0, M9 = nozzle_state(Pt9_P0, gamma_t)
 
         # bypass ratio -- floored, same rationale as compressor_pressure_ratio()'s floor above
-        alpha = ref.alpha * (ref.pi_cH / pi_cH) * math.sqrt(max(
+        alpha = ref.alpha * (ref.pi_cH / pi_cH) * np.sqrt(max(
             (tau_lambda / (tau_r * tau_f)) / (tau_lambdaR / (tau_rR * ref.tau_f)), 1e-12
         )) * (mfp(M19, gamma_c, Rc) / mfp(ref.M19, gamma_c, Rc))
 
@@ -422,7 +422,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         # instead of a raw ValueError/ZeroDivisionError on a doomed iterate.
         mass_flow_rate_estimate = ref.m0 * ((1 + alpha) / (1 + ref.alpha)) * \
             (P0 * pi_r * pi_d * pi_f * pi_cH) / (ref.P0 * pi_rR * pi_dR * ref.pi_f * ref.pi_cH) * \
-            math.sqrt(ref.Tt4 / max(Tt4, 1e-6))
+            np.sqrt(ref.Tt4 / max(Tt4, 1e-6))
 
         # fan temperature ratio, from the LP-spool power balance -- under-relaxed
         tau_f_computed = 1 + ((1 - tau_tL) / (1 - ref.tau_tL)) * ((tau_lambda / tau_r) / (tau_lambdaR / tau_rR)) * \
@@ -438,7 +438,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         if M9 == 0.0:
             collapsed = True
             break
-        pi_tL_computed = ref.pi_tL * math.sqrt(tau_tL / ref.tau_tL) * (mfp(ref.M9, gamma_t, Rt) / mfp(M9, gamma_t, Rt))
+        pi_tL_computed = ref.pi_tL * np.sqrt(tau_tL / ref.tau_tL) * (mfp(ref.M9, gamma_t, Rt) / mfp(M9, gamma_t, Rt))
         pi_tL = pi_tL + relaxation_factor * (pi_tL_computed - pi_tL)
 
         # i>0: pass 0 trivially reproduces reference tau_tL (update uses reference pi_tL
@@ -462,14 +462,14 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
             tau_tL=tau_tL, pi_tL=pi_tL, alpha=alpha, M9=M9, M19=M19,
             stagnation_to_ambient_core_nozzle_pressure_ratio=Pt9_P0,
             stagnation_to_ambient_fan_nozzle_pressure_ratio=Pt19_P0,
-            mass_flow_rate=math.nan, fuel_to_air_ratio=math.nan,
-            thrust=math.nan, fuel_mass_flow_rate=math.nan, specific_fuel_consumption=math.nan,
-            iterations=i + 1, converged=False, convergence_delta=math.inf,
-            core_nozzle_exit_velocity=math.nan, fan_nozzle_exit_velocity=math.nan,
-            core_nozzle_exit_static_temperature=math.nan, fan_nozzle_exit_static_temperature=math.nan,
-            core_nozzle_exit_static_pressure=math.nan, fan_nozzle_exit_static_pressure=math.nan,
-            core_nozzle_exit_stagnation_temperature=math.nan, fan_nozzle_exit_stagnation_temperature=math.nan,
-            core_nozzle_exit_stagnation_pressure=math.nan, fan_nozzle_exit_stagnation_pressure=math.nan,
+            mass_flow_rate=np.nan, fuel_to_air_ratio=np.nan,
+            thrust=np.nan, fuel_mass_flow_rate=np.nan, specific_fuel_consumption=np.nan,
+            iterations=i + 1, converged=False, convergence_delta=np.inf,
+            core_nozzle_exit_velocity=np.nan, fan_nozzle_exit_velocity=np.nan,
+            core_nozzle_exit_static_temperature=np.nan, fan_nozzle_exit_static_temperature=np.nan,
+            core_nozzle_exit_static_pressure=np.nan, fan_nozzle_exit_static_pressure=np.nan,
+            core_nozzle_exit_stagnation_temperature=np.nan, fan_nozzle_exit_stagnation_temperature=np.nan,
+            core_nozzle_exit_stagnation_pressure=np.nan, fan_nozzle_exit_stagnation_pressure=np.nan,
             eta_cH_used=eta_cH_used, eta_f_used=eta_f_used,
             message=f"core nozzle collapsed (Pt9/P0={Pt9_P0:.4f} < 1) at iteration {i}",
         )
@@ -496,7 +496,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         # tau_lambda = cpt*Tt4/(cpc*T0).
         mass_flow_rate = ref.m0 * ((1 + alpha) / (1 + ref.alpha)) * \
             (P0 * pi_r * pi_d * pi_f * pi_cH) / (ref.P0 * pi_rR * pi_dR * ref.pi_f * ref.pi_cH) * \
-            math.sqrt(ref.Tt4 / max(Tt4, 1e-6))
+            np.sqrt(ref.Tt4 / max(Tt4, 1e-6))
 
         # fuel/air ratio
         tau_x = tau_r * tau_f * tau_cH  # compressor-exit / T0 (station 3 temperature ratio)
@@ -515,8 +515,8 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         P9 = P9_P0 * P0
         T19 = T19_T0 * T0
         P19 = P19_P0 * P0
-        a9 = math.sqrt(gamma_t * Rt * T9)
-        a19 = math.sqrt(gamma_c * Rc * T19)
+        a9 = np.sqrt(gamma_t * Rt * T9)
+        a19 = np.sqrt(gamma_c * Rc * T19)
         V9 = M9 * a9
         V19 = M19 * a19
 
@@ -615,7 +615,7 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
         # solve_turbofan_offdesign's Returns docstring), unlike a genuine did-not-converge-
         # in-max_iterations result, which has a real (finite) delta
         nonlocal best_partial
-        if not math.isfinite(result.convergence_delta):
+        if not np.isfinite(result.convergence_delta):
             return
         if best_partial is None or result.convergence_delta < best_partial.convergence_delta:
             best_partial = result

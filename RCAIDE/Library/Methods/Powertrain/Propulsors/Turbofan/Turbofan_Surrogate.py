@@ -46,7 +46,7 @@ class _RatingCodeInterpolator(Data):
     mesh, and LinearNDInterpolator's triangulation went visibly singular/
     noisy on exactly that kind of data (non-monotonic thrust vs. altitude and
     failed mission-segment convergence, found running a full Boeing 737
-    mission through a generate_turbofan_offdesign_deck-built surrogate). RBF
+    mission through a generate_turbofan_deck-built surrogate). RBF
     has no triangulation to go singular and is globally smooth by
     construction. Coordinates are min-max scaled to [0, 1] per axis before
     fitting -- altitude (ft, O(10^4)) and Mach/throttle (O(1)) would otherwise
@@ -321,7 +321,7 @@ class Turbofan_Surrogate(Data):
 
     @staticmethod
     def deck_to_dataframe(deck):
-        """Converts a generate_turbofan_offdesign_deck() result (or any Data/
+        """Converts a generate_turbofan_deck() result (or any Data/
         object with the same fields: altitude_m, mach_number, thrust_N,
         fuel_mass_flow_rate, isa_deviation_k, rating_code, each a 1-D array)
         into the pandas.DataFrame schema this class requires (REQUIRED_COLUMNS
@@ -343,7 +343,7 @@ class Turbofan_Surrogate(Data):
         query(). Returns self, so it can be chained:
             turbofan.surrogate = Turbofan_Surrogate().build(deck_path)
         Pass an in-memory DataFrame directly (matching REQUIRED_COLUMNS) via
-        dataframe=, or a generate_turbofan_offdesign_deck() result via deck=
+        dataframe=, or a generate_turbofan_deck() result via deck=
         (converted internally by deck_to_dataframe()), instead of deck_path=
         when the deck isn't coming from a file. save_path=, if given, writes
         the resolved deck (post near-duplicate-row averaging, pre

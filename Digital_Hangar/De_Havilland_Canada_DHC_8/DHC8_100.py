@@ -557,9 +557,10 @@ def vehicle_setup():
     starboard_propulsor.origin                       = [[5.780,3.945, 1.86 ]]
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()               
     starboard_propulsor.gearbox.efficiency           = 0.99                                             
-    starboard_propulsor.design_thrust                = 8200.0 * Units.N 
-    starboard_propulsor.design_altitude              = 25000*Units.ft                                
+    starboard_propulsor.design_thrust                = 8200.0 * Units.N
+    starboard_propulsor.design_altitude              = 25000*Units.ft
     starboard_propulsor.design_freestream_velocity   = 270 * Units.kts
+    starboard_propulsor.design_power                 = 1892 * Units.horsepower  # PW120A, max continuous
     starboard_propulsor.length                       = 1.8
     starboard_propulsor.diameter                     = 0.52
 

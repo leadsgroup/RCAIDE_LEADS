@@ -16,7 +16,9 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine              import co
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle     import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop            import compute_thrust
- 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.Turboprop_OffDesign_Matching import (
+    solve_turboprop_offdesign_robust, OffDesignMatchingError)
+
 # python imports 
 from   copy import deepcopy
 import numpy as np
@@ -161,8 +163,13 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_thrust
-    """ 
-    conditions               = state.conditions 
+    """
+    if turboprop.offdesign_matching is not None:
+        return compute_turboprop_performance_offdesign(turboprop, state, center_of_gravity)
+
+    # else: analytical cycle model (below)
+
+    conditions               = state.conditions
     noise_conditions         = conditions.aeroacoustics.propulsors[turboprop.tag]  
     turboprop_conditions     = conditions.energy.propulsors[turboprop.tag]
     U0                       = conditions.freestream.velocity
@@ -181,8 +188,55 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     compressor_conditions    = conditions.energy.converters[compressor.tag]  
     combustor_conditions     = conditions.energy.converters[combustor.tag]
     lpt_conditions           = conditions.energy.converters[low_pressure_turbine.tag]
-    hpt_conditions           = conditions.energy.converters[high_pressure_turbine.tag] 
-     
+    hpt_conditions           = conditions.energy.converters[high_pressure_turbine.tag]
+
+    # ----------------------------------------------------------------------------
+    # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
+    # ----------------------------------------------------------------------------
+    external_shaft_work         = 0*state.ones_row(1)
+    integrated_drive_motor      = turboprop.integrated_drive_motor
+    integrated_drive_generator  = turboprop.integrated_drive_generator
+    compressor_conditions.omega = compressor.design_angular_velocity * turboprop_conditions.throttle
+
+    # Motor: consumes electrical power from the bus, delivers mechanical power to the shaft
+    if integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
+        motor_conditions = conditions.energy.converters[integrated_drive_motor.tag]
+        phi = conditions.energy.hybrid_power_split_ratio
+        if 'electrical_power' in state.unknowns.network:
+            motor_electrical_power = state.unknowns.network['electrical_power'] * phi
+        else:
+            motor_electrical_power = conditions.energy.inputs.power.electrical * phi
+
+        eta_motor = integrated_drive_motor.efficiency
+        motor_mechanical_power = motor_electrical_power * eta_motor
+
+        motor_conditions.inputs.power.electrical  = motor_electrical_power
+        motor_conditions.outputs.power.mechanical = motor_mechanical_power
+        motor_conditions.outputs.omega            = compressor_conditions.omega
+        motor_conditions.outputs.torque           = motor_mechanical_power / compressor_conditions.omega
+
+        # Motor delivers power to shaft (negative = reduces turbine burden)
+        external_shaft_work -= motor_mechanical_power
+
+    # Generator: extracts mechanical power from the shaft, provides electrical to bus
+    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
+        gen_conditions = conditions.energy.converters[integrated_drive_generator.tag]
+        if 'electrical_power' in state.unknowns.network:
+            gen_electrical_power = state.unknowns.network['electrical_power'] * integrated_drive_generator.power_split_ratio
+        else:
+            gen_electrical_power = conditions.energy.inputs.power.electrical * integrated_drive_generator.power_split_ratio
+
+        eta_gen = integrated_drive_generator.efficiency
+        gen_mechanical_power = gen_electrical_power / eta_gen
+
+        gen_conditions.outputs.power.electrical  = gen_electrical_power
+        gen_conditions.inputs.power.mechanical   = gen_mechanical_power
+        gen_conditions.inputs.omega              = compressor_conditions.omega
+        gen_conditions.inputs.torque              = gen_mechanical_power / compressor_conditions.omega
+
+        # Generator extracts mechanical power from the shaft (positive = more turbine work needed)
+        external_shaft_work += gen_mechanical_power
+
     # Step 1: Set the working fluid to determine the fluid properties
     ram.working_fluid                                     = turboprop.working_fluid
 
@@ -213,7 +267,17 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     
     # Step 6: Compute flow through the low pressure compressor
     compute_compressor_performance(compressor,conditions)
-    
+
+    # Shaft work as specific work [J/kg], not absolute power [W] -- same conversion as
+    # design_turbofan.py's IDG/motor fix; non-iterative since mass flow is already fixed.
+    mdot_core_for_shaft_work = turboprop.compressor_nondimensional_massflow * \
+        np.sqrt(turboprop.reference_temperature / compressor_conditions.inputs.stagnation_temperature) * \
+        (compressor_conditions.inputs.stagnation_pressure / turboprop.reference_pressure)
+    lpt_shaft_work = turboprop.design_power / mdot_core_for_shaft_work if turboprop.design_power != 0.0 \
+        else 0 * mdot_core_for_shaft_work
+    # Gas-generator accessory offtake, same conversion, computed above (absolute power)
+    hpt_shaft_work = external_shaft_work / mdot_core_for_shaft_work
+
     # Step 7: Link the combustor to the high pressure compressor
     combustor_conditions.inputs.stagnation_temperature    = compressor_conditions.outputs.stagnation_temperature
     combustor_conditions.inputs.stagnation_pressure       = compressor_conditions.outputs.stagnation_pressure
@@ -232,10 +296,11 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     hpt_conditions.inputs.static_temperature              = combustor_conditions.outputs.static_temperature
     hpt_conditions.inputs.static_pressure                 = combustor_conditions.outputs.static_pressure
     hpt_conditions.inputs.mach_number                     = combustor_conditions.outputs.mach_number 
-    hpt_conditions.inputs.compressor                      = compressor_conditions.outputs 
+    hpt_conditions.inputs.compressor                      = compressor_conditions.outputs
     high_pressure_turbine.working_fluid                   = combustor.working_fluid
     hpt_conditions.inputs.bypass_ratio                    = 0.0
-    
+    hpt_conditions.inputs.external_shaft.work_done        = hpt_shaft_work
+
     compute_turbine_performance(high_pressure_turbine,conditions)
     
     #link the low pressure turbine to the high pressure turbine 
@@ -246,10 +311,11 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     lpt_conditions.inputs.mach_number                     = hpt_conditions.outputs.mach_number     
     lpt_conditions.inputs.compressor                      = Data()
     lpt_conditions.inputs.compressor.work_done            = 0.0    
-    lpt_conditions.inputs.bypass_ratio                    = 0.0 
-    lpt_conditions.inputs.fuel_to_air_ratio               = combustor_conditions.outputs.fuel_to_air_ratio 
-    low_pressure_turbine.working_fluid                    = high_pressure_turbine.working_fluid    
-     
+    lpt_conditions.inputs.bypass_ratio                    = 0.0
+    lpt_conditions.inputs.fuel_to_air_ratio               = combustor_conditions.outputs.fuel_to_air_ratio
+    lpt_conditions.inputs.external_shaft.work_done        = lpt_shaft_work
+    low_pressure_turbine.working_fluid                    = high_pressure_turbine.working_fluid
+
     compute_turbine_performance(low_pressure_turbine,conditions)
     
     #link the core nozzle to the low pressure turbine
@@ -292,47 +358,13 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     h_t3                                           = compressor_conditions.outputs.stagnation_enthalpy 
     turboprop_conditions.overall_efficiency        = turboprop_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turboprop_conditions.thermal_efficiency        = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)   
-    compressor_conditions.omega                    = compressor.design_angular_velocity * turboprop_conditions.throttle 
-    
-    # compute electrical power if generated/supplied
-    power_elec_in  = 0*state.ones_row(1) # drawn from the bus (motor)
-    power_elec_out = 0*state.ones_row(1) # supplied to the bus (generator)
+    # power_elec_in/out: same motor/generator electrical power already computed in the
+    # offtake block near the top of this function (reused here, not recomputed)
+    power_elec_in  = motor_electrical_power if integrated_drive_motor != None and \
+        len(state.numerics.time.differentiate) > 0 else 0*state.ones_row(1)
+    power_elec_out = gen_electrical_power if integrated_drive_generator != None and \
+        len(state.numerics.time.differentiate) > 0 else 0*state.ones_row(1)
 
-    # Motor: consumes electrical from bus, delivers mechanical to compressor shaft
-    if turboprop.integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
-        motor_conditions = conditions.energy.converters[turboprop.integrated_drive_motor.tag]
-        phi = conditions.energy.hybrid_power_split_ratio
-        if 'electrical_power' in state.unknowns.network:
-            motor_electrical_power = state.unknowns.network['electrical_power'] * phi
-        else:
-            motor_electrical_power = conditions.energy.inputs.power.electrical * phi
-
-        eta_motor = turboprop.integrated_drive_motor.efficiency
-        motor_mechanical_power = motor_electrical_power * eta_motor
-
-        motor_conditions.inputs.power.electrical  = motor_electrical_power
-        motor_conditions.outputs.power.mechanical = motor_mechanical_power
-        motor_conditions.outputs.omega            = compressor_conditions.omega
-        motor_conditions.outputs.torque           = motor_mechanical_power / compressor_conditions.omega
-        power_elec_in = motor_electrical_power
-
-    # Generator: extracts mechanical from compressor shaft, provides electrical to bus
-    if turboprop.integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
-        gen_conditions = conditions.energy.converters[turboprop.integrated_drive_generator.tag]
-        if 'electrical_power' in state.unknowns.network:
-            gen_electrical_power = state.unknowns.network['electrical_power'] * turboprop.integrated_drive_generator.power_split_ratio
-        else:
-            gen_electrical_power = conditions.energy.inputs.power.electrical * turboprop.integrated_drive_generator.power_split_ratio
-
-        eta_gen = turboprop.integrated_drive_generator.efficiency
-        gen_mechanical_power = gen_electrical_power / eta_gen
-
-        gen_conditions.outputs.power.electrical  = gen_electrical_power
-        gen_conditions.inputs.power.mechanical   = gen_mechanical_power
-        gen_conditions.inputs.omega              = compressor_conditions.omega
-        gen_conditions.inputs.torque             = gen_mechanical_power / compressor_conditions.omega
-        power_elec_out = gen_electrical_power
-            
     # Store data
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
@@ -439,3 +471,154 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
     conditions.energy.propulsors[turboprop.tag].outputs.thrust            = thrust_vector  
 
     return conditions.energy.propulsors[turboprop.tag].inputs, conditions.energy.propulsors[turboprop.tag].outputs
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  compute_turboprop_performance_offdesign
+# ----------------------------------------------------------------------------------------------------------------------
+def compute_turboprop_performance_offdesign(turboprop, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+    """
+    Computes turboprop thrust and fuel flow by live off-design component
+    matching (`Turboprop_OffDesign_Matching.solve_turboprop_offdesign_robust`).
+    Dispatched from `compute_turboprop_performance` when
+    `turboprop.offdesign_matching` is not None.
+
+    Parameters
+    ----------
+    turboprop : RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop
+        Must have `turboprop.offdesign_matching` set to
+        `Data(design_constants=..., reference_point=...)`, from
+        `design_turboprop_offdesign_matching`.
+    state : RCAIDE.Framework.Mission.Common.State
+        Must have `conditions.freestream.mach_number/temperature/pressure`,
+        and `conditions.energy.propulsors[turboprop.tag].throttle`.
+
+    Returns
+    -------
+    inputs, outputs, stored_results_flag, stored_propulsor_tag
+        Same return signature as `compute_turboprop_performance`, for a
+        common call site in `Turboprop.compute_performance`.
+
+    Raises
+    ------
+    OffDesignMatchingError
+        If the matching solver fails to converge at a control point AND
+        `turboprop.offdesign_matching.idle_fallback` is not set. With no
+        fallback configured, this fails loudly rather than silently
+        substituting an approximation. If `idle_fallback` (a built
+        `Turbofan_Surrogate` -- see `generate_turboprop_deck`; the
+        interpolator itself has no turbofan-specific coupling, so it's
+        reused as-is) is set, a point that fails to converge is routed to it
+        instead of raising -- same mechanism as `compute_turbofan_
+        performance_offdesign`'s own `idle_fallback`. Points routed there
+        have no shaft-power figure (the surrogate's schema doesn't carry
+        one) -- `shaft_power` reads NaN for exactly those points.
+
+    Notes
+    -----
+    Throttle is consumed the same way `compute_turbofan_performance_
+    offdesign` does: `Tt4 = reference_point.Tt4 * throttle`.
+
+    There is no fan nozzle at all for a turboprop (all core flow exits
+    through the single core nozzle; the propeller's own thrust is folded
+    into the work-coefficient thrust formula, not modeled as a separate
+    stream) -- `noise_conditions` carries only `core_nozzle`, matching
+    `compute_turboprop_performance`'s own schema.
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.Turboprop_OffDesign_Matching.solve_turboprop_offdesign_robust
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.design_turboprop_offdesign_matching
+    """
+    conditions           = state.conditions
+    turboprop_conditions = conditions.energy.propulsors[turboprop.tag]
+    noise_conditions      = conditions.aeroacoustics.propulsors[turboprop.tag]
+
+    altitude            = conditions.freestream.altitude[:, 0]
+    mach_number         = conditions.freestream.mach_number[:, 0]
+    static_temperature  = conditions.freestream.temperature[:, 0]
+    static_pressure     = conditions.freestream.pressure[:, 0]
+    velocity            = conditions.freestream.velocity[:, 0]
+    throttle            = turboprop_conditions.throttle[:, 0]
+
+    design_constants = turboprop.offdesign_matching.design_constants
+    reference_point  = turboprop.offdesign_matching.reference_point
+    idle_fallback    = getattr(turboprop.offdesign_matching, 'idle_fallback', None)
+
+    n = len(mach_number)
+    thrust_N              = np.zeros(n)
+    fuel_mass_flow_rate    = np.zeros(n)
+    shaft_power            = np.zeros(n)
+    core_nozzle_exit_velocity               = np.full(n, np.nan)
+    core_nozzle_exit_static_temperature     = np.full(n, np.nan)
+    core_nozzle_exit_static_pressure        = np.full(n, np.nan)
+    core_nozzle_exit_stagnation_temperature = np.full(n, np.nan)
+    core_nozzle_exit_stagnation_pressure    = np.full(n, np.nan)
+
+    for i in range(n):
+        combustor_exit_temperature = reference_point.Tt4 * throttle[i]
+        try:
+            result = solve_turboprop_offdesign_robust(
+                design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
+                combustor_exit_temperature)
+        except OffDesignMatchingError:
+            if idle_fallback is None:
+                raise
+            F, FF = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
+                                         throttle=np.array([throttle[i]]))
+            thrust_N[i]             = F[0]
+            fuel_mass_flow_rate[i]  = FF[0]
+            shaft_power[i]          = np.nan
+            continue
+        thrust_N[i]                                 = result.thrust
+        fuel_mass_flow_rate[i]                       = result.fuel_mass_flow_rate
+        shaft_power[i]                              = result.power
+        core_nozzle_exit_velocity[i]                = result.core_nozzle_exit_velocity
+        core_nozzle_exit_static_temperature[i]      = result.core_nozzle_exit_static_temperature
+        core_nozzle_exit_static_pressure[i]         = result.core_nozzle_exit_static_pressure
+        core_nozzle_exit_stagnation_temperature[i]  = result.core_nozzle_exit_stagnation_temperature
+        core_nozzle_exit_stagnation_pressure[i]     = result.core_nozzle_exit_stagnation_pressure
+
+    thrust_vector      = np.zeros((n, 3))
+    thrust_vector[:,0] = thrust_N
+
+    TSFC           = np.zeros(n)
+    positive       = thrust_N > 0
+    gravity        = conditions.freestream.gravity[:, 0] if hasattr(conditions.freestream, 'gravity') \
+                     else 9.80665 * np.ones(n)
+    TSFC[positive] = fuel_mass_flow_rate[positive] * gravity[positive] / thrust_N[positive]
+
+    power_propulsive = thrust_N * velocity
+
+    # Compute forces and moments
+    moment_vector      = 0*state.ones_row(3)
+    moment_vector[:,0] = turboprop.origin[0][0] - center_of_gravity[0][0]
+    moment_vector[:,1] = turboprop.origin[0][1] - center_of_gravity[0][1]
+    moment_vector[:,2] = turboprop.origin[0][2] - center_of_gravity[0][2]
+    moment              = np.cross(moment_vector, thrust_vector)
+
+    turboprop_conditions.thrust                            = thrust_vector
+    turboprop_conditions.fuel_mass_flow_rate                = fuel_mass_flow_rate.reshape(-1,1)
+    turboprop_conditions.thrust_specific_fuel_consumption   = TSFC.reshape(-1,1)
+    turboprop_conditions.moment                             = moment
+    turboprop_conditions.outputs.thrust                     = thrust_vector
+    turboprop_conditions.outputs.moment                     = moment
+    turboprop_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
+    turboprop_conditions.outputs.power.mechanical            = shaft_power.reshape(-1,1)
+
+    if turboprop.combustor is not None and turboprop.combustor.fuel_data is not None:
+        turboprop_conditions.inputs.power.chemical = \
+            (fuel_mass_flow_rate * turboprop.combustor.fuel_data.lower_heating_value).reshape(-1,1)
+
+    noise_conditions.core_nozzle = Data(
+        exit_static_temperature      = core_nozzle_exit_static_temperature.reshape(-1,1),
+        exit_static_pressure         = core_nozzle_exit_static_pressure.reshape(-1,1),
+        exit_stagnation_temperature  = core_nozzle_exit_stagnation_temperature.reshape(-1,1),
+        exit_stagnation_pressure     = core_nozzle_exit_stagnation_pressure.reshape(-1,1),
+        exit_velocity                = core_nozzle_exit_velocity.reshape(-1,1),
+    )
+
+    stored_results_flag   = True
+    stored_propulsor_tag  = turboprop.tag
+
+    return turboprop_conditions.inputs, turboprop_conditions.outputs, stored_results_flag, stored_propulsor_tag

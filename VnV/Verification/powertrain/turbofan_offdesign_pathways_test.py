@@ -25,7 +25,7 @@ import RCAIDE
 from RCAIDE.Framework.Core             import Data, Units
 from RCAIDE.Library.Methods.Powertrain import setup_operating_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan_offdesign_matching import design_turbofan_offdesign_matching
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.generate_turbofan_offdesign_deck    import generate_turbofan_offdesign_deck
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.generate_turbofan_deck    import generate_turbofan_deck
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate                  import Turbofan_Surrogate
 
 # reuse the literature-validated GE90-94B definition rather than redefining a test engine
@@ -115,8 +115,8 @@ def main():
     mach_range     = np.array([0.0, 0.3, turbofan.design_mach_number])
     # two throttle settings per RC=0 point -- Turbofan_Surrogate needs >=2 rows per
     # (ALT ft, XM, ISA k) group to build its throttle axis
-    deck_full = generate_turbofan_offdesign_deck(turbofan, altitude_range, mach_range)
-    deck_part = generate_turbofan_offdesign_deck(turbofan, altitude_range, mach_range,
+    deck_full = generate_turbofan_deck(turbofan, altitude_range, mach_range)
+    deck_part = generate_turbofan_deck(turbofan, altitude_range, mach_range,
                                                   combustor_exit_temperature=0.9 * reference_point.Tt4)
     deck = Data()
     for field in ['altitude_m', 'mach_number', 'thrust_N', 'fuel_mass_flow_rate', 'isa_deviation_k', 'rating_code']:

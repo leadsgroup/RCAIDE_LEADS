@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/generate_turbofan_offdesign_deck.py
+# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/generate_turbofan_deck.py
 #
 #
 # Created:  Sep 2026, M. Clarke
@@ -18,9 +18,9 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan_offde
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  generate_turbofan_offdesign_deck
+#  generate_turbofan_deck
 # ----------------------------------------------------------------------------------------------------------------------
-def generate_turbofan_offdesign_deck(turbofan, altitude_range, mach_range, combustor_exit_temperature=None,
+def generate_turbofan_deck(turbofan, altitude_range, mach_range, combustor_exit_temperature=None,
                                       isa_deviation=0.0, rating_code=0, fan_map=None,
                                       high_pressure_compressor_map=None, allow_unconverged_fallback=False):
     """
@@ -88,7 +88,7 @@ def generate_turbofan_offdesign_deck(turbofan, altitude_range, mach_range, combu
     argument, which converts this result into the `pandas.DataFrame` schema
     `build()` requires internally (`ALT ft, XM, FN lbf, FF lb/h, ISA k, RC`):
 
-        deck = generate_turbofan_offdesign_deck(turbofan, altitude_range, mach_range)
+        deck = generate_turbofan_deck(turbofan, altitude_range, mach_range)
         turbofan.surrogate = Turbofan_Surrogate().build(deck=deck)
 
     Pass `save_path=` too to also write the converted deck out as an Excel

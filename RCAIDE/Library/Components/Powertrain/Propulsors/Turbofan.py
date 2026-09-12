@@ -8,7 +8,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
-from RCAIDE.Framework.Core     import Data
+from RCAIDE.Framework.Core     import Data, Units
 from .                         import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.append_turbofan_conditions     import append_turbofan_conditions , append_turbofan_segment_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
@@ -121,6 +121,23 @@ class Turbofan(Propulsor):
     OpenVSP_flow_through : bool
         Flag for OpenVSP flow-through analysis. Default is False.
 
+    surrogate : RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate, optional
+        If set, `compute_turbofan_performance` uses this table-driven surrogate
+        instead of the analytical cycle model. Default is None.
+
+    offdesign_matching : Data, optional
+        If set (as `Data(design_constants=..., reference_point=...)` from
+        `design_turbofan_offdesign_matching`), `compute_turbofan_performance`
+        uses live off-design component matching
+        (`Turbofan_OffDesign_Matching.solve_turbofan_offdesign_robust`)
+        instead of the analytical cycle model or `surrogate` -- checked
+        before `surrogate`, so set only one. An optional third key,
+        `idle_fallback` (a built `Turbofan_Surrogate`), routes points where
+        the matching solver fails to converge (deep part-power/idle, outside
+        what the matching equations can represent at all) to
+        `idle_fallback.query(..., rating_code='FID')` instead of raising
+        `OffDesignMatchingError`. Default is None.
+
     Notes
     -----
     The Turbofan class inherits from the Propulsor base class and implements
@@ -162,7 +179,7 @@ class Turbofan(Propulsor):
         self.fan_nozzle                                 = None 
         self.integrated_drive_generator                 = None 
         self.integrated_drive_motor                     = None 
-        self.plug_diameter                              = 0.1     # dimater of the engine plug
+        self.plug_diameter                              = 0.1     # diameter of the engine plug
         self.geometry_xe                                = 1.      # Geometry information for the installation effects function
         self.geometry_ye                                = 1.      # Geometry information for the installation effects function
         self.geometry_Ce                                = 2.      # Geometry information for the installation effects function
@@ -173,34 +190,15 @@ class Turbofan(Propulsor):
         self.specific_fuel_consumption_reduction_factor = 0.0 
         self.compressor_nondimensional_massflow         = 0.0
         self.reference_temperature                      = 288.15
-        self.reference_pressure                         = 1.01325*10**5 
+        self.reference_pressure                         = 1.01325*Units.bar
         self.design_thrust                              = 0.0 
         self.design_power_offtake                       = 0.0
         self.design_mass_flow_rate                      = 0.0
         self.design_shaft_work_specific                 = 0.0
         self.design_voltage                             = 0.0
         self.OpenVSP_flow_through                       = False
-        self.surrogate                                  = None    # None -> analytical cycle model (default).
-                                                                    # Set to a Turbofan_Surrogate instance to use
-                                                                    # table-driven performance instead; see
-                                                                    # RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate
-        self.offdesign_matching                         = None    # None -> analytical cycle model or surrogate,
-                                                                    # whichever applies (default). Set to
-                                                                    # Data(design_constants=..., reference_point=...)
-                                                                    # (from design_turbofan_offdesign_matching) to
-                                                                    # use live off-design component matching
-                                                                    # instead; see RCAIDE.Library.Methods.Powertrain.
-                                                                    # Propulsors.Turbofan.Turbofan_OffDesign_Matching.
-                                                                    # Checked before surrogate in
-                                                                    # compute_turbofan_performance -- do not set both.
-                                                                    # Optional third key idle_fallback (a built
-                                                                    # Turbofan_Surrogate): if the matching solver
-                                                                    # fails to converge at a point (deep part-power/
-                                                                    # idle -- outside what the matching equations can
-                                                                    # represent at all, not just a numerics issue),
-                                                                    # that point is routed to idle_fallback.query(...,
-                                                                    # rating_code='FID') instead of raising. Unset ->
-                                                                    # unchanged behavior (raises OffDesignMatchingError).
+        self.surrogate                                  = None    # see docstring
+        self.offdesign_matching                         = None    # see docstring
         
     def append_operating_conditions(self, segment):
         """
