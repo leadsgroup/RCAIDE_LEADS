@@ -21,29 +21,22 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
                               combustor_exit_temperature, tolerance=1e-8, max_iterations=200, relaxation_factor=0.5,
                               initial_guess=None):
     """
-    Off-design component-matching solve for a single-spool-equivalent
-    turbojet (RCAIDE's `Turbojet`: two spools, LP compressor + HP compressor,
-    no bypass) with a fully-expanded convergent-divergent core nozzle:
-    iterates the LP-turbine/LP-compressor and HP-compressor/HP-turbine
-    spools to a converged operating point at a given flight condition and
-    throttle setting, entirely from the engine's design-point reference
-    state -- no compressor/turbine performance maps needed (see Notes).
+    Off-design component-matching solve for RCAIDE's `Turbojet` (two spools,
+    LP+HP compressor, no bypass) with a fully-expanded convergent-divergent
+    core nozzle: iterates both spools to a converged operating point at a
+    given flight condition and throttle, entirely from the engine's design-
+    point reference state -- no compressor/turbine performance maps needed.
 
-    A dedicated turbojet solver, not a reuse of `Turbofan_OffDesign_Matching.
-    solve_turbofan_offdesign` with bypass pinned to zero: a turbojet's core
-    nozzle is convergent-*divergent* (RCAIDE's `Supersonic_Nozzle`), fully
-    expanding downstream of an always-choked throat -- a materially
-    different nozzle model from a turbofan's plain convergent
-    `Expansion_Nozzle`. Confirmed against Cantwell Ref. [2] Sec. 4.2 and
-    Mattingly Ref. [1] Table 8.4 before implementing. Reference-point
-    reproduction is a bounded ~4-6% across the tested pressure-ratio range
-    (subsonic through GE90-class PR), comparable to the turbofan solver's
-    own ~2% baseline -- see `RESEARCH/22_ATI/Engine_Validation/
-    ENGINE_MODEL_NOTES.md` Sec. 14 for the full derivation history,
-    including two `Supersonic_Nozzle` bugs found along the way (one matched
-    rather than fixed -- freestream vs. local gas properties for exit Mach,
-    out of scope to change everywhere else it's used; one fixed directly --
-    exit static pressure left at a placeholder when choked).
+    A dedicated solver, not a bypass=0 reuse of `Turbofan_OffDesign_Matching.
+    solve_turbofan_offdesign`: a turbojet's core nozzle is convergent-
+    *divergent* (`Supersonic_Nozzle`, fully expanded downstream of an
+    always-choked throat), materially different from a turbofan's plain
+    convergent `Expansion_Nozzle` -- confirmed against Cantwell Ref. [2]
+    Sec. 4.2 and Mattingly Ref. [1] Table 8.4 before implementing. Reference-
+    point reproduction is ~4-6% across the tested pressure-ratio range. Full
+    derivation history (including two `Supersonic_Nozzle` bugs found along
+    the way) in `RESEARCH/22_ATI/Engine_Validation/ENGINE_MODEL_NOTES.md`
+    Sec. 14.
 
     Parameters
     ----------
@@ -97,36 +90,22 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
 
     Notes
     -----
-    No compressor/turbine performance MAPS are required: component
-    efficiencies are held at their design (reference) values, and the
-    operating point is found by scaling reference pressure/temperature
-    ratios with choked-flow and power-balance relations, generalized to the
-    LP-compressor+LP-turbine / HP-compressor+HP-turbine spools -- same
-    approach as the turbofan solver, minus the bypass/fan-nozzle machinery
-    that engine architecture doesn't have.
+    No compressor/turbine performance maps needed: efficiencies are held at
+    their design values, and the operating point comes from scaling
+    reference pressure/temperature ratios with choked-flow and power-balance
+    relations -- same approach as the turbofan solver, minus bypass/fan-
+    nozzle machinery this architecture doesn't have.
 
-    The LP-turbine/LP-compressor spool's pressure-ratio matching equation is
-    *simpler* than the turbofan solver's equivalent (no mass-flow-parameter
-    ratio at the nozzle exit at all): the turbofan version matches mass flow
-    at the nozzle's own choked throat, which for a plain convergent nozzle
-    *is* the exit plane (so the exit Mach, capped at 1 when choked, appears
-    directly in that ratio). A convergent-divergent nozzle's throat is a
-    physically different, upstream station from its exit -- fixed-area and,
-    per both Cantwell Ref. [2] Sec. 4.4 ("the nozzle throat is also choked...
-    over almost the entire practical range of engine operating conditions")
-    and Mattingly Ref. [1] Sec. 8.3 (same assumption for the single-spool
-    gas generator), choked (M=1) essentially always. A fixed area choked at
-    M=1 at both the reference and current operating point makes that ratio
-    exactly 1 regardless of what the diverging section does further
-    downstream -- it drops out of the equation entirely, leaving only the
-    `sqrt(tau_tL/ref.tau_tL)` temperature-ratio scaling below.
+    The LP-turbine/LP-compressor pressure-ratio match has no mass-flow-
+    parameter ratio at the nozzle exit at all (unlike the turbofan solver):
+    a convergent-divergent nozzle's throat is choked essentially always
+    (Cantwell Ref. [2] Sec. 4.4, Mattingly Ref. [1] Sec. 8.3), so that ratio
+    is exactly 1 at any operating point and drops out, leaving only the
+    `sqrt(tau_tL/ref.tau_tL)` scaling below.
 
-    Because the nozzle is fully expanded (P9=P0 always, by the same Ref. [2]
-    Sec. 4.2 assumption used throughout this solver), the thrust equation
-    carries no pressure term at all (unlike the turbofan solver's core/fan
-    nozzle terms, which track a real choked-nozzle pressure mismatch) --
-    `thrust = mass_flow_rate*((1+f)*V9 - V0)` is exact, not an approximation
-    that happens to drop a small correction.
+    Because the nozzle is fully expanded (P9=P0 always), the thrust equation
+    carries no pressure term: `thrust = mass_flow_rate*((1+f)*V9 - V0)` is
+    exact, unlike the turbofan solver's core/fan terms.
 
     References
     ----------
@@ -169,9 +148,8 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
     else:
         tau_c, tau_tL, pi_tL = initial_guess
 
-    # Shaft power offtake (IDG/motor), same derivation as solve_turbofan_offdesign's own
-    # tau_cH extension -- see its schema comment for the full derivation. Zero for an engine
-    # with no offtake, reducing this exactly to the original no-offtake equation.
+    # Shaft power offtake (IDG/motor), same derivation as solve_turbofan_offdesign's tau_cH
+    # extension. Zero for an engine with no offtake, an exact no-op then.
     shaft_work_specific_design = getattr(dc, 'shaft_work_specific_design', 0.0)
     P_offtake_design = shaft_work_specific_design * ref.m0
     phiR = shaft_work_specific_design / (dc.cpt * ref.Tt4)
@@ -193,32 +171,24 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
         pi_cH, eta_cH_used = compressor_pressure_ratio(tau_cH, dc.eta_cH, gamma_c)
         pi_c, eta_c_used = compressor_pressure_ratio(tau_c, dc.eta_c, gamma_c)
 
-        # core nozzle -- fully expanded (P9=P0 always, see Notes): M9 solved directly from
-        # Pt9/P0, no choked-at-1 cap. Floored at 0 (not raised) for a bad intermediate
-        # iterate that pushes Pt9/P0 below 1 -- same "fail cleanly downstream" rationale as
-        # compressor_pressure_ratio's own floor (imported from the turbofan module)
+        # core nozzle -- fully expanded (see Notes): M9 solved directly from Pt9/P0, no
+        # choked-at-1 cap. Pt9/P0<1 fails cleanly downstream rather than raising here.
         Pt9_P0 = pi_r * pi_d * pi_c * pi_cH * dc.pi_b * dc.pi_tH * pi_tL * dc.pi_n
         if Pt9_P0 < 1.0:
             collapsed = True
             break
-        # gamma_c (cold/freestream), not gamma_t -- matches RCAIDE's own Supersonic_Nozzle
-        # (compute_supersonic_nozzle_performance.py), which computes exit Mach using
-        # conditions.freestream.isentropic_expansion_factor regardless of the actual hot
-        # exhaust gas properties at the nozzle inlet (unlike Expansion_Nozzle, which
-        # correctly uses the local working-fluid state -- a separate, real bug in
-        # Supersonic_Nozzle, not fixed here; see design_turbojet_offdesign_matching's
-        # Notes). Matching RCAIDE's actual (if imperfect) behavior here is what makes
-        # reference_point.F reproduce turbojet.design_thrust.
+        # gamma_c, not gamma_t -- matches RCAIDE's own (imperfect) Supersonic_Nozzle, which
+        # uses freestream gamma for exit Mach regardless of actual hot-gas properties (a
+        # separate bug, not fixed here; see design_turbojet_offdesign_matching's Notes).
+        # Matching it is what makes reference_point.F reproduce turbojet.design_thrust.
         M9 = np.sqrt(2 / (gamma_c - 1) * (Pt9_P0 ** ((gamma_c - 1) / gamma_c) - 1))
 
         # carried forward for next pass's offtake term above, lagged like pi_tL below
         mass_flow_rate_estimate = ref.m0 * (P0 * pi_r * pi_d * pi_c * pi_cH) / \
             (ref.P0 * pi_rR * pi_dR * ref.pi_c * ref.pi_cH) * np.sqrt(ref.Tt4 / max(Tt4, 1e-6))
 
-        # LP turbine pressure ratio -- see Notes for why this has no mass-flow-parameter
-        # ratio at all (the nozzle *throat*, not the fully-expanded exit, sets this
-        # matching, and the throat is always choked at both the reference and current
-        # point) -- under-relaxed, same rationale as the turbofan solver
+        # LP turbine pressure ratio -- no mass-flow-parameter ratio needed (see Notes),
+        # under-relaxed same as the turbofan solver
         pi_tL_computed = ref.pi_tL * np.sqrt(tau_tL / ref.tau_tL)
         pi_tL = pi_tL + relaxation_factor * (pi_tL_computed - pi_tL)
 
@@ -250,30 +220,30 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
             message=f"core nozzle collapsed (Pt9/P0={Pt9_P0:.4f} < 1) at iteration {i}",
         )
     else:
-        # Recompute final-state dependent quantities at whatever tau_tL/tau_c/pi_tL the
-        # iteration reached -- converged fixed point on success, or the last iterate if
-        # max_iterations ran out
-        tau_cH = 1 + ((tau_lambda / tau_r) / (tau_lambdaR / tau_rR)) * (ref.tau_c / tau_c) * (ref.tau_cH - 1)
+        # Recompute final-state quantities at the converged (or last-iterate) tau_tL/tau_c/
+        # pi_tL. Offtake term recomputed fresh, not reused from the loop body (see Turbofan_
+        # OffDesign_Matching.py's own post-loop recompute -- X/phi there lag tau_c by one pass).
+        X  = tau_lambda / (tau_r * tau_c)
+        XR = tau_lambdaR / (tau_rR * ref.tau_c)
+        shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+        phi = shaft_work_specific / (dc.cpt * Tt4)
+        tau_cH = 1 + (X / XR) * (ref.tau_cH - 1) + X * (phiR - phi)
         pi_cH, eta_cH_used = compressor_pressure_ratio(tau_cH, dc.eta_cH, gamma_c)
         pi_c, eta_c_used = compressor_pressure_ratio(tau_c, dc.eta_c, gamma_c)
         Pt9_P0 = pi_r * pi_d * pi_c * pi_cH * dc.pi_b * dc.pi_tH * pi_tL * dc.pi_n
         M9 = np.sqrt(2 / (gamma_c - 1) * (Pt9_P0 ** ((gamma_c - 1) / gamma_c) - 1))
 
         # engine mass flow rate -- same station-4 choked-flow scaling as the turbofan
-        # solver's mass_flow_rate, minus the (1+alpha)/(1+ref.alpha) bypass-split factor
-        # (always 1 here -- no bypass at all)
+        # solver, minus the bypass-split factor (always 1 here)
         mass_flow_rate = ref.m0 * (P0 * pi_r * pi_d * pi_c * pi_cH) / (ref.P0 * pi_rR * pi_dR * ref.pi_c * ref.pi_cH) * \
             np.sqrt(ref.Tt4 / Tt4)
 
-        # fuel/air ratio
         tau_x = tau_r * tau_c * tau_cH  # compressor-exit / T0 (station 3 temperature ratio)
         fuel_to_air_ratio = (tau_lambda - tau_x) / (dc.fuel_heating_value * dc.eta_b / (dc.cpc * T0) - tau_lambda)
 
-        # core nozzle exit state -- fully expanded, so P9=P0 exactly (no separate static-
-        # pressure computation needed). Tt9 (stagnation temperature entering the nozzle)
-        # is tracked physically via the hot-side energy balance through the turbines
-        # (Tt4*tau_tH*tau_tL, cpt-based, correct); T9/a9/V9 downstream of that use gamma_c/
-        # Rc, matching RCAIDE's own Supersonic_Nozzle convention (see the M9 comment above)
+        # fully expanded, so P9=P0 exactly. Tt9 via the hot-side turbine energy balance
+        # (cpt-based, correct); T9/a9/V9 downstream use gamma_c/Rc, matching Supersonic_
+        # Nozzle's convention (see the M9 comment above)
         Tt9 = Tt4 * dc.tau_tH * tau_tL
         P9 = P0
         T9 = Tt9 / (1 + (gamma_c - 1) / 2 * M9 ** 2)

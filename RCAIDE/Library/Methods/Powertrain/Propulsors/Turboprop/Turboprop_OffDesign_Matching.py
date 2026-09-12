@@ -202,7 +202,13 @@ def solve_turboprop_offdesign(design_constants, reference_point, mach_number, st
             message=f"core nozzle collapsed (Pt9/P0={Pt9_P0:.4f} < 1) at iteration {i}",
         )
     else:
-        tau_c_new = 1 + ((tau_lambda / tau_r) / (tau_lambdaR / tau_rR)) * (ref.tau_c / tau_c) * (ref.tau_c - 1)
+        # Offtake term included here too (see Turbofan_OffDesign_Matching.py's own post-loop
+        # recompute for why this needs recomputing fresh rather than reusing the loop body's
+        # phi, which was evaluated one tau_c update behind).
+        tau_cH_ratio = (tau_lambda / tau_r) / (tau_lambdaR / tau_rR)
+        shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+        phi = shaft_work_specific / (dc.cpt * Tt4)
+        tau_c_new = 1 + tau_cH_ratio * (ref.tau_c / tau_c) * (ref.tau_c - 1) + (tau_lambda / tau_r) * (phiR - phi)
         pi_c, eta_c_used = compressor_pressure_ratio(tau_c_new, dc.eta_c, gamma_c)
         tau_c = tau_c_new
         Pt9_P0 = pi_r * pi_d * pi_c * dc.pi_b * dc.pi_tH * pi_tL * dc.pi_n

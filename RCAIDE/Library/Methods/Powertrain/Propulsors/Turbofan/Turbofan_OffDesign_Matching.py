@@ -477,8 +477,15 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         # Recompute final-state dependent quantities at whatever tau_tL/tau_f/pi_tL the
         # iteration reached -- the converged fixed point on success, or the last iterate if
         # max_iterations ran out without converging (M9!=0 either way, so none of this
-        # divides by zero the way the collapsed branch above would).
-        tau_cH = 1 + ((tau_lambda / tau_r) / (tau_lambdaR / tau_rR)) * (ref.tau_f / tau_f) * (ref.tau_cH - 1)
+        # divides by zero the way the collapsed branch above would). Offtake term included
+        # here too, using the final tau_f and the loop's own last mass_flow_rate_estimate --
+        # the loop body's X/phi (still in scope) were evaluated one tau_f update behind this,
+        # so recomputed fresh here rather than reused.
+        X  = tau_lambda / (tau_r * tau_f)
+        XR = tau_lambdaR / (tau_rR * ref.tau_f)
+        shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+        phi = shaft_work_specific / (dc.cpt * Tt4)
+        tau_cH = 1 + (X / XR) * (ref.tau_cH - 1) + X * (phiR - phi)
         pi_cH, eta_cH_used = compressor_pressure_ratio(tau_cH, dc.eta_cH, gamma_c, high_pressure_compressor_map)
         pi_f, eta_f_used = compressor_pressure_ratio(tau_f, dc.eta_f, gamma_c, fan_map)
         tau_f_alone = 1 + dc.fan_temperature_rise_fraction * (tau_f - 1)
