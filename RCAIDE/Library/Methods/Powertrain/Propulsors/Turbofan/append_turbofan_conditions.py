@@ -79,7 +79,10 @@ def append_turbofan_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag]                               = Conditions()  
     segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
-    segment.state.conditions.energy.propulsors[propulsor.tag].rating_code                   = None
+    # segment.rating_code, if set, seeds the surrogate rating-code table used for this
+    # segment (e.g. 'FID' to route a descent/idle segment to real flight-idle deck data
+    # instead of the RC=0 part-power sweep) -- unset segments keep the previous default (None)
+    segment.state.conditions.energy.propulsors[propulsor.tag].rating_code                   = getattr(segment, 'rating_code', None)
     segment.state.conditions.energy.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
     segment.state.conditions.energy.propulsors[propulsor.tag].moment                        = 0. * ones_row(3) 
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()

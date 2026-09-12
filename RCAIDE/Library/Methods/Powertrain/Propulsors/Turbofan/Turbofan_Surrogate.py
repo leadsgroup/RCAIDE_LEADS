@@ -1,23 +1,19 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/Turbofan_Surrogate.py
 #
-# Created:  Sep 2026, RCAIDE Team
+# Created:  Sep 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Framework.Core import Data, Units 
 import numpy as np
 import pandas as pd
-from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
+from scipy.interpolate import RBFInterpolator
 
-from RCAIDE.Framework.Core import Data
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Turbofan_Surrogate
 # ----------------------------------------------------------------------------------------------------------------------
-FT2M            = 0.3048
-LBF2N           = 4.4482216153
-LBM_HR_TO_KG_S  = 0.45359237 / 3600.0
-
 # Engine_Rating_Codes.png -- string abbreviation -> numeric RC used by the deck.
 # 0 ("not a rating" / part-power) has no abbreviation; it's the implicit fallback.
 RATING_CODE_ABBREVIATIONS = {
@@ -30,8 +26,8 @@ RATING_CODE_ABBREVIATIONS = {
 
 
 class _RatingCodeInterpolator(Data):
-    """Interpolators (linear + nearest-neighbor extrapolation fallback) for one
-    rating code's data. Rated codes (RC>0) are single-valued at fixed
+    """Smooth interpolators (scipy RBFInterpolator, thin-plate-spline kernel)
+    for one rating code's data. Rated codes (RC>0) are single-valued at fixed
     (altitude, Mach[, ISA]) by definition (one fixed power setting), so they
     interpolate over (altitude_ft, Mach[, ISA_k]) -> (FN_norm, FF_norm)
     directly, and the caller applies throttle as a post-hoc multiplier (same
@@ -42,13 +38,40 @@ class _RatingCodeInterpolator(Data):
     When use_throttle_axis is set, this instead interpolates over
     (altitude_ft, Mach[, ISA_k], throttle_fraction) -> (FN_norm, FF_norm), and
     the caller's throttle is consumed as an interpolation coordinate, not a
-    post-hoc multiplier."""
+    post-hoc multiplier.
+
+    Uses RBFInterpolator rather than a Delaunay-triangulation-based linear
+    interpolator (the previous approach): scattered altitude/Mach/throttle
+    points from an algorithmically-generated deck aren't a clean simplex
+    mesh, and LinearNDInterpolator's triangulation went visibly singular/
+    noisy on exactly that kind of data (non-monotonic thrust vs. altitude and
+    failed mission-segment convergence, found running a full Boeing 737
+    mission through a generate_turbofan_offdesign_deck-built surrogate). RBF
+    has no triangulation to go singular and is globally smooth by
+    construction. Coordinates are min-max scaled to [0, 1] per axis before
+    fitting -- altitude (ft, O(10^4)) and Mach/throttle (O(1)) would otherwise
+    make the interpolator's distance metric almost entirely altitude, since
+    RBFInterpolator's kernel is isotropic."""
+
+    # Above this many points, fit uses only each query's nearest RBF_NEIGHBORS training
+    # points (scipy's neighbors= option) instead of the full dense kernel matrix -- RBF's
+    # exact solve is O(n^3), impractical much beyond a few thousand points. Keep this high:
+    # a local neighbor subset can be locally coplanar even when the full dataset isn't (e.g.
+    # near a Mach=0 boundary where many points share that one value), which makes the
+    # thin-plate-spline's degree-1 polynomial term rank-deficient -- seen in practice on a
+    # 400-point deck at the previous threshold of 300.
+    RBF_NEIGHBORS_THRESHOLD = 2000
+    RBF_NEIGHBORS           = 100
 
     def __defaults__(self):
         self.has_isa_variation  = False
         self.use_throttle_axis  = False
-        self._linear  = {}
-        self._nearest = {}
+        self._rbf       = {}
+        self._col_min   = None
+        self._col_range = None
+
+    def _scale(self, points):
+        return (points - self._col_min) / self._col_range
 
     def build(self, df_rc, use_throttle_axis=False):
         self.has_isa_variation = df_rc["ISA k"].nunique() > 1
@@ -61,10 +84,18 @@ class _RatingCodeInterpolator(Data):
             cols.append("throttle_fraction")
         points = df_rc[cols].to_numpy(dtype=float)
 
+        col_max          = points.max(axis=0)
+        self._col_min    = points.min(axis=0)
+        self._col_range  = np.where(col_max > self._col_min, col_max - self._col_min, 1.0)
+        scaled_points    = self._scale(points)
+
+        n_points  = len(scaled_points)
+        neighbors = min(self.RBF_NEIGHBORS, n_points - 1) if n_points > self.RBF_NEIGHBORS_THRESHOLD else None
+
         for col, key in (("FN_norm", "FN"), ("FF_norm", "FF")):
-            values              = df_rc[col].to_numpy(dtype=float)
-            self._linear[key]  = LinearNDInterpolator(points, values)
-            self._nearest[key] = NearestNDInterpolator(points, values)
+            values          = df_rc[col].to_numpy(dtype=float)
+            self._rbf[key] = RBFInterpolator(scaled_points, values, kernel='thin_plate_spline',
+                                              neighbors=neighbors)
 
     def evaluate(self, alt_ft, mach, isa_dev, throttle_fraction=None):
         """alt_ft, mach, isa_dev[, throttle_fraction]: 1-D arrays of equal
@@ -75,17 +106,9 @@ class _RatingCodeInterpolator(Data):
             point.append(isa_dev)
         if self.use_throttle_axis:
             point.append(throttle_fraction)
-        point = tuple(point)
+        query_points = self._scale(np.column_stack(point))
 
-        out = {}
-        for key in ("FN", "FF"):
-            val      = np.atleast_1d(np.asarray(self._linear[key](*point), dtype=float))
-            nan_mask = ~np.isfinite(val)
-            if np.any(nan_mask):
-                nearest_point = tuple(p[nan_mask] for p in point)
-                val[nan_mask] = self._nearest[key](*nearest_point)
-            out[key] = val
-        return out["FN"], out["FF"]
+        return self._rbf["FN"](query_points), self._rbf["FF"](query_points)
 
 
 class Turbofan_Surrogate(Data):
@@ -296,35 +319,62 @@ class Turbofan_Surrogate(Data):
         unresolved = df.drop(rated[dup_mask].index)
         return pd.concat([unresolved] + resolved_groups, ignore_index=True)
 
-    def build(self, deck_path=None, sheet_name=None, dataframe=None):
-        """Loads (or accepts, via dataframe=) and normalizes the deck, and fits
-        per-rating-code interpolators. Must be called once before query().
-        Returns self, so it can be chained:
+    @staticmethod
+    def deck_to_dataframe(deck):
+        """Converts a generate_turbofan_offdesign_deck() result (or any Data/
+        object with the same fields: altitude_m, mach_number, thrust_N,
+        fuel_mass_flow_rate, isa_deviation_k, rating_code, each a 1-D array)
+        into the pandas.DataFrame schema this class requires (REQUIRED_COLUMNS
+        -- see the class docstring). Used by build()'s deck= argument; exposed
+        standalone for callers that just want the DataFrame (e.g. to inspect
+        or export it without building a surrogate)."""
+        return pd.DataFrame({
+            "ALT ft":  deck.altitude_m / Units.ft,
+            "XM":      deck.mach_number,
+            "FN lbf":  deck.thrust_N / Units.lbf,
+            "FF lb/h": deck.fuel_mass_flow_rate / (Units['lbm'] / Units.hour),
+            "ISA k":   deck.isa_deviation_k,
+            "RC":      deck.rating_code,
+        })
+
+    def build(self, deck_path=None, sheet_name=None, dataframe=None, deck=None, save_path=None):
+        """Loads (or accepts, via dataframe= or deck=) and normalizes the deck,
+        and fits per-rating-code interpolators. Must be called once before
+        query(). Returns self, so it can be chained:
             turbofan.surrogate = Turbofan_Surrogate().build(deck_path)
         Pass an in-memory DataFrame directly (matching REQUIRED_COLUMNS) via
-        dataframe= instead of deck_path= when the deck isn't coming from a
-        file -- e.g. generated in-process by another model rather than read
-        from an external engine deck."""
+        dataframe=, or a generate_turbofan_offdesign_deck() result via deck=
+        (converted internally by deck_to_dataframe()), instead of deck_path=
+        when the deck isn't coming from a file. save_path=, if given, writes
+        the resolved deck (post near-duplicate-row averaging, pre
+        normalization -- i.e. the same REQUIRED_COLUMNS schema, reusable as a
+        deck_path= later) to that path via pandas.DataFrame.to_excel()."""
+        if deck is not None:
+            dataframe = self.deck_to_dataframe(deck)
+
         if dataframe is not None:
             df = dataframe
         else:
             deck_path  = deck_path or self.deck_path
             sheet_name = sheet_name or self.sheet_name
             if deck_path is None:
-                raise ValueError("build() needs either deck_path (or self.deck_path) or dataframe=")
+                raise ValueError("build() needs one of deck_path (or self.deck_path), dataframe=, or deck=")
             df = pd.read_excel(deck_path, sheet_name=sheet_name)
 
         df = self._resolve_near_duplicate_rated_rows(df)
         self.validate_deck(df)
 
+        if save_path is not None:
+            df.to_excel(save_path, sheet_name=sheet_name or self.sheet_name, index=False)
+
         ref = df[(df["ALT ft"] == 0) & (df["XM"] == 0) & (df["ISA k"] == 0)]
         ref_row = ref.loc[ref["RC"].idxmax()]   # highest-rated code available at that point (typically MTO)
-        self._SLS_reference_thrust_N       = ref_row["FN lbf"] * LBF2N
-        self._SLS_reference_fuel_flow_kg_s = ref_row["FF lb/h"] * LBM_HR_TO_KG_S
+        self._SLS_reference_thrust_N       = ref_row["FN lbf"] * Units.lbf
+        self._SLS_reference_fuel_flow_kg_s = ref_row["FF lb/h"] * (Units['lbm'] / Units.hour)
 
         df = df.copy()
-        df["FN_norm"] = (df["FN lbf"] * LBF2N) / self._SLS_reference_thrust_N
-        df["FF_norm"] = (df["FF lb/h"] * LBM_HR_TO_KG_S) / self._SLS_reference_fuel_flow_kg_s
+        df["FN_norm"] = (df["FN lbf"] * Units.lbf) / self._SLS_reference_thrust_N
+        df["FF_norm"] = (df["FF lb/h"] * (Units['lbm'] / Units.hour)) / self._SLS_reference_fuel_flow_kg_s
 
         # RC=0 throttle axis -- see THROTTLE_AXIS in the class docstring. Rank (not row
         # position) within each (altitude, Mach, ISA) group, descending FN, mapped to
@@ -402,7 +452,7 @@ class Turbofan_Surrogate(Data):
         if throttle.size == 1 and mach.size > 1:
             throttle = np.full(mach.shape, throttle[0])
 
-        alt_ft = altitude_m / FT2M
+        alt_ft = altitude_m / Units.ft
         model  = self._rc_models[rc]
         if model.use_throttle_axis:
             FN_norm, FF_norm = model.evaluate(alt_ft, mach, isa_dev, throttle_fraction=throttle)
@@ -419,4 +469,7 @@ class Turbofan_Surrogate(Data):
         FN_ref = target_SLS_thrust_N if target_SLS_thrust_N is not None else self._SLS_reference_thrust_N
         FF_ref = target_SLS_fuel_flow_kg_s if target_SLS_fuel_flow_kg_s is not None else self._SLS_reference_fuel_flow_kg_s
 
-        return FN_norm * FN_ref, FF_norm * FF_ref
+        # thrust may legitimately be negative (windmilling/idle drag -- see RC=20 Flight
+        # Idle data), but fuel flow can't be: floors an occasional RBF interpolation
+        # overshoot near a sparse region, not a real physical value from the training data
+        return FN_norm * FN_ref, np.maximum(FF_norm * FF_ref, 0.0)

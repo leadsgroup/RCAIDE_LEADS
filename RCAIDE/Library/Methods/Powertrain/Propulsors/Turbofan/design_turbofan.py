@@ -272,7 +272,6 @@ def design_turbofan(turbofan):
     net_external_shaft_power  = np.array([[0.0]])
     
     # Design and size integrated drive motor (parallel hybrid)
-    # Design and size integrated drive motor (parallel hybrid)
     if integrated_drive_motor != None: 
         motor_electrical_power = design_power_offtake
         motor_mechanical_power = motor_electrical_power * integrated_drive_motor.efficiency
@@ -292,79 +291,104 @@ def design_turbofan(turbofan):
         if integrated_drive_generator.voltage_type == 'DC' and integrated_drive_generator.nominal_voltage > 0:
             design_optimal_generator(integrated_drive_generator)
         net_external_shaft_power += gen_mechanical_power
-                
-    external_shaft_work =  net_external_shaft_power    
-    
-    # Step 13: Link the high pressure turbione to the combustor
-    hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
-    hpt_conditions.inputs.stagnation_pressure       = combustor_conditions.outputs.stagnation_pressure
-    hpt_conditions.inputs.fuel_to_air_ratio         = combustor_conditions.outputs.fuel_to_air_ratio 
-    hpt_conditions.inputs.static_temperature        = combustor_conditions.outputs.static_temperature
-    hpt_conditions.inputs.static_pressure           = combustor_conditions.outputs.static_pressure
-    hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number       
-    hpt_conditions.inputs.compressor                = hpc_conditions.outputs  
-    hpt_conditions.inputs.bypass_ratio              = 0.0
-    hpt_conditions.inputs.external_shaft.work_done  = external_shaft_work 
-    high_pressure_turbine.working_fluid             = combustor.working_fluid    
-    
-    # Step 14: Compute flow through the high pressure turbine
-    compute_turbine_performance(high_pressure_turbine,conditions)
-            
-    # Step 15: Link the low pressure turbine to the high pressure turbine
-    lpt_conditions.inputs.stagnation_temperature     = hpt_conditions.outputs.stagnation_temperature
-    lpt_conditions.inputs.stagnation_pressure        = hpt_conditions.outputs.stagnation_pressure
-    lpt_conditions.inputs.static_temperature         = hpt_conditions.outputs.static_temperature
-    lpt_conditions.inputs.static_pressure            = hpt_conditions.outputs.static_pressure  
-    lpt_conditions.inputs.mach_number                = hpt_conditions.outputs.mach_number    
-    low_pressure_turbine.working_fluid               = high_pressure_turbine.working_fluid     
-    lpt_conditions.inputs.compressor                 = lpc_conditions.outputs 
-    lpt_conditions.inputs.fuel_to_air_ratio          = combustor_conditions.outputs.fuel_to_air_ratio 
-    lpt_conditions.inputs.fan                        = fan_conditions.outputs 
-    lpt_conditions.inputs.bypass_ratio               = bypass_ratio 
-    
-    # Step 16: Compute flow through the low pressure turbine
-    compute_turbine_performance(low_pressure_turbine,conditions)
-    
-    # Step 17: Link the core nozzle to the low pressure turbine
-    core_nozzle_conditions.inputs.stagnation_temperature     = lpt_conditions.outputs.stagnation_temperature
-    core_nozzle_conditions.inputs.stagnation_pressure        = lpt_conditions.outputs.stagnation_pressure
-    core_nozzle_conditions.inputs.static_temperature         = lpt_conditions.outputs.static_temperature
-    core_nozzle_conditions.inputs.static_pressure            = lpt_conditions.outputs.static_pressure  
-    core_nozzle_conditions.inputs.mach_number                = lpt_conditions.outputs.mach_number   
-    core_nozzle.working_fluid                                = low_pressure_turbine.working_fluid 
-    
-    # Step 18: Compute flow through the core nozzle
-    compute_expansion_nozzle_performance(core_nozzle,conditions)
-   
-    # Step 19: Link the fan nozzle to the fan
-    fan_nozzle_conditions.inputs.stagnation_temperature     = fan_conditions.outputs.stagnation_temperature
-    fan_nozzle_conditions.inputs.stagnation_pressure        = fan_conditions.outputs.stagnation_pressure
-    fan_nozzle_conditions.inputs.static_temperature         = fan_conditions.outputs.static_temperature
-    fan_nozzle_conditions.inputs.static_pressure            = fan_conditions.outputs.static_pressure  
-    fan_nozzle_conditions.inputs.mach_number                = fan_conditions.outputs.mach_number   
-    fan_nozzle.working_fluid                                = fan.working_fluid
-    
-    # Step 20: Compute flow through the fan nozzle
-    compute_expansion_nozzle_performance(fan_nozzle,conditions)
-     
-    # Step 21: Link the turbofan to outputs from various Components    
-    turbofan_conditions.bypass_ratio                             = bypass_ratio
-    turbofan_conditions.fan_nozzle_exit_velocity                 = fan_nozzle_conditions.outputs.velocity
-    turbofan_conditions.fan_nozzle_area_ratio                    = fan_nozzle_conditions.outputs.area_ratio  
-    turbofan_conditions.fan_nozzle_static_pressure               = fan_nozzle_conditions.outputs.static_pressure
-    turbofan_conditions.core_nozzle_area_ratio                   = core_nozzle_conditions.outputs.area_ratio 
-    turbofan_conditions.core_nozzle_static_pressure              = core_nozzle_conditions.outputs.static_pressure
-    turbofan_conditions.core_nozzle_exit_velocity                = core_nozzle_conditions.outputs.velocity 
-    turbofan_conditions.fuel_to_air_ratio                        = combustor_conditions.outputs.fuel_to_air_ratio 
-    turbofan_conditions.total_temperature_reference              = lpc_conditions.outputs.stagnation_temperature
-    turbofan_conditions.total_pressure_reference                 = lpc_conditions.outputs.stagnation_pressure
-    turbofan_conditions.flow_through_core                        = 1./(1.+bypass_ratio) #scaled constant to turn on core thrust computation
-    turbofan_conditions.flow_through_fan                         = bypass_ratio/(1.+bypass_ratio) #scaled constant to turn on fan thrust computation        
 
-    # Step 22: Size the core of the turbofan  
-    size_core(turbofan,conditions)  
+    has_shaft_offtake = (integrated_drive_motor is not None) or (integrated_drive_generator is not None)
+ 
+    mass_flow_rate_estimate = None
+    max_offtake_iterations  = 5 if has_shaft_offtake else 1
+    for offtake_iteration in range(max_offtake_iterations):
+        if has_shaft_offtake and mass_flow_rate_estimate is not None:
+            external_shaft_work = net_external_shaft_power / mass_flow_rate_estimate
+        else:
+            external_shaft_work = np.array([[0.0]])
 
-    # Step 23: Static Sea Level Thrust  
+        # Step 13: Link the high pressure turbine to the combustor
+        hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
+        hpt_conditions.inputs.stagnation_pressure       = combustor_conditions.outputs.stagnation_pressure
+        hpt_conditions.inputs.fuel_to_air_ratio         = combustor_conditions.outputs.fuel_to_air_ratio
+        hpt_conditions.inputs.static_temperature        = combustor_conditions.outputs.static_temperature
+        hpt_conditions.inputs.static_pressure           = combustor_conditions.outputs.static_pressure
+        hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number
+        hpt_conditions.inputs.compressor                = hpc_conditions.outputs
+        hpt_conditions.inputs.bypass_ratio              = 0.0
+        hpt_conditions.inputs.external_shaft.work_done  = external_shaft_work
+        high_pressure_turbine.working_fluid             = combustor.working_fluid
+
+        # Step 14: Compute flow through the high pressure turbine
+        compute_turbine_performance(high_pressure_turbine,conditions)
+
+        # Step 15: Link the low pressure turbine to the high pressure turbine
+        lpt_conditions.inputs.stagnation_temperature     = hpt_conditions.outputs.stagnation_temperature
+        lpt_conditions.inputs.stagnation_pressure        = hpt_conditions.outputs.stagnation_pressure
+        lpt_conditions.inputs.static_temperature         = hpt_conditions.outputs.static_temperature
+        lpt_conditions.inputs.static_pressure            = hpt_conditions.outputs.static_pressure
+        lpt_conditions.inputs.mach_number                = hpt_conditions.outputs.mach_number
+        low_pressure_turbine.working_fluid               = high_pressure_turbine.working_fluid
+        lpt_conditions.inputs.compressor                 = lpc_conditions.outputs
+        lpt_conditions.inputs.fuel_to_air_ratio          = combustor_conditions.outputs.fuel_to_air_ratio
+        lpt_conditions.inputs.fan                        = fan_conditions.outputs
+        lpt_conditions.inputs.bypass_ratio               = bypass_ratio
+
+        # Step 16: Compute flow through the low pressure turbine
+        compute_turbine_performance(low_pressure_turbine,conditions)
+
+        # Step 17: Link the core nozzle to the low pressure turbine
+        core_nozzle_conditions.inputs.stagnation_temperature     = lpt_conditions.outputs.stagnation_temperature
+        core_nozzle_conditions.inputs.stagnation_pressure        = lpt_conditions.outputs.stagnation_pressure
+        core_nozzle_conditions.inputs.static_temperature         = lpt_conditions.outputs.static_temperature
+        core_nozzle_conditions.inputs.static_pressure            = lpt_conditions.outputs.static_pressure
+        core_nozzle_conditions.inputs.mach_number                = lpt_conditions.outputs.mach_number
+        core_nozzle.working_fluid                                = low_pressure_turbine.working_fluid
+
+        # Step 18: Compute flow through the core nozzle
+        compute_expansion_nozzle_performance(core_nozzle,conditions)
+
+        # Step 19: Link the fan nozzle to the fan
+        fan_nozzle_conditions.inputs.stagnation_temperature     = fan_conditions.outputs.stagnation_temperature
+        fan_nozzle_conditions.inputs.stagnation_pressure        = fan_conditions.outputs.stagnation_pressure
+        fan_nozzle_conditions.inputs.static_temperature         = fan_conditions.outputs.static_temperature
+        fan_nozzle_conditions.inputs.static_pressure            = fan_conditions.outputs.static_pressure
+        fan_nozzle_conditions.inputs.mach_number                = fan_conditions.outputs.mach_number
+        fan_nozzle.working_fluid                                = fan.working_fluid
+
+        # Step 20: Compute flow through the fan nozzle
+        compute_expansion_nozzle_performance(fan_nozzle,conditions)
+
+        # Step 21: Link the turbofan to outputs from various Components
+        turbofan_conditions.bypass_ratio                             = bypass_ratio
+        turbofan_conditions.fan_nozzle_exit_velocity                 = fan_nozzle_conditions.outputs.velocity
+        turbofan_conditions.fan_nozzle_area_ratio                    = fan_nozzle_conditions.outputs.area_ratio
+        turbofan_conditions.fan_nozzle_static_pressure               = fan_nozzle_conditions.outputs.static_pressure
+        turbofan_conditions.core_nozzle_area_ratio                   = core_nozzle_conditions.outputs.area_ratio
+        turbofan_conditions.core_nozzle_static_pressure              = core_nozzle_conditions.outputs.static_pressure
+        turbofan_conditions.core_nozzle_exit_velocity                = core_nozzle_conditions.outputs.velocity
+        turbofan_conditions.fuel_to_air_ratio                        = combustor_conditions.outputs.fuel_to_air_ratio
+        turbofan_conditions.total_temperature_reference              = lpc_conditions.outputs.stagnation_temperature
+        turbofan_conditions.total_pressure_reference                 = lpc_conditions.outputs.stagnation_pressure
+        turbofan_conditions.flow_through_core                        = 1./(1.+bypass_ratio) #scaled constant to turn on core thrust computation
+        turbofan_conditions.flow_through_fan                         = bypass_ratio/(1.+bypass_ratio) #scaled constant to turn on fan thrust computation
+
+        # Step 22: Size the core of the turbofan
+        size_core(turbofan,conditions)
+
+        if not has_shaft_offtake:
+            break
+        new_mass_flow_rate_estimate = float(np.ravel(turbofan.design_mass_flow_rate)[0])
+        if mass_flow_rate_estimate is not None and \
+                abs(new_mass_flow_rate_estimate - mass_flow_rate_estimate) < 1e-4 * new_mass_flow_rate_estimate:
+            mass_flow_rate_estimate = new_mass_flow_rate_estimate
+            break
+        mass_flow_rate_estimate = new_mass_flow_rate_estimate
+
+    # Specific (not absolute) shaft work [J/kg] at the converged design point -- read back
+    # by design_turbofan_offdesign_matching(), which cannot get this from a fresh
+    # compute_performance() call instead: that dispatch only computes motor/generator power
+    # when state.numerics.time.differentiate is non-empty (a real mission-segment time
+    # discretization), which a synthetic single-point verification state doesn't have, so
+    # the offtake would silently read back as zero there.
+    turbofan.design_shaft_work_specific = float(np.ravel(external_shaft_work)[0])
+
+    # Step 23: Static Sea Level Thrust
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state       = setup_operating_conditions(turbofan,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  

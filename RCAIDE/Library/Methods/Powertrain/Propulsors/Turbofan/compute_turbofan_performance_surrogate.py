@@ -1,6 +1,6 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/compute_turbofan_performance_surrogate.py
 #
-# Created:  Sep 2026, RCAIDE Team
+# Created:  Sep 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -35,16 +35,9 @@ def compute_turbofan_performance_surrogate(turbofan, state, network=None, center
 
     Notes
     -----
-    Thrust, fuel flow, TSFC, propulsive power, and moment are the real,
-    physically meaningful outputs. noise_conditions (fan/core_nozzle/fan_nozzle
-    exit temperature, pressure, velocity) is also populated -- matching the
-    schema compute_turbofan_performance builds at its own return (see that
-    file's fan_res/core_nozzle_res/fan_nozzle_res, ~line 466) so that anything
-    reading those fields (e.g. the aeroacoustics noise model) gets the
-    attributes it expects rather than an AttributeError on an empty
-    Conditions() -- but every value in it is NaN: a surrogate has no
-    component-level station data to report, and NaN signals "not available"
-    rather than a silently wrong physical value like 0.
+    noise_conditions is populated with the same schema compute_turbofan_performance
+    builds (so readers like the aeroacoustics model don't hit an AttributeError), but
+    every value is NaN -- a surrogate has no component-level station data to report.
     """
     conditions          = state.conditions
     turbofan_conditions = conditions.energy.propulsors[turbofan.tag]
@@ -60,14 +53,9 @@ def compute_turbofan_performance_surrogate(turbofan, state, network=None, center
     throttle    = turbofan_conditions.throttle[:, 0]
     rating_code = turbofan_conditions.rating_code
 
-    target_SLS_thrust_N = turbofan.design_thrust if turbofan.design_thrust else None
-
-    # throttle is consumed by query() itself -- as a post-hoc multiplier for a rated code, or
-    # as the 4th interpolation coordinate for the RC=0 fallback (see Turbofan_Surrogate's
-    # THROTTLE_AXIS docstring). Applying it again here would double it for rated codes.
+    # target_SLS_thrust_N left at query()'s default -- design_thrust is cruise thrust, not SLS
     thrust_N, fuel_flow_kg_s = turbofan.surrogate.query(
-        altitude_m=altitude, mach=mach, isa_dev=isa_dev, rating_code=rating_code, throttle=throttle,
-        target_SLS_thrust_N=target_SLS_thrust_N)
+        altitude_m=altitude, mach=mach, isa_dev=isa_dev, rating_code=rating_code, throttle=throttle)
 
     n = len(altitude)
     thrust_vector      = np.zeros((n, 3))
@@ -98,8 +86,7 @@ def compute_turbofan_performance_surrogate(turbofan, state, network=None, center
     if turbofan.combustor is not None and turbofan.combustor.fuel_data is not None:
         turbofan_conditions.inputs.power.chemical = (fuel_flow_kg_s * turbofan.combustor.fuel_data.lower_heating_value).reshape(-1,1)
 
-    # noise_conditions schema match (values NaN -- see Notes above; no component-level
-    # station data exists in surrogate mode to report real ones)
+    # noise_conditions schema match, values NaN -- see Notes above
     nan_column = np.full((n, 1), np.nan)
     nozzle_res = lambda: Data(
         exit_static_temperature      = nan_column,

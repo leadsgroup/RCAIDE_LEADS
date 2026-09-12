@@ -18,6 +18,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle     import co
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan             import compute_thrust
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance_surrogate import compute_turbofan_performance_surrogate
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance_offdesign import compute_turbofan_performance_offdesign
 
 import  numpy as  np
 from copy import  deepcopy
@@ -185,6 +186,9 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """ 
+
+    if turbofan.offdesign_matching is not None:
+        return compute_turbofan_performance_offdesign(turbofan, state, network, center_of_gravity)
 
     if turbofan.surrogate is not None:
         return compute_turbofan_performance_surrogate(turbofan, state, network, center_of_gravity)
@@ -357,10 +361,22 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     hpt_conditions.inputs.static_temperature        = combustor_conditions.outputs.static_temperature
     hpt_conditions.inputs.static_pressure           = combustor_conditions.outputs.static_pressure
     hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number  
-    hpt_conditions.inputs.compressor                = hpc_conditions.outputs 
-    hpt_conditions.inputs.bypass_ratio              = 0.0 #set to zero to ensure that fan not linked here 
-    hpt_conditions.inputs.external_shaft.work_done  = external_shaft_work 
-    high_pressure_turbine.working_fluid             = combustor.working_fluid 
+    hpt_conditions.inputs.compressor                = hpc_conditions.outputs
+    hpt_conditions.inputs.bypass_ratio              = 0.0 #set to zero to ensure that fan not linked here
+    # external_shaft_work above is an absolute power [W] (electrical/mechanical power
+    # to/from the IDG or motor), but compute_turbine_performance's energy balance
+    # (compressor_work + shaft_work + alpha*fan_work) is entirely in *specific* work
+    # [J/kg] -- compressor_work/fan_work both come from ht_out-ht_in. Converting here
+    # using the same mdot_core relation compute_thurst.py uses later (mdhc corrected by
+    # the current LPC exit stagnation conditions, already computed above) -- this was
+    # previously fed in unconverted, silently overstating the offtake's effect on the HP
+    # turbine (a 300 kW offtake read as 300,000 J/kg is order-of-magnitude too large for
+    # any real core mass flow).
+    mdot_core_for_shaft_work                        = turbofan.compressor_nondimensional_massflow * \
+        np.sqrt(turbofan.reference_temperature / lpc_conditions.outputs.stagnation_temperature) * \
+        (lpc_conditions.outputs.stagnation_pressure / turbofan.reference_pressure)
+    hpt_conditions.inputs.external_shaft.work_done  = external_shaft_work / mdot_core_for_shaft_work
+    high_pressure_turbine.working_fluid             = combustor.working_fluid
         
     # Flow through the high pressure turbine
     compute_turbine_performance(high_pressure_turbine,conditions)

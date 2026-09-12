@@ -111,7 +111,13 @@ class Turbofan(Propulsor):
         
     design_mass_flow_rate : float
         Design mass flow rate [kg/s]. Default is 0.0.
-        
+
+    design_shaft_work_specific : float
+        HP-spool external shaft power offtake (IDG/motor), as *specific* work
+        [J/kg core flow] at the converged design point -- set by
+        `design_turbofan`. Zero for an engine with no
+        integrated_drive_generator/integrated_drive_motor. Default is 0.0.
+
     OpenVSP_flow_through : bool
         Flag for OpenVSP flow-through analysis. Default is False.
 
@@ -171,12 +177,30 @@ class Turbofan(Propulsor):
         self.design_thrust                              = 0.0 
         self.design_power_offtake                       = 0.0
         self.design_mass_flow_rate                      = 0.0
+        self.design_shaft_work_specific                 = 0.0
         self.design_voltage                             = 0.0
         self.OpenVSP_flow_through                       = False
         self.surrogate                                  = None    # None -> analytical cycle model (default).
                                                                     # Set to a Turbofan_Surrogate instance to use
                                                                     # table-driven performance instead; see
                                                                     # RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate
+        self.offdesign_matching                         = None    # None -> analytical cycle model or surrogate,
+                                                                    # whichever applies (default). Set to
+                                                                    # Data(design_constants=..., reference_point=...)
+                                                                    # (from design_turbofan_offdesign_matching) to
+                                                                    # use live off-design component matching
+                                                                    # instead; see RCAIDE.Library.Methods.Powertrain.
+                                                                    # Propulsors.Turbofan.Turbofan_OffDesign_Matching.
+                                                                    # Checked before surrogate in
+                                                                    # compute_turbofan_performance -- do not set both.
+                                                                    # Optional third key idle_fallback (a built
+                                                                    # Turbofan_Surrogate): if the matching solver
+                                                                    # fails to converge at a point (deep part-power/
+                                                                    # idle -- outside what the matching equations can
+                                                                    # represent at all, not just a numerics issue),
+                                                                    # that point is routed to idle_fallback.query(...,
+                                                                    # rating_code='FID') instead of raising. Unset ->
+                                                                    # unchanged behavior (raises OffDesignMatchingError).
         
     def append_operating_conditions(self, segment):
         """
