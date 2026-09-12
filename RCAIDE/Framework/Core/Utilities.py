@@ -36,8 +36,8 @@ def interp2d(x,y,xp,yp,zp,fill_value= None):
     # documented behavior above. Clipping x/y here makes the same interpolation formula land
     # exactly on the boundary value once the query is at or past the table's edge.
     x_orig, y_orig = x, y
-    #x = np.clip(x, xp[0], xp[-1])
-    #y = np.clip(y, yp[0], yp[-1])
+    x = np.clip(x, xp[0], xp[-1])
+    y = np.clip(y, yp[0], yp[-1])
 
     ix = np.clip(np.searchsorted(xp, x, side="right"), 1, len(xp) - 1)
     iy = np.clip(np.searchsorted(yp, y, side="right"), 1, len(yp) - 1)

@@ -544,7 +544,7 @@ def TR_mission_setup(analyses):
     segment                                               = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude(base_segment)
     segment.tag                                           = "Departure_Pattern_Curve"
     segment.analyses.extend( analyses.transition_setting_2 )
-    segment.air_speed   = 90 * Units['knots']
+    segment.air_speed   = 100 * Units['mph']
     segment.turn_radius = 4000 * Units.feet
     segment.true_course = 0 * Units.degree
     segment.turn_angle  = 90 * Units.degree
@@ -581,8 +581,8 @@ def TR_mission_setup(analyses):
     segment.analyses.extend(analyses.cruise)
     segment.altitude_start            = 500.0 * Units.ft
     segment.climb_rate                = 300. * Units['ft/min']
-    segment.air_speed_start           = 90.  * Units['knots']
-    segment.air_speed_end             = 170.  * Units['mph']
+    segment.air_speed_start           = 100.  * Units['mph']
+    segment.air_speed_end             = 135.  * Units['mph']
     segment.altitude_end              = 700.0 * Units.ft
     segment.true_course               = 90 * Units.degree
     segment.state.numerics.mission_solver.type      = 'optimize'
@@ -628,7 +628,7 @@ def TR_mission_setup(analyses):
     segment.analyses.extend(analyses.cruise)
     segment.altitude_start            = 700.0 * Units.ft
     segment.climb_rate                = 300. * Units['ft/min']
-    segment.air_speed_start           = 130.  * Units['mph']
+    segment.air_speed_start           = 135.  * Units['mph']
     segment.air_speed_end             = 170.  * Units['mph']
     segment.altitude_end              = 1000.0 * Units.ft
     segment.true_course               = 100 * Units.degree
@@ -644,7 +644,7 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
                                                                           'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
-    segment.assigned_control_variables.throttle.bounds               = [[0.2, 0.8]]
+    segment.assigned_control_variables.throttle.bounds               = [[0.16, 0.8]]
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.35]]
 
     # pitch_angle left inactive (reliable, converges with a real objective) -- but instead of
@@ -670,26 +670,27 @@ def TR_mission_setup(analyses):
     mission.append_segment(segment)
 
     # ------------------------------------------------------------------
-    #  First Transition Segment
+    #  Cruise
     # ------------------------------------------------------------------
     segment                                               = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
     segment.tag                                           = "cruise"
     segment.analyses.extend( analyses.cruise)
-    segment.air_speed                                     = 150 * Units['mph']
-    segment.altitude                                      = 1000 *  Units.feet 
-    segment.throttle                                      = 0.33197
-  
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                       = True  
-    segment.flight_dynamics.force_z                       = True     
-    
-    # define flight controls                                       
-    segment.assigned_control_variables.pitch_angle                   
-    segment.assigned_control_variables.pitch_angle.active             = True                
-           
-    segment.assigned_control_variables.blade_pitch_command.active                     = True        
-    segment.assigned_control_variables.blade_pitch_command.assigned_rotors            =  [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
-                                                                                           'outboard_starboard_rotor', 'rear_port_rotor','rear_starboard_rotor']]
+    segment.air_speed                                     = 170 * Units['mph']
+    segment.altitude                                      = 1000 *  Units.feet
+    # Solve throttle now (was pinned at a hand-tuned 0.33197 for the old 150mph cruise).
+    # 170mph is this rotor's own cruise design point, so blade_pitch stays at the cruise
+    # config's design value -- square 2x2 (throttle, pitch_angle vs force_x, force_z).
+    segment.state.numerics.mission_solver.type            = 'root_finder'
+
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    segment.assigned_control_variables.throttle.active                = True
+    segment.assigned_control_variables.throttle.assigned_propulsors   = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.throttle.initial_guess_values  = [[0.33]]
+    segment.assigned_control_variables.pitch_angle.active             = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[2.0 * Units.degrees]]
 
     mission.append_segment(segment)
 
@@ -705,7 +706,12 @@ def TR_mission_setup(analyses):
     segment.altitude_start           = 1000.0 * Units.ft
     segment.altitude_end             = 750.0 * Units.ft
     segment.true_course              = 90 * Units.degree
-    segment.state.numerics.mission_solver.type = 'root_finder'
+    # blade_pitch_command active makes this 3 controls vs 2 constraints (force_x,
+    # force_z) -- not square, so root_finder isn't an option; optimize/objective=None.
+    segment.state.numerics.mission_solver.type      = 'optimize'
+    segment.state.numerics.mission_solver.step_size = 1E-2
+    segment.state.numerics.mission_solver.tolerance = 1E-6
+    segment.state.numerics.mission_solver.objective = None
 
     segment.flight_dynamics.force_x                                             = True
     segment.flight_dynamics.force_z                                             = True
@@ -718,9 +724,15 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.pitch_angle.active                        = True
     segment.assigned_control_variables.pitch_angle.initial_guess_values        = [[4.7 * Units.degrees]]
 
+    segment.assigned_control_variables.blade_pitch_command.active                     = True
+    segment.assigned_control_variables.blade_pitch_command.assigned_rotors            = [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
+                                                                                        'outboard_starboard_rotor','rear_port_rotor','rear_starboard_rotor']]
+    segment.assigned_control_variables.blade_pitch_command.bounds                     = [[5.0 * Units.degrees, 40.0 * Units.degrees]]
+    segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[35.0 * Units.degrees]]
+
     mission.append_segment(segment)
 
-    
+
     # ------------------------------------------------------------------
     #    Descent Segment 2 -- 130 -> 115 mph, still comfortably above the wing stall band,
     #    stays a simple wing-borne trim.
@@ -735,15 +747,10 @@ def TR_mission_setup(analyses):
     segment.altitude_end             = 600.0 * Units.ft
     segment.true_course              = 90 * Units.degree
 
-    # objective=None -- 2 unknowns (throttle, pitch_angle) vs 2 constraints (force_x,
-    # force_z) is exactly determined, leaving no slack for the default "energy" objective.
-    # root_finder (fsolve) converged but noisy point-to-point (near-singular Jacobian in
-    # this shallow descent regime -> wanders along the degenerate direction). Back to
-    # 'optimize', bounds still left unset (None) same as the original failing attempt --
-    # ONLY the initial guess changes this time, to isolate whether the guess alone was the
-    # problem. Anchored on descent_1's converged exit (throttle 0.29, pitch 4.7deg @
-    # 130mph) and descent_3's entry guess (throttle 0.32, pitch 4.3deg @ 115mph); the
-    # original guess (0.25, 6.5deg) sat off-center from both neighbors.
+    # root_finder (fsolve) converged here but noisily point-to-point -- a near-singular
+    # Jacobian in this shallow descent regime, wandering along the degenerate direction.
+    # optimize/objective=None is more robust to that; now also non-square (3 controls vs
+    # 2 constraints) once blade_pitch_command was made active.
     segment.state.numerics.mission_solver.type      = 'optimize'
     segment.state.numerics.mission_solver.step_size = 1E-2
     segment.state.numerics.mission_solver.tolerance = 1E-6
@@ -760,16 +767,22 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.pitch_angle.active             = True
     segment.assigned_control_variables.pitch_angle.initial_guess_values = [[4.6 * Units.degrees]]
 
+    segment.assigned_control_variables.blade_pitch_command.active                     = True
+    segment.assigned_control_variables.blade_pitch_command.assigned_rotors            = [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
+                                                                                        'outboard_starboard_rotor','rear_port_rotor','rear_starboard_rotor']]
+    segment.assigned_control_variables.blade_pitch_command.bounds                     = [[5.0 * Units.degrees, 40.0 * Units.degrees]]
+    segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[32.0 * Units.degrees]]
+
     mission.append_segment(segment)
 
 
     
     # ------------------------------------------------------------------
-    #    Descent Segment 3 -- commented out for now, broken. Revisit later.
+    #    Descent Segment 3 -- 115mph -> 90kt, final descent to the approach pattern.
     # ------------------------------------------------------------------
     segment                          = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
     segment.tag                      = "descent_3"
-    segment.analyses.extend(analyses.cruise)
+    segment.analyses.extend(analyses.descent_cruise_slow)
     segment.climb_rate               = -300. * Units['ft/min']
     segment.air_speed_start          = 115.  * Units['mph']
     segment.air_speed_end            = 90 * Units.kts
@@ -807,7 +820,8 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[4.5 * Units.degrees]]
 
     mission.append_segment(segment)
-    
+
+
     # ------------------------------------------------------------------------------------------------------------------------------------
     # Circular approach pattern -- not continuous with descent_2's end state yet (descent_3
     # parked above). Already has real bounds in the old file (mirrored from
@@ -898,6 +912,10 @@ def TR_mission_setup(analyses):
     segment.tag                                           = "arriving_transition_2"
     segment.analyses.extend( analyses.low_speed_transition)
     segment.air_speed_start            = 35 * Units['mph']
+    # Held at 10 kt (not lower): below ~10 kt the wing is well under stall speed and
+    # carries nothing, leaving a pure near-hover rotor thrust-vectoring trim that is
+    # ill-conditioned (arriving_transition_2_2 grinds). Reference mission stops here too.
+    # The residual step to Vertical_Descent's ~3.4 mph is negligible on a full-mission plot.
     segment.air_speed_end              = 10 * Units['knots']
     segment.acceleration               = -1.0
     segment.true_course                = 0 * Units.degree
