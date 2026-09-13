@@ -100,33 +100,33 @@ def main():
             print(val)
     
     # Truth values
-    takeoff_thrust_truth     = 131063.19836382168
-    ICA_climb_CL_truth       = 1.6514378366272258
-    climb_throttle_1_truth   = 0.6945159143977768
-    climb_throttle_2_truth   = 0.8923407822140991
-    climb_throttle_3_truth   = 0.3453412053564352
-    climb_throttle_4_truth   = 0.535921457571409
-    climb_throttle_5_truth   = 0.6332198584240508
-    climb_throttle_6_truth   = 0.9562797790125871
-    climb_throttle_7_truth   = 1.1337274586635928
-    climb_throttle_8_truth   = 0.4619322394379185
-    climb_throttle_9_truth   = 0.6921238130400957
-    climb_throttle_10_truth  = 0.5180924074880398
-    cruise_CL_1_truth        = 0.6916833964859302
-    cruise_CL_2_truth        = 0.5272746779496107
-    descent_throttle_1_truth = 0.018411644327993422
-    descent_2_CL_truth       = 0.7064078615336439
-    curved_cruise_CL_truth   = 1.317606452360987
+    takeoff_thrust_truth     = 131032.25591938374
+    ICA_climb_CL_truth       = 1.6359658198752107
+    climb_throttle_1_truth   = 0.6977895892142976
+    climb_throttle_2_truth   = 0.7054129910477155
+    climb_throttle_3_truth   = 0.35870560556527875
+    climb_throttle_4_truth   = 0.5218762515048706
+    climb_throttle_5_truth   = 0.6291517283220219
+    climb_throttle_6_truth   = 0.9348219229688055
+    climb_throttle_7_truth   = 1.1091821352705842
+    climb_throttle_8_truth   = 0.45477946940278885
+    climb_throttle_9_truth   = 0.6693309112832239
+    climb_throttle_10_truth  = 0.49666526920715187
+    cruise_CL_1_truth        = 0.680200289444926
+    cruise_CL_2_truth        = 0.5245654158155282
+    descent_throttle_1_truth = 0.049041126086486954
+    descent_2_CL_truth       = 0.6918958712791945
+    curved_cruise_CL_truth   = 1.2996049653801973
     descent_throttle_3_truth = 0.1
-    single_pt_CL_1_truth     = 0.24719834500830584
-    single_pt_CL_2_truth     = 0.001464123188716452
-    cruise_4_CL_truth        = 0.5036275234326408
-    cruise_5_CL_truth        = 0.5036245080890732
-    cruise_6_CL_truth        = 0.34373971161218136
-    cruise_7_CL_truth        = 0.33918880008486435
-    cruise_8_CL_truth        = 0.3351519149730388
-    descent_throttle_4_truth = 0.1457676635252747
-    landing_thrust_truth     = 47900.15470337794
+    single_pt_CL_1_truth     = 0.24211233260725218
+    single_pt_CL_2_truth     = 0.0014654667507318206
+    cruise_4_CL_truth        = 0.49335039833066946
+    cruise_5_CL_truth        = 0.49334702600378555
+    cruise_6_CL_truth        = 0.336020400147554
+    cruise_7_CL_truth        = 0.3306977104932501
+    cruise_8_CL_truth        = 0.3259973641110331
+    descent_throttle_4_truth = 0.13027486807890656
+    landing_thrust_truth     = 47865.03951348616
     
     # Store errors 
     error = Data()
@@ -194,8 +194,8 @@ def main():
     for name, computed, truth in rows:
         print(f"  {name:<22} {computed:>14.8g} {truth:>14.8g} {error[name]:>12.3e}")
     print(divider + '\n')
-     
-    for k,v in list(error.items()): 
+
+    for k,v in list(error.items()):
         assert(np.abs(v)<1e-6)
         
     plot_results(results)

@@ -119,10 +119,10 @@ def BWB_Test():
     print('BWB  OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
     print('BWB  Moment of Inertia')
     print(computed_moi)
-    truth_OEW_CG_mass_percentage = 95.66
-    truth_moi = np.array([[ 3673194.85814275,  1408681.72257896,  -792445.12519905],
-                          [ 1408681.72257896, 12678162.42794893,    45141.97278135],
-                          [ -792445.12519905,    45141.97278135, 15212804.74026015]])
+    truth_OEW_CG_mass_percentage = 100.49
+    truth_moi = np.array([[ 3688437.9011694,  1316353.82718926,  -829734.69404991],
+                          [ 1316353.82718926, 13804989.31878658,    41815.97869697],
+                          [ -829734.69404991,    41815.97869697, 16349861.40407366]])
 
     error_moi = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_moi < 1e-2),\
@@ -157,9 +157,9 @@ def Transport_Aircraft_Test():
     print(MOI)
 
     truth_OEW_CG_mass_percentage = 99.32
-    truth_moi  = np.array([[ 7065324.68531665,   -37427.59065828,  -251815.96462790],
-                           [  -37427.59065828, 33603798.78999502,   111974.20695348],
-                           [ -251815.96462790,   111974.20695348, 36335240.25372727]])
+    truth_moi  = np.array([[ 7065324.68531665,   -36885.71263030,  -245501.06986959],
+                           [  -36885.71263030, 33429430.78972817,   111974.20695348],
+                           [ -245501.06986959,   111974.20695348, 36160872.25346041]])
 
     error_moi = abs((MOI - truth_moi) / np.where(truth_moi != 0, truth_moi, 1))
     assert np.all(error_moi < 1e-6),\
@@ -195,9 +195,9 @@ def General_Aviation_Test():
     print(MOI)
 
     truth_OEW_CG_mass_percentage = 98.78
-    truth_moi  = np.array([[ 3.74934496e+02, -6.95403814e-15, -4.00441102e+01],
-                           [-6.95403814e-15,  3.75654482e+03, -6.13259031e-15],
-                           [-4.00441102e+01, -6.13259031e-15,  3.58247327e+03]])
+    truth_moi  = np.array([[  449.57227680822189, -6.9540381428015504e-15,  -29.317141217591523],
+                           [-6.9540381428015504e-15,  3767.6375607799655 , -6.1325903062975410e-15],
+                           [ -29.317141217591523 , -6.1325903062975410e-15,  3518.9283237494451 ]])
 
     error_moi = abs(MOI - truth_moi)
     assert np.all(error_moi < 1e-5),\

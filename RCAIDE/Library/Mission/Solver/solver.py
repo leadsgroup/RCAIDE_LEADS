@@ -43,14 +43,7 @@ def converge(segment):
     Properties Used:
     N/A
     """ 
-    numerics = segment.state.numerics
-
-    # A segment can have zero unknowns (mission and network) when nothing in
-    # it needs implicit solving, e.g. a fuel-cell-only network whose current
-    # is solved internally via Newton-Raphson rather than through segment
-    # unknowns. Neither scipy solver path supports a 0-dimensional problem
-    # (SLSQP hits a LAPACK error, fsolve rejects an empty x0), so just run
-    # the segment forward once.
+    numerics = segment.state.numerics 
     total_unknowns = segment.state.number_of_mission_unknowns
     if segment.state.numerics.network_solver.type is None:
         total_unknowns += segment.state.number_of_network_unknowns
@@ -64,9 +57,7 @@ def converge(segment):
         problem  = add_mission_variables(segment)
         package  = getattr(numerics.mission_solver, 'package', 'scipy')
 
-        # Comment suppression of console window output. try/finally so an
-        # exception from either solve path (e.g. a bad package/method value)
-        # can't leave sys.stdout permanently redirected to devnull.
+        # Comment suppression of console window output.  
         if numerics.mission_solver.verbose == False:
             devnull = open(os.devnull,'w')
             sys.stdout = devnull
@@ -86,30 +77,14 @@ def converge(segment):
                     mission_converge = True
                     error_message    = ""
 
-            elif package == "pyopt":
-                # pyoptsparse doesn't expose max_evaluations/tolerance under a
-                # common name (IPOPT's own options are 'max_iter'/'tol') -- left
-                # as a follow-up, runs with IPOPT's own defaults for now.
+            elif package == "pyopt": 
                 outputs = pyopt_setup.Pyoptsparse_Solve(problem,
                                                         solver     = numerics.mission_solver.method,
                                                         sense_step = numerics.mission_solver.step_size)
 
-                # pyoptsparse backends aren't all guaranteed to leave their last
-                # objective call at xStar the way scipy's SLSQP does (see fsolve's
-                # analogous re-run below) -- force one so segment.state and the
-                # residual check just below both reflect the returned point.
                 input_names = problem.optimization_problem.inputs[:,0]
                 x_star      = np.array([np.atleast_1d(outputs.xStar[name])[0] for name in input_names], dtype=float)
-                problem.evaluate(x_star)
-
-                # Don't trust a backend's own success report at face value: CONMIN
-                # (since dropped -- see pyopt_setup.py) reported no optInform at
-                # all and was observed accepting its unmoved initial guess as
-                # "solved" on a fully-determined (zero-DOF) equality-constrained
-                # problem where that guess wasn't actually a root. Independently
-                # verify the equality-constraint residual ourselves for whichever
-                # backend is in use, the same way the root_finder path below never
-                # just trusts fsolve's ier either.
+                problem.evaluate(x_star) 
                 residual  = np.atleast_1d(problem.equality_constraint(x_star))
                 converged_residual = (residual.size == 0) or np.all(np.abs(residual) <= numerics.mission_solver.tolerance)
 
@@ -161,12 +136,7 @@ def converge(segment):
                                                  xtol   = numerics.mission_solver.tolerance,
                                                  maxfev = numerics.mission_solver.max_evaluations,
                                                  epsfcn = numerics.mission_solver.step_size,
-                                                 full_output = 1)
-
-            # fsolve's internal trial/Jacobian-probe calls mutate segment.state as a
-            # side effect (via iterate_root_finder), so the last call it happened to
-            # make -- not necessarily the returned root -- is what's left in state.
-            # Re-run at the actual solution to make state consistent with it.
+                                                 full_output = 1) 
             scaled_iterate(x_scaled)
 
         if ier !=1:
@@ -210,15 +180,44 @@ def _magnitude_scale(values, floor_exponent=-6):
     factor = np.maximum(factor, floor_exponent)
     return 10.0 ** factor
 
-# ---------------------------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------------------------------------------------------
 #  Helper Functions
-# ---------------------------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------------------------------------------------------
+def _segment_soft_max_power(segment, sharpness=30.0):
+    """Smooth (log-sum-exp) stand-in for max(power). A hard max is non-differentiable
+    at whichever control point currently holds the peak, so its finite-difference
+    gradient can jump discontinuously when that point changes between SLSQP's
+    perturbed evaluations; this blends nearby points in instead, and is always >=
+    the true max (standard log-sum-exp upper bound), overshooting by at most
+    log(n_points)/p -- i.e. it never understates the peak.
+
+    `sharpness` is in e-foldings across the segment's own power spread (max-min):
+    e.g. sharpness=30 means a point at the very bottom of the segment's power
+    range contributes negligible weight (~1e-13) while points within a few percent
+    of peak blend in smoothly. Falls back to scaling by |peak| when the segment's
+    power is ~constant (spread ~ 0), so it doesn't blow up to infinite sharpness
+    there. Exponents are always <= 0 (peak subtracted first), so this can only
+    underflow toward 0, never overflow -- regardless of the sign or magnitude of
+    power.
+    """
+    power  = np.ravel(segment.state.conditions.energy.outputs.power.propulsive)
+    peak   = np.max(power)
+    spread = peak - np.min(power)
+    scale  = spread if spread > 0 else max(abs(peak), 1.0)
+    p      = sharpness / scale
+    return float(peak + np.log(np.sum(np.exp(p * (power - peak)))) / p)
+
+
 def iterate_root_finder(unknowns, segment):
     
     """Runs one iteration of of all analyses for the mission.
 
     Assumptions:
-    N/A
+    fsolve has no native bounds support, unlike the "optimize"/SLSQP
+    path -- without this, a proposed unknown (e.g. a [0,1] power split
+    ratio or bounded control variable) can wander outside its declared
+    bounds mid-iteration. Clip to the same bounds the SLSQP path
+    enforces natively before evaluating the residual.
 
     Source:
     N/A
@@ -234,11 +233,6 @@ def iterate_root_finder(unknowns, segment):
     N/A
     """
     if isinstance(unknowns, np.ndarray):
-        # fsolve has no native bounds support, unlike the "optimize"/SLSQP
-        # path -- without this, a proposed unknown (e.g. a [0,1] power split
-        # ratio or bounded control variable) can wander outside its declared
-        # bounds mid-iteration. Clip to the same bounds the SLSQP path
-        # enforces natively before evaluating the residual.
         lower = segment.state.unknowns_lower_bounds.mission.pack_array()
         upper = segment.state.unknowns_upper_bounds.mission.pack_array()
         if segment.state.numerics.network_solver.type is None:
@@ -297,11 +291,7 @@ def add_mission_variables(segment):
     # Step 1: Optimization framework
     # -------------------------------------------------------------------------------------------
     nexus                        = Nexus()
-    optimization_problem         = Data()
-
-    # Expand state arrays to the segment's control-point count now (rather than
-    # at the original "Step 6" location) so the residual evaluation used below
-    # for constraint scaling sees correctly-sized arrays.
+    optimization_problem         = Data() 
     segment.process.initialize.expand_state(segment)
 
     ground_seg_flag =  (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Landing) or\
@@ -394,7 +384,7 @@ def add_mission_variables(segment):
     new_inputs[:,2]     = lower_bounds   
     new_inputs[:,3]     = upper_bounds  
     new_inputs[:,4]     = scale
-    new_inputs[:,5]     = units 
+    new_inputs[:,5]     = units
     optimization_problem.inputs = np.array(new_inputs,dtype=object)
 
     # -------------------------------------------------------------------------------------------
@@ -472,27 +462,14 @@ def add_mission_variables(segment):
         input_aliases[:,0] = input_names
         input_aliases[:,1] = input_string
     
-    # Step 4.2: Setup the aliases for the residuals.
-    # Use pack_array()[i] so each alias evaluates to a true scalar regardless of the
-    # shape of individual residual fields (which are (n_points, 1) column vectors).
-    # pack_array() flattens each sub-container to a 1D vector; integer indexing then
-    # always produces a scalar, satisfying get_values / SLSQP's equality_constraint.
-    #
-    # Ordering convention: mission residuals first (indices 0..n_m-1), then network
-    # residuals (indices 0..n_n-1 from their own pack_array).  This mirrors the split
-    # in update_segment / root_finder: mission.unpack_array(x[:n_m]) followed by
-    # network.unpack_array(x[n_m:n_m+n_n]), keeping both solvers consistent.
-
+    # Step 4.2: Setup the aliases for the residuals. 
     def _pack_aliases(container_path, count):
         """Build 'container_path[i]' strings for i in 0..count-1."""
         base = np.tile(container_path + '[', count)
         return np.char.add(np.char.add(base, np.arange(count, dtype=np.int16).astype(str)), ']')
 
     if ground_seg_flag:
-        # Ground segments have two mission residual fields in pack_array order:
-        #   force_x: shape (n_points-1, 1) → indices 0..n_points-2
-        #   final_velocity_error: scalar float  → index n_points-1
-        # Total: n_points elements, matching len_residuals = n_points.
+        # Ground segments have two mission residual fields in pack_array order: 
         all_res = _pack_aliases('segment.state.residuals.mission.pack_array()', n_points)
 
         if segment.state.numerics.network_solver.type is None:
@@ -527,16 +504,18 @@ def add_mission_variables(segment):
     for jj in range(len_residuals):   
         aliases.append(residual_aliases[jj].tolist())
     
-    # Step 5: Objective function
-    if segment.state.numerics.mission_solver.objective == None:     
-        aliases.append([ 'nothing'                   , 'postprocess.nothing']) 
-        optimization_problem.objective = np.array([ [  'nothing'  ,  1   ,    1*Units.less]  ],dtype=object)            
+    # Step 5: Objective function 
+    if segment.state.numerics.mission_solver.objective == None:
+        aliases.append([ 'nothing'                   , 'postprocess.nothing'])
+        optimization_problem.objective = np.array([ [  'nothing'  ,  1   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "energy":
-        aliases.append([ 'energy_consumed'          , 'postprocess.energy_consumed']) 
-        optimization_problem.objective = np.array([ [  'energy_consumed'  ,  1   ,    1*Units.less]  ],dtype=object)            
+        obj_scale = _magnitude_scale(np.atleast_1d(segment_energy_consumed(segment)))[0]
+        aliases.append([ 'energy_consumed'          , 'postprocess.energy_consumed'])
+        optimization_problem.objective = np.array([ [  'energy_consumed'  ,  obj_scale   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "power":
+        obj_scale = _magnitude_scale(np.atleast_1d(_segment_soft_max_power(segment)))[0]
         aliases.append([ 'maximum_power'          , 'postprocess.maximum_power'])
-        optimization_problem.objective = np.array([ [  'maximum_power'  ,  1   ,    1*Units.less]  ],dtype=object)   
+        optimization_problem.objective = np.array([ [  'maximum_power'  ,  obj_scale   ,    1*Units.less]  ],dtype=object)
     else:
         raise Exception('undefined objective function')
     
@@ -554,7 +533,7 @@ def add_mission_variables(segment):
 
     # Step 10: Append optimization problem
     nexus.optimization_problem   = optimization_problem
-    
+
     return nexus
 
 def iterate_segment(): 
@@ -592,26 +571,26 @@ def iterate_optimizer(nexus):
 
   
 def segment_post_process(nexus):
-    # unpack 
-    power      = nexus.segment.state.conditions.energy.outputs.power.propulsive
-    I          = nexus.segment.state.numerics.time.integrate
-    SPS        =  RCAIDE.Framework.Mission.Segments.Single_Point
-    
-    # compute max power of segment 
-    max_power  = np.max(nexus.segment.state.conditions.energy.outputs.power.propulsive)
-    
-    # compute total energy consumed 
-    if (type(nexus.segment) == SPS.Set_Speed_Set_Altitude) or\
-                    (type(nexus.segment) == SPS.Set_Speed_Set_Altitude_AVL_Trimmed) or \
-                    (type(nexus.segment) == SPS.Set_Speed_Set_Altitude_No_Propulsion) or \
-                    (type(nexus.segment) == SPS.Set_Speed_Set_Throttle): 
-        energy_consumed =  0
-    else:
-        energy_consumed = np.dot(I,power)[-1][0]
-    
+    segment = nexus.segment
+
     postprocess                 = nexus.postprocess
-    postprocess.maximum_power   = max_power
-    postprocess.energy_consumed = energy_consumed 
+    postprocess.maximum_power   = _segment_soft_max_power(segment)
+    postprocess.energy_consumed = segment_energy_consumed(segment)
     postprocess.nothing         = 0
-    
-    return nexus  
+
+    return nexus
+
+
+def segment_energy_consumed(segment):
+    """Total propulsive energy consumed over the segment [J], or 0 for a single-point
+    segment (one control point, no time interval to integrate over).
+    """
+    SPS = RCAIDE.Framework.Mission.Segments.Single_Point
+    single_point_types = (SPS.Set_Speed_Set_Altitude, SPS.Set_Speed_Set_Altitude_AVL_Trimmed,
+                           SPS.Set_Speed_Set_Altitude_No_Propulsion, SPS.Set_Speed_Set_Throttle)
+    if type(segment) in single_point_types:
+        return 0.0
+
+    power = segment.state.conditions.energy.outputs.power.propulsive
+    I     = segment.state.numerics.time.integrate
+    return float(np.dot(I, power)[-1][0])  

@@ -6,7 +6,7 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
-from scipy.optimize import brentq, minimize_scalar
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Pressurized Cylindrical Tank Volume
@@ -140,16 +140,3 @@ def _tank_stress(ro_ri, P_internal, P_external, sigma_allow):
                         (sigma_r     - sigma_z)**2 +
                         (sigma_z     - sigma_theta)**2) / 2)
     return sigma_vm - sigma_allow
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  Bounded 1D root finder (brentq with minimize_scalar fallback)
-# ----------------------------------------------------------------------------------------------------------------------
-def _find_root(func, a, b, args=(), xtol=1e-9):
-    try:
-        return brentq(func, a, b, xtol=xtol, args=args)
-    except ValueError:
-        res = minimize_scalar(lambda x: func(x, *args)**2,
-                              bounds=(a, b), method="bounded",
-                              options={"xatol": xtol})
-        return float(res.x)

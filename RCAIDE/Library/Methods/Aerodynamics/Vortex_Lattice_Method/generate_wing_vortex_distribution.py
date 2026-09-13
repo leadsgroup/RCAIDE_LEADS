@@ -497,11 +497,11 @@ def generate_interplated_airfoil_points(inboard_segment,outboard_segment,local_p
         """
         
         # Get points of inboard segment airfoil 
-        if inboard_segment.airfoil: 
-            if type(inboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: 
-                a_geo_1 = compute_naca_4series(inboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1)
+        if inboard_segment.airfoil:
+            if type(inboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                a_geo_1 = compute_naca_4series(inboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1, thickness_multiplier = inboard_segment.airfoil.thickness_multiplier)
             else:
-                a_geo_1 = import_airfoil_geometry(inboard_segment.airfoil.coordinate_file,ncpts*2+1)   
+                a_geo_1 = import_airfoil_geometry(inboard_segment.airfoil.coordinate_file,ncpts*2+1, thickness_multiplier = inboard_segment.airfoil.thickness_multiplier)
         else:
             a_geo_1 =  Data()
             a_geo_1.camber_coordinates = np.zeros(ncpts)              
@@ -509,11 +509,11 @@ def generate_interplated_airfoil_points(inboard_segment,outboard_segment,local_p
     
     
         # Get points of outboard segment airfoil     
-        if outboard_segment.airfoil: 
-            if type(outboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: 
-                a_geo_2 = compute_naca_4series(outboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1)
+        if outboard_segment.airfoil:
+            if type(outboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                a_geo_2 = compute_naca_4series(outboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1, thickness_multiplier = outboard_segment.airfoil.thickness_multiplier)
             else:
-                a_geo_2 = import_airfoil_geometry(outboard_segment.airfoil.coordinate_file,ncpts*2+1)   
+                a_geo_2 = import_airfoil_geometry(outboard_segment.airfoil.coordinate_file,ncpts*2+1, thickness_multiplier = outboard_segment.airfoil.thickness_multiplier)
         else:
             a_geo_2 =  Data()
             a_geo_2.camber_coordinates = np.zeros(ncpts)              

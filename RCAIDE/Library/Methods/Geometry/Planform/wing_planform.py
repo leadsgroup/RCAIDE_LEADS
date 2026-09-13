@@ -96,13 +96,13 @@ def wing_planform(wing):
                 else:
                     raise AssertionError("Quarter chord or leading edge sweep must be defined") 
              
-            if seg.airfoil != None: 
+            if seg.airfoil != None:
                 if type(seg.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
-                    seg.airfoil.geometry = compute_naca_4series(seg.airfoil.NACA_4_Series_code) 
-                    seg.thickness_to_chord = seg.airfoil.geometry.thickness_to_chord 
+                    seg.airfoil.geometry = compute_naca_4series(seg.airfoil.NACA_4_Series_code, thickness_multiplier = seg.airfoil.thickness_multiplier)
+                    seg.thickness_to_chord = seg.airfoil.geometry.thickness_to_chord
                 else:
-                    seg.airfoil.geometry = import_airfoil_geometry(seg.airfoil.coordinate_file) 
-                    seg.thickness_to_chord =  seg.airfoil.geometry.thickness_to_chord                 
+                    seg.airfoil.geometry = import_airfoil_geometry(seg.airfoil.coordinate_file, thickness_multiplier = seg.airfoil.thickness_multiplier)
+                    seg.thickness_to_chord =  seg.airfoil.geometry.thickness_to_chord
             
                 t_cs.append(seg.thickness_to_chord) 
             else: 
@@ -242,13 +242,13 @@ def wing_planform(wing):
         dihedral    = wing.dihedral 
         vertical    = wing.vertical
         symmetric   = wing.xz_plane_symmetric  
-        if wing.airfoil != None: 
+        if wing.airfoil != None:
             if type(wing.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
-                wing.airfoil.geometry = compute_naca_4series(wing.airfoil.NACA_4_Series_code) 
-                wing.thickness_to_chord = wing.airfoil.geometry.thickness_to_chord 
+                wing.airfoil.geometry = compute_naca_4series(wing.airfoil.NACA_4_Series_code, thickness_multiplier = wing.airfoil.thickness_multiplier)
+                wing.thickness_to_chord = wing.airfoil.geometry.thickness_to_chord
             else:
-                wing.airfoil.geometry   = import_airfoil_geometry(wing.airfoil.coordinate_file) 
-                wing.thickness_to_chord =  wing.airfoil.geometry.thickness_to_chord 
+                wing.airfoil.geometry   = import_airfoil_geometry(wing.airfoil.coordinate_file, thickness_multiplier = wing.airfoil.thickness_multiplier)
+                wing.thickness_to_chord =  wing.airfoil.geometry.thickness_to_chord
                 
         t_c_w  = wing.thickness_to_chord   
         

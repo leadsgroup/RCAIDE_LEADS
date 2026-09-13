@@ -162,7 +162,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
             print('Warning: Prescribed payload weight is greater than maximum payload weight')
         if weights_analysis.settings.iterate_mtow:
             solve_for_mtow(analyses, weights_analysis, i)
-            
+
         else:
             if analyses.vehicle.mass_properties.max_zero_fuel == None:
                 # Before proceeding to the weight buildups, the buildups need either the max fuel capacity or the max zero fuel to compute OEW 

@@ -108,21 +108,21 @@ def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor
         L = (outer_segment.percent_span_location - inner_segment.percent_span_location) * wing.spans.projected/(symm + 1)
         spanwise_shift = inner_segment.percent_span_location * wing.spans.projected/2 
         
-        airfoil_in = inner_segment.airfoil 
-        if  airfoil_in !=  None:                 
+        airfoil_in = inner_segment.airfoil
+        if  airfoil_in !=  None:
             if type(airfoil_in) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-                geometry_in = compute_naca_4series(airfoil_in.NACA_4_Series_code,n_points)
-            elif type(airfoil_in) == RCAIDE.Library.Components.Airfoils.Airfoil: 
-                geometry_in     = import_airfoil_geometry(airfoil_in.coordinate_file,n_points)
+                geometry_in = compute_naca_4series(airfoil_in.NACA_4_Series_code,n_points, thickness_multiplier = airfoil_in.thickness_multiplier)
+            elif type(airfoil_in) == RCAIDE.Library.Components.Airfoils.Airfoil:
+                geometry_in     = import_airfoil_geometry(airfoil_in.coordinate_file,n_points, thickness_multiplier = airfoil_in.thickness_multiplier)
         else:
             geometry_in = compute_naca_4series('0012',n_points)
 
-        airfoil_out = outer_segment.airfoil 
-        if  airfoil_out !=  None:                 
+        airfoil_out = outer_segment.airfoil
+        if  airfoil_out !=  None:
             if type(airfoil_out) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-                geometry_out = compute_naca_4series(airfoil_out.NACA_4_Series_code,n_points)
-            elif type(airfoil_out) == RCAIDE.Library.Components.Airfoils.Airfoil: 
-                geometry_out     = import_airfoil_geometry(airfoil_out.coordinate_file,n_points)
+                geometry_out = compute_naca_4series(airfoil_out.NACA_4_Series_code,n_points, thickness_multiplier = airfoil_out.thickness_multiplier)
+            elif type(airfoil_out) == RCAIDE.Library.Components.Airfoils.Airfoil:
+                geometry_out     = import_airfoil_geometry(airfoil_out.coordinate_file,n_points, thickness_multiplier = airfoil_out.thickness_multiplier)
         else:
             geometry_out = compute_naca_4series('0012',n_points)
         

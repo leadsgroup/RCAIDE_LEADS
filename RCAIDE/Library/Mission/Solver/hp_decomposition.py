@@ -72,10 +72,6 @@ def compute_subsegment_layout(number_of_control_points, number_of_unknowns, max_
         raise ValueError("number_of_control_points and number_of_unknowns must be >= 1")
 
     if number_of_control_points < min_control_points:
-        # Already below the floor a split piece would need to meet -- there's
-        # no way to divide this segment into >=1 pieces each with at least
-        # min_control_points points without a piece smaller than the whole
-        # segment itself, so leave it undecomposed rather than erroring.
         return number_of_control_points, 1
 
     divisors   = [n for n in range(1, number_of_control_points + 1) if number_of_control_points % n == 0]
@@ -189,35 +185,12 @@ def register_known_segment_types():
     register(Vertical_Flight.Descent, ('pair', 'altitude_start', 'altitude_end'))
     register(Vertical_Flight.Hover, ('divide', 'time'))
 
-    # Curved_Constant_Radius: true_course_control_points = segment.true_course
-    # + t_nondim*turn_angle (initialize_conditions.py) -- true_course is read
-    # directly, not carried forward via state.initials like everything else,
-    # so each piece needs the heading already turned by prior pieces added
-    # back in, not just an even turn_angle split.
+    # Curved_Constant_Radius
     register(Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude,
               ('divide', 'turn_angle'), ('cumulative', 'true_course', 'turn_angle'))
 
-    # Battery_Discharge: initialize_conditions.py's else-branch (non-Recharge)
-    # reads segment.time directly -- a plain, prescribed duration, same as
-    # Hover/the Loiter segments.
+    # Battery_Discharge
     register(Ground.Battery_Discharge, ('divide', 'time'))
-
-    # Ground: the rest deliberately excluded, not just unfinished.
-    #   - Takeoff/Landing: velocity profile and total elapsed time are both
-    #     solved unknowns (not prescribed), a fundamentally different
-    #     residual/unknown structure than every airborne segment here, and
-    #     already have a reputation (independent of this feature) for being
-    #     finicky to converge -- not worth compounding that with a first
-    #     pass at decomposition. Revisit only with real motivation.
-    #   - Battery_Recharge: charging duration is computed from cutoff_SOC and
-    #     the SOC the segment actually starts at (initialize_conditions.py:
-    #     "linear SOC increase" from state.initials's converged end-of-flight
-    #     SOC, or initial_battery_conditions if it's the first segment) --
-    #     not known until solve time, and specifically not known to
-    #     hp_decompose_segment, which runs on a bare segment before it's
-    #     chained into a mission (state.initials doesn't exist yet). Same
-    #     class of problem as Takeoff/Landing, just for a different reason.
-
 
 register_known_segment_types()
 
@@ -312,6 +285,20 @@ def hp_decompose_segment(segment, number_of_unknowns, tolerance, step_size,
             v0 = getattr(segment, start_attr)
             vf = getattr(segment, end_attr)
             if v0 is None or vf is None:
+                # Common for chained mid-mission segments (e.g. only the first climb
+                # segment in a mission sets altitude_start explicitly; later ones
+                # inherit it from the previous segment's converged end state at
+                # evaluate-time, which hasn't happened yet here in Pre_Process) --
+                # not an error, but silent, so surface it rather than let a mission
+                # silently get zero benefit from hp_decomposition on most of its
+                # segments with no visible sign why.
+                import warnings
+                warnings.warn(
+                    f"hp_decompose_segment: '{segment.tag}' ({segment_class.__name__}) not split -- "
+                    f"'{start_attr}' or '{end_attr}' is None (likely inherited via segment chaining, "
+                    f"not yet resolved at decompose time). Falling back to the undecomposed segment.",
+                    stacklevel=2,
+                )
                 return [segment]
             edges = np.linspace(v0, vf, number_of_subsegments + 1)
             per_spec_values.append(('pair', start_attr, end_attr, edges))

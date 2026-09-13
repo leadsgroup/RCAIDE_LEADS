@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_conditions import append_converter_power_conditions
 
 # pack imports 
 from copy import deepcopy
@@ -43,28 +44,8 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment):
     
     ones_row                                                       = segment.state.ones_row    
                                              
-    segment.state.conditions.energy.converters[fuel_cell_stack.tag] = Conditions()
-    fuel_cell_conditions                                           = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
-    fuel_cell_conditions.inputs                                    = Conditions()
-    fuel_cell_conditions.outputs                                   = Conditions()
-
-    fuel_cell_conditions.inputs.power                              = Conditions()
-    fuel_cell_conditions.outputs.power                             = Conditions()
-    fuel_cell_conditions.inputs.power.propulsive                   = 0 * ones_row(1)
-    fuel_cell_conditions.inputs.power.mechanical                   = 0 * ones_row(1)
-    fuel_cell_conditions.inputs.power.electrical                   = 0 * ones_row(1)
-    fuel_cell_conditions.inputs.power.chemical                     = 0 * ones_row(1)
-    fuel_cell_conditions.inputs.power.pneumatic                    = 0 * ones_row(1)
-    fuel_cell_conditions.inputs.power.hydraulic                    = 0 * ones_row(1)
-    fuel_cell_conditions.inputs.power.thermal                      = 0 * ones_row(1)
-    fuel_cell_conditions.outputs.power.propulsive                  = 0 * ones_row(1)
-    fuel_cell_conditions.outputs.power.mechanical                  = 0 * ones_row(1)
-    fuel_cell_conditions.outputs.power.electrical                  = 0 * ones_row(1)
-    fuel_cell_conditions.outputs.power.chemical                    = 0 * ones_row(1)
-    fuel_cell_conditions.outputs.power.pneumatic                   = 0 * ones_row(1)
-    fuel_cell_conditions.outputs.power.hydraulic                   = 0 * ones_row(1)
-    fuel_cell_conditions.outputs.power.thermal                     = 0 * ones_row(1)
-    fuel_cell_conditions.current                                   = 0 * ones_row(1)      
+    fuel_cell_conditions                                           = append_converter_power_conditions(fuel_cell_stack, segment)
+    fuel_cell_conditions.current                                   = 0 * ones_row(1)
     fuel_cell_conditions.voltage_open_circuit                      = 0 * ones_row(1) 
     fuel_cell_conditions.voltage_under_load                        = 0 * ones_row(1) 
     fuel_cell_conditions.H2_mass_flow_rate                         = 0 * ones_row(1)

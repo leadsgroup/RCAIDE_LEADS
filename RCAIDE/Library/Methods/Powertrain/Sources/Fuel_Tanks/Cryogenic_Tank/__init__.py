@@ -28,3 +28,7 @@ RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank
 
 from .compute_cryogenic_conformal_tank_volume import compute_cryogenic_conformal_tank_volume
 from .compute_cryogenic_cylindrical_tank_volume  import compute_cryogenic_cylindrical_tank_volume
+from .compute_cryogenic_tank_heat_leak        import compute_cryogenic_tank_heat_leak
+from .compute_cryogenic_tank_performance      import compute_cryogenic_tank_performance
+from .append_cryogenic_tank_unknown_and_residual import append_cryogenic_tank_unknown_and_residual
+from .append_cryogenic_tank_conditions        import append_cryogenic_tank_conditions

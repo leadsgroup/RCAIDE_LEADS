@@ -57,8 +57,12 @@ class Electrical_Bus(Distributor):
     length : float
         Cable length [m] (default: 1)
 
-    number_of_parallel_wires : int
-        Number of parallel conductors (default: 1)
+    number_of_parallel_wires : int or None
+        Number of parallel conductors (default: None). When None,
+        `size_electrical_cable` auto-selects the smallest count that keeps
+        each conductor under a practical single-conductor size (~500 kcmil,
+        NEC 310.10(H)'s parallel-conductor practice) and writes the result
+        back here.
 
     design_ambient_temperature : float
         Ambient temperature used for cable sizing [K] (default: 273)
@@ -111,13 +115,13 @@ class Electrical_Bus(Distributor):
         self.current_type                              = 'DC'   
         self.efficiency                                = 1
         self.length                                    = 1
-        self.number_of_parallel_wires                  = 1
+        self.number_of_parallel_wires                  = None
         self.design_ambient_temperature                = 273  
         self.maximum_insulator_electric_field          = 0  
         self.maximum_operating_temperature             = 0 
         self.maximum_current                           = 0  
-        self.maximum_temperature                       = 423  
-        self.environmental_external_thermal_resistance = 1  
+        self.maximum_temperature                       = 423
+        self.environmental_external_thermal_resistance = None  # None -> IEC 60287-2-1 generic duct formula (see size_electrical_cable); set explicitly to override for a specific installation
         self.conductor                                 = Component()
         self.conductor.radius                          = None
         self.conductor.material                        = Copper()  
@@ -207,10 +211,20 @@ class Electrical_Bus(Distributor):
 
         for source in network.sources:
             if assigned_here(source):
-                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack): 
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
                     if source.power_split_ratio != 0.0:
                         self.design_voltage = source.voltage
-                        self.design_power  += source.maximum_power
+                        # maximum_power is the pack's physical max-discharge ceiling, sized
+                        # off design_capacity for endurance -- it can vastly exceed what the
+                        # pack is actually asked to deliver (design_power, the vehicle's own
+                        # target for this bus's load). Cable/bus sizing should track the
+                        # latter: the former never overwrites design_power the way fuel-cell
+                        # sizing does, so it stays a true "never asked to draw more than this"
+                        # cap here, not a byproduct of energy-capacity sizing.
+                        source_power = source.maximum_power
+                        if source.design_power is not None:
+                            source_power = min(source_power, source.design_power)
+                        self.design_power += source_power
 
         for converter in network.converters:
             if assigned_here(converter):

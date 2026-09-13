@@ -18,8 +18,30 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 # the analysis functions
-from BWB    import vehicle_setup  ,  configs_setup
+from BWB    import vehicle_setup as bwb_vehicle_setup, configs_setup
 import time
+from RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks import Cryogenic_Tank
+
+# ----------------------------------------------------------------------
+#   Vehicle
+# ----------------------------------------------------------------------
+def vehicle_setup():
+    """BWB vehicle with boil-off physics disabled on its cryogenic tanks.
+
+    This test only checks VLM panelization/CL and static LOPA geometry, neither of which
+    depends on fuel-tank thermal behavior -- that's covered separately by
+    Verification/network_hydrogen/bwb_hydrogen_test.py and
+    bwb_hydrogen_boil_off_fidelity_test.py. 'quasi_steady' boil-off runs a stiff ODE with
+    nested root-finds per RHS evaluation, which SLSQP's finite-difference Jacobian then
+    re-solves dozens of times per segment; 'none' falls back to plain fuel burn-down and
+    skips that entirely.
+    """
+    vehicle = bwb_vehicle_setup()
+    for network in vehicle.networks:
+        for source in network.sources:
+            if isinstance(source, Cryogenic_Tank):
+                source.boil_off_model = 'none'
+    return vehicle
 
 # ----------------------------------------------------------------------
 #   Main
@@ -82,7 +104,7 @@ def aerodynamics_surrogate_test():
     Cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
 
 
-    Cruise_CL_true   = 0.5122871542801427
+    Cruise_CL_true   = 0.5143710605545126
     Cruise_CL_diff   = np.abs(Cruise_CL - Cruise_CL_true)
     print('Error: ',Cruise_CL_diff)
     assert np.abs((Cruise_CL - Cruise_CL_true)/Cruise_CL_true) < 1e-3, f"Cruise_CL mismatch: got {Cruise_CL}, expected {Cruise_CL_true}"

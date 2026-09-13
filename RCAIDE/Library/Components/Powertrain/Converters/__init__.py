@@ -30,7 +30,8 @@ from .Lift_Rotor                                 import Lift_Rotor
 from .Liquid_Cooled_Wavy_Channel                 import Liquid_Cooled_Wavy_Channel
 from .Generic_Fuel_Cell_Stack                    import Generic_Fuel_Cell_Stack
 from .Generator                                  import Generator
-from .Pump                                       import Pump 
+from .Heater                                     import Heater
+from .Pump                                       import Pump
 from .Ram                                        import Ram 
 from .Rotor                                      import Rotor
 from .PMSM_Motor                                 import PMSM_Motor 
