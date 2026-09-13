@@ -632,6 +632,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
             thrust_N[i]             = F[0]
             fuel_mass_flow_rate[i]  = FF[0]
             continue
+        
         thrust_N[i]                                 = result.thrust
         fuel_mass_flow_rate[i]                       = result.fuel_mass_flow_rate
         core_nozzle_exit_velocity[i]                = result.core_nozzle_exit_velocity
