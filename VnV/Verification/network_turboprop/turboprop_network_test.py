@@ -69,8 +69,8 @@ def main():
         print(val)
     
     # Truth values
-    thrust_truth     = 22849.71794096379
-    throttle_truth   = 0.6267708021483583
+    thrust_truth     = 13316.461106265253
+    throttle_truth   = 0.7283555295686847
     
     # Store errors 
     error = Data()
@@ -187,15 +187,16 @@ def mission_setup(analyses):
     Vstall         = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)
     
     # ------------------------------------------------------------------
-    #   Fourth Climb Segment: linear Mach, constant segment angle 
-    # ------------------------------------------------------------------  
-    segment = Segments.Climb.Constant_Mach_Constant_Rate(base_segment)
-    segment.tag = "climbing_cruise" 
-    segment.analyses.extend( analyses.base ) 
+    #   Fourth Climb Segment: constant speed, constant rate
+    # ------------------------------------------------------------------
+    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag = "climbing_cruise"
+    segment.analyses.extend( analyses.base )
     segment.altitude_start                                = 50.0 * Units.feet
-    segment.altitude_end                                  = 500.0 * Units.feet 
+    segment.altitude_end                                  = 500.0 * Units.feet
+    segment.air_speed_start                               = Vstall *1.3
     segment.air_speed_end                                 = Vstall *1.3
-    segment.climb_rate                                    = 600 * Units['ft/min']  
+    segment.climb_rate                                    = 600 * Units['ft/min']
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  

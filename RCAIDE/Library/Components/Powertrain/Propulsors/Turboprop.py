@@ -74,15 +74,12 @@ class Turboprop(Propulsor):
 
     design_power : float
         Design-point shaft power delivered by the free (low-pressure)
-        turbine to the propeller, through the gearbox [W]. This is what
-        actually powers the propeller -- the free turbine extracts this much
-        work from the gas path (via `external_shaft.work_done`, the same
-        mechanism `Turbofan`'s IDG/motor offtake uses), leaving little
-        thrust to come from the core nozzle itself, which is the correct
-        physical picture for a turboprop. Default is 0.0, which reproduces
-        the previous (physically incomplete) behavior of a free turbine that
-        does no work at all -- existing vehicles must set this explicitly to
-        get a physically meaningful split between propeller and core thrust.
+        turbine to the propeller, through the gearbox [W]. An output, not an
+        input: it is `design_turboprop`'s result once `low_pressure_turbine.
+        pressure_ratio` (the actual design input -- see `Turbine.
+        pressure_ratio`) and the design mass flow rate are both known,
+        reported here for visibility/downstream use. Default is 0.0 before
+        `design_turboprop` runs.
 
     design_power_offtake : float
         Design-point shaft power extracted from (or, via `integrated_drive_

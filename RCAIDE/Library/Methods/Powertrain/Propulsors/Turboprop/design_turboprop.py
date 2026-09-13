@@ -108,8 +108,13 @@ def design_turboprop(turboprop):
     """
     #check if mach number and temperature are passed
     if turboprop.design_altitude==None:
-        if turboprop.design_mach_number==None and turboprop.design_freestream_velocity ==None:  
+        if turboprop.design_mach_number==None and turboprop.design_freestream_velocity ==None:
             raise NameError('The sizing conditions require an altitude and a Mach number or Velocity ')
+
+    if turboprop.low_pressure_turbine.pressure_ratio is None:
+        raise NameError('turboprop.low_pressure_turbine.pressure_ratio must be set -- the free '
+                         'turbine has no compressor to balance power against, so its design-point '
+                         'pressure ratio cannot be derived from design_thrust alone.')
     
     else:
         #call the atmospheric model to get the conditions at the specified altitude
@@ -214,10 +219,10 @@ def design_turboprop(turboprop):
     # Step 8: Compute flow through the high pressor compressor
     compute_combustor_performance(combustor,conditions)
 
-    # Two independent shaft-work terms (both specific work, same conversion as design_
-    # turbofan.py): hpt_shaft_work is the gas-generator accessory tap (design_power_offtake);
-    # lpt_shaft_work (below) is the free turbine's own propeller power (design_power) --
-    # a separate shaft, not a duplicate of this.
+    # Two independent shaft-work terms: hpt_shaft_work is the gas-generator accessory tap
+    # (design_power_offtake, absolute power, circular via mass flow -- iterated below);
+    # lpt_shaft_work (below) is the free turbine's own propeller power, closed directly from
+    # low_pressure_turbine.pressure_ratio (specific work, no mass flow involved at all).
     net_external_shaft_power = np.array([[0.0]])
 
     # Design and size integrated drive motor (parallel hybrid, gas-generator spool)
@@ -242,17 +247,14 @@ def design_turboprop(turboprop):
         net_external_shaft_power += gen_mechanical_power
 
     has_gas_generator_offtake = (integrated_drive_motor is not None) or (integrated_drive_generator is not None)
-    has_shaft_offtake         = has_gas_generator_offtake or (turboprop.design_power != 0.0)
 
     mass_flow_rate_estimate = None
-    max_power_iterations    = 5 if has_shaft_offtake else 1
+    max_power_iterations    = 5 if has_gas_generator_offtake else 1
     for power_iteration in range(max_power_iterations):
-        if has_shaft_offtake and mass_flow_rate_estimate is not None:
-            hpt_shaft_work = net_external_shaft_power / mass_flow_rate_estimate if has_gas_generator_offtake else 0.0
-            lpt_shaft_work = turboprop.design_power / mass_flow_rate_estimate if turboprop.design_power != 0.0 else 0.0
+        if has_gas_generator_offtake and mass_flow_rate_estimate is not None:
+            hpt_shaft_work = net_external_shaft_power / mass_flow_rate_estimate
         else:
             hpt_shaft_work = 0.0
-            lpt_shaft_work = 0.0
 
         #link the high pressure turbione to the combustor
         hpt_conditions.inputs.stagnation_temperature          = combustor_conditions.outputs.stagnation_temperature
@@ -267,6 +269,17 @@ def design_turboprop(turboprop):
         hpt_conditions.inputs.external_shaft.work_done        = hpt_shaft_work
 
         compute_turbine_performance(high_pressure_turbine,conditions)
+
+        T0_lpt_in    = hpt_conditions.outputs.static_temperature
+        P0_lpt_in    = hpt_conditions.outputs.static_pressure
+        gamma_lpt    = high_pressure_turbine.working_fluid.compute_gamma(T0_lpt_in, P0_lpt_in)
+        Cp_lpt       = high_pressure_turbine.working_fluid.compute_cp(T0_lpt_in, P0_lpt_in)
+        Tt_in_lpt    = hpt_conditions.outputs.stagnation_temperature
+        f            = combustor_conditions.outputs.fuel_to_air_ratio
+        tau_tL       = low_pressure_turbine.pressure_ratio ** \
+            ((gamma_lpt - 1) * low_pressure_turbine.polytropic_efficiency / gamma_lpt)
+        deltah_ht    = Cp_lpt * Tt_in_lpt * (tau_tL - 1)
+        lpt_shaft_work = -deltah_ht * (1 + f) * low_pressure_turbine.mechanical_efficiency
 
         #link the low pressure turbine to the high pressure turbine
         lpt_conditions.inputs.stagnation_temperature          = hpt_conditions.outputs.stagnation_temperature
@@ -301,7 +314,7 @@ def design_turboprop(turboprop):
         # Step 25: Size the core of the turboprop
         size_core(turboprop,conditions)
 
-        if not has_shaft_offtake:
+        if not has_gas_generator_offtake:
             break
         new_mass_flow_rate_estimate = float(np.ravel(turboprop.design_mass_flow_rate)[0])
         if mass_flow_rate_estimate is not None and \
@@ -312,6 +325,11 @@ def design_turboprop(turboprop):
 
     # Specific shaft work at the converged design point, same rationale as design_turbofan.py
     turboprop.design_shaft_work_specific = float(np.ravel(hpt_shaft_work)[0]) if has_gas_generator_offtake else 0.0
+
+    # design_power is an output here, not an input: the free turbine's design point is closed
+    # by low_pressure_turbine.pressure_ratio above, and this is just that choice's resulting
+    # absolute power once the design mass flow rate is known -- for reporting only.
+    turboprop.design_power = float(np.ravel(lpt_shaft_work)[0]) * float(np.ravel(turboprop.design_mass_flow_rate)[0])
 
     # Step 26: Static Sea Level Thrust
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)
