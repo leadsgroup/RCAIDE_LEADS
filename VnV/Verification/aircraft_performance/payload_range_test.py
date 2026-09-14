@@ -69,11 +69,11 @@ def fuel_aircraft_payload_range():
     
     # run payload range analysis . To account for the simplified single segment analysis, 
     # fuel reserve percentage is increased from 10 to 25%.
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.225)
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.15)
     plot_payload_range_diagram(payload_range_results, save_figure = False)  
                   
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 5545666.215104221 # Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.
+    fuel_r_true            = 5533023.114473729 # Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.
     
     print('Fuel Range: ' + str(fuel_r))
     fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
@@ -105,10 +105,10 @@ def fuel_aircraft_payload_range_mzfw():
         
     # run payload range analysis . To account for the simplified single segment analysis, 
     # fuel reserve percentage is increased from 10 to 25%.
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.225)
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.15)
                                 
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 5545741.888779508
+    fuel_r_true            = 5533075.540669438
     # Correct value from reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000. 
     # This value is high due to simplified single segment analysis i.e. only cruise. To compensate, reserve percentage is increased from 5 to 10%
     

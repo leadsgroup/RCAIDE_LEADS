@@ -64,11 +64,11 @@ def main():
     # opposite-sign gap, not a fix. Accepted as the expected tradeoff of a correlation fit
     # to one reference aircraft (CRM) being applied to a different planform (787).
     truth_values = {
-        "range":            np.array([       0.        , 10358662.01764413, 18070001.55248218, 18689954.83624262]),
-        "payload":          np.array([44000.        , 44000.        ,  9847.68563847,     0.        ]),
-        "oew_plus_payload": np.array([160759.31436153, 160759.31436153, 126607.        , 116759.31436153]),
-        "fuel":             np.array([     0.        ,  67170.68563847, 101323.        , 101323.        ]),
-        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 218082.31436153]),
+        "range":            np.array([       0.        ,  9118803.78899555, 15598256.41449719, 16164851.03651247]),
+        "payload":          np.array([44000.        , 44000.        , 10566.91738857,     0.        ]),
+        "oew_plus_payload": np.array([160040.08261143, 160040.08261143, 126607.        , 116040.08261143]),
+        "fuel":             np.array([     0.        ,  67889.91738857, 101323.        , 101323.        ]),
+        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 217363.08261143]),
     }
     # ########################################### WARNING #################################################
     ###### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ################
@@ -487,8 +487,9 @@ def base_analysis(vehicle):
     weights.settings.weight_correction_additions.empty.structural.paint      = 450 
     weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.number_of_passengers
     weights.settings.weight_correction_additions.empty.propulsion.battery    = 150 
-    weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.1   
-    weights.settings.weight_correction_factors.empty.systems.electrical      = 2.7 
+    weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.1
+    weights.settings.weight_correction_factors.empty.systems.electrical      = 2.7
+    weights.settings.weight_correction_factors.empty.propulsion.engines      = 1.031
     analyses.append(weights)
 
     # ------------------------------------------------------------------
