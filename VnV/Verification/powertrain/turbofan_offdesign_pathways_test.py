@@ -1,19 +1,9 @@
 # turbofan_offdesign_pathways_test.py
 #
-# Verifies RCAIDE's three turbofan performance pathways -- analytical cycle
-# model, live off-design matching (turbofan.offdesign_matching), and the
-# table-driven surrogate (turbofan.surrogate) -- at design point, sea-level
-# static, and an interpolated surrogate point. Reuses the literature-
-# validated GE90-94B from test_turbofan_validation.py as the test engine.
-#
-# Not asserted, and why (both noted again inline): analytical vs. off-design
-# matching thrust are not cross-compared at SLS -- the analytical model's
-# fixed pressure ratios are known to diverge far from its one design point
-# (see ENGINE_MODEL_NOTES.md), so each pathway is checked against its own
-# reference instead. The analytical model is also not run at exact M0=0, a
-# known singularity RCAIDE itself works around via M0=0.01 in
-# design_turbofan.py; off-design matching has no such singularity and is
-# checked at exact M0=0 instead.
+# Verifies RCAIDE's three turbofan performance pathways -- analytical,
+# off-design matching, and surrogate -- at design point, sea-level static,
+# and an interpolated surrogate point. Uses the GE90-94B from
+# test_turbofan_validation.py as the test engine.
 #
 # Created: Sep 2026, M. Clarke
 
@@ -27,11 +17,15 @@ from RCAIDE.Library.Methods.Powertrain import setup_operating_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan_offdesign_matching import design_turbofan_offdesign_matching
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.generate_turbofan_deck    import generate_turbofan_deck
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate                  import Turbofan_Surrogate
+from RCAIDE.Library.Methods.Powertrain.Converters.Compressor.Generic_Compressor_Map import Generic_Compressor_Map
 
 # reuse the literature-validated GE90-94B definition rather than redefining a test engine
 from VnV.Validation.propulsors.test_turbofan_validation import GE90_94B
 
 # Python package imports
+import tempfile
+from pathlib import Path
+
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -129,6 +123,18 @@ def main():
     check('surrogate: query() reproduces its own tabulated point [N]',
           F_tabulated[0], deck.thrust_N[0], 1e-4, results)
 
+    # save_path=/deck_path= file round-trip: build() only ever exercises the in-memory
+    # deck= path above -- Example_Engine_Deck_for_RCAIDE.xlsx-style persistence goes through
+    # pandas.to_excel()/read_excel() instead (Turbofan_Surrogate.build()'s only file format;
+    # no CSV support exists), so this checks that path specifically, not just the schema.
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        deck_xlsx = Path(tmp_dir) / "turbofan_deck.xlsx"
+        Turbofan_Surrogate().build(deck=deck, save_path=deck_xlsx)
+        reloaded_surrogate = Turbofan_Surrogate().build(deck_path=deck_xlsx)
+    F_reloaded, _ = reloaded_surrogate.query(deck.altitude_m[0], deck.mach_number[0])
+    check('surrogate: query() after save_path/deck_path xlsx round-trip [N]',
+          F_reloaded[0], F_tabulated[0], 1e-6, results)
+
     # interpolated point should fall between its bracketing tabulated altitudes
     F_low_alt, _  = turbofan.surrogate.query(np.array([0.0]), np.array([0.3]))
     F_high_alt, _ = turbofan.surrogate.query(np.array([turbofan.design_altitude]), np.array([0.3]))
@@ -144,6 +150,34 @@ def main():
     F_via_dispatch = evaluate_thrust(turbofan, fuel_line, deck.altitude_m[0], deck.mach_number[0])
     check('surrogate: compute_performance dispatch vs direct query() [N]',
           F_via_dispatch, F_tabulated[0], 1e-8, results)
+
+    # ------------------------------------------------------------------------------------
+    # 4. Generic_Compressor_Map wired into the off-design solver
+    # ------------------------------------------------------------------------------------
+    # Only reachable through generate_turbofan_deck()/solve_turbofan_offdesign_robust()'s own
+    # fan_map=/high_pressure_compressor_map= kwargs -- compute_turbofan_performance_offdesign's
+    # live per-segment dispatch has no field for maps on turbofan.offdesign_matching at all
+    # (maps are meant to be baked into an offline deck once, not root-found live every segment).
+    #
+    # generate_turbofan_deck() calls design_turbofan_offdesign_matching() internally, which
+    # itself calls turbofan.compute_performance() at the design point to read back converged
+    # gas properties -- compute_performance dispatches to whichever of offdesign_matching/
+    # surrogate is set (section 3 left turbofan.surrogate built), so it must be cleared here
+    # or that internal call would route through the surrogate's pure table lookup instead of
+    # the analytical cycle, which has no converter-level gamma/cp outputs to read back.
+    turbofan.surrogate = None
+    fan_map = Generic_Compressor_Map().scale_to_design_point(design_pressure_ratio=turbofan.fan.pressure_ratio)
+    hpc_map = Generic_Compressor_Map().scale_to_design_point(
+        design_pressure_ratio=turbofan.high_pressure_compressor.pressure_ratio)
+
+    deck_with_maps = generate_turbofan_deck(turbofan, altitude_range, mach_range,
+                                             fan_map=fan_map, high_pressure_compressor_map=hpc_map)
+    assert len(deck_with_maps.thrust_N) > 0, "map-based deck generation produced no converged points"
+    # deck[0] is (altitude=0, mach=0) at full (RC=0 reference) throttle -- close to design
+    # corrected speed regardless of altitude/Mach at that throttle setting, so the map and
+    # constant-efficiency assumptions should agree closely there
+    check('map-based deck: SLS/full-throttle grid point vs map-free deck [N]',
+          deck_with_maps.thrust_N[0], deck_full.thrust_N[0], 1e-2, results)
 
     # ---- Report ----
     width = max(len(r[0]) for r in results)

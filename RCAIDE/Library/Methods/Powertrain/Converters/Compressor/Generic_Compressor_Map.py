@@ -12,11 +12,6 @@ from RCAIDE.Framework.Core import Data
 # Python package imports
 import numpy as np
 
-# Physical floor on extrapolated efficiency -- a real (or windmilling) compressor
-# stage doesn't have zero or negative efficiency, so this bounds the linear
-# extrapolation used far outside the tabulated 60-110% corrected-speed range.
-MINIMUM_ADIABATIC_EFFICIENCY = 0.30
-
 # ----------------------------------------------------------------------------------------------------------------------
 #  interp_with_linear_extrapolation
 # ----------------------------------------------------------------------------------------------------------------------
@@ -217,10 +212,12 @@ class Generic_Compressor_Map(Data):
 
         # Efficiency is floored, not just extrapolated: a real (or even a windmilling)
         # compressor stage doesn't have zero or negative efficiency, so a floor here
-        # is a physical bound, not an arbitrary clip.
+        # is a physical bound, not an arbitrary clip. Bounds the linear extrapolation
+        # used far outside the tabulated 60-110% corrected-speed range.
+        minimum_adiabatic_efficiency = 0.30
         efficiency = interp_with_linear_extrapolation(percent_corrected_speed, self.percent_corrected_speed,
                                                         self.adiabatic_efficiency)
-        efficiency = np.maximum(efficiency, MINIMUM_ADIABATIC_EFFICIENCY)
+        efficiency = np.maximum(efficiency, minimum_adiabatic_efficiency)
 
         design_pressure_ratio = self.get('design_pressure_ratio', None)
         if design_pressure_ratio is not None:

@@ -1,49 +1,27 @@
 # turbofan_cycle_mattingly_test.py
 #
-# Verifies RCAIDE's turbofan cycle component equations (ram, inlet nozzle, fan,
-# compressor, combustor, turbine, and the choked-nozzle relation) against
-# Mattingly, "Elements of Gas Turbine Propulsion", 2nd ed., Example 7-6
-# (separate-exhaust turbofan with losses, pp. 398-400) -- a single,
-# self-consistent hand-worked calculation, so there is no literature-source
-# ambiguity the way there is for a real engine like the GE90 (see
-# VnV/Validation/propulsors/test_turbofan_validation.py).
+# Verifies RCAIDE's turbofan cycle component equations (ram, inlet nozzle,
+# fan, compressor, combustor, turbine, choked-nozzle relation) against
+# Mattingly, "Elements of Gas Turbine Propulsion", 2nd ed., Example 7-6.
 #
-# Two deliberate departures from a literal reproduction of the example, both
-# noted inline where they matter:
+# Two departures from a literal reproduction, noted inline where they matter:
+# 1. Mattingly's fan/compressor are parallel paths off station 2, not in
+#    series like RCAIDE's Turbofan network -- so this calls the individual
+#    compute_*_performance functions directly with that wiring instead of
+#    going through compute_turbofan_performance.
+# 2. Mattingly uses fixed cp/gamma upstream/downstream of the burner, not
+#    RCAIDE's temperature-dependent Air model -- constant-property gas
+#    stand-ins isolate "are the cycle equations right" from the gas model.
 #
-# 1. Mattingly's parametric-cycle idealization treats the fan and compressor
-#    as parallel paths drawn from the same post-inlet stagnation state
-#    (station 2), not fan-feeds-compressor in series the way RCAIDE's
-#    Turbofan network wires them. This test calls the individual
-#    compute_*_performance functions directly with that parallel wiring
-#    (mimicking Sec. 7-4's Fig. 7-11 station numbering), rather than going
-#    through compute_turbofan_performance's fixed series wiring -- it
-#    verifies the equations, not the Turbofan network's default topology.
-#    The "compressor" (pi_c=36) is mapped onto RCAIDE's low_pressure_compressor;
-#    high_pressure_compressor is left at pressure_ratio=1 (no-op) since
-#    Mattingly's example has only one compressor spool.
-#
-# 2. Mattingly assumes separate constant gas properties upstream/downstream of
-#    the burner (Assumptions 1-2 of Sec. 7-4): gamma_c=1.4, cp_c=0.240 Btu/(lbm-R)
-#    and gamma_t=1.33, cp_t=0.276 Btu/(lbm-R). RCAIDE's Air class instead
-#    varies cp/gamma continuously with local temperature (a more accurate gas
-#    model, verified separately against Mattingly Table 2-4 -- see Air.py's
-#    compute_cp docstring). Small constant-property gas stand-ins are used
-#    below so this test isolates "are the cycle equations right" from "is the
-#    temperature-dependence of the gas model right".
-#
-# Mattingly's nozzle treatment in this example prescribes P0/P9=P0/P19=0.9
-# (a fixed design exit-pressure ratio, not derived from choking), which
-# doesn't map onto RCAIDE's actual nozzle model -- that instead computes
-# whether the nozzle is physically choked from Pt/P0 vs. the critical
-# pressure ratio. Both nozzles in this example are well above the choking
-# threshold regardless, so this test checks that RCAIDE's choked-nozzle
-# branch reproduces Mattingly's own choking relation, Eq. 7-53, directly,
-# rather than the specific prescribed exit numbers this example reports.
+# Both nozzles are well above their choking threshold, so rather than
+# reproducing Mattingly's prescribed P0/P9=0.9 exit ratio (which doesn't map
+# onto RCAIDE's choke-vs-critical-ratio nozzle model), this checks RCAIDE's
+# choked branch against Mattingly's own choking relation, Eq. 7-53.
 
 import numpy as np
 
 import RCAIDE
+from RCAIDE.Framework.Core           import Units
 from RCAIDE.Framework.Mission.Common import Conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
@@ -52,8 +30,8 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Compressor         import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor          import compute_combustor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import compute_turbine_performance
 
-BTU_LBM_TO_J_KG     = 1055.06 / 0.45359237          # energy-per-mass (no temperature interval)
-BTU_LBM_R_TO_J_KG_K = BTU_LBM_TO_J_KG * 1.8         # matches Air.compute_cp's own conversion
+BTU_LBM_TO_J_KG     = Units.btu / Units.lbm         # energy-per-mass (no temperature interval)
+BTU_LBM_R_TO_J_KG_K = BTU_LBM_TO_J_KG * 1.8         # no Rankine unit in RCAIDE's Units; 1.8 is the R->K interval factor
 
 
 def constant_property_gas(cp, gamma, tag):
@@ -192,14 +170,9 @@ def main():
     pi_d = inlet_c.outputs.stagnation_pressure[0, 0] / ram_c.outputs.stagnation_pressure[0, 0]
     Tt2_over_Tt0 = inlet_c.outputs.stagnation_temperature[0, 0] / ram_c.outputs.stagnation_temperature[0, 0]
     check('pi_d', pi_d, pi_d_truth, 1e-3, results)
-    # KNOWN ISSUE (not fixed in this change): compute_compression_nozzle_performance ties Tt_out
-    # to (pressure_ratio)^((gamma-1)/(gamma*polytropic_efficiency)), which is only correct for a
-    # component doing shaft work (compressor/turbine). For a passive, adiabatic, no-work duct
-    # (any inlet/diffuser), Tt must be exactly conserved regardless of the pressure ratio --
-    # only Pt should drop. Fixing this touches every vehicle in VnV/Vehicles (all set
-    # inlet_nozzle.polytropic_efficiency explicitly, ~0.97-0.98) and would require refreshing
-    # every network regression baseline again, so it's flagged here rather than fixed alongside
-    # the Cp/gamma and combustor fixes in this change.
+    # KNOWN ISSUE (not fixed here): compute_compression_nozzle_performance ties Tt_out to a
+    # shaft-work formula, but a passive duct should conserve Tt exactly (only Pt drops). Not
+    # fixed because it touches every vehicle in VnV/Vehicles and its regression baselines.
     check('Tt2/Tt0 (Mattingly: exactly 1, adiabatic no-work duct)', Tt2_over_Tt0, 1.0, 1e-3, results, known_issue=True)
 
     # ---- Fan and compressor, both fed from the inlet nozzle exit (parallel, per Mattingly Fig. 7-11) ----

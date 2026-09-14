@@ -15,7 +15,8 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Fan                import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import compute_turbine_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan           import size_core 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan           import size_core
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate import Turbofan_Surrogate
 from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor import   design_optimal_motor
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_generator import design_optimal_generator
@@ -398,5 +399,9 @@ def design_turbofan(turbofan):
     turbofan.sealevel_static_thrust        = outputs.thrust[0][0]
     turbofan.sealevel_static_power         = outputs.power.propulsive[0][0]
     turbofan.design_power                  = design_power_offtake
- 
+
+    # Step 24: Build the deck-driven surrogate, if requested
+    if turbofan.surrogate_deck_path is not None:
+        turbofan.surrogate = Turbofan_Surrogate().build(deck_path=turbofan.surrogate_deck_path)
+
     return 

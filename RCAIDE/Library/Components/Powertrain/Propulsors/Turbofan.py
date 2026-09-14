@@ -123,7 +123,19 @@ class Turbofan(Propulsor):
 
     surrogate : RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate, optional
         If set, `compute_turbofan_performance` uses this table-driven surrogate
-        instead of the analytical cycle model. Default is None.
+        instead of the analytical cycle model. Default is None. Built
+        automatically by `design_turbofan` if `surrogate_deck_path` is set --
+        set that instead of building this directly, unless a deck is already
+        assembled in memory (`generate_turbofan_deck` output, or a
+        `pandas.DataFrame`).
+
+    surrogate_deck_path : str, optional
+        Path to a deck file (`Turbofan_Surrogate`'s `deck_path=` -- an Excel
+        file, e.g. a GasTurb/test-stand export or one written by
+        `Turbofan_Surrogate.build(..., save_path=...)`). If set,
+        `design_turbofan` builds `surrogate` from it automatically at the
+        design point, same call the user already makes to size the engine.
+        Default is None.
 
     offdesign_matching : Data, optional
         If set (as `Data(design_constants=..., reference_point=...)` from
@@ -198,6 +210,7 @@ class Turbofan(Propulsor):
         self.design_voltage                             = 0.0
         self.OpenVSP_flow_through                       = False
         self.surrogate                                  = None    # see docstring
+        self.surrogate_deck_path                        = None    # see docstring
         self.offdesign_matching                         = None    # see docstring
         
     def append_operating_conditions(self, segment):
