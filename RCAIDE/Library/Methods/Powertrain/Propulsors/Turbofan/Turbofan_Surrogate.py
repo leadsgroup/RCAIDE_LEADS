@@ -25,7 +25,7 @@ RATING_CODE_ABBREVIATIONS = {
 }
 
 
-class _RatingCodeInterpolator(Data):
+class RatingCodeInterpolator(Data):
     """Smooth interpolators (scipy RBFInterpolator, thin-plate-spline kernel)
     for one rating code's data. Rated codes (RC>0) are single-valued at fixed
     (altitude, Mach[, ISA]) by definition (one fixed power setting), so they
@@ -70,7 +70,7 @@ class _RatingCodeInterpolator(Data):
         self._col_min   = None
         self._col_range = None
 
-    def _scale(self, points):
+    def scale(self, points):
         return (points - self._col_min) / self._col_range
 
     def build(self, df_rc, use_throttle_axis=False):
@@ -87,7 +87,7 @@ class _RatingCodeInterpolator(Data):
         col_max          = points.max(axis=0)
         self._col_min    = points.min(axis=0)
         self._col_range  = np.where(col_max > self._col_min, col_max - self._col_min, 1.0)
-        scaled_points    = self._scale(points)
+        scaled_points    = self.scale(points)
 
         n_points  = len(scaled_points)
         neighbors = min(self.RBF_NEIGHBORS, n_points - 1) if n_points > self.RBF_NEIGHBORS_THRESHOLD else None
@@ -106,7 +106,7 @@ class _RatingCodeInterpolator(Data):
             point.append(isa_dev)
         if self.use_throttle_axis:
             point.append(throttle_fraction)
-        query_points = self._scale(np.column_stack(point))
+        query_points = self.scale(np.column_stack(point))
 
         return self._rbf["FN"](query_points), self._rbf["FF"](query_points)
 
@@ -121,7 +121,8 @@ class Turbofan_Surrogate(Data):
 
     Required deck schema (case-sensitive column names; one row per flight
     condition/rating point -- order doesn't matter, but every column below
-    must be present):
+    must be present). Two schemas are accepted -- English units (the
+    conventional GasTurb/OEM test-stand deck format):
 
         ALT ft   XM    FN lbf    FF lb/h   ISA k   RC
         0        0.0   26338.1   6176.1    0       50
@@ -130,11 +131,23 @@ class Turbofan_Surrogate(Data):
         5000     0.6   15200.0   5100.0    0       0
         ...
 
+    or SI units, column-for-column equivalent (SI_COLUMNS):
+
+        ALT m    XM    FN N       FF kg/s   ISA k   RC
+        0        0.0   117165.8   1.7156    0       50
+        ...
+
+    A deck must use one schema or the other, not a mix of the two -- which
+    schema is present is detected purely from column names (never from value
+    magnitude, which is ambiguous), converted internally to the English-unit
+    columns below, and then handled identically regardless of which was
+    supplied. See resolve_schema().
+
     where, per Engine_Rating_Codes.png:
-        ALT ft   pressure altitude [ft]
+        ALT ft   pressure altitude [ft]      (or ALT m, meters)
         XM       flight Mach number
-        FN lbf   net thrust [lbf]           (at that ALT/XM/ISA/RC)
-        FF lb/h  fuel flow [lb/h]            (at that ALT/XM/ISA/RC)
+        FN lbf   net thrust [lbf]            (or FN N, Newtons)     (at that ALT/XM/ISA/RC)
+        FF lb/h  fuel flow [lb/h]             (or FF kg/s)          (at that ALT/XM/ISA/RC)
         ISA k    ISA temperature deviation [K]
         RC       rating code: 50 MTO, 45 MCO, 40 MCL, 35 MCR, 20 FID, 0 = not
                  a rating (general part-power map -- the RC=0 fallback query()
@@ -190,9 +203,71 @@ class Turbofan_Surrogate(Data):
     """
 
     REQUIRED_COLUMNS = ("ALT ft", "XM", "FN lbf", "FF lb/h", "ISA k", "RC")
+    SI_COLUMNS       = ("ALT m",  "XM", "FN N",   "FF kg/s", "ISA k", "RC")
     MIN_POINTS_2D = 4    # LinearNDInterpolator needs enough points to triangulate
     MIN_POINTS_3D = 5
     MIN_POINTS_4D = 6    # RC=0 with ISA variation: (altitude, Mach, ISA, throttle)
+
+    # Plausibility bounds on the converted SI values (ALT_M_BOUNDS, |FN|_N max, FF_kg_s max)
+    # -- not real engineering limits, just generous enough to span anything from a small
+    # turboprop to the largest turbofan while still catching an off-by-Units.* mistake, e.g.
+    # a deck labeled "FN N" that actually holds lbf-magnitude numbers (~4.4x too small) or an
+    # "ALT m" column that actually holds ft-magnitude numbers (~3.3x too large).
+    SI_ALTITUDE_BOUNDS_M   = (0.0, 25000.0)
+    SI_MAX_ABS_THRUST_N    = 3.0e6
+    SI_MAX_FUEL_FLOW_KG_S  = 50.0
+
+    @classmethod
+    def resolve_schema(cls, df):
+        """Detects whether df uses the English-unit schema (REQUIRED_COLUMNS)
+        or the SI schema (SI_COLUMNS), purely from column names (never from
+        value magnitude -- see class docstring), and returns a DataFrame in
+        the internal English-unit schema either way. Raises ValueError if df
+        matches neither schema, or ambiguously matches both (e.g. it has both
+        an "ALT ft" and an "ALT m" column)."""
+        has_english = all(c in df.columns for c in cls.REQUIRED_COLUMNS)
+        has_si      = all(c in df.columns for c in cls.SI_COLUMNS)
+
+        if has_english and has_si:
+            raise ValueError(
+                f"deck columns {list(df.columns)} match both the English-unit schema "
+                f"{list(cls.REQUIRED_COLUMNS)} and the SI schema {list(cls.SI_COLUMNS)} at "
+                f"once -- a deck must use exactly one schema, not a mix of both")
+
+        if has_english:
+            return df
+
+        if has_si:
+            out = df.copy()
+            out["ALT ft"]  = df["ALT m"]   / Units.ft
+            out["FN lbf"]  = df["FN N"]    / Units.lbf
+            out["FF lb/h"] = df["FF kg/s"] / (Units['lbm'] / Units.hour)
+            out = out.drop(columns=["ALT m", "FN N", "FF kg/s"])
+
+            alt_lo, alt_hi = cls.SI_ALTITUDE_BOUNDS_M
+            if not df["ALT m"].between(alt_lo, alt_hi).all():
+                bad = df.loc[~df["ALT m"].between(alt_lo, alt_hi), "ALT m"].tolist()[:5]
+                raise ValueError(
+                    f"SI-schema deck has 'ALT m' value(s) {bad} outside the plausible range "
+                    f"[{alt_lo}, {alt_hi}] m -- check this column really is meters, not feet")
+            if (df["FN N"].abs() > cls.SI_MAX_ABS_THRUST_N).any():
+                bad = df.loc[df["FN N"].abs() > cls.SI_MAX_ABS_THRUST_N, "FN N"].tolist()[:5]
+                raise ValueError(
+                    f"SI-schema deck has 'FN N' value(s) {bad} with |FN| exceeding the "
+                    f"plausible {cls.SI_MAX_ABS_THRUST_N:.0f} N bound -- check this column "
+                    f"really is Newtons, not lbf")
+            if (df["FF kg/s"] > cls.SI_MAX_FUEL_FLOW_KG_S).any():
+                bad = df.loc[df["FF kg/s"] > cls.SI_MAX_FUEL_FLOW_KG_S, "FF kg/s"].tolist()[:5]
+                raise ValueError(
+                    f"SI-schema deck has 'FF kg/s' value(s) {bad} exceeding the plausible "
+                    f"{cls.SI_MAX_FUEL_FLOW_KG_S:.0f} kg/s bound -- check this column really "
+                    f"is kg/s, not lb/h")
+            return out
+
+        raise ValueError(
+            f"deck columns {list(df.columns)} match neither accepted schema -- English units "
+            f"{list(cls.REQUIRED_COLUMNS)} or SI units {list(cls.SI_COLUMNS)} (case-sensitive; "
+            f"a deck must have every column of exactly one of these two sets)")
 
     def __defaults__(self):
         self.tag                           = 'turbofan_surrogate'
@@ -209,9 +284,13 @@ class Turbofan_Surrogate(Data):
         ValueError with a specific, actionable message on the first problem
         found, rather than letting a downstream pandas/scipy call fail with a
         confusing KeyError or Qhull error. Called automatically by build();
-        safe to call standalone to check a deck before using it."""
+        safe to call standalone to check a deck before using it. Accepts
+        either REQUIRED_COLUMNS (English units) or SI_COLUMNS (SI units) --
+        see resolve_schema()."""
         if not isinstance(df, pd.DataFrame):
             raise ValueError(f"expected a pandas DataFrame, got {type(df).__name__}")
+
+        df = cls.resolve_schema(df)
 
         missing = [c for c in cls.REQUIRED_COLUMNS if c not in df.columns]
         if missing:
@@ -279,7 +358,7 @@ class Turbofan_Surrogate(Data):
     RATED_DUPLICATE_NOISE_TOLERANCE = 0.01   # 1% relative
 
     @classmethod
-    def _resolve_near_duplicate_rated_rows(cls, df):
+    def resolve_near_duplicate_rated_rows(cls, df):
         """Averages duplicate (ALT ft, XM, ISA k, RC) rows for rated codes
         (RC>0) when they agree within RATED_DUPLICATE_NOISE_TOLERANCE (a data
         quirk, not a real distinct engine state -- see class docstring),
@@ -342,13 +421,15 @@ class Turbofan_Surrogate(Data):
         and fits per-rating-code interpolators. Must be called once before
         query(). Returns self, so it can be chained:
             turbofan.surrogate = Turbofan_Surrogate().build(deck_path)
-        Pass an in-memory DataFrame directly (matching REQUIRED_COLUMNS) via
-        dataframe=, or a generate_turbofan_deck() result via deck=
-        (converted internally by deck_to_dataframe()), instead of deck_path=
-        when the deck isn't coming from a file. save_path=, if given, writes
-        the resolved deck (post near-duplicate-row averaging, pre
-        normalization -- i.e. the same REQUIRED_COLUMNS schema, reusable as a
-        deck_path= later) to that path via pandas.DataFrame.to_excel()."""
+        Pass an in-memory DataFrame directly (matching REQUIRED_COLUMNS or
+        SI_COLUMNS -- see resolve_schema()) via dataframe=, or a
+        generate_turbofan_deck() result via deck= (converted internally by
+        deck_to_dataframe()), instead of deck_path= when the deck isn't
+        coming from a file. save_path=, if given, writes the resolved deck
+        (post schema resolution and near-duplicate-row averaging -- i.e. the
+        REQUIRED_COLUMNS schema regardless of which schema was supplied,
+        reusable as a deck_path= later) to that path via
+        pandas.DataFrame.to_excel()."""
         if deck is not None:
             dataframe = self.deck_to_dataframe(deck)
 
@@ -361,7 +442,8 @@ class Turbofan_Surrogate(Data):
                 raise ValueError("build() needs one of deck_path (or self.deck_path), dataframe=, or deck=")
             df = pd.read_excel(deck_path, sheet_name=sheet_name)
 
-        df = self._resolve_near_duplicate_rated_rows(df)
+        df = self.resolve_schema(df)
+        df = self.resolve_near_duplicate_rated_rows(df)
         self.validate_deck(df)
 
         if save_path is not None:
@@ -388,17 +470,17 @@ class Turbofan_Surrogate(Data):
 
         self._rc_models = {}
         for rc, df_rc in df.groupby("RC"):
-            model = _RatingCodeInterpolator()
+            model = RatingCodeInterpolator()
             model.build(df_rc, use_throttle_axis=(rc == 0))
             self._rc_models[int(rc)] = model
 
         if self.isa_sensitivity_per_K is None:
-            self.isa_sensitivity_per_K = self._fit_isa_sensitivity(df)
+            self.isa_sensitivity_per_K = self.fit_isa_sensitivity(df)
 
         return self
 
     @staticmethod
-    def _fit_isa_sensitivity(df):
+    def fit_isa_sensitivity(df):
         """Average d(FN_norm)/d(ISA dev) across rated codes (RC>0) that have at
         least two ISA levels, matched on (altitude, Mach)."""
         slopes = []

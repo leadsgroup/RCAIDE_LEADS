@@ -594,7 +594,10 @@ def vehicle_setup():
     turbofan.design_altitude                       = 35000.0*Units.ft
     turbofan.design_mach_number                    = 0.78   
     turbofan.design_thrust                         = 35000.0* Units.N 
-                
+
+    # dispatch through a deck-driven surrogate 
+    turbofan.surrogate_deck_path = os.path.join(os.path.dirname(__file__), 'Boeing_737_800_Engine_Deck.xlsx')
+                    
     # fan                   
     fan                                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
     fan.tag                                        = 'fan'
@@ -676,11 +679,6 @@ def vehicle_setup():
     fan_nozzle.pressure_ratio                      = 0.99 
     turbofan.fan_nozzle                            = fan_nozzle 
     
-    # dispatch through a deck-driven surrogate instead of the analytical cycle model --
-    # design_turbofan() builds turbofan.surrogate from this deck automatically;
-    # deepcopy()-ed onto the port engine below, so this only needs to be set once
-    turbofan.surrogate_deck_path = os.path.join(os.path.dirname(__file__), 'Boeing_737_800_Engine_Deck.xlsx')
-
     # design turbofan
     design_turbofan(turbofan)
 
