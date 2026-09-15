@@ -488,8 +488,7 @@ def vehicle_setup():
     starboard_propulsor.design_mach_number           = 0.27                                              # [-]         Design Mach number
     starboard_propulsor.design_thrust                = 3500.0 * Units.N                                  # [-]         Design Thrust 
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()          
-    starboard_propulsor.gearbox.efficiency           = 0.99   
-    starboard_propulsor.design_power                 = 462334                                          # [-]         Design Gearbox Efficiency
+    starboard_propulsor.gearbox.efficiency           = 0.99
     starboard_propulsor.specific_fuel_consumption_reduction_factor = -3.5
     starboard_propulsor.length                       = 1.5
     starboard_propulsor.diameter                     = 0.45
@@ -547,9 +546,10 @@ def vehicle_setup():
     starboard_propulsor.high_pressure_turbine        = high_pressure_turbine 
         
     # low pressure turbine      
-    low_pressure_turbine                             = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
+    low_pressure_turbine                             = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
     low_pressure_turbine.tag                         ='lpt'
-    low_pressure_turbine.mechanical_efficiency       = 0.99                      
+    low_pressure_turbine.mechanical_efficiency       = 0.99
+    low_pressure_turbine.pressure_ratio              = 0.30419  # targets ~90% propeller / 10% core thrust split
     starboard_propulsor.low_pressure_turbine         = low_pressure_turbine
     
     # core nozzle    

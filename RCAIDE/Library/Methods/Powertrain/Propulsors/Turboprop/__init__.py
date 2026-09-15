@@ -31,3 +31,9 @@ from .size_core                     import size_core
 from .design_turboprop              import design_turboprop
 from .compute_thrust                import compute_thrust
 from .compute_turboprop_performance import compute_turboprop_performance , reuse_stored_turboprop_data
+from .compute_turboprop_performance import compute_turboprop_performance_offdesign
+from .design_turboprop_offdesign_matching import design_turboprop_offdesign_matching
+from .Turboprop_OffDesign_Matching  import OffDesignMatchingError
+from .Turboprop_OffDesign_Matching  import solve_turboprop_offdesign
+from .Turboprop_OffDesign_Matching  import solve_turboprop_offdesign_robust
+from .generate_turboprop_deck import generate_turboprop_deck
