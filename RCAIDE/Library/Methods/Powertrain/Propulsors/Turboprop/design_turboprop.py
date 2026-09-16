@@ -115,39 +115,38 @@ def design_turboprop(turboprop):
         raise NameError('turboprop.low_pressure_turbine.pressure_ratio must be set -- the free '
                          'turbine has no compressor to balance power against, so its design-point '
                          'pressure ratio cannot be derived from design_thrust alone.')
-    
-    else:
-        #call the atmospheric model to get the conditions at the specified altitude
-        atmosphere                                        = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-        atmo_data                                         = atmosphere.compute_values(turboprop.design_altitude,turboprop.design_isa_deviation)
-        planet                                            = RCAIDE.Library.Attributes.Planets.Earth()
-                                                          
-        p                                                 = atmo_data.pressure          
-        T                                                 = atmo_data.temperature       
-        rho                                               = atmo_data.density          
-        a                                                 = atmo_data.speed_of_sound    
-        mu                                                = atmo_data.dynamic_viscosity   
-        
-        if turboprop.design_mach_number==None:
-            turboprop.design_mach_number =   turboprop.design_freestream_velocity / a 
-            
-        # setup conditions
-        conditions                                        = RCAIDE.Framework.Mission.Common.Results()
-    
-        # freestream conditions    
-        conditions.freestream.altitude                    = np.atleast_1d(turboprop.design_altitude)
-        conditions.freestream.mach_number                 = np.atleast_1d(turboprop.design_mach_number)
-        conditions.freestream.pressure                    = np.atleast_1d(p)
-        conditions.freestream.temperature                 = np.atleast_1d(T)
-        conditions.freestream.density                     = np.atleast_1d(rho)
-        conditions.freestream.dynamic_viscosity           = np.atleast_1d(mu)
-        conditions.freestream.gravity                     = np.atleast_1d(planet.compute_gravity(turboprop.design_altitude))
-        conditions.freestream.isentropic_expansion_factor = np.atleast_1d(turboprop.working_fluid.compute_gamma(T,p))
-        conditions.freestream.Cp                          = np.atleast_1d(turboprop.working_fluid.compute_cp(T,p))
-        conditions.freestream.R                           = np.atleast_1d(turboprop.working_fluid.gas_specific_constant)
-        conditions.freestream.speed_of_sound              = np.atleast_1d(a)
-        conditions.freestream.velocity                    = np.atleast_1d(a*turboprop.design_mach_number)
-          
+
+    #call the atmospheric model to get the conditions at the specified altitude
+    atmosphere                                        = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    atmo_data                                         = atmosphere.compute_values(turboprop.design_altitude,turboprop.design_isa_deviation)
+    planet                                            = RCAIDE.Library.Attributes.Planets.Earth()
+
+    p                                                 = atmo_data.pressure
+    T                                                 = atmo_data.temperature
+    rho                                               = atmo_data.density
+    a                                                 = atmo_data.speed_of_sound
+    mu                                                = atmo_data.dynamic_viscosity
+
+    if turboprop.design_mach_number==None:
+        turboprop.design_mach_number =   turboprop.design_freestream_velocity / a
+
+    # setup conditions
+    conditions                                        = RCAIDE.Framework.Mission.Common.Results()
+
+    # freestream conditions
+    conditions.freestream.altitude                    = np.atleast_1d(turboprop.design_altitude)
+    conditions.freestream.mach_number                 = np.atleast_1d(turboprop.design_mach_number)
+    conditions.freestream.pressure                    = np.atleast_1d(p)
+    conditions.freestream.temperature                 = np.atleast_1d(T)
+    conditions.freestream.density                     = np.atleast_1d(rho)
+    conditions.freestream.dynamic_viscosity           = np.atleast_1d(mu)
+    conditions.freestream.gravity                     = np.atleast_1d(planet.compute_gravity(turboprop.design_altitude))
+    conditions.freestream.isentropic_expansion_factor = np.atleast_1d(turboprop.working_fluid.compute_gamma(T,p))
+    conditions.freestream.Cp                          = np.atleast_1d(turboprop.working_fluid.compute_cp(T,p))
+    conditions.freestream.R                           = np.atleast_1d(turboprop.working_fluid.gas_specific_constant)
+    conditions.freestream.speed_of_sound              = np.atleast_1d(a)
+    conditions.freestream.velocity                    = np.atleast_1d(a*turboprop.design_mach_number)
+
     # create dummy distributor for setup_operating_conditions
     fuel_line                                             = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
 
@@ -336,6 +335,7 @@ def design_turboprop(turboprop):
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01
     operating_state       = setup_operating_conditions(turboprop,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)
     operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0
+    operating_state.unknowns.network['electrical_power'] = np.array([[design_power_offtake]])
     _,sls_outputs,_,_                                 = turboprop.compute_performance(operating_state)
 
     # compute_thrust.py's F=P/V0 propeller-thrust term assumes constant propulsive efficiency,

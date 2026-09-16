@@ -236,7 +236,7 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
         # engine mass flow rate -- same station-4 choked-flow scaling as the turbofan
         # solver, minus the bypass-split factor (always 1 here)
         mass_flow_rate = ref.m0 * (P0 * pi_r * pi_d * pi_c * pi_cH) / (ref.P0 * pi_rR * pi_dR * ref.pi_c * ref.pi_cH) * \
-            np.sqrt(ref.Tt4 / Tt4)
+            np.sqrt(ref.Tt4 / max(Tt4, 1e-6))
 
         tau_x = tau_r * tau_c * tau_cH  # compressor-exit / T0 (station 3 temperature ratio)
         fuel_to_air_ratio = (tau_lambda - tau_x) / (dc.fuel_heating_value * dc.eta_b / (dc.cpc * T0) - tau_lambda)
@@ -253,7 +253,7 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
         thrust = mass_flow_rate * ((1 + fuel_to_air_ratio) * V9 - V0)
 
         fuel_mass_flow_rate = fuel_to_air_ratio * mass_flow_rate
-        specific_fuel_consumption = fuel_mass_flow_rate / thrust  # kg/(N.s)
+        specific_fuel_consumption = fuel_mass_flow_rate / thrust if thrust > 0 else np.nan  # kg/(N.s)
 
         Pt9 = Pt9_P0 * P0
 

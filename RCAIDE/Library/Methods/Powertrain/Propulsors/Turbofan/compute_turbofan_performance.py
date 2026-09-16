@@ -713,6 +713,14 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     fan_nozzle_exit_stagnation_temperature  = np.full(n, np.nan)
     core_nozzle_exit_stagnation_pressure    = np.full(n, np.nan)
     fan_nozzle_exit_stagnation_pressure     = np.full(n, np.nan)
+    # feed bypass_ratio/flow_through_*/fuel_to_air_ratio/total_*_reference below
+    alpha_out       = np.full(n, np.nan)
+    tau_r_out       = np.full(n, np.nan)
+    tau_f_out       = np.full(n, np.nan)
+    pi_r_out        = np.full(n, np.nan)
+    pi_d_out        = np.full(n, np.nan)
+    pi_f_out        = np.full(n, np.nan)
+    fuel_to_air_ratio_out = np.full(n, np.nan)
 
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * throttle[i]
@@ -745,6 +753,13 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
         fan_nozzle_exit_stagnation_temperature[i]   = result.fan_nozzle_exit_stagnation_temperature
         core_nozzle_exit_stagnation_pressure[i]     = result.core_nozzle_exit_stagnation_pressure
         fan_nozzle_exit_stagnation_pressure[i]      = result.fan_nozzle_exit_stagnation_pressure
+        alpha_out[i]                                = result.alpha
+        tau_r_out[i]                                = result.tau_r
+        tau_f_out[i]                                = result.tau_f
+        pi_r_out[i]                                 = result.pi_r
+        pi_d_out[i]                                 = result.pi_d
+        pi_f_out[i]                                 = result.pi_f
+        fuel_to_air_ratio_out[i]                    = result.fuel_to_air_ratio
 
     thrust_vector      = np.zeros((n, 3))
     thrust_vector[:,0] = thrust_N
@@ -773,9 +788,21 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     turbofan_conditions.outputs.moment                     = moment
     turbofan_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
 
+    # same fields the analytical path sets (~lines 441-448, 476-477); NaN at idle_fallback points
+    turbofan_conditions.bypass_ratio                       = alpha_out.reshape(-1,1)
+    turbofan_conditions.flow_through_core                  = (1./(1.+alpha_out)).reshape(-1,1)
+    turbofan_conditions.flow_through_fan                   = (alpha_out/(1.+alpha_out)).reshape(-1,1)
+    turbofan_conditions.fuel_to_air_ratio                  = fuel_to_air_ratio_out.reshape(-1,1)
+    turbofan_conditions.total_temperature_reference        = (tau_r_out*tau_f_out*static_temperature).reshape(-1,1)
+    turbofan_conditions.total_pressure_reference           = (pi_r_out*pi_d_out*pi_f_out*static_pressure).reshape(-1,1)
+
     if turbofan.combustor is not None and turbofan.combustor.fuel_data is not None:
         turbofan_conditions.inputs.power.chemical = \
             (fuel_mass_flow_rate * turbofan.combustor.fuel_data.lower_heating_value).reshape(-1,1)
+        # uses specific_energy, not lower_heating_value used just above -- different fields
+        turbofan_conditions.overall_efficiency = \
+            (thrust_N * velocity / (fuel_mass_flow_rate * turbofan.combustor.fuel_data.specific_energy)).reshape(-1,1)
+    # thermal_efficiency not set: needs internal enthalpies the offdesign solver doesn't return
 
     # noise_conditions schema match -- real values at points the live solver handled,
     # NaN at any point routed to idle_fallback (no station data there either) and for

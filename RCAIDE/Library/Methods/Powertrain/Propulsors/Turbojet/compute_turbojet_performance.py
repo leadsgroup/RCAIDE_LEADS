@@ -617,6 +617,13 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     core_nozzle_exit_static_pressure        = np.full(n, np.nan)
     core_nozzle_exit_stagnation_temperature = np.full(n, np.nan)
     core_nozzle_exit_stagnation_pressure    = np.full(n, np.nan)
+    # feed fuel_to_air_ratio/total_*_reference below
+    tau_r_out             = np.full(n, np.nan)
+    tau_c_out             = np.full(n, np.nan)
+    pi_r_out              = np.full(n, np.nan)
+    pi_d_out              = np.full(n, np.nan)
+    pi_c_out              = np.full(n, np.nan)
+    fuel_to_air_ratio_out = np.full(n, np.nan)
 
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * throttle[i]
@@ -640,6 +647,12 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
         core_nozzle_exit_static_pressure[i]         = result.core_nozzle_exit_static_pressure
         core_nozzle_exit_stagnation_temperature[i]  = result.core_nozzle_exit_stagnation_temperature
         core_nozzle_exit_stagnation_pressure[i]     = result.core_nozzle_exit_stagnation_pressure
+        tau_r_out[i]                                = result.tau_r
+        tau_c_out[i]                                = result.tau_c
+        pi_r_out[i]                                 = result.pi_r
+        pi_d_out[i]                                 = result.pi_d
+        pi_c_out[i]                                 = result.pi_c
+        fuel_to_air_ratio_out[i]                    = result.fuel_to_air_ratio
 
     thrust_vector      = np.zeros((n, 3))
     thrust_vector[:,0] = thrust_N
@@ -667,9 +680,19 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     turbojet_conditions.outputs.moment                     = moment
     turbojet_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
 
+    # same fields the analytical path sets; NaN at idle_fallback points
+    turbojet_conditions.flow_through_core           = 1.0
+    turbojet_conditions.fuel_to_air_ratio           = fuel_to_air_ratio_out.reshape(-1,1)
+    turbojet_conditions.total_temperature_reference = (tau_r_out*tau_c_out*static_temperature).reshape(-1,1)
+    turbojet_conditions.total_pressure_reference    = (pi_r_out*pi_d_out*pi_c_out*static_pressure).reshape(-1,1)
+
     if turbojet.combustor is not None and turbojet.combustor.fuel_data is not None:
         turbojet_conditions.inputs.power.chemical = \
             (fuel_mass_flow_rate * turbojet.combustor.fuel_data.lower_heating_value).reshape(-1,1)
+        # uses specific_energy, not lower_heating_value used just above -- different fields
+        turbojet_conditions.overall_efficiency = \
+            (thrust_N * velocity / (fuel_mass_flow_rate * turbojet.combustor.fuel_data.specific_energy)).reshape(-1,1)
+    # thermal_efficiency not set: needs internal enthalpies the offdesign solver doesn't return
 
     noise_conditions.core_nozzle = Data(
         exit_static_temperature      = core_nozzle_exit_static_temperature.reshape(-1,1),

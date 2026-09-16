@@ -120,7 +120,10 @@ def generate_turbofan_deck(turbofan, altitude_range, mach_range, combustor_exit_
                     combustor_exit_temperature, fan_map=fan_map,
                     high_pressure_compressor_map=high_pressure_compressor_map,
                     allow_unconverged_fallback=allow_unconverged_fallback)
-            except OffDesignMatchingError:
+            except (OffDesignMatchingError, ValueError):
+                # ValueError: Generic_Compressor_Map.query_by_temperature_ratio raises this
+                # directly (not OffDesignMatchingError) when a map's speed bracket can't
+                # produce the required temperature ratio -- skip this grid point too
                 continue
 
             altitude_m.append(altitude)

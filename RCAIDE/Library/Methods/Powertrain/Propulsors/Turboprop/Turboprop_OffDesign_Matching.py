@@ -150,6 +150,7 @@ def solve_turboprop_offdesign(design_constants, reference_point, mach_number, st
     mass_flow_rate_estimate = ref.m0
     converged = False
     collapsed = False
+    mfp_ref_M9 = mfp(ref.M9, gamma_t, Rt)  # loop-invariant
     for i in range(max_iterations):
         tau_tL_prev = tau_tL
         tau_c_prev = tau_c
@@ -159,7 +160,7 @@ def solve_turboprop_offdesign(design_constants, reference_point, mach_number, st
         tau_cH_ratio = (tau_lambda / tau_r) / (tau_lambdaR / tau_rR)
         shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
         phi = shaft_work_specific / (dc.cpt * Tt4)
-        tau_c_new = 1 + tau_cH_ratio * (ref.tau_c / tau_c) * (ref.tau_c - 1) + \
+        tau_c_new = 1 + tau_cH_ratio * (ref.tau_c - 1) + \
             (tau_lambda / tau_r) * (phiR - phi)
         pi_c, eta_c_used = compressor_pressure_ratio(tau_c_new, dc.eta_c, gamma_c)
         tau_c = tau_c_new
@@ -179,7 +180,7 @@ def solve_turboprop_offdesign(design_constants, reference_point, mach_number, st
 
         # free turbine pressure ratio -- mass-flow matched to the core nozzle, same
         # equation as solve_turbofan_offdesign's LP turbine, no compressor on this shaft
-        pi_tL_computed = ref.pi_tL * np.sqrt(tau_tL / ref.tau_tL) * (mfp(ref.M9, gamma_t, Rt) / mfp(M9, gamma_t, Rt))
+        pi_tL_computed = ref.pi_tL * np.sqrt(tau_tL / ref.tau_tL) * (mfp_ref_M9 / mfp(M9, gamma_t, Rt))
         pi_tL = pi_tL + relaxation_factor * (pi_tL_computed - pi_tL)
         tau_tL = 1 - dc.eta_tL * (1 - pi_tL ** ((gamma_t - 1) / gamma_t))
 
@@ -208,14 +209,14 @@ def solve_turboprop_offdesign(design_constants, reference_point, mach_number, st
         tau_cH_ratio = (tau_lambda / tau_r) / (tau_lambdaR / tau_rR)
         shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
         phi = shaft_work_specific / (dc.cpt * Tt4)
-        tau_c_new = 1 + tau_cH_ratio * (ref.tau_c / tau_c) * (ref.tau_c - 1) + (tau_lambda / tau_r) * (phiR - phi)
+        tau_c_new = 1 + tau_cH_ratio * (ref.tau_c - 1) + (tau_lambda / tau_r) * (phiR - phi)
         pi_c, eta_c_used = compressor_pressure_ratio(tau_c_new, dc.eta_c, gamma_c)
         tau_c = tau_c_new
         Pt9_P0 = pi_r * pi_d * pi_c * dc.pi_b * dc.pi_tH * pi_tL * dc.pi_n
         P9_P0, M9 = nozzle_state(Pt9_P0, gamma_t)
 
         mass_flow_rate = ref.m0 * (P0 * pi_r * pi_d * pi_c) / (ref.P0 * pi_rR * pi_dR * ref.pi_c) * \
-            np.sqrt(ref.Tt4 / Tt4)
+            np.sqrt(ref.Tt4 / max(Tt4, 1e-6))
 
         tau_x = tau_r * tau_c  # compressor-exit / T0 (station 3 temperature ratio)
         fuel_to_air_ratio = (tau_lambda - tau_x) / (dc.fuel_heating_value * dc.eta_b / (dc.cpc * T0) - tau_lambda)
@@ -241,7 +242,7 @@ def solve_turboprop_offdesign(design_constants, reference_point, mach_number, st
         thrust = Fsp * mass_flow_rate
 
         fuel_mass_flow_rate = fuel_to_air_ratio * mass_flow_rate
-        specific_fuel_consumption = fuel_mass_flow_rate / thrust  # kg/(N.s)
+        specific_fuel_consumption = fuel_mass_flow_rate / thrust if thrust > 0 else np.nan  # kg/(N.s)
         power = Cprop * dc.cpc * T0 * mass_flow_rate  # shaft power to the propeller [W]
 
         Tt9 = T9 * (1 + (gamma_t - 1) / 2 * M9 ** 2)

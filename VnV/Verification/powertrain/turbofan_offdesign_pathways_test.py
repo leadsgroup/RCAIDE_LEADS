@@ -16,6 +16,7 @@ from RCAIDE.Framework.Core             import Data, Units
 from RCAIDE.Library.Methods.Powertrain import setup_operating_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan_offdesign_matching import design_turbofan_offdesign_matching
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.generate_turbofan_deck    import generate_turbofan_deck
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import OffDesignMatchingError
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate                  import Turbofan_Surrogate
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor.Generic_Compressor_Map import Generic_Compressor_Map
 
@@ -154,17 +155,9 @@ def main():
     # ------------------------------------------------------------------------------------
     # 4. Generic_Compressor_Map wired into the off-design solver
     # ------------------------------------------------------------------------------------
-    # Only reachable through generate_turbofan_deck()/solve_turbofan_offdesign_robust()'s own
-    # fan_map=/high_pressure_compressor_map= kwargs -- compute_turbofan_performance_offdesign's
-    # live per-segment dispatch has no field for maps on turbofan.offdesign_matching at all
-    # (maps are meant to be baked into an offline deck once, not root-found live every segment).
-    #
-    # generate_turbofan_deck() calls design_turbofan_offdesign_matching() internally, which
-    # itself calls turbofan.compute_performance() at the design point to read back converged
-    # gas properties -- compute_performance dispatches to whichever of offdesign_matching/
-    # surrogate is set (section 3 left turbofan.surrogate built), so it must be cleared here
-    # or that internal call would route through the surrogate's pure table lookup instead of
-    # the analytical cycle, which has no converter-level gamma/cp outputs to read back.
+    # maps only apply to offline deck generation, not the live per-segment solve
+    # clear surrogate: generate_turbofan_deck's internal design-point readback must
+    # dispatch through the analytical cycle, not section 3's leftover surrogate
     turbofan.surrogate = None
     fan_map = Generic_Compressor_Map().scale_to_design_point(design_pressure_ratio=turbofan.fan.pressure_ratio)
     hpc_map = Generic_Compressor_Map().scale_to_design_point(
@@ -178,6 +171,28 @@ def main():
     # constant-efficiency assumptions should agree closely there
     check('map-based deck: SLS/full-throttle grid point vs map-free deck [N]',
           deck_with_maps.thrust_N[0], deck_full.thrust_N[0], 1e-2, results)
+
+    # ------------------------------------------------------------------------------------
+    # 5. idle_fallback: only triggers on a genuine convergence failure
+    # ------------------------------------------------------------------------------------
+    idle_altitude, idle_mach, idle_throttle = turbofan.design_altitude, 0.3, 0.02  # confirmed non-convergent
+
+    turbofan.surrogate = None
+    turbofan.offdesign_matching = Data(design_constants=design_constants, reference_point=reference_point)
+    try:
+        evaluate_thrust(turbofan, fuel_line, idle_altitude, idle_mach, throttle=idle_throttle)
+        raise AssertionError("expected OffDesignMatchingError without idle_fallback set")
+    except OffDesignMatchingError:
+        pass
+
+    # reuse section 3's already-built, SLS-normalized deck as the fallback table
+    idle_fallback = Turbofan_Surrogate().build(deck=deck)
+
+    turbofan.offdesign_matching = Data(design_constants=design_constants, reference_point=reference_point,
+                                        idle_fallback=idle_fallback)
+    F_idle = evaluate_thrust(turbofan, fuel_line, idle_altitude, idle_mach, throttle=idle_throttle)
+    assert np.isfinite(F_idle) and F_idle > 0, \
+        f"idle_fallback should return a finite, positive thrust at a non-convergent point, got {F_idle}"
 
     # ---- Report ----
     width = max(len(r[0]) for r in results)

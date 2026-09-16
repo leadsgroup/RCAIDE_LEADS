@@ -374,6 +374,9 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
     mass_flow_rate_estimate = ref.m0
     converged = False
     collapsed = False
+    # loop-invariant: ref.M19/ref.M9 never change across iterations
+    mfp_ref_M19 = mfp(ref.M19, gamma_c, Rc)
+    mfp_ref_M9  = mfp(ref.M9, gamma_t, Rt)
     for i in range(max_iterations):
         tau_tL_prev = tau_tL
         tau_f_prev = tau_f
@@ -410,7 +413,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         # bypass ratio -- floored, same rationale as compressor_pressure_ratio()'s floor above
         alpha = ref.alpha * (ref.pi_cH / pi_cH) * np.sqrt(max(
             (tau_lambda / (tau_r * tau_f)) / (tau_lambdaR / (tau_rR * ref.tau_f)), 1e-12
-        )) * (mfp(M19, gamma_c, Rc) / mfp(ref.M19, gamma_c, Rc))
+        )) * (mfp(M19, gamma_c, Rc) / mfp_ref_M19)
 
         # this iteration's own mass flow estimate (same relation used post-loop), carried
         # forward for the *next* pass's offtake term above -- lagged for the same reason
@@ -435,10 +438,12 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         # LP turbine pressure ratio, via choked-turbine-inlet flow matching -- under-relaxed.
         # M9=0 (collapsed core nozzle) would divide by zero below (mfp(0)=0); stop cleanly
         # instead -- solve_turbofan_offdesign_robust's continuation stepping is the real fix.
-        if M9 == 0.0:
+        # M19=0 (collapsed fan nozzle) is checked here too: alpha's mfp(M19,...) term above
+        # would otherwise have already silently gone to 0 this same iteration.
+        if M9 == 0.0 or M19 == 0.0:
             collapsed = True
             break
-        pi_tL_computed = ref.pi_tL * np.sqrt(tau_tL / ref.tau_tL) * (mfp(ref.M9, gamma_t, Rt) / mfp(M9, gamma_t, Rt))
+        pi_tL_computed = ref.pi_tL * np.sqrt(tau_tL / ref.tau_tL) * (mfp_ref_M9 / mfp(M9, gamma_t, Rt))
         pi_tL = pi_tL + relaxation_factor * (pi_tL_computed - pi_tL)
 
         # i>0: pass 0 trivially reproduces reference tau_tL (update uses reference pi_tL
@@ -471,7 +476,8 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
             core_nozzle_exit_stagnation_temperature=np.nan, fan_nozzle_exit_stagnation_temperature=np.nan,
             core_nozzle_exit_stagnation_pressure=np.nan, fan_nozzle_exit_stagnation_pressure=np.nan,
             eta_cH_used=eta_cH_used, eta_f_used=eta_f_used,
-            message=f"core nozzle collapsed (Pt9/P0={Pt9_P0:.4f} < 1) at iteration {i}",
+            message=(f"core nozzle collapsed (Pt9/P0={Pt9_P0:.4f} < 1) at iteration {i}" if M9 == 0.0
+                     else f"fan nozzle collapsed (Pt19/P0={Pt19_P0:.4f} < 1) at iteration {i}"),
         )
     else:
         # Recompute final-state dependent quantities at whatever tau_tL/tau_f/pi_tL the
@@ -536,7 +542,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         thrust = core_thrust + fan_thrust
 
         fuel_mass_flow_rate = fuel_to_air_ratio * core_mass_flow_rate
-        specific_fuel_consumption = fuel_mass_flow_rate / thrust  # kg/(N.s)
+        specific_fuel_consumption = fuel_mass_flow_rate / thrust if thrust > 0 else np.nan  # kg/(N.s)
 
         # stagnation nozzle-exit conditions, for callers (e.g. compute_turbofan_performance_offdesign)
         # that want the full noise_conditions schema populated with real values rather than NaN
