@@ -248,7 +248,6 @@ def VLM(conditions,settings,geometry):
     B2     = np.tile((mach**2 - 1),VD.n_cp[0])
     SINALF = np.sin(aoa)
     COSALF = np.cos(aoa)
-    TANALF = np.tan(aoa)
     SINPSI = np.sin(PSI)
     COPSI  = np.cos(PSI)
     COSIN  = COSALF *SINPSI *2.0
@@ -440,10 +439,14 @@ def VLM(conditions,settings,geometry):
     # Drag coefficient
     results   = compute_trefftz_plane_induced_drag(conditions, VD,Clift_y, X, Y, Z, CHORD_strip,S_ref,b_ref)       
     
-    # force coefficeints 
-    CX_for   = (TANALF * CLift -  results.CDrag_induced)/(COSALF - SINALF*TANALF)
-    CZ_for   = (results.CDrag_induced+ CX_for*COSALF)/SINALF  
-    CY_for   = np.atleast_2d(np.sum(FY,axis=1)/S_ref).T  
+    # force coefficeints
+    # Body-axis forces from the wind-axis (lift, drag) pair via the stability-axis
+    # rotation inverted (Takahashi et al., "VORLAX2024: Further Upgrades to a Legacy
+    # Potential Flow Solver," AIAA SciTech 2025, Sec. III.F): a pure rotation, so no
+    # division is needed and there is no singularity at alpha = 0.
+    CX_for   = CLift*SINALF - results.CDrag_induced*COSALF
+    CZ_for   = CLift*COSALF + results.CDrag_induced*SINALF
+    CY_for   = np.atleast_2d(np.sum(FY,axis=1)/S_ref).T
 
     # moment coefficients 
     CM_mom   = np.atleast_2d(np.sum(MOMENT,axis=1)/S_ref).T/c_ref  
@@ -471,7 +474,7 @@ def VLM(conditions,settings,geometry):
  
     i = 0 
     dim_wing_lifts      = results.CLift_wing * VD.wing_areas
-    dim_wing_drags      = results.CDrag_induced_wing * VD.wing_areas
+    dim_wing_drags      = results.CDrag_induced_wing * S_ref
     Clift_wings         = Data()
     Cdrag_wings         = Data()
     # Assign the lift and drag and non-dimensionalize
@@ -761,8 +764,7 @@ def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dis
 
         is_symmetric = np.array(VD.symmetric_wings[0], dtype=bool)
         is_vertical  = np.array(VD.vertical_wing[0],   dtype=bool)
-        symmetric_wing_flags = np.concatenate([np.repeat(is_symmetric & ~is_vertical, 2), np.zeros(np.count_nonzero(~is_symmetric), dtype=bool)])[:n_wings]  
-        wing_areas = (symmetric_wing_flags+1)*VD.wing_areas
+        symmetric_wing_flags = np.concatenate([np.repeat(is_symmetric & ~is_vertical, 2), np.zeros(np.count_nonzero(~is_symmetric), dtype=bool)])[:n_wings]
 
         # ------------------------------------------------------------------------------------------
         # Trefftz Plane Drag — per-wing quantities built into lists
@@ -846,7 +848,7 @@ def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dis
             cd_w   = cd_induced_flat[offset:offset + n_sw_w]
             ch_w   = chord_split[w]
             ld_w   = np.cumsum(np.sqrt(np.diff(ycp_w)**2 + np.diff(zcp_w)**2))
-            CDi_w  = trapezoid(cd_w * ch_w / wing_areas[0][w], ld_w)
+            CDi_w  = trapezoid(cd_w * ch_w, ld_w) / SREF
             CDi_wing[k][w] = CDi_w
             CDi   += CDi_w
             offset += n_sw_w

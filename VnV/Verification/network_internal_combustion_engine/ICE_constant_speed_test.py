@@ -122,7 +122,7 @@ def ICE_CS(vehicle):
     engine.flat_rate_altitude                  = 0.0
     engine.rated_speed                         = 2700. * Units.rpm
     engine.rated_power                         = 180.  * Units.hp   
-    engine.power_specific_fuel_consumption     = 0.52  
+    engine.power_specific_fuel_consumption     = 0.52  * Units['lb/hp/hr']
     propulsor.engine                           = engine 
     
     # Prop  
