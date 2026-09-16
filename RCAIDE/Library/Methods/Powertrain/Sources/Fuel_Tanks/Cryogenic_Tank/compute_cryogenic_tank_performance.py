@@ -140,8 +140,8 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     if network is not None:
         for converter in getattr(network, 'converters', []):
             if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) and \
-               getattr(converter, 'assigned_tank', None) == tag and converter.rated_power is not None:
-                max_heater_power = converter.rated_power
+               getattr(converter, 'assigned_tank', None) == tag and converter.design_power is not None:
+                max_heater_power = converter.design_power
                 break
 
     if t.size < 2:
