@@ -104,7 +104,7 @@ class Cryogenic_Tank(Non_Integral_Tank):
         default is slower still (500-1000 s). 400 s is chosen in that range;
         the previous 60 s default was untuned and, combined with heater_power
         having no cap of its own, could demand unphysically large heater
-        power for an ordinary pressure deficit (see Heater.rated_power).
+        power for an ordinary pressure deficit (see Heater.design_power).
     """
 
     def __defaults__(self):

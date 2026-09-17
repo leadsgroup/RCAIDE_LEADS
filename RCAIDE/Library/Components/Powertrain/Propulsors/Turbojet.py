@@ -74,7 +74,20 @@ class Turbojet(Propulsor):
         
     compressor_nondimensional_massflow : float
         Non-dimensional mass flow through the compressor. Default is 0.0.
-        
+
+    design_power_offtake : float
+        Design-point shaft power extracted from (or, via `integrated_drive_
+        motor`, added to) the low-pressure spool by `integrated_drive_
+        generator`/`integrated_drive_motor` [W]. Same convention as
+        `Turbofan.design_power_offtake` -- fed into the HP turbine's energy
+        balance as specific work. Default is 0.0.
+
+    design_shaft_work_specific : float
+        HP-spool external shaft power offtake (IDG/motor), as *specific*
+        work [J/kg core flow] at the converged design point -- set by
+        `design_turbojet`. Zero for an engine with no `integrated_drive_
+        generator`/`integrated_drive_motor`. Default is 0.0.
+
     reference_temperature : float
         Reference temperature for calculations [K]. Default is 288.15.
         
@@ -89,7 +102,14 @@ class Turbojet(Propulsor):
         
     OpenVSP_flow_through : bool
         Flag for OpenVSP flow-through analysis. Default is False.
-        
+
+    offdesign_matching : Data, optional
+        If set (as `Data(design_constants=..., reference_point=...)` from
+        `design_turbojet_offdesign_matching`), `compute_turbojet_performance`
+        uses live off-design component matching
+        (`Turbojet_OffDesign_Matching.solve_turbojet_offdesign_robust`)
+        instead of the analytical cycle model. Default is None.
+
     areas : Data
         Collection of engine areas
 
@@ -153,10 +173,13 @@ class Turbojet(Propulsor):
         self.reference_temperature                       = 288.15
         self.reference_pressure                          = 1.01325*10**5
         self.integrated_drive_generator                  = None
-        self.integrated_drive_motor                      = None 
+        self.integrated_drive_motor                      = None
+        self.design_power_offtake                        = 0.0
+        self.design_shaft_work_specific                  = 0.0 
         self.design_thrust                               = 0.0
-        self.design_mass_flow_rate                       = 0.0 
+        self.design_mass_flow_rate                       = 0.0
         self.OpenVSP_flow_through                        = False
+        self.offdesign_matching                          = None    # see docstring
    
         #areas needed for drag; not in there yet   
         self.areas                                       = Data()

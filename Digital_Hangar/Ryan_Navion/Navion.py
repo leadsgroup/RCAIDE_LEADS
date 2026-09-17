@@ -401,7 +401,7 @@ def vehicle_setup():
     # Engine                     
     engine                                     = RCAIDE.Library.Components.Powertrain.Converters.Engine()
 
-    engine.sea_level_power                     = 185. * Units.horsepower 
+    engine.sealevel_static_power                 = 185. * Units.horsepower
     engine.rated_speed                         = 2300. * Units.rpm 
     engine.power_specific_fuel_consumption     = 0.01  * Units['lb/hp/hr']
     ice_prop.engine                            = engine 

@@ -11,7 +11,7 @@
             "total": 470.48938316519616
         },
         "propulsion": {
-            "total": 4054.4782704234176,
+            "total": 4958.706237241093,
             "engines": 0,
             "thrust_reversers": 0,
             "miscellaneous": 0,
@@ -34,7 +34,7 @@
             "anti_ice": 0,
             "total": 198.73104529681905
         },
-        "total": 4723.698698885433
+        "total": 5627.926665703108
     },
     "payload": {
         "total": 200,
@@ -49,6 +49,6 @@
         "passenger_service": 0,
         "total": 0
     },
-    "zero_fuel_weight": 4923.698698885433,
+    "zero_fuel_weight": 5827.926665703108,
     "max_takeoff": 1156.6605435000001
 }

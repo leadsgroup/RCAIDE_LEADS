@@ -21,4 +21,10 @@ from .append_turbojet_conditions   import append_turbojet_conditions
 from .compute_thurst               import compute_thrust
 from .size_core                    import size_core 
 from .compute_turbojet_performance import compute_turbojet_performance , reuse_stored_turbojet_data
+from .compute_turbojet_performance import compute_turbojet_performance_offdesign
 from .design_turbojet              import design_turbojet
+from .design_turbojet_offdesign_matching import design_turbojet_offdesign_matching
+from .Turbojet_OffDesign_Matching  import OffDesignMatchingError
+from .Turbojet_OffDesign_Matching  import solve_turbojet_offdesign
+from .Turbojet_OffDesign_Matching  import solve_turbojet_offdesign_robust
+from .generate_turbojet_deck import generate_turbojet_deck
