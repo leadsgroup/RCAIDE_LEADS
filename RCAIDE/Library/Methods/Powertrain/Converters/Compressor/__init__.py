@@ -17,3 +17,4 @@ RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle
         
 from .compute_compressor_performance import compute_compressor_performance
 from .append_compressor_conditions   import append_compressor_conditions
+from .Generic_Compressor_Map         import Generic_Compressor_Map

@@ -140,7 +140,7 @@ def compute_piston_engine_weight(ref_propulsor):
     ----------
     ref_propulsor : RCAIDE.Component()
         Propulsor data structure containing:
-            - engine.sea_level_power : float
+            - engine.sealevel_static_power : float
                 Sea level power of engine [kW]
 
     Returns
@@ -170,7 +170,7 @@ def compute_piston_engine_weight(ref_propulsor):
     [1] Based on 26 GA aircraft engines from Rotax, Lycoming, and Continental
     """
   
-    WENG = 0.8953*(ref_propulsor.engine.sea_level_power/1000) + 19.121
+    WENG = 0.8953*(ref_propulsor.engine.sealevel_static_power/1000) + 19.121
     return WENG
 
 def compute_turbine_engine_weight(vehicle, ref_propulsor):

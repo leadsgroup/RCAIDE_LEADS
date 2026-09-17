@@ -112,7 +112,7 @@ def compute_piston_engine_weight(propulsor):
         
         Source: Raymer, Aircraft Design, a Conceptual Approach         
     """    
-    bhp    = propulsor.engine.sea_level_power/Units.horsepower
+    bhp    = propulsor.engine.sealevel_static_power/Units.horsepower
     weight = 5.22*((bhp)**0.780)  # weight in lbs.
     mass   = weight*Units.lbs
     return mass

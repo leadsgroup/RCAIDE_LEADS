@@ -51,7 +51,7 @@ def main():
     
     # Step 5 execute flight profile
     results = missions.base_mission.evaluate()
-    CL_truth = 0.4868814  # updated Aug 2026 for the ECS/turbofan/bus fixes; bit-for-bit reproducible across 3 runs
+    CL_truth = 0.4402001  # updated Sep 2026 for turbofan/turboprop design_thrust/SLS-thrust changes
     CL    = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0, 0]
 
     abs_error = np.abs((CL - CL_truth))

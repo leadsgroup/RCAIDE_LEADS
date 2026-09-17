@@ -8,7 +8,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
-from RCAIDE.Framework.Core     import Data
+from RCAIDE.Framework.Core     import Data, Units
 from .                         import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.append_turbofan_conditions     import append_turbofan_conditions , append_turbofan_segment_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
@@ -111,9 +111,44 @@ class Turbofan(Propulsor):
         
     design_mass_flow_rate : float
         Design mass flow rate [kg/s]. Default is 0.0.
-        
+
+    design_shaft_work_specific : float
+        HP-spool external shaft power offtake (IDG/motor), as *specific* work
+        [J/kg core flow] at the converged design point -- set by
+        `design_turbofan`. Zero for an engine with no
+        integrated_drive_generator/integrated_drive_motor. Default is 0.0.
+
     OpenVSP_flow_through : bool
         Flag for OpenVSP flow-through analysis. Default is False.
+
+    surrogate : RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate, optional
+        If set, `compute_turbofan_performance` uses this table-driven surrogate
+        instead of the analytical cycle model. Default is None. Built
+        automatically by `design_turbofan` if `surrogate_deck_path` is set --
+        set that instead of building this directly, unless a deck is already
+        assembled in memory (`generate_turbofan_deck` output, or a
+        `pandas.DataFrame`).
+
+    surrogate_deck_path : str, optional
+        Path to a deck file (`Turbofan_Surrogate`'s `deck_path=` -- an Excel
+        file, e.g. a GasTurb/test-stand export or one written by
+        `Turbofan_Surrogate.build(..., save_path=...)`). If set,
+        `design_turbofan` builds `surrogate` from it automatically at the
+        design point, same call the user already makes to size the engine.
+        Default is None.
+
+    offdesign_matching : Data, optional
+        If set (as `Data(design_constants=..., reference_point=...)` from
+        `design_turbofan_offdesign_matching`), `compute_turbofan_performance`
+        uses live off-design component matching
+        (`Turbofan_OffDesign_Matching.solve_turbofan_offdesign_robust`)
+        instead of the analytical cycle model or `surrogate` -- checked
+        before `surrogate`, so set only one. An optional third key,
+        `idle_fallback` (a built `Turbofan_Surrogate`), routes points where
+        the matching solver fails to converge (deep part-power/idle, outside
+        what the matching equations can represent at all) to
+        `idle_fallback.query(..., rating_code='FID')` instead of raising
+        `OffDesignMatchingError`. Default is None.
 
     Notes
     -----
@@ -156,7 +191,7 @@ class Turbofan(Propulsor):
         self.fan_nozzle                                 = None 
         self.integrated_drive_generator                 = None 
         self.integrated_drive_motor                     = None 
-        self.plug_diameter                              = 0.1     # dimater of the engine plug
+        self.plug_diameter                              = 0.1     # diameter of the engine plug
         self.geometry_xe                                = 1.      # Geometry information for the installation effects function
         self.geometry_ye                                = 1.      # Geometry information for the installation effects function
         self.geometry_Ce                                = 2.      # Geometry information for the installation effects function
@@ -167,12 +202,16 @@ class Turbofan(Propulsor):
         self.specific_fuel_consumption_reduction_factor = 0.0 
         self.compressor_nondimensional_massflow         = 0.0
         self.reference_temperature                      = 288.15
-        self.reference_pressure                         = 1.01325*10**5 
+        self.reference_pressure                         = 1.01325*Units.bar
         self.design_thrust                              = 0.0 
         self.design_power_offtake                       = 0.0
         self.design_mass_flow_rate                      = 0.0
+        self.design_shaft_work_specific                 = 0.0
         self.design_voltage                             = 0.0
         self.OpenVSP_flow_through                       = False
+        self.surrogate                                  = None    # see docstring
+        self.surrogate_deck_path                        = None    # see docstring
+        self.offdesign_matching                         = None    # see docstring
         
     def append_operating_conditions(self, segment):
         """

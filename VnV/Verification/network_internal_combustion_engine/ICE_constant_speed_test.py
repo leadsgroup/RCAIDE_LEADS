@@ -118,7 +118,7 @@ def ICE_CS(vehicle):
                                                    
     # Engine                     
     engine                                     = RCAIDE.Library.Components.Powertrain.Converters.Engine()
-    engine.sea_level_power                     = 180. * Units.horsepower
+    engine.sealevel_static_power                 = 180. * Units.horsepower
     engine.flat_rate_altitude                  = 0.0
     engine.rated_speed                         = 2700. * Units.rpm
     engine.rated_power                         = 180.  * Units.hp   
