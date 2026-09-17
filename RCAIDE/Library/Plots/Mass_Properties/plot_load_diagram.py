@@ -111,11 +111,12 @@ def plot_load_diagram(results,
     CG_LEMAC       = results.trim_results.CG_percent_of_LEMAC_location*100
     SM             = results.trim_results.static_margin*100
     SM_levels      = np.linspace(static_margin_lower_limit*100, static_margin_upper_limit*100, static_margin_resolution)
-    CS             = axis.contourf(CG_LEMAC, results.trim_results.mass, SM, levels = SM_levels, cmap='coolwarm_r', extend='both', alpha = 0.5) 
+    CS             = axis.contourf(CG_LEMAC, results.trim_results.mass, SM, levels = SM_levels, cmap='viridis', extend='both', alpha = 0.5) 
     CS2            = axis.contour(CG_LEMAC, results.trim_results.mass,SM, levels = SM_levels,  colors='black', extend='both') 
     cbar           = fig.colorbar(CS, ax=axis)
-    axis.clabel(CS2, fontsize=10)
-    cbar.ax.set_ylabel('Static Margin', rotation =  90)        
+    axis.clabel(CS2, fontsize=16)
+    cbar.ax.set_ylabel('Static Margin', rotation =  90, fontsize=20)    
+    cbar.ax.tick_params(labelsize=16)    
     
     # ------------------------------------------------------------------------    
     # load diamonds 
@@ -195,9 +196,10 @@ def plot_load_diagram(results,
     # ------------------------------------------------------------------------     
     axis.set_xlim(x_axis_lower_limit, x_axis_upper_limit) 
     axis.set_ylim(y_axis_lower_limit, y_axis_upper_limit)
-    axis.legend(loc='upper right')
-    axis.set_xlabel(r'$X_{CG}$/LEMAC (%)')
-    axis.set_ylabel('Mass (kg)') 
+    axis.tick_params(labelsize=16)
+    axis.legend(loc='upper right', fontsize = 16)
+    axis.set_xlabel(r'$X_{CG}$/LEMAC (%)', fontsize = 24)
+    axis.set_ylabel('Mass (kg)', fontsize = 24) 
     plt.grid(False) 
     fig.tight_layout()
      
