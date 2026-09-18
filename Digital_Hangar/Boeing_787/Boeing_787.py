@@ -728,7 +728,7 @@ def vehicle_setup() :
     combustor                                      = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.997                    
-    combustor.turbine_inlet_temperature            = 1440                  
+    combustor.turbine_inlet_temperature            = 1250
     combustor.pressure_ratio                       = 0.94                     
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan1.combustor                             = combustor

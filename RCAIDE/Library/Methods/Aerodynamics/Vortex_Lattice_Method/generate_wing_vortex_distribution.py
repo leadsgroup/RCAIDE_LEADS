@@ -113,7 +113,7 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
         xc_w   = np.zeros((n_sw,n_cw))
         yc_w   = np.zeros((n_sw,n_cw))
         zc_w   = np.zeros((n_sw,n_cw))
-        x_w    = np.zeros((n_sw+1,n_cw+1)) # may have to change to make space for split if control surfaces are allowed to have more than two Segments
+        x_w    = np.zeros((n_sw+1,n_cw+1))  
         y_w    = np.zeros((n_sw+1,n_cw+1)) 
         z_w    = np.zeros((n_sw+1,n_cw+1)) 
         x_c    = np.zeros((n_sw+1,n_cw)) 

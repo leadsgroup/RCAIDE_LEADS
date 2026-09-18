@@ -30,7 +30,7 @@ def vehicle_setup():
     # ################################################# Vehicle-level Properties #################################################   
     vehicle.mass_properties.max_takeoff               = 79000 * Units.kilogram    
     vehicle.mass_properties.takeoff                   = 79000 * Units.kilogram   
-    vehicle.mass_properties.max_fuel                  = 72000.0 * Units.lbs  
+    vehicle.mass_properties.max_fuel                  = 26837 * Units.kilogram
     vehicle.mass_properties.max_payload               = 21000.  * Units.kilogram  
     vehicle.mass_properties.payload                   = 0.5*vehicle.mass_properties.max_payload
     vehicle.mass_properties.fuel                      = 0.5*vehicle.mass_properties.max_fuel
@@ -527,7 +527,7 @@ def vehicle_setup():
     turbofan.diameter                              = 1.5494
     turbofan.design_altitude                       = 35000.0*Units.ft
     turbofan.design_mach_number                    = 0.78   
-    turbofan.design_thrust                         = 35000.0* Units.N 
+    turbofan.design_thrust                         = 25603.0* Units.N
                 
     # fan                   
     fan                                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
@@ -582,7 +582,7 @@ def vehicle_setup():
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.99 
     combustor.alphac                               = 1.0     
-    combustor.turbine_inlet_temperature            = 1600
+    combustor.turbine_inlet_temperature            = 1450
     combustor.pressure_ratio                       = 0.95
     combustor.air_mass_flow_rate_take_off          = 40      
     combustor.air_data                             = RCAIDE.Library.Attributes.Gases.Air() 

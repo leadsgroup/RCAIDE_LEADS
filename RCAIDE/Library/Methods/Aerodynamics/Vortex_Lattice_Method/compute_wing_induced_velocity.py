@@ -32,18 +32,9 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
     Outside of a call to the VLM() function itself, EW does not need to be computed, as C_mn
     provides the same information in the body-frame.
 
-    Every array this function builds is shaped (n_mach, n_panels, n_panels[, 3]) --
-    dense in both panel dimensions and stacked across every flight condition at once.
-    For a realistic panel count (low thousands) and case count (tens, per mission
-    segment), that is tens of temporary arrays several hundred MB to multiple GB
-    each, alive simultaneously. To keep peak memory bounded regardless of case
-    count, the actual per-case math (in compute_wing_induced_velocity_chunk(),
-    unchanged from the original single-shot implementation) is run over one small
-    slice of the mach/case dimension at a time, writing into pre-sized output
-    arrays instead of ever materializing the full (n_mach, N, N) intermediates.
-    This is arithmetically identical to the single-shot computation -- there is no
-    coupling between cases anywhere in these formulas, each case's induced
-    velocity depends only on that case's own geometry and Mach number.
+    Chunks over the mach/case dimension (see compute_wing_induced_velocity_chunk) to
+    bound peak memory -- each array here is (n_mach, n_panels, n_panels[, 3]), and cases
+    don't couple to each other in these formulas, so chunking is exact, not an approximation.
 
     Source:
     1. Miranda, Luis R., Robert D. Elliot, and William M. Baker. "A generalized vortex
@@ -111,11 +102,6 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False):
     mach         = np.array(mach,dtype=np.float32)
 
     # Control points from the VLM
-    # (single .astype(..., copy=True) instead of "*1. then np.array(dtype=...)" --
-    # the multiply-by-1 was just an idiom to force a copy, so wrapping it in
-    # np.array(dtype=...) again made a second, redundant copy of already-float32
-    # data. x*1.0 doesn't change any finite float's value, so this is bit-exact
-    # for any of VD's supported source precisions (float16/32/64).)
     XAH   = np.atleast_2d(VD.XAH).astype(np.float32,copy=True)
     YAH   = np.atleast_2d(VD.YAH).astype(np.float32,copy=True)
     ZAH   = np.atleast_2d(VD.ZAH).astype(np.float32,copy=True)
@@ -507,12 +493,8 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
     FLAG_bool          = np.reshape(FLAG_bool,(n_mach,size,-1))
 
 
-    # COMPUTE THE GENERALIZED PRINCIPAL PART OF THE VORTEX-INDUCED VELOCITY INTEGRAL, WWAVE.
-    # FROM LINE 2647 VORLAX, the IR .NE. IRR means that we're looking at vortices that affect themselves
-    # This term is only ever nonzero on the diagonal (a panel's own self-induced wave-drag
-    # contribution), so it's computed directly on the diagonal instead of building
-    # (n_mach, n_panels, n_panels)-sized copies of T2/B2/COX just to zero out everything
-    # else via an eye() multiply -- same values, without the O(n_panels^2) intermediates.
+    # WWAVE: a panel's self-induced wave-drag term, only ever nonzero on the diagonal, so
+    # computed directly there instead of building full (n_mach, n_panels, n_panels) arrays.
     WWAVE     = np.zeros(shape,dtype=np.float32)
     COX       = CHORD /RNMAX[:, :, None]
     diag_idx  = np.arange(size)
@@ -527,23 +509,15 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
 
     W = W + WWAVE
 
-    # IF CONTROL POINT BELONGS TO A SONIC HORSESHOE VORTEX, AND THE
-    # SENDING ELEMENT IS SUCH HORSESHOE, THEN MODIFY THE NORMALWASH
-    # COEFFICIENTS IN SUCH A WAY THAT THE STRENGTH OF THE SONIC VORTEX
-    # WILL BE THE AVERAGE OF THE STRENGTHS OF THE HORSESHOES IMMEDIATELY
-    # IN FRONT OF AND BEHIND IT.
-
-    # Zero out the row
+    # A sonic horseshoe vortex's strength is set to the average of its neighbors (the
+    # panels immediately before/after it): zero the row, then set self=2 and neighbors=-1.
     FLAG_bool_rep     = np.broadcast_to(FLAG_bool,shape)
-    W[FLAG_bool_rep]  = 0. # Default to zero
+    W[FLAG_bool_rep]  = 0.
 
-    # The self velocity goes to 2
-    # FLAG_ind[0]/[1] are the (mach, panel) indices of every sonic-flagged panel. The
-    # target flat index into W.ravel() for panel p's own "diagonal" entry is
-    # m*size*size + p*(size+1) -- the direct-index equivalent of scattering into a
-    # dense (size, size, n_mach) array and reading back where it's nonzero, which
-    # allocated an O(n_panels^2) array (almost entirely zeros) just to look up a
-    # handful of indices.
+    # FLAG_ind[0]/[1] are the (mach, panel) indices of every sonic-flagged panel; panel p's
+    # own diagonal entry is at flat index m*size*size + p*(size+1) into W.ravel() -- the
+    # direct-index equivalent of scattering into a dense (size, size, n_mach) array and
+    # reading back where it's nonzero, avoiding an O(n_panels^2) array for a handful of lookups.
     FLAG_bool_split   = FLAG_bool[:,:,0]
     FLAG_ind          = np.array(np.where(FLAG_bool_split))
     FLAG_bool_self    = FLAG_ind[0]*size*size + FLAG_ind[1]*(size+1)
