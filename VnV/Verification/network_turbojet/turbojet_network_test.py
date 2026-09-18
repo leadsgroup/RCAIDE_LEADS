@@ -319,10 +319,9 @@ def mission_setup(analyses):
     segment = Segments.Climb.Linear_Mach_Constant_Rate(base_segment)
     segment.tag = "climb_3" 
     segment.analyses.extend( analyses.cruise ) 
-    segment.altitude_end        = 34000. * Units.ft
-    segment.mach_number_start   = 0.95
+    segment.altitude_end        = 34000. * Units.ft 
     segment.mach_number_end     = 1.1
-    segment.climb_rate          = 3000.  * Units['ft/min']  
+    segment.climb_rate          = 3000  * Units['ft/min']  
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                      = True  
