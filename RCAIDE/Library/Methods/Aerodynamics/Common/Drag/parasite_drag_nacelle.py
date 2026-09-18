@@ -205,20 +205,19 @@ def nacelle_drag(state,settings, nacelle):
         a_low        = np.zeros_like(Mach)
         du_max_u_low = np.zeros_like(Mach)
 
-        D_high        = np.zeros_like(Mach)
-        a_high        = np.zeros_like(Mach)
-        du_max_u_high = np.zeros_like(Mach)
-
-        low_inds      = Mach < high_mach_cutoff
-        high_inds     = Mach > low_mach_cutoff
+        # "low" (subsonic) formula relies on arctanh(D), which is only defined for D<1,
+        # i.e. Mach<1 -- it must never be evaluated past that regardless of high_mach_cutoff.
+        # It decays continuously to 0 as Mach->1, so leaving it at 0 beyond that is exact, not an approximation.
+        low_inds  = Mach < 1.0
 
         D_low[low_inds]        = np.sqrt(1 - (1-Mach[low_inds]**2) * d_d**2)
         a_low[low_inds]        = 2 * (1-Mach[low_inds]**2) * (d_d**2) *(np.arctanh(D_low[low_inds])-D_low[low_inds]) / (D_low[low_inds]**3)
         du_max_u_low[low_inds] = a_low[low_inds] / ( (2-a_low[low_inds]) * (1-Mach[low_inds]**2)**0.5 )
 
-        D_high[high_inds]        = np.sqrt(1 - d_d**2)
-        a_high[high_inds]        = 2  * (d_d**2) *(np.arctanh(D_high[high_inds])-D_high[high_inds]) / (D_high[high_inds]**3)
-        du_max_u_high[high_inds] = a_high[high_inds] / ( (2-a_high[high_inds]) )
+        # "high" (frozen) formula has no Mach dependence, so it is valid everywhere -- no masking needed
+        D_high        = np.sqrt(1 - d_d**2) * np.ones_like(Mach)
+        a_high        = 2  * (d_d**2) *(np.arctanh(D_high)-D_high) / (D_high**3)
+        du_max_u_high = a_high / (2-a_high)
 
         trans_spline = Cubic_Spline_Blender(low_mach_cutoff,high_mach_cutoff)
         h00 = lambda M:trans_spline.compute(M)

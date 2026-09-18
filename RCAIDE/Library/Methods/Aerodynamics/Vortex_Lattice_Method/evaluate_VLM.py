@@ -98,12 +98,7 @@ def evaluate_surrogate(state,settings,vehicle):
  
     # -----------------------------------------------------------------------------------------------------------------------
     # Addition of Control Surface Effect
-    # -----------------------------------------------------------------------------------------------------------------------
-    # see control_surface_registry.py for why every control surface is handled through one generic path here.
-    # Induced drag is added as an absolute value (it cannot reduce total induced drag regardless of deflection
-    # direction), unlike the signed linear terms used for Y/L/N/M/lift. A compound surface (Flaperon, Elevon,
-    # Ruddervator) contributes two rows sharing one `name` conditions block, so that block's diagnostic
-    # coefficients are reset once per call and accumulated with += across its rows rather than overwritten.
+    # ----------------------------------------------------------------------------------------------------------------------- 
     touched_names = set()
     for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
         if not getattr(aerodynamics, flag):
