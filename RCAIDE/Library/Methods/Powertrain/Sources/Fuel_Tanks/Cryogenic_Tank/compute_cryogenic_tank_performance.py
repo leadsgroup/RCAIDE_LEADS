@@ -266,6 +266,20 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
             refuel_pts_eff = np.where(t <= t_event, refuel_pts, 0.0)
         else:
             m_g, m_l, T_g, T_l = sol.y
+
+        if not volume_capped:
+            # _tank_volume_full above only flags volume_capped if scipy's terminal-event
+            # root-finder registers a clean upward crossing of V_l - net_volume. When the
+            # fill approaches that wall asymptotically (the physically realistic case near
+            # a volume limit), the segment can end with V_l a hair below net_volume without
+            # the event ever technically crossing zero -- a knife-edge that flips with the
+            # integrator's exact step sequence (e.g. between scipy builds on different
+            # Python versions) even though the tank is, physically, volume-capped either
+            # way. Re-check the achieved final state directly so this doesn't depend on the
+            # event's root-finder having caught the crossing.
+            T_l_final_c = np.clip(T_l[-1], T_l_lo, T_l_hi)
+            rho_l_final = fuel.cryogen_properties(np.array([T_l_final_c]), "Density (kg/m3)", phase='liquid')[0]
+            volume_capped = bool(m_l[-1] / rho_l_final >= net_volume * (1 - 1e-3))
     else:
         if np.isfinite(refuel_target):
             # Already at/above target (e.g. topping off a nearly-full tank) -- don't add fuel.
