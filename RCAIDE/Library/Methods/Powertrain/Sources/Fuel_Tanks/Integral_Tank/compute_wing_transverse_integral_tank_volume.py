@@ -223,7 +223,6 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
             print('Warning:Specified fuel mass greater than mass of fuel capable of being stored in fuel tank')
         fuel_tank.fuel.volume_properties.net_volume = max_volume
     else:
-        fuel_tank.fuel.mass_properties.mass         = max_volume *  fuel_tank.fuel.density
         fuel_tank.fuel.volume_properties.net_volume = max_volume
    
     # Build a 3D tank mesh by extruding the 2D section over length_external.

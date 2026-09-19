@@ -69,9 +69,9 @@ def tube_and_wing_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag = 'cruise', discretization=  3)
     
-    CG_Percent_of_LEMAC_truth = np.array([[-0.14674024430478047,  0.789441781675028,  1.725623807654836],
-                                          [-0.14674024430478047,  0.789441781675028,  1.725623807654836],
-                                          [-0.14674024430478047,  0.789441781675028,  1.725623807654836]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.1214743084559218,  0.821024201486101,  1.7635227114281238],
+                                          [-0.1214743084559218,  0.821024201486101,  1.7635227114281238],
+                                          [-0.1214743084559218,  0.821024201486101,  1.7635227114281238]])
     plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram")
 
     LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))

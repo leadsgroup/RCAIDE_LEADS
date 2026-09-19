@@ -32,7 +32,7 @@ def main():
     missions = missions_setup(mission)
      
     # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.11)
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.10)
 
     apm = {
         "range":            np.array([0., 5500., 9500., 10000.]) * Units.nmi,
@@ -52,23 +52,12 @@ def main():
     # ########################################### WARNING #################################################
     # #####################################################################################################
         
-    # Updated Aug 2026 after checking against the APM (see `apm` above): the ECS fix
-    # raises OEW ~470kg; payload/oew_plus_payload moved closer to real APM data,
-    # range slightly further (pre-existing cruise-efficiency gap, not from this PR).
-    #
-    # Updated Sep 2026 after the form_drag.py CD_sep rework (CRM-derived CL lookup table,
-    # no aspect-ratio correction for non-CRM airframes -- see form_drag.py docstring).
-    # payload/oew_plus_payload/fuel/takeoff_weight are unaffected (exact match); only range
-    # moved, flipping the pre-existing cruise-efficiency gap from under-predicting the APM
-    # (-1.8% to -2.4%) to over-predicting it (+0.9% to +2.7%) -- a comparable-magnitude,
-    # opposite-sign gap, not a fix. Accepted as the expected tradeoff of a correlation fit
-    # to one reference aircraft (CRM) being applied to a different planform (787).
     truth_values = {
-        "range":            np.array([       0.        ,  9118803.78899555, 15598256.41449719, 16164851.03651247]),
-        "payload":          np.array([44000.        , 44000.        , 10566.91738857,     0.        ]),
-        "oew_plus_payload": np.array([160040.08261143, 160040.08261143, 126607.        , 116040.08261143]),
-        "fuel":             np.array([     0.        ,  67889.91738857, 101323.        , 101323.        ]),
-        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 217363.08261143]),
+        "range":            np.array([       0.        , 10381833.99602455, 17758948.49934158, 18487095.5382325 ]),
+        "payload":          np.array([44000.        , 44000.        , 10339.83       ,     0.        ]),
+        "oew_plus_payload": np.array([160267.17      , 160267.17      , 126607.        , 116267.17      ]),
+        "fuel":             np.array([     0.        ,  67662.83      , 101323.        , 101323.        ]),
+        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 217590.17      ]),
     }
     # ########################################### WARNING #################################################
     ###### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ################

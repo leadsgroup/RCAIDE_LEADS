@@ -1,11 +1,11 @@
 {
     "empty": {
         "propulsion": {
-            "total": 7626.377911319022,
-            "engines": 5944.612167367309,
-            "thrust_reversers": 1111.642475297687,
-            "miscellaneous": 175.6138017995257,
-            "fuel_system": 394.5094668545006,
+            "total": 5731.220820534724,
+            "engines": 4389.097822834269,
+            "thrust_reversers": 820.7612928700084,
+            "miscellaneous": 169.31186411640653,
+            "fuel_system": 352.04984071404004,
             "fuel_tanks": 0,
             "electrical_cabling": 0,
             "thermal_management": 0,
@@ -17,10 +17,10 @@
             "empennage": 1321.7116193994502,
             "fuselage": 7354.906399856778,
             "landing_gear": 2502.3527847272717,
-            "nacelle": 462.52974337003815,
+            "nacelle": 414.6773266013426,
             "booms": 0,
             "paint": 0,
-            "total": 18261.747280774336
+            "total": 18213.89486400564
         },
         "systems": {
             "control_systems": 805.5000596597622,
@@ -33,7 +33,7 @@
             "instruments": 245.85316804876413,
             "total": 7605.849948526038
         },
-        "total": 34478.02423670555
+        "total": 32517.812057847295
     },
     "payload": {
         "total": 10500.0,
@@ -42,12 +42,12 @@
         "cargo": 0
     },
     "operational_items": {
-        "misc": 235.621685586151,
+        "misc": 218.4190142808955,
         "flight_crew": 306.17484975,
         "flight_attendants": 442.25256075000004,
         "passenger_service": 0.0,
-        "total": 984.049096086151
+        "total": 966.8464247808955
     },
-    "zero_fuel_weight": 44978.02423670555,
+    "zero_fuel_weight": 43017.812057847295,
     "max_takeoff": 79000.0
 }

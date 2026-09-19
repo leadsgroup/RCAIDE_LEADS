@@ -522,7 +522,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
         if getattr(aerodynamics, flag):
             for coeff in ('Clift', 'Cdrag', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN'):
                 key = 'd' + coeff + '_ddelta_' + letter
-                training[key] = np.array([training_subsonic[key][-1], training_subsonic[key][0]])
+                training[key] = np.array([training_subsonic[key][-1], training_supersonic[key][0]])
 
     return training
 
