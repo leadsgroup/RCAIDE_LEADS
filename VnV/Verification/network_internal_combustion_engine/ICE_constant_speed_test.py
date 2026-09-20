@@ -53,8 +53,8 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()   
     
-    P_truth     = 50660.36166669471
-    mdot_truth  = 0.004451134589049687
+    P_truth     = 44449.65701088019
+    mdot_truth  = 0.0039054479534558046
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power.propulsive[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle.mass_rate[-1,0]     
@@ -122,7 +122,7 @@ def ICE_CS(vehicle):
     engine.flat_rate_altitude                  = 0.0
     engine.rated_speed                         = 2700. * Units.rpm
     engine.rated_power                         = 180.  * Units.hp   
-    engine.power_specific_fuel_consumption     = 0.52  
+    engine.power_specific_fuel_consumption     = 0.52  * Units['lb/hp/hr']
     propulsor.engine                           = engine 
     
     # Prop  

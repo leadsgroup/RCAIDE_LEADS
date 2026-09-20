@@ -106,16 +106,19 @@ def nacelle_drag(state,settings, nacelle):
     
     **Major Assumptions**
         * Fully turbulent boundary layer over the entire nacelle
-        * Raymer's form factor correlation is valid for nacelle geometry
+        * Nacelle is treated as a cylindrical body of revolution, using the same
+          Mach-dependent max-velocity-increment form factor method as the fuselage
+          (see parasite_drag_fuselage) -- Raymer's nacelle correlation (1 + 0.35/(l/d))
+          has no Mach dependence and left nacelle parasite drag flat across a subsonic
+          speed sweep, unlike the wing and fuselage terms
         * Compressible turbulent flat plate skin friction correlation
         * Cubic spline blending smooths transition between subsonic and supersonic regimes
-        * Nacelle shape can be approximated as a cylindrical body
     
     **Theory**
 
     The nacelle Reynolds number is:
 
-    :math:`Re_{nac} = Re \\cdot l_{nac}`
+    :math:`Re_{nac} = Re \cdot l_{nac}`
 
     where :math:`Re` is the freestream Reynolds number per unit length and :math:`l_{nac}` is the nacelle length.
 
@@ -125,27 +128,19 @@ def nacelle_drag(state,settings, nacelle):
 
     The reference area is:
 
-    :math:`S_{ref} = \\pi \\cdot d_{nac} \\cdot l_{nac}`
+    :math:`S_{ref} = \pi \cdot d_{nac} \cdot l_{nac}`
 
     where :math:`d_{nac}` is the nacelle diameter.
 
-    The form factor follows Raymer's correlation:
+    The form factor follows the same cylindrical-body, Mach-dependent max-velocity-increment
+    method used for the fuselage, with :math:`d/l` computed from the nacelle's own diameter
+    and length:
 
-    :math:`FF = 1 + \\frac{0.35}{l_{nac}/d_{nac}}`
+    :math:`k_{nac} = (1 + FF \cdot \frac{\Delta u_{max}}{u_{\infty}})^2`
 
-    For subsonic flow (M ≤ 1.0), the parasite drag coefficient is:
+    The parasite drag coefficient is:
 
-    :math:`C_{D,parasite} = FF \\cdot C_f \\cdot \\frac{S_{wet}}{S_{ref}}`
-
-    For supersonic flow, the form factor is blended using a cubic spline:
-
-    :math:`FF_{eff} = FF \\cdot h_{00}(M) + 1 \\cdot (1-h_{00}(M))`
-
-    where :math:`h_{00}(M)` is the cubic spline blending function.
-
-    The final parasite drag coefficient is:
-
-    :math:`C_{D,parasite} = FF_{eff} \\cdot C_f \\cdot \\frac{S_{wet}}{S_{ref}}`
+    :math:`C_{D,parasite} = k_{nac} \cdot C_f \cdot \frac{S_{wet}}{S_{ref}}`
     
     **Definitions**
 
@@ -162,6 +157,7 @@ def nacelle_drag(state,settings, nacelle):
     See Also
     --------
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressible_turbulent_flat_plate
+    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_fuselage
     RCAIDE.Library.Methods.Utilities.Cubic_Spline_Blender
     """
 
@@ -171,6 +167,7 @@ def nacelle_drag(state,settings, nacelle):
     Mach             = freestream.mach_number
     T                = freestream.temperature     
     Re               = freestream.reynolds_number
+    form_factor      = settings.nacelle_parasite_drag_form_factor
     low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number
     high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number 
     Sref             = np.pi * nacelle.diameter * nacelle.length 
@@ -182,24 +179,55 @@ def nacelle_drag(state,settings, nacelle):
     # Skin friction coefficient
     cf_prop, k_comp, k_reyn = compressible_turbulent_flat_plate(Re_prop,Mach,T) 
     
-    # Form factor according to Raymer equation
-    form_factor  = 1 + 0.35 / ( nacelle.length/nacelle.diameter)   
-         
-    if np.all((Mach<=1.0) == True): 
-        # subsonic condition 
-        parasite_drag = form_factor * cf_prop * Swet / Sref 
+    # cylindrical-body form factor (same method as parasite_drag_fuselage, sized to the nacelle)
+    d_d = nacelle.diameter/nacelle.length
+
+    if np.all((Mach<=1.0) == True):
+        # subsonic condition
+        D              = np.zeros_like(Mach)
+        D[Mach < 0.95]  = np.sqrt(1 - (1-Mach[Mach < 0.95]**2) * d_d**2)
+        D[Mach >= 0.95] = np.sqrt(1 - d_d**2)
+
+        a              = np.zeros_like(Mach)
+        a[Mach < 0.95]  = 2 * (1-Mach[Mach < 0.95]**2) * (d_d**2) *(np.arctanh(D[Mach < 0.95])-D[Mach < 0.95]) / (D[Mach < 0.95]**3)
+        a[Mach >= 0.95] = 2  * (d_d**2) *(np.arctanh(D[Mach >= 0.95])-D[Mach >= 0.95]) / (D[Mach >= 0.95]**3)
+
+        du_max_u               = np.zeros_like(Mach)
+        du_max_u[Mach < 0.95]  = a[Mach < 0.95] / ( (2-a[Mach < 0.95]) * (1-Mach[Mach < 0.95]**2)**0.5 )
+        du_max_u[Mach >= 0.95] = a[Mach >= 0.95] / ( (2-a[Mach >= 0.95]) )
+
+        k_nac         = (1 + form_factor*du_max_u)**2
+        parasite_drag = k_nac * cf_prop * Swet / Sref
     else:
 
-        # supersonic condition 
-        k_prop_sup = 1.
-        
+        # supersonic condition
+        D_low        = np.zeros_like(Mach)
+        a_low        = np.zeros_like(Mach)
+        du_max_u_low = np.zeros_like(Mach)
+
+        # "low" (subsonic) formula relies on arctanh(D), which is only defined for D<1,
+        # i.e. Mach<1 -- it must never be evaluated past that regardless of high_mach_cutoff.
+        # It decays continuously to 0 as Mach->1, so leaving it at 0 beyond that is exact, not an approximation.
+        low_inds  = Mach < 1.0
+
+        D_low[low_inds]        = np.sqrt(1 - (1-Mach[low_inds]**2) * d_d**2)
+        a_low[low_inds]        = 2 * (1-Mach[low_inds]**2) * (d_d**2) *(np.arctanh(D_low[low_inds])-D_low[low_inds]) / (D_low[low_inds]**3)
+        du_max_u_low[low_inds] = a_low[low_inds] / ( (2-a_low[low_inds]) * (1-Mach[low_inds]**2)**0.5 )
+
+        # "high" (frozen) formula has no Mach dependence, so it is valid everywhere -- no masking needed
+        D_high        = np.sqrt(1 - d_d**2) * np.ones_like(Mach)
+        a_high        = 2  * (d_d**2) *(np.arctanh(D_high)-D_high) / (D_high**3)
+        du_max_u_high = a_high / (2-a_high)
+
         trans_spline = Cubic_Spline_Blender(low_mach_cutoff,high_mach_cutoff)
         h00 = lambda M:trans_spline.compute(M)
-        
-        form_factor = form_factor*(h00(Mach)) + k_prop_sup*(1-h00(Mach))
-             
+
+        du_max_u = du_max_u_low*(h00(Mach)) + du_max_u_high*(1-h00(Mach))
+
+        k_nac = (1 + form_factor*du_max_u)**2
+
         # find the final result    
-        parasite_drag = form_factor * cf_prop * Swet / Sref        
+        parasite_drag = k_nac * cf_prop * Swet / Sref        
     
     # store results
     results = Data(
@@ -209,7 +237,7 @@ def nacelle_drag(state,settings, nacelle):
         skin_friction             = cf_prop ,
         compressibility_factor    = k_comp  ,
         reynolds_factor           = k_reyn  , 
-        form_factor               = form_factor  ,
+        form_factor               = k_nac  ,
     )
     state.conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag] = results    
     

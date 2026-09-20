@@ -53,11 +53,11 @@ def main():
     print('Balanced Field Length (m): ', balanced_field_length)
     print('Decision Speed V1 (m/s): ', decision_speed)
 
-    truth_BFL = 2158.0344212496952
+    truth_BFL = 1826.11001435578
     BFL_error = np.max(np.abs(balanced_field_length - truth_BFL))
     assert (BFL_error < 1e-6)
 
-    truth_V1 = 67.44415954428656
+    truth_V1 = 65.14799083466956
     V1_error = np.max(np.abs(decision_speed - truth_V1))
     assert (V1_error < 1e-6)
 

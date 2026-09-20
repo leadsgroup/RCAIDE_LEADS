@@ -100,7 +100,7 @@ def main():
     RCAIDE_vals = Data() 
     RCAIDE_vals.Clift_alpha = 5.71836275727471
     RCAIDE_vals.CY_beta = -0.14312877260856274
-    RCAIDE_vals.CL_beta = -0.07529640050767267
+    RCAIDE_vals.CL_beta = -0.06816080687555857
     RCAIDE_vals.CM_alpha = -1.1788082925116026
     RCAIDE_vals.CN_beta = 0.10219800736234788
     RCAIDE_vals.CL_p = -0.4331829968640342

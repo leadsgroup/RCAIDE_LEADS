@@ -5,9 +5,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
- # RCAIDE imports 
+ # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core                                         import Units
 
 # package imports
 import numpy as np 
@@ -113,9 +112,8 @@ def compute_throttle_from_power(engine,conditions):
     P[P<0.] = 0. 
 
     # Compute fuel flow rate
-    SFC             = PSFC* Units['lb/hp/hr']
     a               = np.zeros_like(altitude)
-    m_dot_fuel      = np.fmax(P*SFC,a)
+    m_dot_fuel      = np.fmax(P*PSFC,a)
     
     # Store outputs 
     engine_conditions.power_specific_fuel_consumption = PSFC

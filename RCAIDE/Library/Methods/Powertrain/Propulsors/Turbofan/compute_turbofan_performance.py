@@ -735,7 +735,23 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
             # shape into the SAME rating-code-0 throttle axis as its part-power sweep (see
             # aircraft_engine_mission_test.py's build_part_power_deck/setup_offdesign for
             # why), so the actual requested throttle carries through instead of collapsing
-            # to a fixed idle value regardless of how much power was actually asked for
+            # to a fixed idle value regardless of how much power was actually asked for.
+            #
+            # NOT clamped at 0: tried a hard max(throttle, 0.0) here (idle_fallback's deck
+            # has no data below throttle=0, so querying below it is extrapolation past the
+            # RBF's training domain). That is true, but the clamp itself is worse -- it
+            # makes F/FF exactly constant for every throttle < 0, i.e. zero local
+            # derivative there, and the segment's own Newton-type trim solver legitimately
+            # searches through slightly-negative throttle as a smooth control variable
+            # while converging on a small/negative net-thrust target during descent.
+            # Handing it a flat, zero-gradient region broke that Newton iteration outright
+            # (confirmed: thrust and throttle diverged to ~1e20/-1e5 on the very next full
+            # mission run). Left unclamped -- the pre-existing, real, but smooth
+            # extrapolation behavior the solver already relies on -- pending a fix that
+            # preserves a nonzero gradient below throttle=0 (e.g. extending the training
+            # deck with its own smoothly-extrapolated sub-zero anchor points) instead of a
+            # hard clamp. See aircraft_engine_mission_test.py's idle_fallback investigation
+            # in RESEARCH/22_ATI/Engine_Validation/.
             F, FF = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
                                          throttle=np.array([throttle[i]]))
             thrust_N[i]             = F[0]

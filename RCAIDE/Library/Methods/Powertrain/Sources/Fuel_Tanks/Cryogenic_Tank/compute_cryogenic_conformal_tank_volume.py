@@ -91,8 +91,12 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     alpha_th = k_air / (rho * Cp_air)      # thermal diffusivity [m²/s]
     Pr       = nu / alpha_th               # Prandtl number
 
-    # Outer envelope volume (constant target)
-    V_cuboid = fuel_tank.widths.external * fuel_tank.heights.external * fuel_tank.lengths.external
+    # Outer envelope volume (constant target) -- prefer the true loft mesh volume (set by an
+    # upstream wing-integral-tank stage) over its bounding box; prismatic tanks have no such
+    # stage and are box-shaped by definition, so fall back to the box product for those.
+    V_cuboid = fuel_tank.volume_properties.gross_volume
+    if not V_cuboid:
+        V_cuboid = fuel_tank.widths.external * fuel_tank.heights.external * fuel_tank.lengths.external
 
     # Pack thermal constants into a tuple for the inner solvers
     therm = (Ta, T_inlet, Qo_total, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr)
