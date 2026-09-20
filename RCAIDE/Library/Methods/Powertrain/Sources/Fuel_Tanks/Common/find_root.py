@@ -13,6 +13,12 @@ from scipy.optimize import brentq, minimize_scalar
 #  (no sign change in the bracket, e.g. the root is a tangent zero).
 # ----------------------------------------------------------------------------------------------------------------------
 def _find_root(func, a, b, args=(), xtol=1e-9):
+    if not (np.isfinite(a) and np.isfinite(b)):
+        raise ValueError(
+            f"_find_root: non-finite bracket (a={a}, b={b}) -- a caller-side "
+            f"state (e.g. an ODE integrator trial value) has already diverged "
+            f"to NaN/Inf upstream of this root search."
+        )
     try:
         return brentq(func, a, b, xtol=xtol, args=args)
     except ValueError:
