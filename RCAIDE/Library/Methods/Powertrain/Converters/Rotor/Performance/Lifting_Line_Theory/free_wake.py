@@ -11,7 +11,7 @@
 import numpy as np
 from concurrent.futures                import ThreadPoolExecutor
 from RCAIDE.Framework.Core            import orientation_transpose
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry, initialize_lifting_line
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_induced_velocity, initialize_wake_geometry, initialize_lifting_line
 
 def free_wake(rotor, wake_inputs, conditions):
 
@@ -197,13 +197,11 @@ def free_wake(rotor, wake_inputs, conditions):
             wake_src  = source_grid[cp, :, j, :, :]
             r_w_start = wake_src[:, :-1, :].reshape(B*N_wake, 3)
             r_w_end   = wake_src[:,  1:, :].reshape(B*N_wake, 3)
-            K_wake = biot_savart_velocity_induction(
-                P, r_w_start, r_w_end, rcvf_flat[cp], vc_correction)
-            v_wake = np.einsum('mnk,n->mk', K_wake, Gamma_w_flat[cp])
+            v_wake = biot_savart_induced_velocity(
+                P, r_w_start, r_w_end, Gamma_w_flat[cp], rcvf_flat[cp], vc_correction)
 
-            K_blade = biot_savart_velocity_induction(
-                P, A_blade_all[cp, j], B_blade_all[cp, j], rcb_flat[cp], vc_correction)
-            v_blade = np.einsum('mnk,n->mk', K_blade, Gamma_b_flat[cp])
+            v_blade = biot_savart_induced_velocity(
+                P, A_blade_all[cp, j], B_blade_all[cp, j], Gamma_b_flat[cp], rcb_flat[cp], vc_correction)
             v_sum = (v_blade + v_wake).reshape(B, N_wake+1, 3)
             V_ind[cp, :, j, :, :] = np.where(CW[cp], -v_sum, v_sum)
 

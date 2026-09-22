@@ -139,6 +139,90 @@ if _NUMBA_AVAILABLE:
 
         return cross
 
+    @njit(cache=True, error_model='numpy')
+    def _biot_savart_kernel_2d_contracted(P, A, B, rc_sq_arr, rc_qd_arr, vc_correction, tol, Gamma):
+        """Same kernel as _biot_savart_kernel_2d, but contracted against a (N,) circulation
+        vector Gamma in the same pass -- i.e. fuses biot_savart_velocity_induction(...)
+        followed by np.einsum('mnk,n->mk', cross, Gamma) into one loop, avoiding the (M,N,3)
+        intermediate array entirely.
+
+        Bit-exactness relies on accumulating each output element in the SAME order numpy's
+        einsum does: for fixed m, summing contributions over n=0..N-1 in increasing order.
+        This kernel's outer loop is already over n (see _biot_savart_kernel_2d), so `result`
+        is updated for every m at each n in exactly that sequence -- verified bit-identical
+        against biot_savart_velocity_induction + np.einsum in
+        test_biot_savart_bitexact.py before this kernel is trusted anywhere.
+        """
+        M = P.shape[0]
+        N = A.shape[0]
+        result = np.zeros((M, 3))
+        four_pi = 4.0 * np.pi
+
+        for n in range(N):
+            r0x = B[n, 0] - A[n, 0]
+            r0y = B[n, 1] - A[n, 1]
+            r0z = B[n, 2] - A[n, 2]
+            r0_norm_sq = r0x*r0x + r0y*r0y + r0z*r0z
+            s = math.sqrt(r0_norm_sq)
+            rc_sq = rc_sq_arr[n]
+            rc_qd = rc_qd_arr[n]
+            g = Gamma[n]
+
+            for m in range(M):
+                r1x = P[m, 0] - A[n, 0]
+                r1y = P[m, 1] - A[n, 1]
+                r1z = P[m, 2] - A[n, 2]
+
+                r1_norm_sq = r1x*r1x + r1y*r1y + r1z*r1z
+                r1_norm    = math.sqrt(r1_norm_sq)
+                if r1_norm == 0.0:
+                    r1_norm = 1e-300
+
+                r1_dot_r0  = r1x*r0x + r1y*r0y + r1z*r0z
+                r2_norm_sq = r1_norm_sq - 2.0*r1_dot_r0 + r0_norm_sq
+                r2_norm    = math.sqrt(r2_norm_sq)
+                if r2_norm == 0.0:
+                    r2_norm = 1e-300
+
+                s1 = -r1_dot_r0 / s
+                s2 = (r0_norm_sq - r1_dot_r0) / s
+
+                s2ms1 = s2 - s1
+                wx = r1x*s2ms1 + r0x*s1
+                wy = r1y*s2ms1 + r0y*s1
+                wz = r1z*s2ms1 + r0z*s1
+                rm_sq = (wx*wx + wy*wy + wz*wz) / (s*s)
+
+                cross_x = r0y*r1z - r0z*r1y
+                cross_y = r0z*r1x - r0x*r1z
+                cross_z = r0x*r1y - r0y*r1x
+
+                bracket = s2/r2_norm - s1/r1_norm
+
+                f     = 1.0
+                denom = rm_sq
+                if vc_correction == 1:            # Standard/Scully
+                    denom = rm_sq + rc_sq
+                elif vc_correction == 2:           # Rankine
+                    ratio = rm_sq / rc_sq
+                    f = ratio if ratio < 1.0 else 1.0
+                elif vc_correction == 3:           # Vatistas
+                    f = rm_sq / math.sqrt(rm_sq*rm_sq + rc_qd)
+                elif vc_correction == 4:           # Oseen
+                    f = 1.0 - math.exp(-1.25643*rm_sq/rc_sq)
+
+                scalar_coeff   = f * bracket / denom
+                combined_coeff = scalar_coeff / (four_pi * s)
+
+                if (r1_norm < tol) or (r2_norm < tol) or (rm_sq < tol):
+                    combined_coeff = 0.0
+
+                result[m, 0] += cross_x * combined_coeff * g
+                result[m, 1] += cross_y * combined_coeff * g
+                result[m, 2] += cross_z * combined_coeff * g
+
+        return result
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Biot_Savart_velocity_induction
 # ----------------------------------------------------------------------------------------------------------------------
@@ -172,6 +256,40 @@ def biot_savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
                                        int(vc_correction), float(tol))
 
     return _biot_savart_velocity_induction_numpy(P_arr, A_arr, B_arr, rc, vc_correction, tol)
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  biot_savart_induced_velocity -- fused biot_savart + einsum('mnk,n->mk', cross, Gamma)
+# ----------------------------------------------------------------------------------------------------------------------
+def biot_savart_induced_velocity(P, A, B, Gamma, rc=1e-6, vc_correction=1, tol=1e-6):
+    """Equivalent to np.einsum('mnk,n->mk', biot_savart_velocity_induction(P,A,B,rc,
+    vc_correction,tol), Gamma), i.e. the (M,3) velocity induced at P by filaments A->B
+    carrying circulation Gamma, without materializing the (M,N,3) per-filament tensor.
+
+    Every call site in this codebase immediately contracts biot_savart_velocity_induction's
+    output against a circulation vector this same way (free_wake.py's v_wake/v_blade,
+    evaluate_bound_vortex_circulation.py's v_induced_bound_body/v_induced_wake_body) -- this
+    fuses that pattern into one Numba pass when P/A/B are plain 2-D and Numba is installed,
+    falling back to the exact original two-step computation otherwise (any batch-shaped
+    call, or no Numba available), so it's always at least as capable as the two-step form.
+    """
+    P_arr = np.asarray(P, dtype=float)
+    A_arr = np.asarray(A, dtype=float)
+    B_arr = np.asarray(B, dtype=float)
+
+    if _NUMBA_AVAILABLE and P_arr.ndim == 2 and A_arr.ndim == 2 and B_arr.ndim == 2:
+        N = A_arr.shape[0]
+        rc_1d = np.atleast_1d(np.asarray(rc, dtype=float))
+        if rc_1d.shape[0] == 1 and N > 1:
+            rc_1d = np.full(N, rc_1d[0])
+        rc_sq_arr = rc_1d**2
+        rc_qd_arr = rc_1d**4
+        Gamma_arr = np.asarray(Gamma, dtype=float)
+        return _biot_savart_kernel_2d_contracted(P_arr, A_arr, B_arr, rc_sq_arr, rc_qd_arr,
+                                                  int(vc_correction), float(tol), Gamma_arr)
+
+    cross = biot_savart_velocity_induction(P_arr, A_arr, B_arr, rc, vc_correction, tol)
+    return np.einsum('mnk,n->mk', cross, Gamma)
 
 
 def _biot_savart_velocity_induction_numpy(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
