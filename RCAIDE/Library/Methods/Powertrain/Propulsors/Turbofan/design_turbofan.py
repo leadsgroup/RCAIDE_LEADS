@@ -423,11 +423,24 @@ def design_turbofan(turbofan):
     if turbofan.rated_takeoff_thrust > 0:
         def thrust_residual(throttle):
             return sea_level_static_performance(throttle).thrust[0][0] - turbofan.rated_takeoff_thrust
-        try:
-            turbofan.rated_takeoff_throttle = brentq(thrust_residual, 0.8, 2.0, xtol=1e-6)
-        except ValueError:
-            raise ValueError(f"Turbofan '{turbofan.tag}': no takeoff throttle between 0.8 and 2.0 gives the rated takeoff "
-                             f"thrust of {turbofan.rated_takeoff_thrust:.0f} N at sea level; check design_thrust against it.")
+
+        # bracket the rating by stepping outward from the design throttle, so the matching solver is
+        # only evaluated near the solution
+        throttle_step   = 0.05
+        lower, upper    = 1.0, 1.0
+        residual        = thrust_residual(1.0)
+        direction       = 1.0 if residual < 0 else -1.0
+        while (residual < 0) == (direction > 0):
+            next_throttle = (upper if direction > 0 else lower) + direction * throttle_step
+            if not 0.5 <= next_throttle <= 2.0:
+                raise ValueError(f"Turbofan '{turbofan.tag}': no takeoff throttle between 0.5 and 2.0 gives the rated takeoff "
+                                 f"thrust of {turbofan.rated_takeoff_thrust:.0f} N at sea level; check design_thrust against it.")
+            residual = thrust_residual(next_throttle)
+            if direction > 0:
+                lower, upper = upper, next_throttle
+            else:
+                lower, upper = next_throttle, lower
+        turbofan.rated_takeoff_throttle = brentq(thrust_residual, lower, upper, xtol=1e-6)
 
     # idle_fallback deck spans part power up to the takeoff rating
     if offdesign_matching_default:

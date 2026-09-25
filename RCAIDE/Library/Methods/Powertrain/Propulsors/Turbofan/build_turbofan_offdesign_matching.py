@@ -7,7 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
-from RCAIDE.Framework.Core                                                              import Data
+from RCAIDE.Framework.Core                                                              import Data, Units
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan_offdesign_matching import design_turbofan_offdesign_matching
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.generate_turbofan_deck          import generate_turbofan_deck
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate              import Turbofan_Surrogate
@@ -34,9 +34,11 @@ def build_turbofan_offdesign_matching(turbofan, combustor_exit_temperature_fract
         Fractions of the design combustor exit stagnation temperature swept to build the
         idle_fallback deck.
     number_of_altitudes : int, optional
-        Number of altitudes, from sea level to the design altitude, in the idle_fallback deck.
+        Number of altitudes, from sea level to the larger of the design altitude and 40,000 ft,
+        in the idle_fallback deck.
     number_of_mach_numbers : int, optional
-        Number of Mach numbers, from 0 to the design Mach number, in the idle_fallback deck.
+        Number of Mach numbers, from 0 to the larger of the design Mach number and 0.85, in the
+        idle_fallback deck.
 
     Returns
     -------
@@ -59,8 +61,12 @@ def build_turbofan_offdesign_matching(turbofan, combustor_exit_temperature_fract
     """
     design_constants, reference_point = design_turbofan_offdesign_matching(turbofan)
 
-    altitude_range = np.linspace(0.0, turbofan.design_altitude, number_of_altitudes)
-    mach_range     = np.concatenate([[0.0], np.linspace(0.1, turbofan.design_mach_number, number_of_mach_numbers - 1)])
+    # the deck spans the flight envelope, not only up to the design point (which can itself be
+    # sea-level static)
+    maximum_altitude    = max(turbofan.design_altitude, 40000. * Units.ft)
+    maximum_mach_number = max(turbofan.design_mach_number, 0.85)
+    altitude_range      = np.linspace(0.0, maximum_altitude, number_of_altitudes)
+    mach_range          = np.concatenate([[0.0], np.linspace(0.1, maximum_mach_number, number_of_mach_numbers - 1)])
 
     decks = []
     for fraction in combustor_exit_temperature_fractions:
