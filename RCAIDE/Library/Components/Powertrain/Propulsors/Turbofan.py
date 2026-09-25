@@ -137,6 +137,18 @@ class Turbofan(Propulsor):
         design point, same call the user already makes to size the engine.
         Default is None.
 
+    rated_takeoff_thrust : float, optional
+        Rated (certified) sea-level static takeoff thrust [N]. When set (> 0),
+        `design_turbofan` solves `rated_takeoff_throttle` so that the sea-level
+        static thrust equals it. Default is 0.0.
+
+    rated_takeoff_throttle : float
+        Throttle (fraction of the design-point combustor exit temperature) of the
+        takeoff rating, set by `design_turbofan` from `rated_takeoff_thrust`;
+        `sealevel_static_thrust` is evaluated at it. Engines are rated hotter at
+        takeoff than at the climb/cruise design point, so it is typically above 1.
+        Default is 1.0.
+
     offdesign_matching : Data, optional
         If set (as `Data(design_constants=..., reference_point=...)` from
         `design_turbofan_offdesign_matching`), `compute_turbofan_performance`
@@ -148,7 +160,10 @@ class Turbofan(Propulsor):
         the matching solver fails to converge (deep part-power/idle, outside
         what the matching equations can represent at all) to
         `idle_fallback.query(..., rating_code='FID')` instead of raising
-        `OffDesignMatchingError`. Default is None.
+        `OffDesignMatchingError`. Built by `design_turbofan` by default (see
+        `build_turbofan_offdesign_matching`), making off-design matching the
+        default performance model; set to None after `design_turbofan` to use
+        the analytical cycle model instead. Default is None.
 
     Notes
     -----
@@ -204,6 +219,8 @@ class Turbofan(Propulsor):
         self.reference_temperature                      = 288.15
         self.reference_pressure                         = 1.01325*Units.bar
         self.design_thrust                              = 0.0 
+        self.rated_takeoff_thrust                       = 0.0     # see docstring
+        self.rated_takeoff_throttle                     = 1.0     # see docstring
         self.design_power_offtake                       = 0.0
         self.design_mass_flow_rate                      = 0.0
         self.design_shaft_work_specific                 = 0.0

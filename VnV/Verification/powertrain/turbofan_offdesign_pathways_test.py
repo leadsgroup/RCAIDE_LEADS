@@ -63,11 +63,15 @@ def main():
     # ------------------------------------------------------------------------------------
     design_thrust = turbofan.design_thrust
 
+    # design_turbofan builds off-design matching (with its idle_fallback) as the default model
+    assert turbofan.offdesign_matching is not None and turbofan.offdesign_matching.idle_fallback is not None, \
+        "design_turbofan should build off-design matching as the default performance model"
+    default_offdesign_matching  = turbofan.offdesign_matching
+
+    turbofan.offdesign_matching = None
     F_analytical_design = evaluate_thrust(turbofan, fuel_line, turbofan.design_altitude, turbofan.design_mach_number)
     check('design point, analytical vs design_thrust [N]', F_analytical_design, design_thrust, 1e-6, results)
 
-    # built with offdesign_matching still None -- it calls compute_performance() itself and
-    # would recurse into this same solver otherwise
     design_constants, reference_point = design_turbofan_offdesign_matching(turbofan)
     turbofan.offdesign_matching = Data(design_constants=design_constants, reference_point=reference_point)
 
@@ -78,11 +82,15 @@ def main():
     # ------------------------------------------------------------------------------------
     # 2. Sea-level static
     # ------------------------------------------------------------------------------------
-    turbofan.offdesign_matching = None
-    F_analytical_sls = evaluate_thrust(turbofan, fuel_line, 0.0, 0.01)
-    check('SLS (M=0.01), analytical vs turbofan.sealevel_static_thrust [N]',
-          F_analytical_sls, turbofan.sealevel_static_thrust, 1e-6, results)
+    # turbofan.sealevel_static_thrust is evaluated by design_turbofan with its default off-design model
+    turbofan.offdesign_matching = default_offdesign_matching
+    F_default_sls = evaluate_thrust(turbofan, fuel_line, 0.0, 0.01, throttle=turbofan.rated_takeoff_throttle)
+    check('SLS (M=0.01), default off-design model at the takeoff rating vs turbofan.sealevel_static_thrust [N]',
+          F_default_sls, turbofan.sealevel_static_thrust, 1e-6, results)
+    check('SLS (M=0.01), takeoff rating vs turbofan.rated_takeoff_thrust [N]',
+          F_default_sls, turbofan.rated_takeoff_thrust, 1e-4, results)
 
+    turbofan.offdesign_matching = None
     F_analytical_sls_exact0 = evaluate_thrust(turbofan, fuel_line, 0.0, 0.0)
     # known singularity in the analytical model at exact M0=0 (see header comment)
     assert np.isnan(F_analytical_sls_exact0), \
