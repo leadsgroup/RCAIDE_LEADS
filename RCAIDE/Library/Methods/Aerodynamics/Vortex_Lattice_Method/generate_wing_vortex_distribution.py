@@ -113,7 +113,7 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
         xc_w   = np.zeros((n_sw,n_cw))
         yc_w   = np.zeros((n_sw,n_cw))
         zc_w   = np.zeros((n_sw,n_cw))
-        x_w    = np.zeros((n_sw+1,n_cw+1)) # may have to change to make space for split if control surfaces are allowed to have more than two Segments
+        x_w    = np.zeros((n_sw+1,n_cw+1))  
         y_w    = np.zeros((n_sw+1,n_cw+1)) 
         z_w    = np.zeros((n_sw+1,n_cw+1)) 
         x_c    = np.zeros((n_sw+1,n_cw)) 
@@ -197,9 +197,14 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
                     elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron: 
                         TE_angle          = -cs.deflection * sym_sign 
                         TE_chord_fraction = cs.chord_fraction 
-                    elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder: 
-                        TE_angle          = cs.deflection * xz_sym_sign 
-                        TE_chord_fraction = cs.chord_fraction                        
+                    elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:
+                        TE_angle          = cs.deflection * xz_sym_sign
+                        TE_chord_fraction = cs.chord_fraction
+                    elif type(cs) in (RCAIDE.Library.Components.Wings.Control_Surfaces.Flaperon,
+                                       RCAIDE.Library.Components.Wings.Control_Surfaces.Elevon,
+                                       RCAIDE.Library.Components.Wings.Control_Surfaces.Ruddervator):
+                        TE_angle          = cs.deflection + cs.secondary_deflection * sym_sign
+                        TE_chord_fraction = cs.chord_fraction
                     else:
                         TE_angle          = cs.deflection 
                         TE_chord_fraction = cs.chord_fraction 
@@ -278,11 +283,11 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
                 panel_numbers              = np.linspace(1,n_cw,n_cw, dtype=np.int16)     
                 exposed_leading_edge_flag  = 1 
                             
-                VD.panels_per_strip          = np.append(VD.panels_per_strip         , RNMAX                    )
-                VD.chordwise_panel_number    = np.append(VD.chordwise_panel_number   , panel_numbers            )  
-                VD.leading_edge_indices      = np.append(VD.leading_edge_indices     , LE_inds                  ) 
-                VD.trailing_edge_indices     = np.append(VD.trailing_edge_indices    , TE_inds                  )  
-                VD.exposed_leading_edge_flag = np.append(VD.exposed_leading_edge_flag, exposed_leading_edge_flag)            
+                VD.panels_per_strip.append(np.ravel(RNMAX))
+                VD.chordwise_panel_number.append(np.ravel(panel_numbers))
+                VD.leading_edge_indices.append(np.ravel(LE_inds))
+                VD.trailing_edge_indices.append(np.ravel(TE_inds))
+                VD.exposed_leading_edge_flag.append(np.atleast_1d(exposed_leading_edge_flag))
             
         cs_w  = (cs_ws[:1] +  cs_ws[1:]) / 2
         
@@ -403,57 +408,57 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
         VD.n_w  += 1             
         VD.n_cp += n_panels 
         
-        # store this wing's discretization information  
-        first_panel_ind  = VD.XAH.size
+        # store this wing's discretization information
+        first_panel_ind  = VD.n_cp - n_panels # equal to the old VD.XAH.size, now that XAH is accumulated as a list
         first_strip_ind  = VD.chordwise_breaks.size
         chordwise_breaks = first_panel_ind + np.arange(n_panels)[0::n_cw]
         ID               = VD.counter*1
-        
+
         VD.chordwise_breaks = np.append(VD.chordwise_breaks, np.int32(chordwise_breaks))
-        VD.spanwise_breaks  = np.append(VD.spanwise_breaks , np.int32(first_strip_ind ))            
+        VD.spanwise_breaks  = np.append(VD.spanwise_breaks , np.int32(first_strip_ind ))
         VD.n_sw             = np.append(VD.n_sw            , np.int16(n_sw)            )
         VD.n_cw             = np.append(VD.n_cw            , np.int16(n_cw)            )
-        VD.surface_ID       = np.append(VD.surface_ID      , np.ones(n_cw*n_sw)*ID*xz_sym_sign) # Update me when the loop is gone
-        VD.surface_ID_full  = np.append(VD.surface_ID_full , np.ones((n_cw+1)*(n_sw+1))*ID*xz_sym_sign) # Update me when the loop is gone    
-                
+        VD.surface_ID.append(np.ones(n_cw*n_sw)*ID*xz_sym_sign)
+        VD.surface_ID_full.append(np.ones((n_cw+1)*(n_sw+1))*ID*xz_sym_sign)
+
         # ---------------------------------------------------------------------------------------
         # STEP 7: Store wing in vehicle vector
-        # --------------------------------------------------------------------------------------- 
-        VD.XAH    = np.append(VD.XAH  , np.array(xah  , dtype=precision))
-        VD.YAH    = np.append(VD.YAH  , np.array(yah  , dtype=precision))
-        VD.ZAH    = np.append(VD.ZAH  , np.array(zah  , dtype=precision))
-        VD.XBH    = np.append(VD.XBH  , np.array(xbh  , dtype=precision))
-        VD.YBH    = np.append(VD.YBH  , np.array(ybh  , dtype=precision))
-        VD.ZBH    = np.append(VD.ZBH  , np.array(zbh  , dtype=precision))
-        VD.XCH    = np.append(VD.XCH  , np.array(xch  , dtype=precision))
-        VD.YCH    = np.append(VD.YCH  , np.array(ych  , dtype=precision))
-        VD.ZCH    = np.append(VD.ZCH  , np.array(zch  , dtype=precision))            
-        VD.XA1    = np.append(VD.XA1  , np.array(xa1  , dtype=precision))
-        VD.YA1    = np.append(VD.YA1  , np.array(ya1  , dtype=precision))
-        VD.ZA1    = np.append(VD.ZA1  , np.array(za1  , dtype=precision))
-        VD.XA2    = np.append(VD.XA2  , np.array(xa2  , dtype=precision))
-        VD.YA2    = np.append(VD.YA2  , np.array(ya2  , dtype=precision))
-        VD.ZA2    = np.append(VD.ZA2  , np.array(za2  , dtype=precision))        
-        VD.XB1    = np.append(VD.XB1  , np.array(xb1  , dtype=precision))
-        VD.YB1    = np.append(VD.YB1  , np.array(yb1  , dtype=precision))
-        VD.ZB1    = np.append(VD.ZB1  , np.array(zb1  , dtype=precision))
-        VD.XB2    = np.append(VD.XB2  , np.array(xb2  , dtype=precision))                
-        VD.YB2    = np.append(VD.YB2  , np.array(yb2  , dtype=precision))        
-        VD.ZB2    = np.append(VD.ZB2  , np.array(zb2  , dtype=precision)) 
-        VD.XAC    = np.append(VD.XAC  , np.array(xac  , dtype=precision))
-        VD.YAC    = np.append(VD.YAC  , np.array(yac  , dtype=precision)) 
-        VD.ZAC    = np.append(VD.ZAC  , np.array(zac  , dtype=precision)) 
-        VD.XBC    = np.append(VD.XBC  , np.array(xbc  , dtype=precision))
-        VD.YBC    = np.append(VD.YBC  , np.array(ybc  , dtype=precision)) 
-        VD.ZBC    = np.append(VD.ZBC  , np.array(zbc  , dtype=precision))  
-        VD.XC     = np.append(VD.XC   , np.array(xc   , dtype=precision))
-        VD.YC     = np.append(VD.YC   , np.array(yc   , dtype=precision))
-        VD.ZC     = np.append(VD.ZC   , np.array(zc   , dtype=precision))  
-        VD.X      = np.append(VD.X    , np.array(x    , dtype=precision))
-        VD.Y      = np.append(VD.Y    , np.array(y    , dtype=precision))
-        VD.Z      = np.append(VD.Z    , np.array(z    , dtype=precision))         
-        VD.CS     = np.append(VD.CS   , np.array(cs_w , dtype=precision)) 
-        VD.DY     = np.append(VD.DY   , np.array(del_y, dtype=precision))
+        # ---------------------------------------------------------------------------------------
+        VD.XAH.append(np.ravel(np.array(xah  , dtype=precision)))
+        VD.YAH.append(np.ravel(np.array(yah  , dtype=precision)))
+        VD.ZAH.append(np.ravel(np.array(zah  , dtype=precision)))
+        VD.XBH.append(np.ravel(np.array(xbh  , dtype=precision)))
+        VD.YBH.append(np.ravel(np.array(ybh  , dtype=precision)))
+        VD.ZBH.append(np.ravel(np.array(zbh  , dtype=precision)))
+        VD.XCH.append(np.ravel(np.array(xch  , dtype=precision)))
+        VD.YCH.append(np.ravel(np.array(ych  , dtype=precision)))
+        VD.ZCH.append(np.ravel(np.array(zch  , dtype=precision)))
+        VD.XA1.append(np.ravel(np.array(xa1  , dtype=precision)))
+        VD.YA1.append(np.ravel(np.array(ya1  , dtype=precision)))
+        VD.ZA1.append(np.ravel(np.array(za1  , dtype=precision)))
+        VD.XA2.append(np.ravel(np.array(xa2  , dtype=precision)))
+        VD.YA2.append(np.ravel(np.array(ya2  , dtype=precision)))
+        VD.ZA2.append(np.ravel(np.array(za2  , dtype=precision)))
+        VD.XB1.append(np.ravel(np.array(xb1  , dtype=precision)))
+        VD.YB1.append(np.ravel(np.array(yb1  , dtype=precision)))
+        VD.ZB1.append(np.ravel(np.array(zb1  , dtype=precision)))
+        VD.XB2.append(np.ravel(np.array(xb2  , dtype=precision)))
+        VD.YB2.append(np.ravel(np.array(yb2  , dtype=precision)))
+        VD.ZB2.append(np.ravel(np.array(zb2  , dtype=precision)))
+        VD.XAC.append(np.ravel(np.array(xac  , dtype=precision)))
+        VD.YAC.append(np.ravel(np.array(yac  , dtype=precision)))
+        VD.ZAC.append(np.ravel(np.array(zac  , dtype=precision)))
+        VD.XBC.append(np.ravel(np.array(xbc  , dtype=precision)))
+        VD.YBC.append(np.ravel(np.array(ybc  , dtype=precision)))
+        VD.ZBC.append(np.ravel(np.array(zbc  , dtype=precision)))
+        VD.XC.append(np.ravel(np.array(xc   , dtype=precision)))
+        VD.YC.append(np.ravel(np.array(yc   , dtype=precision)))
+        VD.ZC.append(np.ravel(np.array(zc   , dtype=precision)))
+        VD.X.append(np.ravel(np.array(x    , dtype=precision)))
+        VD.Y.append(np.ravel(np.array(y    , dtype=precision)))
+        VD.Z.append(np.ravel(np.array(z    , dtype=precision)))
+        VD.CS.append(np.ravel(np.array(cs_w , dtype=precision)))
+        VD.DY.append(np.ravel(np.array(del_y, dtype=precision)))
         
         side_idx += 1
     
@@ -492,11 +497,11 @@ def generate_interplated_airfoil_points(inboard_segment,outboard_segment,local_p
         """
         
         # Get points of inboard segment airfoil 
-        if inboard_segment.airfoil: 
-            if type(inboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: 
-                a_geo_1 = compute_naca_4series(inboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1)
+        if inboard_segment.airfoil:
+            if type(inboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                a_geo_1 = compute_naca_4series(inboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1, thickness_multiplier = inboard_segment.airfoil.thickness_multiplier)
             else:
-                a_geo_1 = import_airfoil_geometry(inboard_segment.airfoil.coordinate_file,ncpts*2+1)   
+                a_geo_1 = import_airfoil_geometry(inboard_segment.airfoil.coordinate_file,ncpts*2+1, thickness_multiplier = inboard_segment.airfoil.thickness_multiplier)
         else:
             a_geo_1 =  Data()
             a_geo_1.camber_coordinates = np.zeros(ncpts)              
@@ -504,11 +509,11 @@ def generate_interplated_airfoil_points(inboard_segment,outboard_segment,local_p
     
     
         # Get points of outboard segment airfoil     
-        if outboard_segment.airfoil: 
-            if type(outboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: 
-                a_geo_2 = compute_naca_4series(outboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1)
+        if outboard_segment.airfoil:
+            if type(outboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                a_geo_2 = compute_naca_4series(outboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1, thickness_multiplier = outboard_segment.airfoil.thickness_multiplier)
             else:
-                a_geo_2 = import_airfoil_geometry(outboard_segment.airfoil.coordinate_file,ncpts*2+1)   
+                a_geo_2 = import_airfoil_geometry(outboard_segment.airfoil.coordinate_file,ncpts*2+1, thickness_multiplier = outboard_segment.airfoil.thickness_multiplier)
         else:
             a_geo_2 =  Data()
             a_geo_2.camber_coordinates = np.zeros(ncpts)              

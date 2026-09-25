@@ -514,7 +514,7 @@ def vehicle_setup():
 
     # Engine                     
     engine                                     = RCAIDE.Library.Components.Powertrain.Converters.Engine()
-    engine.sea_level_power                     = 375. * Units.horsepower 
+    engine.sealevel_static_power                 = 375. * Units.horsepower
     engine.rated_speed                         = 3350. * Units.rpm 
     engine.power_specific_fuel_consumption     = 0.40  * Units['lb/hp/hr'] # This is a very rough estimate
     engine.origin                              = [[3.75,2.25,1.15]]

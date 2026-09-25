@@ -91,9 +91,9 @@ def generate_3d_wing_points(wing, n_points,plot_centerline = False):
 
         if  airfoil !=  None:
             if type(airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-                geometry = compute_naca_4series(airfoil.NACA_4_Series_code,n_points)
+                geometry = compute_naca_4series(airfoil.NACA_4_Series_code,n_points, thickness_multiplier = airfoil.thickness_multiplier)
             elif type(airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil:
-                geometry     = import_airfoil_geometry(airfoil.coordinate_file,n_points)
+                geometry     = import_airfoil_geometry(airfoil.coordinate_file,n_points, thickness_multiplier = airfoil.thickness_multiplier)
         else:
             t_c = str(int(wing.segments[current_seg].thickness_to_chord *  100)).zfill(4)
             geometry = compute_naca_4series(t_c,n_points)

@@ -43,6 +43,13 @@ class Airfoil(Component):
     number_of_points : int
         Number of points used to discretize the airfoil geometry (default: 201)
 
+    thickness_multiplier : float
+        Scale factor applied to the airfoil's thickness distribution about
+        its own camber line -- camber and chord are unaffected (default: 1.0,
+        no change). Set by wing_planform.py at geometry-import time; lets a
+        wing section's thickness be swept as a simple shape-optimization
+        variable without a new coordinate file per candidate thickness.
+
     Notes
     -----
     The Airfoil class serves as a base class for more specific airfoil implementations.
@@ -78,6 +85,7 @@ class Airfoil(Component):
         self.prev                       = None
         self.next                       = None
         self.number_of_points           = 201
+        self.thickness_multiplier       = 1.0
         
 
     def append_operating_conditions(self, segment): 

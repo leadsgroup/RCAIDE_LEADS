@@ -63,6 +63,8 @@ nosetests.xml
 *.dat
 *.csv
 *.xlsx
+# Engine deck shipped as tutorial data -- Turbofan_Surrogate loads it directly
+!Tutorials/Simulation_Turbofan_Engine_Deck_Mission/Boeing_737_800_Engine_Deck.xlsx
 
 # Geometry
 *.geo
@@ -84,3 +86,6 @@ nosetests.xml
 .vscode
 .idea
 *venv*
+
+# Solver logs (IPOPT writes this to the cwd on every run, no way to disable)
+IPOPT.out

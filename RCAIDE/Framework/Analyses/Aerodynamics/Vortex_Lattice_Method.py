@@ -106,11 +106,14 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.yaw_rate                                      = np.array([0.05 ,1E-20 ])  * Units.deg / Units.sec 
         
         # control surface flags                  
-        self.aileron_flag                                           = False 
-        self.flap_flag                                              = False 
-        self.rudder_flag                                            = False 
-        self.elevator_flag                                          = False 
+        self.aileron_flag                                           = False
+        self.flap_flag                                              = False
+        self.rudder_flag                                            = False
+        self.elevator_flag                                          = False
         self.slat_flag                                              = False
+        self.flaperon_flag                                          = False
+        self.elevon_flag                                            = False
+        self.ruddervator_flag                                       = False
                                       
         # surrogoate models                                  
         self.surrogates                                             = Data() 

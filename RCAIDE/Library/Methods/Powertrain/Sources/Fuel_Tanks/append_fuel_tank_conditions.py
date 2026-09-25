@@ -9,6 +9,7 @@
 # RCAIDE imports
 import  RCAIDE
 from RCAIDE.Framework.Mission.Common     import   Conditions
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
@@ -49,13 +50,18 @@ def append_fuel_tank_conditions(tank, segment):
     RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks 
     """ 
     ones_row    = segment.state.ones_row
-        
-    segment.state.conditions.energy.sources[tank.tag]                            = Conditions()  
-    segment.state.conditions.energy.sources[tank.tag].fuel_mass                  = tank.fuel.mass_properties.mass * ones_row(1)  
-    segment.state.conditions.energy.sources[tank.tag].mass_flow_rate             = 0 * ones_row(1)  
+
+    tank.design_full_liquid_mass = tank.volume_properties.net_volume * tank.fuel.density
+
+    segment.state.conditions.energy.sources[tank.tag]                            = Conditions()
+    segment.state.conditions.energy.sources[tank.tag].fuel_mass                  = tank.fuel.mass_properties.mass * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].mass_flow_rate             = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].refuel_mass_flow_rate      = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].refuel_target_mass         = np.nan * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].surface_temperature        = 0 * ones_row(1)  
-    segment.state.conditions.energy.sources[tank.tag].boil_off_flow_rate         = 0 * ones_row(1)  
+    segment.state.conditions.energy.sources[tank.tag].boil_off_flow_rate         = 0 * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].ullage                     = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].heater_power               = 0 * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].secondary_mass_flow_rate   = tank.secondary_mass_flow_rate * ones_row(1) 
     segment.state.conditions.energy.sources[tank.tag].power_split_ratio          = tank.power_split_ratio * ones_row(1) 
     segment.state.conditions.energy.sources[tank.tag].inputs                     = Conditions()         

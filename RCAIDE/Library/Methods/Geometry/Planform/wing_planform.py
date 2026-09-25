@@ -96,13 +96,13 @@ def wing_planform(wing):
                 else:
                     raise AssertionError("Quarter chord or leading edge sweep must be defined") 
              
-            if seg.airfoil != None: 
+            if seg.airfoil != None:
                 if type(seg.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
-                    seg.airfoil.geometry = compute_naca_4series(seg.airfoil.NACA_4_Series_code) 
-                    seg.thickness_to_chord = seg.airfoil.geometry.thickness_to_chord 
+                    seg.airfoil.geometry = compute_naca_4series(seg.airfoil.NACA_4_Series_code, thickness_multiplier = seg.airfoil.thickness_multiplier)
+                    seg.thickness_to_chord = seg.airfoil.geometry.thickness_to_chord
                 else:
-                    seg.airfoil.geometry = import_airfoil_geometry(seg.airfoil.coordinate_file) 
-                    seg.thickness_to_chord =  seg.airfoil.geometry.thickness_to_chord                 
+                    seg.airfoil.geometry = import_airfoil_geometry(seg.airfoil.coordinate_file, thickness_multiplier = seg.airfoil.thickness_multiplier)
+                    seg.thickness_to_chord =  seg.airfoil.geometry.thickness_to_chord
             
                 t_cs.append(seg.thickness_to_chord) 
             else: 
@@ -215,25 +215,9 @@ def wing_planform(wing):
         wing.aspect_ratio                    = AR
             
         # update remainder segment properties
-        segment_properties(wing) 
-        
-        # compute trap area 
-        seg_keys = list(wing.segments.keys())  
-        for tag, segment in enumerate(wing.segments): 
-            if segment.chords.reference_area_root:                      
-                segment_root_chord       = wing.segments[seg_keys[tag]].root_chord_percent * wing.chords.root 
-                segment_tip_chord        = wing.segments[seg_keys[tag+1]].root_chord_percent * wing.chords.root 
-                segnent_start_span       = wing.segments[seg_keys[tag]].percent_span_location * wing.spans.projected
-                reference_wing_span      = wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected
-    
-                next_seg = wing.segments[seg_keys[tag+1]]
-                trailing_edge_sweep = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=1.0) 
-                leading_edge_sweep  = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.0) 
-    
-                projected_root_chord = segment_root_chord + segnent_start_span * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
-                wing.areas.reference = (projected_root_chord + segment_tip_chord)/2 * reference_wing_span        
-        
-    else: 
+        segment_properties(wing)
+
+    else:
         # unpack
         sref        = wing.areas.reference
         taper       = wing.taper
@@ -242,13 +226,13 @@ def wing_planform(wing):
         dihedral    = wing.dihedral 
         vertical    = wing.vertical
         symmetric   = wing.xz_plane_symmetric  
-        if wing.airfoil != None: 
+        if wing.airfoil != None:
             if type(wing.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil: # check if naca 4 series of airfoil from datafile
-                wing.airfoil.geometry = compute_naca_4series(wing.airfoil.NACA_4_Series_code) 
-                wing.thickness_to_chord = wing.airfoil.geometry.thickness_to_chord 
+                wing.airfoil.geometry = compute_naca_4series(wing.airfoil.NACA_4_Series_code, thickness_multiplier = wing.airfoil.thickness_multiplier)
+                wing.thickness_to_chord = wing.airfoil.geometry.thickness_to_chord
             else:
-                wing.airfoil.geometry   = import_airfoil_geometry(wing.airfoil.coordinate_file) 
-                wing.thickness_to_chord =  wing.airfoil.geometry.thickness_to_chord 
+                wing.airfoil.geometry   = import_airfoil_geometry(wing.airfoil.coordinate_file, thickness_multiplier = wing.airfoil.thickness_multiplier)
+                wing.thickness_to_chord =  wing.airfoil.geometry.thickness_to_chord
                 
         t_c_w  = wing.thickness_to_chord   
         
@@ -366,6 +350,7 @@ def wing_planform(wing):
 
             projected_root_chord = segment_root_chord + segnent_start_span/2 * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
             wing.areas.reference = (projected_root_chord + segment_tip_chord)/2 * reference_wing_span
+            wing.aspect_ratio    = wing.spans.projected**2 / wing.areas.reference
             wing.chords.mean_aerodynamic =   2./3.*( projected_root_chord+segment_tip_chord - projected_root_chord*segment_tip_chord/(projected_root_chord+segment_tip_chord) )
             
             # estimating aerodynamic center coordinates

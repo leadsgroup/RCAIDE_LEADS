@@ -269,7 +269,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
 
     print('\n----- Non-Conformal LH2 Fuel Tank Volume Test -----')
 
-    fuel_volume_true = 612.218299
+    fuel_volume_true = 711.037900
     vehicle          = BWB_vehicle_setup()
     fuel_line        = vehicle.networks.fuel.distributors.fuel_line
     vehicle.networks.fuel.sources.clear()
@@ -450,7 +450,7 @@ def conformal_lh2_fuel_tank_volume_test():
 
     print('\n----- Conformal LH2 Fuel Tank Volume Test -----')
 
-    fuel_volume_true = 275.10296942
+    fuel_volume_true = 204.31467701
     vehicle          = BWB_vehicle_setup()
     fuel_line        = vehicle.networks.fuel.distributors.fuel_line
     vehicle.networks.fuel.sources.clear()

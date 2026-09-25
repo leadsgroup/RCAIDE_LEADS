@@ -147,9 +147,9 @@ def compute_systems_weight(vehicle):
             XL  = fuselage.lengths.total / Units.ft
             WF  = fuselage.width / Units.ft
     FPAREA      = XL * WF
-    NPASS       = vehicle.number_of_passengers
+    NPASS       = vehicle.number_of_seats or vehicle.number_of_passengers
     WAPU        = 54 * FPAREA ** 0.3 + 5.4 * NPASS ** 0.9  # apu weight
-    if vehicle.number_of_passengers >= 150:
+    if NPASS >= 150:
         NFLCR = 3  # number of flight crew
     else:
         NFLCR = 2

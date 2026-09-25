@@ -102,9 +102,9 @@ def vehicle_setup():
     wing.xz_plane_symmetric      = True
     wing.t_tail                  = False 
     wing.dynamic_pressure_ratio  = 1.0  
-    wing.aft_center_body.origin  = [[wing.chords.root - 2/3 * wing.aft_center_body.length,0,0]]    
-    wing.aft_center_body.length  = 9.021    
-    wing.aft_center_body.taper   = 0.85    
+    wing.aft_center_body.length  = 9.021
+    wing.aft_center_body.origin  = [[wing.chords.root - 2/3 * wing.aft_center_body.length,0,0]]
+    wing.aft_center_body.taper   = 0.85
     wing.center_body.origin      = [[0.5*(wing.chords.root - wing.aft_center_body.length),0,0]]
      
     cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
@@ -398,11 +398,11 @@ def vehicle_setup():
     ##  Systems
     ##-------------------------------------------------------------------------------------------------------------------------    
     avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[4,0,0]]   
+    avionics.origin                   = [[2.5,0,0]]
     net.systems.append(avionics)
 
     flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[6,0,0]]
+    flight_controls.origin            = [[3.5,0,0]]
     net.systems.append(flight_controls)
 
     auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
@@ -410,15 +410,15 @@ def vehicle_setup():
     net.systems.append(auxillary_power_unit)
 
     electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[7,0,0]]
+    electrical.origin                 = [[3.5,0,0]]
     net.systems.append(electrical)
 
     hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[6,0,0]]
+    hydraulics.origin                 = [[3.5,0,0]]
     net.systems.append(hydraulics)
 
     environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[6,0,-0.5]]
+    environmental_controls.origin     = [[3.5,0,-0.5]]
     net.systems.append(environmental_controls)
 
     instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
@@ -426,7 +426,7 @@ def vehicle_setup():
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[7,0,0]]
+    furnishings.origin                = [[4.0,0,0]]
     net.systems.append(furnishings)
 
     #------------------------------------------------------------------------------------------------------------------------- 

@@ -108,18 +108,24 @@ def plot_drag_components(results,
     axis_1 = plt.subplot(1,1,1)
     fig.set_size_inches(width,height)
     
-    for i in range(len(results.segments)): 
-        time   = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min 
-        drag   = results.segments[i].conditions.aerodynamics.coefficients.drag 
+    first_plotted = False
+    for i in range(len(results.segments)):
+        drag   = results.segments[i].conditions.aerodynamics.coefficients.drag
+        if not hasattr(drag.parasite, 'total'):
+            # ground segment (e.g. Dormancy, Refuel) -- aerodynamics update never ran
+            continue
+
+        time   = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
         cdp    = drag.parasite.total[:,0]
         cdi    = drag.induced.total[:,0]
         cdc    = drag.compressible.total[:,0]
-        cdm    = drag.miscellaneous.total[:,0] 
-        cdf    = drag.form.total[:,0] 
-        cdk    = drag.cooling.total[:,0] 
-        cd     = drag.total[:,0]  
-        
-        if i ==  0:
+        cdm    = drag.miscellaneous.total[:,0]
+        cdf    = drag.form.total[:,0]
+        cdk    = drag.cooling.total[:,0]
+        cd     = drag.total[:,0]
+
+        if not first_plotted:
+            first_plotted = True
             axis_1.plot(time, cdp, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = r'$C_{Dpar}$') 
             axis_1.plot(time,cdi, color = line_colors[i], marker = ps.markers[1], linewidth = ps.line_width,  label = r'$C_{Dind}$')  
             axis_1.plot(time, cdc, color = line_colors[i], marker = ps.markers[2], linewidth = ps.line_width,  label =r'$C_{Dcomp}$')  

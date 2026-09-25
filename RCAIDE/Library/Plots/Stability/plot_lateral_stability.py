@@ -110,28 +110,40 @@ def plot_lateral_stability(results,
     axis_2 = plt.subplot(2,2,2)  
     axis_3 = plt.subplot(2,2,3)    
     
-    for i in range(len(results.segments)): 
-        time     = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min  
-        phi      = -results.segments[i].conditions.aerodynamics.angles.phi[:,0] / Units.deg          
-        delta_a  = results.segments[i].conditions.control_surfaces.aileron.deflection[:,0] / Units.deg  
-        delta_r  = results.segments[i].conditions.control_surfaces.rudder.deflection[:,0] / Units.deg   
-          
+    has_aileron = 'aileron' in results.segments[0].conditions.control_surfaces
+    has_rudder  = 'rudder'  in results.segments[0].conditions.control_surfaces
+    if not has_aileron:
+        import warnings
+        warnings.warn("No aileron found in control_surfaces; skipping aileron deflection plot.")
+    if not has_rudder:
+        import warnings
+        warnings.warn("No rudder found in control_surfaces; skipping rudder deflection plot.")
+
+    for i in range(len(results.segments)):
+        conditions   = results.segments[i].conditions
+        time         = conditions.frames.inertial.time[:,0] / Units.min
+        phi          = -conditions.aerodynamics.angles.phi[:,0] / Units.deg
+
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')
-        
-        axis_1.plot(time, phi, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name)
-        axis_1.set_ylabel(r'$Bank Angle (deg)$') 
-        set_axes(axis_1)     
 
-        axis_2.plot(time,delta_a , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
+        axis_1.plot(time, phi, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name)
+        axis_1.set_ylabel(r'$Bank Angle (deg)$')
+        set_axes(axis_1)
+
+        if has_aileron:
+            delta_a = conditions.control_surfaces.aileron.deflection[:,0] / Units.deg
+            axis_2.plot(time,delta_a , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_2.set_xlabel('Time (mins)')
         axis_2.set_ylabel(r'Aileron Defl. (deg)')
-        set_axes(axis_2)  
+        set_axes(axis_2)
 
-        axis_3.plot(time,delta_r , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
+        if has_rudder:
+            delta_r = conditions.control_surfaces.rudder.deflection[:,0] / Units.deg
+            axis_3.plot(time,delta_r , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_3.set_xlabel('Time (mins)')
         axis_3.set_ylabel(r'Rudder Defl. (deg)')
-        set_axes(axis_3)         
+        set_axes(axis_3)
     
     axis_1.set_ylim([-40, 40])  
     axis_2.set_ylim([-40, 40])    

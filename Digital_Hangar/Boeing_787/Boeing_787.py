@@ -666,12 +666,12 @@ def vehicle_setup() :
     turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()   
     turbofan1.origin                             = [[18, 10.000,-0.953 ]]
     turbofan1.tag                                = 'propulsor_1'    
-    turbofan1.length                             = 6.0                    
+    turbofan1.length                             = 4.95
     turbofan1.diameter                           = 2.822                  
     turbofan1.bypass_ratio                       = 9.1                        
     turbofan1.design_altitude                    = 36000*Units.ft             
     turbofan1.design_mach_number                 = 0.85                     
-    turbofan1.design_thrust                      = 80000* Units.N
+    turbofan1.design_thrust                      = 60243.8 * Units.N
     
     # working fluid                   
     turbofan1.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air() 
@@ -728,7 +728,7 @@ def vehicle_setup() :
     combustor                                      = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.997                    
-    combustor.turbine_inlet_temperature            = 1440                  
+    combustor.turbine_inlet_temperature            = 1250
     combustor.pressure_ratio                       = 0.94                     
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan1.combustor                             = combustor
@@ -754,10 +754,10 @@ def vehicle_setup() :
 
     # Nacelle 
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
-    nacelle.diameter                            = 3.2
+    nacelle.diameter                            = 3.556
     nacelle.length                              = 4.8
     nacelle.tag                                 = 'nacelle_1'
-    nacelle.inlet_diameter                      = 2.5
+    nacelle.inlet_diameter                      = 2.822
     nacelle.origin                              = [[17.818, 10.000,-0.953]] 
     nacelle.areas.wetted                        = np.pi*nacelle.diameter*nacelle.length
     nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()

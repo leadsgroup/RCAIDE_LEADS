@@ -49,8 +49,8 @@ def vehicle_setup():
     # ################################################# Vehicle-level Properties #################################################   
     vehicle.mass_properties.max_takeoff               = 79000 * Units.kilogram    
     vehicle.mass_properties.takeoff                   = 79000 * Units.kilogram   
-    vehicle.mass_properties.max_fuel                  = 70000 * Units.lbs  
-    vehicle.mass_properties.operating_empty           = 41412.0 * Units.lbs
+    vehicle.mass_properties.max_fuel                  = 26837 * Units.kilogram
+    vehicle.mass_properties.operating_empty           = 41412.0 * Units.kilogram
     vehicle.mass_properties.max_payload               = 21000.  * Units.kilogram  
     vehicle.mass_properties.payload                   = 0.5*vehicle.mass_properties.max_payload
     vehicle.mass_properties.fuel                      = 0.5*vehicle.mass_properties.max_fuel
@@ -136,20 +136,20 @@ def vehicle_setup():
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
-    wing.twists.root                      = 2.5 * Units.degrees 
-    wing.twists.tip                       = 3.5  * Units.degrees  
-    
+    wing.twists.root                      = 3.5 * Units.degrees
+    wing.twists.tip                       = -3  * Units.degrees
+
 
     # Wing Segments
-    root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()    
+    root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     root_airfoil.coordinate_file          = airfoil_file_path + 'transonic_wing_root_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Root'
-    segment.percent_span_location         = 0.0 
+    segment.percent_span_location         = 0.0
     segment.root_chord_percent            = 1.
     segment.dihedral_outboard             = 3.5 * Units.degrees
-    segment.twist                         = 2.5   * Units.degrees
-    segment.sweeps.quarter_chord          = 28.225 * Units.degrees 
+    segment.twist                         = wing.twists.root - (wing.twists.root -wing.twists.tip)*segment.percent_span_location
+    segment.sweeps.quarter_chord          = 28.225 * Units.degrees
     segment.thickness_to_chord            = 0.11
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
@@ -158,11 +158,11 @@ def vehicle_setup():
     yehudi_airfoil.coordinate_file        = airfoil_file_path + 'transonic_wing_inboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Yehudi'
-    segment.percent_span_location         = 0.324 
+    segment.percent_span_location         = 0.324
     segment.root_chord_percent            = 0.5
-    segment.twist                         = 2.5  * Units.degrees
+    segment.twist                         =  wing.twists.root - (wing.twists.root -wing.twists.tip)*segment.percent_span_location
     segment.dihedral_outboard             = 5.5 * Units.degrees
-    segment.sweeps.quarter_chord          = 25. * Units.degrees   
+    segment.sweeps.quarter_chord          = 25. * Units.degrees
     segment.thickness_to_chord            = 0.12
     segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
@@ -171,11 +171,11 @@ def vehicle_setup():
     mid_airfoil.coordinate_file           = airfoil_file_path + 'transonic_wing_outboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Section_2'
-    segment.percent_span_location         = 0.963 
-    segment.root_chord_percent            = 0.220  
+    segment.percent_span_location         = 0.963
+    segment.root_chord_percent            = 0.220
     segment.dihedral_outboard             = 5.5 * Units.degrees
-    segment.sweeps.quarter_chord          = 56.75 * Units.degrees 
-    segment.twist                         = 0 * Units.degrees 
+    segment.sweeps.quarter_chord          = 56.75 * Units.degrees
+    segment.twist                         =  wing.twists.root - (wing.twists.root -wing.twists.tip)*segment.percent_span_location
     segment.thickness_to_chord            = 0.13
     segment.append_airfoil(mid_airfoil)
     wing.append_segment(segment)
@@ -184,11 +184,11 @@ def vehicle_setup():
     tip_airfoil.coordinate_file           = airfoil_file_path +  'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Tip'
-    segment.percent_span_location         = 1. 
+    segment.percent_span_location         = 1.
     segment.root_chord_percent            = 0.10077
     segment.dihedral_outboard             = 0.
-    segment.twist                         = 0 * Units.degrees
-    segment.sweeps.quarter_chord          = 56.75 * Units.degrees 
+    segment.twist                         =  wing.twists.root - (wing.twists.root -wing.twists.tip)*segment.percent_span_location
+    segment.sweeps.quarter_chord          = 56.75 * Units.degrees
     segment.thickness_to_chord            = 0.14
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
@@ -618,8 +618,8 @@ def vehicle_setup():
     turbofan.bypass_ratio                          = 5.4          
     turbofan.diameter                              = 1.5494
     turbofan.design_altitude                       = 35000.0*Units.ft
-    turbofan.design_mach_number                    = 0.78   
-    turbofan.design_thrust                         = 35000.0* Units.N 
+    turbofan.design_mach_number                    = 0.78
+    turbofan.design_thrust                         = 25603.0* Units.N
                 
     # fan                   
     fan                                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
@@ -674,7 +674,7 @@ def vehicle_setup():
     combustor.tag                                     = 'Comb'
     combustor.efficiency                              = 0.99 
     combustor.alphac                                  = 1.0     
-    combustor.turbine_inlet_temperature               = 1600
+    combustor.turbine_inlet_temperature               = 1450
     combustor.pressure_ratio                          = 0.95
     combustor.air_mass_flow_rate_take_off             = 40      
     combustor.air_data                                = RCAIDE.Library.Attributes.Gases.Air() 

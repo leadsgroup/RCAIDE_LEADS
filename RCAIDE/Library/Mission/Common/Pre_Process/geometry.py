@@ -200,11 +200,13 @@ def geometry_preprocess_routine(analyses):
             vehicle.number_of_first_class_seats    = NPF
             vehicle.number_of_business_class_seats = NPB
             vehicle.number_of_economy_class_seats  = NPE
-        else:  
+            vehicle.number_of_seats                = total_seats
+        else:
             vehicle.number_of_first_class_seats    = vehicle.number_of_passengers / 20.
             vehicle.number_of_business_class_seats = vehicle.number_of_passengers / 10.
-            vehicle.number_of_economy_class_seats  = vehicle.number_of_passengers - NPF - NPB 
-     
+            vehicle.number_of_economy_class_seats  = vehicle.number_of_passengers - NPF - NPB
+            vehicle.number_of_seats                = vehicle.number_of_passengers
+
     # --------------------------------------------------------------------------------------------------------------------
     # Compute fuel volume  
     # -------------------------------------------------------------------------------------------------------------------- 

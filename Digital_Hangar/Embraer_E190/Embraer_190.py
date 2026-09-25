@@ -53,7 +53,7 @@ def vehicle_setup():
     vehicle.mass_properties.max_takeoff               = 51800. # kg
     vehicle.mass_properties.takeoff                   = 51800. # kg
     vehicle.mass_properties.max_zero_fuel             = 40900. # kg
-    vehicle.mass_properties.max_fuel                  = 13100. # kg
+    vehicle.mass_properties.max_fuel                  = 13975. # kg
     vehicle.mass_properties.max_payload               = 12900. # kg
     vehicle.mass_properties.operating_empty           = 27900  #  
 
@@ -140,8 +140,8 @@ def vehicle_setup():
     wing.vertical                = False
     wing.xz_plane_symmetric      = True       
     wing.areas.exposed           = 0.80 * wing.areas.wetted        
-    wing.twists.root             = 2.0 * Units.degrees
-    wing.twists.tip              = -1.0 * Units.degrees    
+    wing.twists.root             = 3.0 * Units.degrees
+    wing.twists.tip              = -2.0 * Units.degrees
     wing.dynamic_pressure_ratio  = 1.0
      
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -243,15 +243,15 @@ def vehicle_setup():
     wing.aspect_ratio            = 5.5
     wing.spans.projected         = 12
     wing.sweeps.quarter_chord    = 34.5 * Units.deg
-    wing.thickness_to_chord      = 0.16
+    wing.thickness_to_chord      = 0.10
     wing.taper                   = 0.2
     wing.dihedral                = 8.4 * Units.degrees
     wing.origin                  = [[31,0,1.5]]
     wing.vertical                = False
-    wing.xz_plane_symmetric      = True          
-    wing.areas.exposed           = 0.9 * wing.areas.wetted 
-    wing.twists.root             = 2.0 * Units.degrees
-    wing.twists.tip              = 2.0 * Units.degrees    
+    wing.xz_plane_symmetric      = True
+    wing.areas.exposed           = 0.9 * wing.areas.wetted
+    wing.twists.root             = 0.0 * Units.degrees
+    wing.twists.tip              = 0.0 * Units.degrees
     wing.dynamic_pressure_ratio  = 0.90
 
     # control surfaces -------------------------------------------
@@ -278,7 +278,7 @@ def vehicle_setup():
     wing.sweeps.quarter_chord    = 35. * Units.deg
     wing.chords.root             = 4.68
     wing.chords.tip              = 1.45
-    wing.thickness_to_chord      = 0.16
+    wing.thickness_to_chord      = 0.10
     wing.taper                   = 0.31
     wing.dihedral                = 0.00
     wing.origin                  = [[30.4,0,1.675]]
@@ -559,7 +559,7 @@ def vehicle_setup():
     fuel_tank.lengths.external                  = 2
     fuel_tank.widths.external                   = 2
     fuel_tank.geometry_type                     = 'prismatic'
-    fuel_tank.heights.external                  = 0.75
+    fuel_tank.heights.external                  = 0.25
     fuel_tank.origin                            = [[15.0,0.0, 0.0]]
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A()
     fuel_tank.fuel.origin                       = [[15.0,0.0, 0.0]]
@@ -577,7 +577,7 @@ def vehicle_setup():
     turbofan.diameter                               = 52 *  Units.inches
     turbofan.design_altitude                        = 35000.0*Units.ft
     turbofan.design_mach_number                     = 0.78
-    turbofan.design_thrust                          = 22500 * Units.N
+    turbofan.design_thrust                          = 19700 * Units.N
     turbofan.origin                                 = [[13.15,4.38,-2.1]]
     turbofan.mass_properties.center_of_gravity      = [[turbofan.length /2,0,0]]
 
@@ -633,21 +633,21 @@ def vehicle_setup():
     # low pressure turbine  
     low_pressure_turbine                           = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     low_pressure_turbine.tag                       ='lpt'
-    low_pressure_turbine.mechanical_efficiency     = 0.99
+    low_pressure_turbine.mechanical_efficiency     = 0.98
     low_pressure_turbine.polytropic_efficiency     = 0.93 
     turbofan.low_pressure_turbine                  = low_pressure_turbine
    
     # high pressure turbine     
     high_pressure_turbine                          = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     high_pressure_turbine.tag                      ='hpt'
-    high_pressure_turbine.mechanical_efficiency    = 0.99
+    high_pressure_turbine.mechanical_efficiency    = 0.98
     high_pressure_turbine.polytropic_efficiency    = 0.93 
     turbofan.high_pressure_turbine                 = high_pressure_turbine 
    
     # combustor     
     combustor                                      = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
     combustor.tag                                  = 'Comb'
-    combustor.efficiency                           = 0.99 
+    combustor.efficiency                           = 0.98
     combustor.alphac                               = 1.0     
     combustor.turbine_inlet_temperature            = 1550
     combustor.pressure_ratio                       = 0.95
@@ -658,7 +658,7 @@ def vehicle_setup():
     core_nozzle                                    = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
     core_nozzle.tag                                = 'core nozzle'
     core_nozzle.polytropic_efficiency              = 0.95
-    core_nozzle.pressure_ratio                     = 0.99  
+    core_nozzle.pressure_ratio                     = 0.98
     core_nozzle.diameter                           = 0.92    
     turbofan.core_nozzle                           = core_nozzle
           
@@ -666,7 +666,7 @@ def vehicle_setup():
     fan_nozzle                                  = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
     fan_nozzle.tag                              = 'fan nozzle'
     fan_nozzle.polytropic_efficiency            = 0.95
-    fan_nozzle.pressure_ratio                   = 0.99 
+    fan_nozzle.pressure_ratio                   = 0.98
     fan_nozzle.diameter                         = 1.659
     turbofan.fan_nozzle                         = fan_nozzle 
     

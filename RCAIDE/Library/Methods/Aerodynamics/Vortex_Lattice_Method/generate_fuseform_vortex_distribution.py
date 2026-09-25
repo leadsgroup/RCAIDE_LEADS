@@ -202,11 +202,11 @@ def generate_fuseform_vortex_distribution(VD,fus,n_cw,n_sw,spc,precision):
             panel_numbers  = np.linspace(1,n_cw,n_cw, dtype=np.int16)
             exposed_leading_edge_flag = 1
             
-            VD.leading_edge_indices      = np.append(VD.leading_edge_indices   , LE_inds       ) 
-            VD.trailing_edge_indices     = np.append(VD.trailing_edge_indices  , TE_inds       )            
-            VD.panels_per_strip          = np.append(VD.panels_per_strip       , RNMAX         )
-            VD.chordwise_panel_number    = np.append(VD.chordwise_panel_number , panel_numbers )   
-            VD.exposed_leading_edge_flag = np.append(VD.exposed_leading_edge_flag, exposed_leading_edge_flag)
+            VD.leading_edge_indices.append(np.ravel(LE_inds))
+            VD.trailing_edge_indices.append(np.ravel(TE_inds))
+            VD.panels_per_strip.append(np.ravel(RNMAX))
+            VD.chordwise_panel_number.append(np.ravel(panel_numbers))
+            VD.exposed_leading_edge_flag.append(np.atleast_1d(exposed_leading_edge_flag))
             
         
         # ------------------------------------------------     
@@ -301,57 +301,57 @@ def generate_fuseform_vortex_distribution(VD,fus,n_cw,n_sw,spc,precision):
         VD.n_w    += 1             
         VD.n_cp   += n_panels        
         
-        # store this wing's discretization information  
-        first_panel_ind  = VD.XAH.size
+        # store this wing's discretization information
+        first_panel_ind  = VD.n_cp - n_panels # equal to the old VD.XAH.size, now that XAH is accumulated as a list
         first_strip_ind  = VD.chordwise_breaks.size
         chordwise_breaks = first_panel_ind + np.arange(n_panels)[0::n_cw]
         ID               = VD.counter*1
-        
+
         VD.chordwise_breaks = np.append(VD.chordwise_breaks, np.int32(chordwise_breaks))
-        VD.spanwise_breaks  = np.append(VD.spanwise_breaks , np.int32(first_strip_ind ))            
+        VD.spanwise_breaks  = np.append(VD.spanwise_breaks , np.int32(first_strip_ind ))
         VD.n_sw             = np.append(VD.n_sw            , np.int16(n_sw)            )
         VD.n_cw             = np.append(VD.n_cw            , np.int16(n_cw)            )
-        VD.surface_ID       = np.append(VD.surface_ID      , np.ones(n_cw*n_sw)*ID*xz_sym_sign) # Update me when the loop is gone
-        VD.surface_ID_full  = np.append(VD.surface_ID_full , np.ones((n_cw+1)*(n_sw+1))*ID*xz_sym_sign) # Update me when the loop is gone    
-                
+        VD.surface_ID.append(np.ones(n_cw*n_sw)*ID*xz_sym_sign)
+        VD.surface_ID_full.append(np.ones((n_cw+1)*(n_sw+1))*ID*xz_sym_sign)
+
         # ---------------------------------------------------------------------------------------
         # STEP 7: Store wing in vehicle vector
-        # --------------------------------------------------------------------------------------- 
-        VD.XAH    = np.append(VD.XAH  , np.array(fhs_xah  , dtype=precision))
-        VD.YAH    = np.append(VD.YAH  , np.array(fhs_yah  , dtype=precision))
-        VD.ZAH    = np.append(VD.ZAH  , np.array(fhs_zah  , dtype=precision))
-        VD.XBH    = np.append(VD.XBH  , np.array(fhs_xbh  , dtype=precision))
-        VD.YBH    = np.append(VD.YBH  , np.array(fhs_ybh  , dtype=precision))
-        VD.ZBH    = np.append(VD.ZBH  , np.array(fhs_zbh  , dtype=precision))
-        VD.XCH    = np.append(VD.XCH  , np.array(fhs_xch  , dtype=precision))
-        VD.YCH    = np.append(VD.YCH  , np.array(fhs_ych  , dtype=precision))
-        VD.ZCH    = np.append(VD.ZCH  , np.array(fhs_zch  , dtype=precision))            
-        VD.XA1    = np.append(VD.XA1  , np.array(fhs_xa1  , dtype=precision))
-        VD.YA1    = np.append(VD.YA1  , np.array(fhs_ya1  , dtype=precision))
-        VD.ZA1    = np.append(VD.ZA1  , np.array(fhs_za1  , dtype=precision))
-        VD.XA2    = np.append(VD.XA2  , np.array(fhs_xa2  , dtype=precision))
-        VD.YA2    = np.append(VD.YA2  , np.array(fhs_ya2  , dtype=precision))
-        VD.ZA2    = np.append(VD.ZA2  , np.array(fhs_za2  , dtype=precision))        
-        VD.XB1    = np.append(VD.XB1  , np.array(fhs_xb1  , dtype=precision))
-        VD.YB1    = np.append(VD.YB1  , np.array(fhs_yb1  , dtype=precision))
-        VD.ZB1    = np.append(VD.ZB1  , np.array(fhs_zb1  , dtype=precision))
-        VD.XB2    = np.append(VD.XB2  , np.array(fhs_xb2  , dtype=precision))                
-        VD.YB2    = np.append(VD.YB2  , np.array(fhs_yb2  , dtype=precision))        
-        VD.ZB2    = np.append(VD.ZB2  , np.array(fhs_zb2  , dtype=precision)) 
-        VD.XAC    = np.append(VD.XAC  , np.array(fhs_xac  , dtype=precision))
-        VD.YAC    = np.append(VD.YAC  , np.array(fhs_yac  , dtype=precision)) 
-        VD.ZAC    = np.append(VD.ZAC  , np.array(fhs_zac  , dtype=precision)) 
-        VD.XBC    = np.append(VD.XBC  , np.array(fhs_xbc  , dtype=precision))
-        VD.YBC    = np.append(VD.YBC  , np.array(fhs_ybc  , dtype=precision)) 
-        VD.ZBC    = np.append(VD.ZBC  , np.array(fhs_zbc  , dtype=precision))  
-        VD.XC     = np.append(VD.XC   , np.array(fhs_xc   , dtype=precision))
-        VD.YC     = np.append(VD.YC   , np.array(fhs_yc   , dtype=precision))
-        VD.ZC     = np.append(VD.ZC   , np.array(fhs_zc   , dtype=precision))  
-        VD.X      = np.append(VD.X    , np.array(fhs_x    , dtype=precision))
-        VD.Y      = np.append(VD.Y    , np.array(fhs_y    , dtype=precision))
-        VD.Z      = np.append(VD.Z    , np.array(fhs_z    , dtype=precision))         
-        VD.CS     = np.append(VD.CS   , np.array(fhs_cs , dtype=precision)) 
-        VD.DY     = np.append(VD.DY   , np.array(fhs_del_y, dtype=precision))
+        # ---------------------------------------------------------------------------------------
+        VD.XAH.append(np.ravel(np.array(fhs_xah  , dtype=precision)))
+        VD.YAH.append(np.ravel(np.array(fhs_yah  , dtype=precision)))
+        VD.ZAH.append(np.ravel(np.array(fhs_zah  , dtype=precision)))
+        VD.XBH.append(np.ravel(np.array(fhs_xbh  , dtype=precision)))
+        VD.YBH.append(np.ravel(np.array(fhs_ybh  , dtype=precision)))
+        VD.ZBH.append(np.ravel(np.array(fhs_zbh  , dtype=precision)))
+        VD.XCH.append(np.ravel(np.array(fhs_xch  , dtype=precision)))
+        VD.YCH.append(np.ravel(np.array(fhs_ych  , dtype=precision)))
+        VD.ZCH.append(np.ravel(np.array(fhs_zch  , dtype=precision)))
+        VD.XA1.append(np.ravel(np.array(fhs_xa1  , dtype=precision)))
+        VD.YA1.append(np.ravel(np.array(fhs_ya1  , dtype=precision)))
+        VD.ZA1.append(np.ravel(np.array(fhs_za1  , dtype=precision)))
+        VD.XA2.append(np.ravel(np.array(fhs_xa2  , dtype=precision)))
+        VD.YA2.append(np.ravel(np.array(fhs_ya2  , dtype=precision)))
+        VD.ZA2.append(np.ravel(np.array(fhs_za2  , dtype=precision)))
+        VD.XB1.append(np.ravel(np.array(fhs_xb1  , dtype=precision)))
+        VD.YB1.append(np.ravel(np.array(fhs_yb1  , dtype=precision)))
+        VD.ZB1.append(np.ravel(np.array(fhs_zb1  , dtype=precision)))
+        VD.XB2.append(np.ravel(np.array(fhs_xb2  , dtype=precision)))
+        VD.YB2.append(np.ravel(np.array(fhs_yb2  , dtype=precision)))
+        VD.ZB2.append(np.ravel(np.array(fhs_zb2  , dtype=precision)))
+        VD.XAC.append(np.ravel(np.array(fhs_xac  , dtype=precision)))
+        VD.YAC.append(np.ravel(np.array(fhs_yac  , dtype=precision)))
+        VD.ZAC.append(np.ravel(np.array(fhs_zac  , dtype=precision)))
+        VD.XBC.append(np.ravel(np.array(fhs_xbc  , dtype=precision)))
+        VD.YBC.append(np.ravel(np.array(fhs_ybc  , dtype=precision)))
+        VD.ZBC.append(np.ravel(np.array(fhs_zbc  , dtype=precision)))
+        VD.XC.append(np.ravel(np.array(fhs_xc   , dtype=precision)))
+        VD.YC.append(np.ravel(np.array(fhs_yc   , dtype=precision)))
+        VD.ZC.append(np.ravel(np.array(fhs_zc   , dtype=precision)))
+        VD.X.append(np.ravel(np.array(fhs_x    , dtype=precision)))
+        VD.Y.append(np.ravel(np.array(fhs_y    , dtype=precision)))
+        VD.Z.append(np.ravel(np.array(fhs_z    , dtype=precision)))
+        VD.CS.append(np.ravel(np.array(fhs_cs , dtype=precision)))
+        VD.DY.append(np.ravel(np.array(fhs_del_y, dtype=precision)))
         
         side_idx += 1 
      

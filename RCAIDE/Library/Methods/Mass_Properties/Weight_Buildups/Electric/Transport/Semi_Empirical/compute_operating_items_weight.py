@@ -66,16 +66,17 @@ def compute_operating_items_weight(vehicle):
             
     WSRV        = (5.164 * NPF + 3.846 * NPB + 2.529 * NPE) * (DESRNG / VMAX) ** 0.225  # passenger service weight
 
-    if vehicle.number_of_passengers >= 150:
+    NPASS = vehicle.number_of_seats or vehicle.number_of_passengers
+    if NPASS >= 150:
         NFLCR = 3  # number of flight crew
-        NGALC = 1 + np.floor(vehicle.number_of_passengers / 250.)  # number of galley crew
+        NGALC = 1 + np.floor(NPASS / 250.)  # number of galley crew
     else:
         NFLCR = 2
         NGALC = 0
-    if vehicle.number_of_passengers < 51:
+    if NPASS < 51:
         NFLA = 1  # number of flight attendants, NSTU in FLOPS
     else:
-        NFLA = 1 + np.floor(vehicle.number_of_passengers / 40.)
+        NFLA = 1 + np.floor(NPASS / 40.)
 
     WFLAAB = NFLA * 155 + NGALC * 200  # flight attendant weight, WSTUAB in FLOPS
     WFLCRB = NFLCR * 225  # flight crew and baggage weight

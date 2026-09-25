@@ -3,6 +3,7 @@
 # Created:  Aug 2026, RCAIDE Team
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_conditions import append_converter_power_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  append_reformer_fuel_cell_conditions
@@ -35,28 +36,9 @@ def append_reformer_fuel_cell_conditions(reformer_fuel_cell,segment):
     RCAIDE.Library.Methods.Powertrain.Converters.Reformer_Fuel_Cell.compute_reformer_fuel_cell_performance
     """
 
-    ones_row    = segment.state.ones_row
-
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag]                          = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs                   = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].fuel_mass_flow_rate       = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs                  = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power             = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power            = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.propulsive  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.mechanical  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.electrical  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.chemical    = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.pneumatic   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.hydraulic   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.thermal     = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.propulsive = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.mechanical = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.electrical = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.chemical   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.pneumatic  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.hydraulic  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.thermal    = 0 * ones_row(1)
+    ones_row  = segment.state.ones_row
+    rfc_conditions = append_converter_power_conditions(reformer_fuel_cell, segment)
+    rfc_conditions.fuel_mass_flow_rate = 0. * ones_row(1)
 
     reformer  = reformer_fuel_cell.reformer
     fuel_cell = reformer_fuel_cell.fuel_cell

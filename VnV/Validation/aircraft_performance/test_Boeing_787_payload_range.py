@@ -32,7 +32,7 @@ def main():
     missions = missions_setup(mission)
      
     # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.11)
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.10)
 
     apm = {
         "range":            np.array([0., 5500., 9500., 10000.]) * Units.nmi,
@@ -53,11 +53,11 @@ def main():
     # #####################################################################################################
         
     truth_values = {
-        "range":            np.array([       0.        , 10090424.13008407, 17488065.51305655, 18153977.03778774]),
-        "payload":          np.array([44000.        , 44000.        , 10271.2719788,     0.        ]),
-        "oew_plus_payload": np.array([160289.63081657, 160289.63081657, 126607.        , 116289.63081657]),
-        "fuel":             np.array([     0.        ,  67640.36918343, 101323.        , 101323.        ]),
-        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 217612.63081657]),
+        "range":            np.array([       0.        , 10381833.99602455, 17758948.49934158, 18487095.5382325 ]),
+        "payload":          np.array([44000.        , 44000.        , 10339.83       ,     0.        ]),
+        "oew_plus_payload": np.array([160267.17      , 160267.17      , 126607.        , 116267.17      ]),
+        "fuel":             np.array([     0.        ,  67662.83      , 101323.        , 101323.        ]),
+        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 217590.17      ]),
     }
     # ########################################### WARNING #################################################
     ###### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ################
@@ -476,8 +476,9 @@ def base_analysis(vehicle):
     weights.settings.weight_correction_additions.empty.structural.paint      = 450 
     weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.number_of_passengers
     weights.settings.weight_correction_additions.empty.propulsion.battery    = 150 
-    weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.1   
-    weights.settings.weight_correction_factors.empty.systems.electrical      = 2.7 
+    weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.1
+    weights.settings.weight_correction_factors.empty.systems.electrical      = 2.7
+    weights.settings.weight_correction_factors.empty.propulsion.engines      = 1.031
     analyses.append(weights)
 
     # ------------------------------------------------------------------

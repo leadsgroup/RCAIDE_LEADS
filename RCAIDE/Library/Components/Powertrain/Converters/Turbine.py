@@ -28,6 +28,15 @@ class Turbine(Converter):
     polytropic_efficiency : float
         Efficiency of the expansion process accounting for losses. Default is 1.0.
 
+    pressure_ratio : float
+        Design-point pressure ratio, for a turbine with no directly-coupled
+        compressor to balance power against (e.g. a turboprop's free/power
+        turbine, driving only a propeller through a gearbox). When set,
+        `design_turboprop` uses it directly to close the free turbine's
+        design point, instead of a compressor/turbine power balance. Default
+        is None (unused by turbines that get their work requirement from a
+        compressor, e.g. a turbofan/turbojet's HP/LP turbines).
+
     Notes
     -----
     The Turbine class models the expansion and work extraction process in a 
@@ -74,7 +83,8 @@ class Turbine(Converter):
         #set the default values
         self.tag                               ='Turbine'
         self.mechanical_efficiency             = 1.0
-        self.polytropic_efficiency             = 1.0 
+        self.polytropic_efficiency             = 1.0
+        self.pressure_ratio                    = None
 
     def append_operating_conditions(self,segment):  
         append_turbine_conditions(self,segment)
