@@ -158,9 +158,9 @@ def approach_mission_setup(analyses):
     segment = Segments.Descent.Constant_Speed_Constant_Angle(base_segment)
     segment.tag = "final_approach"  
     segment.analyses.extend( analyses.landing ) 
-    segment.altitude_start                                           = 120.5   
+    segment.altitude_start                                           = 1000.0 * Units.ft
     segment.altitude_end                                             = 10.0   * Units.ft
-    segment.air_speed                                                = 160  * Units['knots']
+    segment.air_speed                                                = 135.0  * Units['knots']
     segment.descent_angle                                            = 3.  * Units.deg                               
            
     # define flight dynamics to model            
@@ -178,74 +178,76 @@ def approach_mission_setup(analyses):
     return mission
 
 def takeoff_mission_setup(analyses):
-
-    # ------------------------------------------------------------------
-    #   Initialize the Mission
-    # ------------------------------------------------------------------
-
+    """Certification-style takeoff: full-thrust ground run to lift-off, climb to the 35 ft screen
+    height, accelerating initial climb, then a fixed-throttle cutback climb past the flyover
+    microphone. Speeds are continuous between segments."""
     mission = RCAIDE.Framework.Mission.Sequential_Segments()
     mission.tag = 'the_mission'
-
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
     base_segment.state.numerics.number_of_control_points = 40
 
-
-    # ------------------------------------------------------------------------------------------------------------------------------------ 
-    #   Takeoff Roll
-    # ------------------------------------------------------------------------------------------------------------------------------------ 
-
+    # ------------------------------------------------------------------
+    #   Ground Run: full takeoff thrust to lift-off speed
+    # ------------------------------------------------------------------
     segment = Segments.Ground.Takeoff(base_segment)
     segment.tag = "Takeoff_Ground_Run" 
     segment.analyses.extend( analyses.takeoff )
-    segment.velocity_start                                           = 20.* Units.knots
-    segment.velocity_end                                             = 167.0 * Units['knots']
+    segment.velocity_start                                           = 20.0  * Units['knots']
+    segment.velocity_end                                             = 140.0 * Units['knots']
     segment.friction_coefficient                                     = 0.03
-    segment.altitude                                                 = 5.0   
-    segment.throttle                                                 = 0.8
+    segment.altitude                                                 = 0.0   
+    segment.throttle                                                 = 1.0
     mission.append_segment(segment)
 
-     
-    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    # ------------------------------------------------------------------
+    #   Screen Climb: constant speed to 35 ft
+    # ------------------------------------------------------------------
+    segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "Takeoff_Climb" 
     segment.analyses.extend( analyses.takeoff ) 
-    segment.altitude_end                                             = 35 * Units['ft']
-    segment.air_speed_end                                            = 175.0 * Units['knots']
-    segment.climb_rate                                               = 1800 * Units['fpm']  
-            
-    # define flight dynamics to model             
+    segment.altitude_start                                           = 0.0   * Units['ft']
+    segment.altitude_end                                             = 35.0  * Units['ft']
+    segment.air_speed                                                = 140.0 * Units['knots']
+    segment.climb_rate                                               = 1500  * Units['fpm']
     segment.flight_dynamics.force_x                                  = True  
     segment.flight_dynamics.force_z                                  = True     
-
-    # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                 
-
+    segment.assigned_control_variables.pitch_angle.active            = True                 
     mission.append_segment(segment) 
 
-    #------------------------------------------------------------------
-    #   First Climb Segment: Constant Speed Constant Rate  
     # ------------------------------------------------------------------
-
-    segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
+    #   Initial Climb: accelerate to climb speed while climbing to 1000 ft
+    # ------------------------------------------------------------------
+    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
     segment.tag = "Inital_Climb" 
-    segment.analyses.extend( analyses.cutback )  
-    segment.altitude_end                                             = 1500  * Units['feet']
-    segment.air_speed                                                = 200.0 * Units['knots']
-    segment.climb_rate                                               = 1800   * Units['fpm']  
-            
-    # define flight dynamics to model             
+    segment.analyses.extend( analyses.takeoff )  
+    segment.altitude_end                                             = 1000.0 * Units['ft']
+    segment.air_speed_start                                          = 140.0  * Units['knots']
+    segment.air_speed_end                                            = 160.0  * Units['knots']
+    segment.climb_rate                                               = 2000   * Units['fpm']
     segment.flight_dynamics.force_x                                  = True  
     segment.flight_dynamics.force_z                                  = True     
-
-    # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                 
-
+    segment.assigned_control_variables.pitch_angle.active            = True                 
     mission.append_segment(segment)
- 
+
+    # ------------------------------------------------------------------
+    #   Cutback Climb: fixed reduced throttle past the flyover microphone
+    # ------------------------------------------------------------------
+    segment = Segments.Climb.Constant_Throttle_Constant_Speed(base_segment)
+    segment.tag = "Cutback_Climb" 
+    segment.analyses.extend( analyses.cutback )  
+    segment.altitude_end                                             = 3000.0 * Units['ft']
+    segment.air_speed                                                = 160.0  * Units['knots']
+    segment.throttle                                                 = 0.85
+    segment.flight_dynamics.force_x                                  = True  
+    segment.flight_dynamics.force_z                                  = True     
+    segment.assigned_control_variables.angle_of_attack.active        = True
+    segment.assigned_control_variables.pitch_angle.active            = True                 
+    mission.append_segment(segment)
 
     return mission
 

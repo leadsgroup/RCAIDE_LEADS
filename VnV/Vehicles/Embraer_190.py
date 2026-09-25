@@ -563,7 +563,7 @@ def vehicle_setup():
     turbofan.design_mach_number                     = 0.78
     # sized so the off-design sea-level static thrust matches the CF34-10E6 maximum takeoff rating,
     # 83.72 kN (EASA TCDS IM.E.021, Issue 06)
-    turbofan.design_thrust                          = 24820.6 * Units.N
+    turbofan.design_thrust                          = 24123.0 * Units.N
     turbofan.origin                                 = [[13.15,4.38,-2.1]]
     turbofan.mass_properties.center_of_gravity      = [[turbofan.length /2,0,0]]
 
@@ -615,7 +615,7 @@ def vehicle_setup():
     high_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     high_pressure_compressor.tag                   = 'hpc'
     high_pressure_compressor.polytropic_efficiency = 0.91
-    high_pressure_compressor.pressure_ratio        = 10.0    
+    high_pressure_compressor.pressure_ratio        = 8.978 # overall pressure ratio 29 (GE Aviation CF34-10E datasheet, AE-44029E)
     turbofan.high_pressure_compressor              = high_pressure_compressor
 
     # low pressure turbine  
@@ -637,7 +637,7 @@ def vehicle_setup():
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.98
     combustor.alphac                               = 1.0     
-    combustor.turbine_inlet_temperature            = 1550
+    combustor.turbine_inlet_temperature            = 1321  # sets the 35,000 ft / Mach 0.8 cruise SFC to 0.64 lb/lbf/h (GE Aviation CF34-10E datasheet, AE-44029E)
     combustor.pressure_ratio                       = 0.95
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan.combustor                             = combustor
