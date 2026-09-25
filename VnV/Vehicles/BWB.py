@@ -446,7 +446,10 @@ def vehicle_setup():
     turbofan1.bypass_ratio                       = 9.1                        
     turbofan1.design_altitude                    = 40000*Units.ft             
     turbofan1.design_mach_number                 = 0.7                       
-    turbofan1.design_thrust                      = 55000* Units.N 
+    # sized so the takeoff rating (rated_takeoff_throttle) is 1.13 x the design-point combustor exit
+    # temperature, the takeoff-to-climb ratio of the SAFAM truth engine (T41 1900 K MTO / 1686 K MCL)
+    turbofan1.design_thrust                      = 28923.0 * Units.N
+    turbofan1.rated_takeoff_thrust               = 40900. * Units.lbf # representative engine: PW2040 takeoff rating, 40,900 lbf (FAA TCDS E17NE, Rev. 13)
     turbofan1.specific_fuel_consumption_reduction_factor  = 0.1 
     turbofan1.wing_mounted                        = False
 

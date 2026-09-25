@@ -658,6 +658,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     turbofan1.design_altitude                    = 36000*Units.ft             
     turbofan1.design_mach_number                 = 0.85                     
     turbofan1.design_thrust                      = 60243.8 * Units.N
+    turbofan1.rated_takeoff_thrust               = 298000. * Units.N # GEnx-1B64 takeoff rating, 298 kN (EASA TCDS IM.E.102, Issue 12)
     
     # working fluid                   
     turbofan1.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air() 
@@ -680,6 +681,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     fan.tag                                     = 'fan'
     fan.polytropic_efficiency                   = 0.98                 
     fan.pressure_ratio                          = 1.4                    
+    fan.rated_angular_velocity                  = 2560.0 * Units.rpm # GEnx-1B 100% N1 (EASA TCDS IM.E.102, Issue 12)
     turbofan1.fan                                = fan        
 
     # low pressure compressor    

@@ -587,6 +587,7 @@ def vehicle_setup():
     turbofan.design_altitude                        = 0*Units.ft
     turbofan.design_mach_number                     = 0.01
     turbofan.design_thrust                          = 193000* Units.N 
+    turbofan.rated_takeoff_thrust                   = 43000. * Units.lbf # TF39-GE-1C rating, 43,000 lbf (GlobalSecurity.org, TF39; no civil TCDS)
      
     # Nacelle 
     nacelle                                         = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
@@ -655,7 +656,7 @@ def vehicle_setup():
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.99 
     combustor.alphac                               = 1.0     
-    combustor.turbine_inlet_temperature            = 1370 # celcius
+    combustor.turbine_inlet_temperature            = 1370 + 273.15  # 1370 C in K
     combustor.pressure_ratio                       = 0.95
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan.combustor                             = combustor
