@@ -55,8 +55,10 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, cpt, segment, frequencie
     Fan diameter and blade count have no dedicated fan-level design attribute in the current
     turbofan cycle model; turbofan.diameter (engine/nacelle diameter) is used as a stand-in for
     fan face diameter, and fan.number_of_blades must be set on the vehicle's Fan component.
-    Fan angular velocity falls back to fan.design_angular_velocity when the operating value
-    hasn't been solved for (compute_fan_performance does not currently update it).
+    Fan angular velocity (rad/s) is taken, in order of precedence, from: fan.angular_velocity
+    when set on the vehicle configuration (> 0); the per-control-point operating value stored by
+    compute_turbofan_performance in conditions.energy.converters[fan.tag].omega; and finally
+    fan.design_angular_velocity.
 
     References
     ----------
@@ -75,7 +77,13 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, cpt, segment, frequencie
     fan_out    = converters[turbofan.fan.tag].outputs
     fan_nozzle_out = converters[turbofan.fan_nozzle.tag].outputs
 
-    N1                        = turbofan.fan.angular_velocity if turbofan.fan.angular_velocity > 0 else turbofan.fan.design_angular_velocity
+    fan_conditions            = converters[turbofan.fan.tag]
+    if turbofan.fan.angular_velocity > 0:
+        omega_fan             = turbofan.fan.angular_velocity
+    elif 'omega' in fan_conditions:
+        omega_fan             = fan_conditions.omega[cpt_idx]
+    else:
+        omega_fan             = turbofan.fan.design_angular_velocity
     Velocity_secondary        = fan_nozzle_out.velocity[cpt_idx]
     Temperature_secondary     = fan_nozzle_out.stagnation_temperature[cpt_idx]
     Temperature_static_output = fan_out.static_temperature[cpt_idx]
@@ -91,7 +99,8 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, cpt, segment, frequencie
 
     density_secondary = Pressure_secondary / (R_gas * (Temperature_secondary - (0.5 * Velocity_secondary**2 / Cp)))
     delt_T = Temperature_static_output - Temperature_static_input
-    M_TR = ((Velocity_aircraft**2 + ((np.pi*Diameter_secondary*N1)/60)**2)**0.5) / sound_ambient
+    U_tip = omega_fan * Diameter_secondary / 2.0
+    M_TR = ((Velocity_aircraft**2 + U_tip**2)**0.5) / sound_ambient
 
     if m is None:
         # Annular secondary (bypass) flow area, subtracting the core nozzle area
@@ -104,8 +113,8 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, cpt, segment, frequencie
         delta_T = delt_T * 1.8,
         M_TR = M_TR,
         RSS = 150.0,
-        f_b = (N1 * Num_blades * Diameter_secondary) / Units.minute,
-        M_Tip = (np.pi * Diameter_secondary * N1 * (1/60)) / (sound_ambient),
+        f_b = Num_blades * omega_fan / (2.0 * np.pi),
+        M_Tip = U_tip / sound_ambient,
         V_Number = 54,
         B_Number = Num_blades,
         inlet_distortion = False
