@@ -29,8 +29,17 @@ class Fan(Converter):
     pressure_ratio : float
         Ratio of outlet to inlet total pressure. Default is 1.0.
         
-    angular_velocity : float
-        Rotational speed of the fan [rad/s]. Default is 0.0.
+    design_angular_velocity : float
+        Rotational speed of the fan at the design point [rad/s]. Default is 3000 rpm.
+
+    rated_angular_velocity : float
+        Rotational speed of the fan at the sea-level static maximum takeoff rating, i.e. the
+        engine's 100% N1 speed [rad/s]. When set (> 0), design_turbofan derives
+        design_angular_velocity from it. Default is 0.0.
+
+    design_total_temperature_rise : float
+        Total temperature rise across the fan at the design point [K], set by design_turbofan.
+        Default is 0.0.
 
     number_of_blades : int
         Number of fan blades. Default is 0.
@@ -90,8 +99,9 @@ class Fan(Converter):
         self.polytropic_efficiency          = 1.0
         self.mechanical_efficiency          = 1.0
         self.pressure_ratio                 = 1.0 
-        self.angular_velocity               = 0.0
         self.design_angular_velocity        = 3000 *  Units.rpm
+        self.rated_angular_velocity         = 0.0
+        self.design_total_temperature_rise  = 0.0
         self.number_of_blades               = 0
 
 

@@ -17,6 +17,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan           import size_core
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate import Turbofan_Surrogate
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.build_turbofan_offdesign_matching import build_turbofan_offdesign_matching
 from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor import   design_optimal_motor
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_generator import design_optimal_generator
@@ -389,7 +390,18 @@ def design_turbofan(turbofan):
     # the offtake would silently read back as zero there.
     turbofan.design_shaft_work_specific = float(np.ravel(external_shaft_work)[0])
 
-    # Step 23: Static Sea Level Thrust
+    # Total temperature rise across the fan at the design point, the reference for scaling fan
+    # angular velocity with operating condition (see compute_fan_angular_velocity)
+    fan.design_total_temperature_rise   = float(np.ravel(fan_conditions.outputs.stagnation_temperature - fan_conditions.inputs.stagnation_temperature)[0])
+
+    # Step 23: Off-design matching is the default performance model -- build it from the sized
+    # design point (with offdesign_matching still None, so the design-point readback dispatches
+    # through the cycle solve above), unless a deck-driven surrogate was requested instead
+    if turbofan.surrogate_deck_path is None and turbofan.surrogate is None:
+        turbofan.offdesign_matching = None
+        turbofan.offdesign_matching = build_turbofan_offdesign_matching(turbofan)
+
+    # Step 24: Static Sea Level Thrust
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state       = setup_operating_conditions(turbofan,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
@@ -397,10 +409,17 @@ def design_turbofan(turbofan):
     operating_state.unknowns.network['electrical_power'] = np.array([[design_power_offtake]])
     inputs,outputs,_,_                     = turbofan.compute_performance(operating_state,dummy_network) 
     turbofan.sealevel_static_thrust        = outputs.thrust[0][0]
+
+    # Fan design-point speed from its rated (100% N1, sea-level static takeoff) speed, using the
+    # same total temperature rise scaling as compute_fan_angular_velocity
+    if fan.rated_angular_velocity > 0:
+        sls_fan_conditions                   = operating_state.conditions.energy.converters[fan.tag]
+        sls_total_temperature_rise           = float(np.ravel(sls_fan_conditions.outputs.stagnation_temperature - sls_fan_conditions.inputs.stagnation_temperature)[0])
+        fan.design_angular_velocity          = fan.rated_angular_velocity * np.sqrt(fan.design_total_temperature_rise / sls_total_temperature_rise)
     turbofan.sealevel_static_power         = outputs.power.propulsive[0][0]
     turbofan.design_power                  = design_power_offtake
 
-    # Step 24: Build the deck-driven surrogate, if requested
+    # Step 25: Build the deck-driven surrogate, if requested
     if turbofan.surrogate_deck_path is not None:
         turbofan.surrogate = Turbofan_Surrogate().build(deck_path=turbofan.surrogate_deck_path)
 

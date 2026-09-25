@@ -12,7 +12,7 @@ from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                  import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor            import compute_combustor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor           import compute_compressor_performance
-from RCAIDE.Library.Methods.Powertrain.Converters.Fan                  import compute_fan_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Fan                  import compute_fan_performance, compute_fan_angular_velocity
 from RCAIDE.Library.Methods.Powertrain.Converters.Turbine              import compute_turbine_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle     import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import compute_compression_nozzle_performance
@@ -483,20 +483,20 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     power_hydraulic  = Q * hpc_conditions.outputs.stagnation_pressure  
         
     # compute shaft RPMs 
-    fan_conditions.omega        = fan.design_angular_velocity * turbofan_conditions.throttle
+    fan_conditions.omega        = compute_fan_angular_velocity(fan, fan_conditions.outputs.stagnation_temperature - fan_conditions.inputs.stagnation_temperature)
     lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
     hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle 
   
     # store data
     fan_res         = Data(
-                angular_velocity   = fan.angular_velocity
+                angular_velocity   = fan_conditions.omega
     )
 
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
                 exit_static_pressure                = core_nozzle_conditions.outputs.static_pressure,
                 exit_stagnation_temperature         = core_nozzle_conditions.outputs.stagnation_temperature,
-                exit_stagnation_pressure            = core_nozzle_conditions.outputs.static_pressure,
+                exit_stagnation_pressure            = core_nozzle_conditions.outputs.stagnation_pressure,
                 exit_velocity                       = core_nozzle_conditions.outputs.velocity
             )
 
@@ -504,7 +504,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
                 exit_static_temperature             = fan_nozzle_conditions.outputs.static_temperature,
                 exit_static_pressure                = fan_nozzle_conditions.outputs.static_pressure,
                 exit_stagnation_temperature         = fan_nozzle_conditions.outputs.stagnation_temperature,
-                exit_stagnation_pressure            = fan_nozzle_conditions.outputs.static_pressure,
+                exit_stagnation_pressure            = fan_nozzle_conditions.outputs.stagnation_pressure,
                 exit_velocity                       = fan_nozzle_conditions.outputs.velocity
                 )
                 
@@ -717,6 +717,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     alpha_out       = np.full(n, np.nan)
     tau_r_out       = np.full(n, np.nan)
     tau_f_out       = np.full(n, np.nan)
+    tau_f_alone_out = np.full(n, np.nan)
     pi_r_out        = np.full(n, np.nan)
     pi_d_out        = np.full(n, np.nan)
     pi_f_out        = np.full(n, np.nan)
@@ -772,6 +773,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
         alpha_out[i]                                = result.alpha
         tau_r_out[i]                                = result.tau_r
         tau_f_out[i]                                = result.tau_f
+        tau_f_alone_out[i]                          = result.tau_f_alone
         pi_r_out[i]                                 = result.pi_r
         pi_d_out[i]                                 = result.pi_d
         pi_f_out[i]                                 = result.pi_f
@@ -821,8 +823,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     # thermal_efficiency not set: needs internal enthalpies the offdesign solver doesn't return
 
     # noise_conditions schema match -- real values at points the live solver handled,
-    # NaN at any point routed to idle_fallback (no station data there either) and for
-    # fan angular velocity always (no equivalent computed by either path)
+    # NaN at any point routed to idle_fallback (no station data there either)
     noise_conditions.core_nozzle = Data(
         exit_static_temperature      = core_nozzle_exit_static_temperature.reshape(-1,1),
         exit_static_pressure         = core_nozzle_exit_static_pressure.reshape(-1,1),
@@ -837,7 +838,30 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
         exit_stagnation_pressure     = fan_nozzle_exit_stagnation_pressure.reshape(-1,1),
         exit_velocity                = fan_nozzle_exit_velocity.reshape(-1,1),
     )
-    noise_conditions.fan = Data(angular_velocity = np.full((n,1), np.nan))
+    # fan total temperature rise (fan inlet Tt2 = T0*tau_r) sets the fan angular velocity
+    fan_inlet_stagnation_temperature  = tau_r_out * static_temperature
+    fan_exit_stagnation_temperature   = fan_inlet_stagnation_temperature * tau_f_alone_out
+    fan_angular_velocity              = compute_fan_angular_velocity(turbofan.fan, fan_exit_stagnation_temperature - fan_inlet_stagnation_temperature)
+    noise_conditions.fan = Data(angular_velocity = fan_angular_velocity.reshape(-1,1))
+
+    # component station states, in the same conditions the analytical cycle populates, so that
+    # downstream consumers (e.g. the aeroacoustic engine noise models) read one location
+    converters = conditions.energy.converters
+    for nozzle, V, T_s, P_s, T_t, P_t in [
+            (turbofan.core_nozzle, core_nozzle_exit_velocity, core_nozzle_exit_static_temperature, core_nozzle_exit_static_pressure,
+             core_nozzle_exit_stagnation_temperature, core_nozzle_exit_stagnation_pressure),
+            (turbofan.fan_nozzle, fan_nozzle_exit_velocity, fan_nozzle_exit_static_temperature, fan_nozzle_exit_static_pressure,
+             fan_nozzle_exit_stagnation_temperature, fan_nozzle_exit_stagnation_pressure)]:
+        nozzle_outputs                        = converters[nozzle.tag].outputs
+        nozzle_outputs.velocity               = V.reshape(-1,1)
+        nozzle_outputs.static_temperature     = T_s.reshape(-1,1)
+        nozzle_outputs.static_pressure        = P_s.reshape(-1,1)
+        nozzle_outputs.stagnation_temperature = T_t.reshape(-1,1)
+        nozzle_outputs.stagnation_pressure    = P_t.reshape(-1,1)
+    fan_conditions                                = converters[turbofan.fan.tag]
+    fan_conditions.inputs.stagnation_temperature  = fan_inlet_stagnation_temperature.reshape(-1,1)
+    fan_conditions.outputs.stagnation_temperature = fan_exit_stagnation_temperature.reshape(-1,1)
+    fan_conditions.omega                          = fan_angular_velocity.reshape(-1,1)
 
     stored_results_flag   = True
     stored_propulsor_tag  = turbofan.tag

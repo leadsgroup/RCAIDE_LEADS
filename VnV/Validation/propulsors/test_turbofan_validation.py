@@ -193,6 +193,8 @@ def GE90_94B():
     fan.tag                                     = 'fan'
     fan.polytropic_efficiency                   = 0.915                
     fan.pressure_ratio                          = 1.58                    
+    fan.rated_angular_velocity                  = 2261.5 * Units.rpm # GE90-94B 100% N1 (EASA TCDS IM.E.002, Issue 05)
+    fan.number_of_blades                        = 22                 # GE Aerospace, GE90 composite fan
     turbofan.fan                                = fan        
 
     # low pressure compressor    

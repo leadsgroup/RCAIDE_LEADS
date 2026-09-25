@@ -561,7 +561,9 @@ def vehicle_setup():
     turbofan.diameter                               = 52 *  Units.inches
     turbofan.design_altitude                        = 35000.0*Units.ft
     turbofan.design_mach_number                     = 0.78
-    turbofan.design_thrust                          = 19700 * Units.N
+    # sized so the off-design sea-level static thrust matches the CF34-10E6 maximum takeoff rating,
+    # 83.72 kN (EASA TCDS IM.E.021, Issue 06)
+    turbofan.design_thrust                          = 24820.6 * Units.N
     turbofan.origin                                 = [[13.15,4.38,-2.1]]
     turbofan.mass_properties.center_of_gravity      = [[turbofan.length /2,0,0]]
 
@@ -584,6 +586,8 @@ def vehicle_setup():
     fan.tag                                         = 'fan'
     fan.polytropic_efficiency                       = 0.93
     fan.pressure_ratio                              = 1.7   
+    fan.rated_angular_velocity                      = 5954.4 * Units.rpm # CF34-10E 100% N1 (EASA TCDS IM.E.021, Issue 06)
+    fan.number_of_blades                            = 24                 # one blade per fan rotor blade retainer (FAA AD, Federal Register 2011-11481)
     turbofan.fan                                    = fan        
                         
     # working fluid                        
@@ -703,12 +707,6 @@ def configs_setup(vehicle):
     configs     = RCAIDE.Library.Components.Configs.Config.Container() 
     base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
     base_config.tag = 'base'  
-    base_config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    =  2780. * Units.rpm
-    base_config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         =  2780. * Units.rpm   
-    base_config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 300
-    base_config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 300
-    base_config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 350
-    base_config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 350
     configs.append(base_config)
 
     # ------------------------------------------------------------------
@@ -717,12 +715,6 @@ def configs_setup(vehicle):
 
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'cruise'
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    =  2780. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         =  2780. * Units.rpm  
-    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 300
-    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 300
-    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 350
-    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 350
     configs.append(config)
 
 
@@ -734,12 +726,6 @@ def configs_setup(vehicle):
     config.tag = 'takeoff'
     config.wings['main_wing'].control_surfaces.flap.deflection                       = 20. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection                       = 25. * Units.deg 
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity      = 3470. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity           = 3470. * Units.rpm 
-    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 200
-    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 200
-    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 300.
-    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 300.
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)
@@ -753,12 +739,6 @@ def configs_setup(vehicle):
     config.tag = 'cutback'
     config.wings['main_wing'].control_surfaces.flap.deflection                       = 20. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection                       = 20. * Units.deg
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity      =  2780. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity           =  2780. * Units.rpm 
-    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity =  150
-    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      =  150
-    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  =  260. 
-    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       =  260. 
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)
@@ -769,12 +749,6 @@ def configs_setup(vehicle):
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'descent' 
     config.wings['main_wing'].control_surfaces.spoiler.deflection  = 45. * Units.deg    
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    =  2780. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         =  2780. * Units.rpm   
-    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 300
-    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 300
-    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 350
-    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 350
     configs.append(config)  
     
     # ------------------------------------------------------------------
@@ -785,12 +759,6 @@ def configs_setup(vehicle):
     config.tag = 'landing'
     config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    =  2780. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         =  2780. * Units.rpm  
-    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 300
-    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 300
-    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 350
-    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 350
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)   
@@ -802,12 +770,6 @@ def configs_setup(vehicle):
     config.tag = 'short_field_takeoff'    
     config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity =  3470. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity      =  3470. * Units.rpm  
-    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 300
-    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 300
-    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 350
-    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 350
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)    

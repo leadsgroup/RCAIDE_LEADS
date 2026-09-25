@@ -820,8 +820,6 @@ def configs_setup(vehicle):
     config.tag = 'takeoff'
     config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection  = 30. * Units.deg   
-    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity =  3470. * Units.rpm 
-    config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  3470. * Units.rpm 
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
     config.V2_VS_ratio = 1.21
@@ -834,8 +832,6 @@ def configs_setup(vehicle):
 
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'cutback'
-    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity =  2780. * Units.rpm 
-    config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  2780. * Units.rpm     
     configs.append(config)   
     
         
@@ -847,8 +843,6 @@ def configs_setup(vehicle):
     config.tag = 'landing'
     config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg 
-    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity =  2030. * Units.rpm 
-    config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  2030. * Units.rpm 
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
     config.Vref_VS_ratio = 1.23
@@ -876,7 +870,6 @@ def configs_setup(vehicle):
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'oei'  
     config.networks.fuel.propulsors['propulsor_2'].active = False
-    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity =  2030. * Units.rpm 
     configs.append(config)
 
 

@@ -55,10 +55,9 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, cpt, segment, frequencie
     Fan diameter and blade count have no dedicated fan-level design attribute in the current
     turbofan cycle model; turbofan.diameter (engine/nacelle diameter) is used as a stand-in for
     fan face diameter, and fan.number_of_blades must be set on the vehicle's Fan component.
-    Fan angular velocity (rad/s) is taken, in order of precedence, from: fan.angular_velocity
-    when set on the vehicle configuration (> 0); the per-control-point operating value stored by
-    compute_turbofan_performance in conditions.energy.converters[fan.tag].omega; and finally
-    fan.design_angular_velocity.
+    Fan angular velocity [rad/s] and the fan total temperature rise are the per-control-point
+    values solved by the turbofan cycle (conditions.energy.converters[fan.tag]); see
+    compute_fan_angular_velocity.
 
     References
     ----------
@@ -77,28 +76,26 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, cpt, segment, frequencie
     fan_out    = converters[turbofan.fan.tag].outputs
     fan_nozzle_out = converters[turbofan.fan_nozzle.tag].outputs
 
-    fan_conditions            = converters[turbofan.fan.tag]
-    if turbofan.fan.angular_velocity > 0:
-        omega_fan             = turbofan.fan.angular_velocity
-    elif 'omega' in fan_conditions:
-        omega_fan             = fan_conditions.omega[cpt_idx]
-    else:
-        omega_fan             = turbofan.fan.design_angular_velocity
+    omega_fan                 = converters[turbofan.fan.tag].omega[cpt_idx]
     Velocity_secondary        = fan_nozzle_out.velocity[cpt_idx]
-    Temperature_secondary     = fan_nozzle_out.stagnation_temperature[cpt_idx]
-    Temperature_static_output = fan_out.static_temperature[cpt_idx]
-    Temperature_static_input  = fan_in.static_temperature[cpt_idx]
-    Pressure_secondary        = fan_nozzle_out.stagnation_pressure[cpt_idx]
+    Temperature_secondary     = fan_nozzle_out.static_temperature[cpt_idx]
+    Temperature_total_output  = fan_out.stagnation_temperature[cpt_idx]
+    Temperature_total_input   = fan_in.stagnation_temperature[cpt_idx]
+    Pressure_secondary        = fan_nozzle_out.static_pressure[cpt_idx]
     Diameter_secondary        = turbofan.diameter
     Num_blades                = turbofan.fan.number_of_blades
+    if Num_blades <= 0:
+        raise ValueError(f"Fan '{turbofan.fan.tag}' of propulsor '{turbofan.tag}' has no number_of_blades set; "
+                         "fan noise requires the fan blade count.")
 
     Velocity_aircraft = segment.state.conditions.freestream.velocity[cpt_idx]
     sound_ambient     = segment.state.conditions.freestream.speed_of_sound[cpt_idx]
-    R_gas, gamma = 287.1, 1.4
-    Cp = R_gas / (1 - 1/gamma)
+    R_gas = 287.1
 
-    density_secondary = Pressure_secondary / (R_gas * (Temperature_secondary - (0.5 * Velocity_secondary**2 / Cp)))
-    delt_T = Temperature_static_output - Temperature_static_input
+    # fan nozzle exit static density
+    density_secondary = Pressure_secondary / (R_gas * Temperature_secondary)
+    # total temperature rise across the fan (Ref. NASA CR-2014-218421)
+    delt_T = Temperature_total_output - Temperature_total_input
     U_tip = omega_fan * Diameter_secondary / 2.0
     M_TR = ((Velocity_aircraft**2 + U_tip**2)**0.5) / sound_ambient
 

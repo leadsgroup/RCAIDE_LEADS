@@ -603,6 +603,8 @@ def vehicle_setup():
     fan.tag                                        = 'fan'
     fan.polytropic_efficiency                      = 0.93
     fan.pressure_ratio                             = 1.7   
+    fan.rated_angular_velocity                     = 5175.0 * Units.rpm # CFM56-7B 100% N1, 5382 rpm = 104% (EASA TCDS E.004, Issue 07)
+    fan.number_of_blades                           = 24                 # GKN Aerospace CFM56-7B fan blade data sheet (CFM's 1990s launch release states 22)
     turbofan.fan                                   = fan        
                    
     # working fluid                   
@@ -786,8 +788,6 @@ def configs_setup(vehicle):
     config.tag                                                                       = 'takeoff'    
     config.wings['main_wing'].control_surfaces.flap.deflection                       = 20. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection                       = 30. * Units.deg 
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity      =  3470. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity           =  3470. * Units.rpm            
     config.networks.fuel.propulsors['starboard_propulsor'].fan.rotation              = 3470. # N1 speed
     config.networks.fuel.propulsors['port_propulsor'].fan.rotation                   = 3470. # N1 speed
     config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.noise_speed    = 315.
@@ -806,8 +806,6 @@ def configs_setup(vehicle):
     config.tag                                                                     = 'cutback'
     config.wings['main_wing'].control_surfaces.flap.deflection                     = 20. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection                     = 20. * Units.deg
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    =  2780. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         =  2780. * Units.rpm        
     config.networks.fuel.propulsors['starboard_propulsor'].fan.rotation            = 2780.  
     config.networks.fuel.propulsors['port_propulsor'].fan.rotation                 = 2780. 
     config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.noise_speed  = 210.
@@ -826,8 +824,6 @@ def configs_setup(vehicle):
     config.tag = 'landing'
     config.wings['main_wing'].control_surfaces.flap.deflection                     = 30. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection                     = 25. * Units.deg
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    = 2780. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         = 2780. * Units.rpm     
     config.networks.fuel.propulsors['starboard_propulsor'].fan.rotation            = 2780.  
     config.networks.fuel.propulsors['port_propulsor'].fan.rotation                 = 2780. 
     config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.noise_speed = 92.
@@ -846,8 +842,6 @@ def configs_setup(vehicle):
     config.tag = 'short_field_takeoff'    
     config.wings['main_wing'].control_surfaces.flap.deflection                     = 20. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection                     = 25. * Units.deg
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    =  3470. * Units.rpm
-    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         =  3470. * Units.rpm 
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)

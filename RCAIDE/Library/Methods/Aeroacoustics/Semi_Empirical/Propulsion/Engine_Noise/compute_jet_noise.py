@@ -54,8 +54,8 @@ def compute_jet_noise(microphone_locations, turbofan, cpt, segment, frequencies,
         Vs = Vs * 0.8
     freqs = np.atleast_1d(frequencies).reshape(1, -1)
 
-    # Ambient properties (approximated for static standard day)
-    c_0 = 343.0
+    # Ambient speed of sound at each control point
+    c_0 = segment.state.conditions.freestream.speed_of_sound[cpt_idx]
 
     # 2. Aerodynamic Flow Model (Section 4.1.1)
 

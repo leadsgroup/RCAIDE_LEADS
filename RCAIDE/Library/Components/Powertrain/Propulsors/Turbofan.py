@@ -148,7 +148,10 @@ class Turbofan(Propulsor):
         the matching solver fails to converge (deep part-power/idle, outside
         what the matching equations can represent at all) to
         `idle_fallback.query(..., rating_code='FID')` instead of raising
-        `OffDesignMatchingError`. Default is None.
+        `OffDesignMatchingError`. Built by `design_turbofan` by default (see
+        `build_turbofan_offdesign_matching`), making off-design matching the
+        default performance model; set to None after `design_turbofan` to use
+        the analytical cycle model instead. Default is None.
 
     Notes
     -----

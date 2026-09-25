@@ -87,7 +87,6 @@ class Compression_Nozzle(Converter):
         self.compression_levels              = 0.0
         self.theta                           = 0.0
         self.diameter                        = 1.0
-        self.exit_velocity                   = 1.0
 
     def append_operating_conditions(self,segment):  
         append_compression_nozzle_conditions(self,segment)

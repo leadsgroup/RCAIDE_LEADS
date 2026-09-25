@@ -80,7 +80,6 @@ class Expansion_Nozzle(Converter):
         self.polytropic_efficiency           = 1.0
         self.pressure_ratio                  = 1.0
         self.diameter                        = 1.0
-        self.exit_velocity                   = 1.0
 
     def append_operating_conditions(self,segment):
         append_expansion_nozzle_conditions(self,segment)
