@@ -862,6 +862,48 @@ def configs_setup(vehicle):
     
     config.V2_VS_ratio = 1.21
     configs.append(config)
+    # ------------------------------------------------------------------
+    #   Transition Configuration (climb to the 35 ft screen height)
+    # ------------------------------------------------------------------
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'transition'
+    config.wings['main_wing'].control_surfaces.flap.deflection  = 10. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    config.landing_gears.main_gear.gear_extended    = True
+    config.landing_gears.nose_gear.gear_extended    = True
+    configs.append(config)
+
+    # ------------------------------------------------------------------
+    #   Initial Climb Configuration (climb to 400 ft)
+    # ------------------------------------------------------------------
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'initial_climb'
+    config.wings['main_wing'].control_surfaces.flap.deflection  = 10. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    config.landing_gears.main_gear.gear_extended    = False
+    config.landing_gears.nose_gear.gear_extended    = False
+    configs.append(config)
+
+    # ------------------------------------------------------------------
+    #   Acceleration Configuration (acceleration at 400 ft)
+    # ------------------------------------------------------------------
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'accel'
+    config.wings['main_wing'].control_surfaces.flap.deflection  = 10. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    configs.append(config)
+
+    # ------------------------------------------------------------------
+    #   Approach Configuration
+    # ------------------------------------------------------------------
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'approach'
+    config.wings['main_wing'].control_surfaces.flap.deflection  = 0. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    config.landing_gears.main_gear.gear_extended    = True
+    config.landing_gears.nose_gear.gear_extended    = True
+    configs.append(config)
+
 
 
     # ------------------------------------------------------------------
