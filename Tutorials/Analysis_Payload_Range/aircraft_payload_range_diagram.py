@@ -535,9 +535,6 @@ def vehicle_setup():
     turbofan.diameter                               = 53 *  Units.inches
     turbofan.design_altitude                        = 35000.0*Units.ft
     turbofan.design_mach_number                     = 0.8   
-    # sized so the takeoff rating (rated_takeoff_throttle) is 1.13 x the design-point combustor exit
-    # temperature, the takeoff-to-climb ratio of the SAFAM truth engine (T41 1900 K MTO / 1686 K MCL)
-    turbofan.design_thrust                          = 18478.4 * Units.N
     turbofan.rated_takeoff_thrust                   = 83720. * Units.N # CF34-10E6 maximum takeoff rating, 83.72 kN (EASA TCDS IM.E.021, Issue 06)
     turbofan.origin                                 = [[13.15,4.38,-2.1]]
     turbofan.mass_properties.center_of_gravity      = [[turbofan.length /2,0,0]]

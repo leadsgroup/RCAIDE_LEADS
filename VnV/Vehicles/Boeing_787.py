@@ -657,7 +657,6 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     turbofan1.bypass_ratio                       = 9.1                        
     turbofan1.design_altitude                    = 36000*Units.ft             
     turbofan1.design_mach_number                 = 0.85                     
-    turbofan1.design_thrust                      = 60243.8 * Units.N
     turbofan1.rated_takeoff_thrust               = 298000. * Units.N # GEnx-1B64 takeoff rating, 298 kN (EASA TCDS IM.E.102, Issue 12)
     
     # working fluid                   

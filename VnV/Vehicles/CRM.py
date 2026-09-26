@@ -579,7 +579,6 @@ def vehicle_setup() :
     turbofan1.bypass_ratio                       = 9.1                        
     turbofan1.design_altitude                    = 36000*Units.ft             
     turbofan1.design_mach_number                 = 0.85                     
-    turbofan1.design_thrust                      = 80000* Units.N
     turbofan1.rated_takeoff_thrust               = 432810. * Units.N # representative engine: GE90-94B takeoff rating, 43281 daN (EASA TCDS IM.E.002, Issue 05)
     
     # working fluid                   

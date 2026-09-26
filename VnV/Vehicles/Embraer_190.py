@@ -561,7 +561,6 @@ def vehicle_setup():
     turbofan.diameter                               = 52 *  Units.inches
     turbofan.design_altitude                        = 35000.0*Units.ft
     turbofan.design_mach_number                     = 0.78
-    turbofan.design_thrust                          = 19700 * Units.N
     turbofan.rated_takeoff_thrust                   = 83720. * Units.N # CF34-10E6 maximum takeoff rating, 83.72 kN (EASA TCDS IM.E.021, Issue 06)
     turbofan.origin                                 = [[13.15,4.38,-2.1]]
     turbofan.mass_properties.center_of_gravity      = [[turbofan.length /2,0,0]]

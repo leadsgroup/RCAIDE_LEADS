@@ -586,8 +586,8 @@ def vehicle_setup():
     turbofan.bypass_ratio                           = 8  
     turbofan.design_altitude                        = 0*Units.ft
     turbofan.design_mach_number                     = 0.01
-    turbofan.design_thrust                          = 193000* Units.N 
     turbofan.rated_takeoff_thrust                   = 43000. * Units.lbf # TF39-GE-1C rating, 43,000 lbf (GlobalSecurity.org, TF39; no civil TCDS)
+    turbofan.takeoff_combustor_exit_temperature_ratio = 1.0 # the design point is sea-level static at the takeoff turbine inlet temperature
      
     # Nacelle 
     nacelle                                         = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
