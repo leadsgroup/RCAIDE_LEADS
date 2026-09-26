@@ -31,7 +31,7 @@ from scipy.optimize import brentq
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_turbofan(turbofan):
+def design_turbofan(turbofan, build_idle_fallback=True):
     """
     Computes performance properties of a turbofan engine at the design point by linking
     and analyzing the thermodynamic cycle of its components.
@@ -96,6 +96,22 @@ def design_turbofan(turbofan):
                 Fan nozzle component
                     - tag : str
                         Identifier for the fan nozzle
+            - design_thrust : float
+                Thrust at the design point [N]; sizes the engine
+            - rated_takeoff_thrust : float
+                Rated sea-level static takeoff thrust [N]
+    build_idle_fallback : bool, optional
+        Build the off-design idle_fallback deck. Default is True.
+
+    The engine is sized one of three ways:
+        * rated_takeoff_thrust only: the standard way -- the engine is sized so its sea-level
+          static thrust at the takeoff rating (takeoff_combustor_exit_temperature_ratio times the
+          design-point combustor exit temperature) equals rated_takeoff_thrust, and design_thrust
+          is solved (size_turbofan_to_rated_takeoff_thrust)
+        * design_thrust and rated_takeoff_thrust: the engine is sized from design_thrust and
+          rated_takeoff_throttle is solved so the sea-level static thrust equals
+          rated_takeoff_thrust -- a consistency check between two documented operating points
+        * design_thrust only: the engine is sized from design_thrust and rated_takeoff_throttle is 1
     
     Returns
     -------
@@ -140,6 +156,12 @@ def design_turbofan(turbofan):
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.size_core
     """
+    # sized from the rated takeoff thrust alone: solve design_thrust (see size_turbofan_to_rated_takeoff_thrust)
+    if turbofan.rated_takeoff_thrust > 0 and turbofan.design_thrust <= 0:
+        from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.size_turbofan_to_rated_takeoff_thrust import size_turbofan_to_rated_takeoff_thrust
+        size_turbofan_to_rated_takeoff_thrust(turbofan)
+        return
+
     # check if mach number and temperature are passed
     if(turbofan.design_mach_number==None) and (turbofan.design_altitude==None): 
         raise NameError('The sizing conditions require an altitude and a Mach number') 
@@ -441,9 +463,11 @@ def design_turbofan(turbofan):
             else:
                 lower, upper = next_throttle, lower
         turbofan.rated_takeoff_throttle = brentq(thrust_residual, lower, upper, xtol=1e-6)
+    else:
+        turbofan.rated_takeoff_throttle = 1.0
 
     # idle_fallback deck spans part power up to the takeoff rating
-    if offdesign_matching_default:
+    if offdesign_matching_default and build_idle_fallback:
         combustor_exit_temperature_fractions = sorted(set([turbofan.rated_takeoff_throttle, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
         turbofan.offdesign_matching          = None
         turbofan.offdesign_matching          = build_turbofan_offdesign_matching(turbofan, combustor_exit_temperature_fractions = combustor_exit_temperature_fractions)

@@ -138,9 +138,17 @@ class Turbofan(Propulsor):
         Default is None.
 
     rated_takeoff_thrust : float, optional
-        Rated (certified) sea-level static takeoff thrust [N]. When set (> 0),
-        `design_turbofan` solves `rated_takeoff_throttle` so that the sea-level
-        static thrust equals it. Default is 0.0.
+        Rated (certified) sea-level static takeoff thrust [N]. When set (> 0)
+        without `design_thrust`, `design_turbofan` sizes the engine to it and
+        solves `design_thrust`; when set together with `design_thrust`, it
+        solves `rated_takeoff_throttle` so that the sea-level static thrust
+        equals it. Default is 0.0.
+
+    takeoff_combustor_exit_temperature_ratio : float
+        Combustor exit temperature at the takeoff rating divided by its
+        design-point value, used when sizing the engine to
+        `rated_takeoff_thrust`. Default is 1.13, the ratio of the SAFAM engine
+        data (T41 of 1900 K at maximum takeoff, 1686 K at maximum climb).
 
     rated_takeoff_throttle : float
         Throttle (fraction of the design-point combustor exit temperature) of the
@@ -221,6 +229,7 @@ class Turbofan(Propulsor):
         self.design_thrust                              = 0.0 
         self.rated_takeoff_thrust                       = 0.0     # see docstring
         self.rated_takeoff_throttle                     = 1.0     # see docstring
+        self.takeoff_combustor_exit_temperature_ratio   = 1.13    # see docstring
         self.design_power_offtake                       = 0.0
         self.design_mass_flow_rate                      = 0.0
         self.design_shaft_work_specific                 = 0.0
