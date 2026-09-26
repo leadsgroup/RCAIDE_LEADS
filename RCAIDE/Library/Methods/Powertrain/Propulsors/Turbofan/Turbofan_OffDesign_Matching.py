@@ -11,6 +11,13 @@ from RCAIDE.Framework.Core import Data
 
 # Python package imports
 import numpy as np
+try:
+    from numba import njit
+except ImportError:  # numba is optional: without it the kernels below run as plain Python
+    def njit(*args, **kwargs):
+        if len(args) == 1 and callable(args[0]):
+            return args[0]
+        return lambda function: function
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  mfp
@@ -106,6 +113,237 @@ def nozzle_state(stagnation_to_ambient_pressure_ratio, gamma):
         exit_mach_number = 1.0
     return static_to_ambient_pressure_ratio, exit_mach_number
 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  compiled matching kernel (constant-efficiency compressors)
+# ----------------------------------------------------------------------------------------------------------------------
+# The same equations as solve_turbofan_offdesign, on plain floats so they compile with numba.
+# design_constants and reference_point are packed into float arrays in the order below.
+DESIGN_CONSTANT_FIELDS = ['gamma_c', 'gamma_t', 'cpc', 'cpt', 'pi_dmax', 'fuel_heating_value', 'eta_b', 'pi_b', 'pi_tH',
+                          'tau_tH', 'pi_n', 'pi_fn', 'eta_cH', 'eta_f', 'eta_f_alone', 'fan_temperature_rise_fraction',
+                          'eta_tL', 'shaft_work_specific_design']
+REFERENCE_POINT_FIELDS = ['M0', 'T0', 'P0', 'Tt4', 'tau_f', 'tau_tL', 'pi_tL', 'alpha', 'pi_cH', 'tau_cH', 'pi_f', 'M19',
+                          'M9', 'm0']
+KERNEL_OUTPUT_FIELDS   = ['tau_r', 'pi_r', 'pi_d', 'tau_lambda', 'tau_cH', 'pi_cH', 'tau_f', 'pi_f', 'tau_f_alone',
+                          'pi_f_alone', 'tau_tL', 'pi_tL', 'alpha', 'M9', 'M19',
+                          'stagnation_to_ambient_core_nozzle_pressure_ratio',
+                          'stagnation_to_ambient_fan_nozzle_pressure_ratio', 'mass_flow_rate', 'fuel_to_air_ratio',
+                          'thrust', 'fuel_mass_flow_rate', 'specific_fuel_consumption', 'iterations', 'converged',
+                          'convergence_delta', 'core_nozzle_exit_velocity', 'fan_nozzle_exit_velocity',
+                          'core_nozzle_exit_static_temperature', 'fan_nozzle_exit_static_temperature',
+                          'core_nozzle_exit_static_pressure', 'fan_nozzle_exit_static_pressure',
+                          'core_nozzle_exit_stagnation_temperature', 'fan_nozzle_exit_stagnation_temperature',
+                          'core_nozzle_exit_stagnation_pressure', 'fan_nozzle_exit_stagnation_pressure',
+                          'eta_cH_used', 'eta_f_used', 'collapsed']
+
+def pack_design_constants(design_constants):
+    """Design constants as a float array in DESIGN_CONSTANT_FIELDS order (for the compiled kernel)."""
+    return np.array([float(getattr(design_constants, field, 0.0)) for field in DESIGN_CONSTANT_FIELDS])
+
+def pack_reference_point(reference_point):
+    """Reference point as a float array in REFERENCE_POINT_FIELDS order (for the compiled kernel)."""
+    return np.array([float(reference_point[field]) for field in REFERENCE_POINT_FIELDS])
+
+@njit(cache=True)
+def mass_flow_parameter_kernel(mach_number, gamma, gas_constant):
+    """Compiled mfp()."""
+    return np.sqrt(gamma / gas_constant) * mach_number * \
+        (1 + (gamma - 1) / 2 * mach_number ** 2) ** (-(gamma + 1) / (2 * (gamma - 1)))
+
+@njit(cache=True)
+def area_from_mass_flow_rate_kernel(mass_flow_rate, static_pressure, static_temperature, gas_constant, gamma, mach_number):
+    """Compiled area_from_mass_flow_rate()."""
+    stagnation_pressure    = static_pressure * (1 + (gamma - 1) / 2 * mach_number ** 2) ** (gamma / (gamma - 1))
+    stagnation_temperature = static_temperature * (1 + (gamma - 1) / 2 * mach_number ** 2)
+    return mass_flow_rate * np.sqrt(stagnation_temperature) / (stagnation_pressure * mass_flow_parameter_kernel(mach_number, gamma, gas_constant))
+
+@njit(cache=True)
+def nozzle_state_kernel(stagnation_to_ambient_pressure_ratio, gamma):
+    """Compiled nozzle_state()."""
+    pi_crit = ((gamma + 1) / 2) ** (gamma / (gamma - 1))
+    if stagnation_to_ambient_pressure_ratio < 1.0:
+        return 1.0, 0.0
+    elif stagnation_to_ambient_pressure_ratio < pi_crit:
+        return 1.0, np.sqrt(2 / (gamma - 1) * (stagnation_to_ambient_pressure_ratio ** ((gamma - 1) / gamma) - 1))
+    else:
+        return stagnation_to_ambient_pressure_ratio / pi_crit, 1.0
+
+@njit(cache=True)
+def constant_efficiency_pressure_ratio_kernel(temperature_ratio, efficiency, gamma):
+    """Compiled compressor_pressure_ratio() without a map."""
+    base = max(1 + efficiency * (temperature_ratio - 1), 1e-6)
+    return base ** (gamma / (gamma - 1))
+
+@njit(cache=True)
+def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, tolerance, max_iterations, relaxation_factor,
+                                    guess_tau_f, guess_tau_tL, guess_pi_tL):
+    """
+    Compiled solve_turbofan_offdesign for constant-efficiency compressors: design and reference are
+    the packed design constants and reference point, and the result is a float array in
+    KERNEL_OUTPUT_FIELDS order. A NaN guess starts from the reference point.
+    """
+    gamma_c, gamma_t, cpc, cpt, pi_dmax, fuel_heating_value = design[0], design[1], design[2], design[3], design[4], design[5]
+    eta_b, pi_b, pi_tH, tau_tH, pi_n, pi_fn = design[6], design[7], design[8], design[9], design[10], design[11]
+    eta_cH, eta_f, eta_f_alone, fan_temperature_rise_fraction = design[12], design[13], design[14], design[15]
+    eta_tL, shaft_work_specific_design = design[16], design[17]
+    M0R, T0R, P0R, Tt4R, tau_fR, tau_tLR, pi_tLR = reference[0], reference[1], reference[2], reference[3], reference[4], reference[5], reference[6]
+    alphaR, pi_cHR, tau_cHR, pi_fR, M19R, M9R, m0R = reference[7], reference[8], reference[9], reference[10], reference[11], reference[12], reference[13]
+
+    Rc = (gamma_c - 1) / gamma_c * cpc
+    Rt = (gamma_t - 1) / gamma_t * cpt
+    a0 = np.sqrt(gamma_c * Rc * T0)
+    V0 = a0 * M0
+    tau_r = 1 + (gamma_c - 1) / 2 * M0 ** 2
+    pi_r = tau_r ** (gamma_c / (gamma_c - 1))
+    eta_r = 1.0 if M0 <= 1 else 1 - 0.075 * (M0 - 1) ** 1.35
+    pi_d = pi_dmax * eta_r
+    tau_lambda = cpt * Tt4 / (cpc * T0)
+
+    tau_rR = 1 + (gamma_c - 1) / 2 * M0R ** 2
+    pi_rR = tau_rR ** (gamma_c / (gamma_c - 1))
+    eta_rR = 1.0 if M0R <= 1 else 1 - 0.075 * (M0R - 1) ** 1.35
+    pi_dR = pi_dmax * eta_rR
+    tau_lambdaR = cpt * Tt4R / (cpc * T0R)
+
+    if np.isnan(guess_tau_f):
+        tau_f, tau_tL, pi_tL = tau_fR, tau_tLR, pi_tLR
+    else:
+        tau_f, tau_tL, pi_tL = guess_tau_f, guess_tau_tL, guess_pi_tL
+
+    P_offtake_design = shaft_work_specific_design * m0R
+    phiR = shaft_work_specific_design / (cpt * Tt4R)
+    alpha = alphaR
+    mass_flow_rate_estimate = m0R
+    converged = False
+    collapsed = False
+    mfp_ref_M19 = mass_flow_parameter_kernel(M19R, gamma_c, Rc)
+    mfp_ref_M9  = mass_flow_parameter_kernel(M9R, gamma_t, Rt)
+
+    tau_cH = tau_cHR
+    pi_cH = pi_cHR
+    pi_f = pi_fR
+    tau_f_alone = 1.0
+    pi_f_alone = 1.0
+    Pt9_P0 = 1.0
+    Pt19_P0 = 1.0
+    M9 = M9R
+    M19 = M19R
+    tau_tL_prev = tau_tL
+    iteration = 0
+    for i in range(max_iterations):
+        iteration = i
+        tau_tL_prev = tau_tL
+        tau_f_prev = tau_f
+        X  = tau_lambda / (tau_r * tau_f)
+        XR = tau_lambdaR / (tau_rR * tau_fR)
+        shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+        phi = shaft_work_specific / (cpt * Tt4)
+        tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
+        pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
+        pi_f = constant_efficiency_pressure_ratio_kernel(tau_f, eta_f, gamma_c)
+        tau_f_alone = 1 + fan_temperature_rise_fraction * (tau_f - 1)
+        pi_f_alone = (1 + eta_f_alone * (tau_f_alone - 1)) ** (gamma_c / (gamma_c - 1))
+        Pt19_P0 = pi_r * pi_d * pi_f_alone * pi_fn
+        P19_P0, M19 = nozzle_state_kernel(Pt19_P0, gamma_c)
+        Pt9_P0 = pi_r * pi_d * pi_f * pi_cH * pi_b * pi_tH * pi_tL * pi_n
+        P9_P0, M9 = nozzle_state_kernel(Pt9_P0, gamma_t)
+        alpha = alphaR * (pi_cHR / pi_cH) * np.sqrt(max(
+            (tau_lambda / (tau_r * tau_f)) / (tau_lambdaR / (tau_rR * tau_fR)), 1e-12
+        )) * (mass_flow_parameter_kernel(M19, gamma_c, Rc) / mfp_ref_M19)
+        mass_flow_rate_estimate = m0R * ((1 + alpha) / (1 + alphaR)) * \
+            (P0 * pi_r * pi_d * pi_f * pi_cH) / (P0R * pi_rR * pi_dR * pi_fR * pi_cHR) * \
+            np.sqrt(Tt4R / max(Tt4, 1e-6))
+        tau_f_computed = 1 + ((1 - tau_tL) / (1 - tau_tLR)) * ((tau_lambda / tau_r) / (tau_lambdaR / tau_rR)) * \
+            ((1 + alphaR) / (1 + alpha)) * (tau_fR - 1)
+        tau_f = tau_f + relaxation_factor * (tau_f_computed - tau_f)
+        tau_tL = 1 - eta_tL * (1 - pi_tL ** ((gamma_t - 1) / gamma_t))
+        if M9 == 0.0 or M19 == 0.0:
+            collapsed = True
+            break
+        pi_tL_computed = pi_tLR * np.sqrt(tau_tL / tau_tLR) * (mfp_ref_M9 / mass_flow_parameter_kernel(M9, gamma_t, Rt))
+        pi_tL = pi_tL + relaxation_factor * (pi_tL_computed - pi_tL)
+        if i > 0 and abs(tau_tL - tau_tL_prev) < tolerance and abs(tau_f - tau_f_prev) < tolerance:
+            converged = True
+            break
+
+    out = np.full(38, np.nan)
+    out[0], out[1], out[2], out[3] = tau_r, pi_r, pi_d, tau_lambda
+    if collapsed:
+        out[4], out[5], out[6], out[7], out[8], out[9] = tau_cH, pi_cH, tau_f, pi_f, tau_f_alone, pi_f_alone
+        out[10], out[11], out[12], out[13], out[14] = tau_tL, pi_tL, alpha, M9, M19
+        out[15], out[16] = Pt9_P0, Pt19_P0
+        out[22], out[23], out[24] = iteration + 1, 0.0, np.inf
+        out[35], out[36], out[37] = eta_cH, eta_f, 1.0
+        return out
+
+    X  = tau_lambda / (tau_r * tau_f)
+    XR = tau_lambdaR / (tau_rR * tau_fR)
+    shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+    phi = shaft_work_specific / (cpt * Tt4)
+    tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
+    pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
+    pi_f = constant_efficiency_pressure_ratio_kernel(tau_f, eta_f, gamma_c)
+    tau_f_alone = 1 + fan_temperature_rise_fraction * (tau_f - 1)
+    pi_f_alone = (1 + eta_f_alone * (tau_f_alone - 1)) ** (gamma_c / (gamma_c - 1))
+    Pt19_P0 = pi_r * pi_d * pi_f_alone * pi_fn
+    P19_P0, M19 = nozzle_state_kernel(Pt19_P0, gamma_c)
+    Pt9_P0 = pi_r * pi_d * pi_f * pi_cH * pi_b * pi_tH * pi_tL * pi_n
+    P9_P0, M9 = nozzle_state_kernel(Pt9_P0, gamma_t)
+    mass_flow_rate = m0R * ((1 + alpha) / (1 + alphaR)) * \
+        (P0 * pi_r * pi_d * pi_f * pi_cH) / (P0R * pi_rR * pi_dR * pi_fR * pi_cHR) * \
+        np.sqrt(Tt4R / max(Tt4, 1e-6))
+    tau_x = tau_r * tau_f * tau_cH
+    fuel_to_air_ratio = (tau_lambda - tau_x) / (fuel_heating_value * eta_b / (cpc * T0) - tau_lambda)
+    Pt9_P9 = Pt9_P0 / P9_P0
+    Pt19_P19 = Pt19_P0 / P19_P0
+    T9_T0 = (tau_lambda * tau_tH * tau_tL / (Pt9_P9 ** ((gamma_t - 1) / gamma_t))) * (cpc / cpt)
+    T19_T0 = (tau_r * tau_f_alone) / (Pt19_P19 ** ((gamma_c - 1) / gamma_c))
+    T9 = T9_T0 * T0
+    P9 = P9_P0 * P0
+    T19 = T19_T0 * T0
+    P19 = P19_P0 * P0
+    a9 = np.sqrt(gamma_t * Rt * T9)
+    a19 = np.sqrt(gamma_c * Rc * T19)
+    V9 = M9 * a9
+    V19 = M19 * a19
+    core_mass_flow_rate = mass_flow_rate / (1 + alpha)
+    fan_mass_flow_rate = mass_flow_rate * alpha / (1 + alpha)
+    core_thrust = core_mass_flow_rate * ((1 + fuel_to_air_ratio) * V9 - V0) + \
+        (P9 - P0) * area_from_mass_flow_rate_kernel(core_mass_flow_rate * (1 + fuel_to_air_ratio), P9, T9, Rt, gamma_t, M9)
+    fan_thrust = fan_mass_flow_rate * (V19 - V0) + \
+        (P19 - P0) * area_from_mass_flow_rate_kernel(fan_mass_flow_rate, P19, T19, Rc, gamma_c, M19)
+    thrust = core_thrust + fan_thrust
+    fuel_mass_flow_rate = fuel_to_air_ratio * core_mass_flow_rate
+    specific_fuel_consumption = fuel_mass_flow_rate / thrust if thrust > 0 else np.nan
+    Tt9 = T9 * (1 + (gamma_t - 1) / 2 * M9 ** 2)
+    Pt9 = Pt9_P0 * P0
+    Tt19 = T19 * (1 + (gamma_c - 1) / 2 * M19 ** 2)
+    Pt19 = Pt19_P0 * P0
+
+    out[4], out[5], out[6], out[7], out[8], out[9] = tau_cH, pi_cH, tau_f, pi_f, tau_f_alone, pi_f_alone
+    out[10], out[11], out[12], out[13], out[14] = tau_tL, pi_tL, alpha, M9, M19
+    out[15], out[16], out[17], out[18] = Pt9_P0, Pt19_P0, mass_flow_rate, fuel_to_air_ratio
+    out[19], out[20], out[21] = thrust, fuel_mass_flow_rate, specific_fuel_consumption
+    out[22], out[23], out[24] = iteration + 1, 1.0 if converged else 0.0, abs(tau_tL - tau_tL_prev)
+    out[25], out[26], out[27], out[28] = V9, V19, T9, T19
+    out[29], out[30], out[31], out[32], out[33], out[34] = P9, P19, Tt9, Tt19, Pt9, Pt19
+    out[35], out[36], out[37] = eta_cH, eta_f, 0.0
+    return out
+
+def result_from_kernel_output(output, max_iterations):
+    """Data result (the solve_turbofan_offdesign schema) from a solve_turbofan_offdesign_kernel output array."""
+    result = Data()
+    for index, field in enumerate(KERNEL_OUTPUT_FIELDS[:-1]):
+        result[field] = float(output[index])
+    result.iterations = int(output[22])
+    result.converged  = bool(output[23] == 1.0)
+    iteration         = result.iterations - 1
+    if output[37] == 1.0:
+        result.message = (f"core nozzle collapsed (Pt9/P0={output[15]:.4f} < 1) at iteration {iteration}" if output[13] == 0.0
+                          else f"fan nozzle collapsed (Pt19/P0={output[16]:.4f} < 1) at iteration {iteration}")
+    else:
+        result.message = '' if result.converged else f"did not converge in {max_iterations} iterations (last delta={output[24]:.2e})"
+    return result
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  design_constants / reference_point schema (both plain Data objects, not classes --
@@ -331,6 +569,15 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.solve_turbofan_offdesign_robust
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan_offdesign_matching
     """
+    # constant-efficiency compressors: compiled kernel (same equations, see solve_turbofan_offdesign_kernel)
+    if fan_map is None and high_pressure_compressor_map is None:
+        guess  = (np.nan, np.nan, np.nan) if initial_guess is None else initial_guess
+        output = solve_turbofan_offdesign_kernel(pack_design_constants(design_constants), pack_reference_point(reference_point),
+                                                 float(mach_number), float(static_temperature), float(static_pressure),
+                                                 float(combustor_exit_temperature), float(tolerance), int(max_iterations),
+                                                 float(relaxation_factor), float(guess[0]), float(guess[1]), float(guess[2]))
+        return result_from_kernel_output(output, max_iterations)
+
     dc, ref = design_constants, reference_point
     M0, T0, P0, Tt4 = mach_number, static_temperature, static_pressure, combustor_exit_temperature
 
@@ -582,7 +829,8 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
 def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_number, static_temperature,
                                      static_pressure, combustor_exit_temperature, tolerance=1e-8, max_iterations=200,
                                      relaxation_factor=0.5, max_continuation_steps=32, fan_map=None,
-                                     high_pressure_compressor_map=None, allow_unconverged_fallback=False):
+                                     high_pressure_compressor_map=None, allow_unconverged_fallback=False,
+                                     packed_design_constants=None, packed_reference_point=None):
     """
     Robust wrapper around `solve_turbofan_offdesign`: tries a direct solve
     first, falls back to *continuation* if that fails (stepping from the
@@ -601,6 +849,9 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
 
     Parameters
     ----------
+    packed_design_constants, packed_reference_point : numpy.ndarray, optional
+        pack_design_constants(design_constants) and pack_reference_point(reference_point), when the
+        caller solves many points of the same engine and has already packed them.
     allow_unconverged_fallback : bool, optional
         If every tier fails, raises `OffDesignMatchingError` by default. If
         `True`, returns the best (smallest convergence delta) partial result
@@ -620,6 +871,44 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
         If every tier fails and `allow_unconverged_fallback` is False (the
         default).
     """
+    # constant-efficiency compressors: direct solve and continuation run in the compiled kernel, and
+    # only the returned point is converted to a Data result
+    if fan_map is None and high_pressure_compressor_map is None:
+        design    = pack_design_constants(design_constants) if packed_design_constants is None else packed_design_constants
+        reference = pack_reference_point(reference_point)  if packed_reference_point  is None else packed_reference_point
+        M0, T0, P0, Tt4 = float(mach_number), float(static_temperature), float(static_pressure), float(combustor_exit_temperature)
+        output = solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, tolerance, max_iterations,
+                                                 relaxation_factor, np.nan, np.nan, np.nan)
+        if output[23] == 1.0:
+            return result_from_kernel_output(output, max_iterations)
+        best_partial = output if np.isfinite(output[24]) else None
+        n_steps = 2
+        while n_steps <= max_continuation_steps:
+            tau_f, tau_tL, pi_tL = reference_point.tau_f, reference_point.tau_tL, reference_point.pi_tL
+            for k in range(1, n_steps + 1):
+                frac   = k / n_steps
+                output = solve_turbofan_offdesign_kernel(design, reference,
+                                                         reference_point.M0 + frac * (M0 - reference_point.M0),
+                                                         reference_point.T0 + frac * (T0 - reference_point.T0),
+                                                         reference_point.P0 + frac * (P0 - reference_point.P0),
+                                                         reference_point.Tt4 + frac * (Tt4 - reference_point.Tt4),
+                                                         tolerance, max_iterations, relaxation_factor, tau_f, tau_tL, pi_tL)
+                if output[23] != 1.0:
+                    break
+                tau_f, tau_tL, pi_tL = output[6], output[10], output[11]
+            if output[23] == 1.0:
+                return result_from_kernel_output(output, max_iterations)
+            if np.isfinite(output[24]) and (best_partial is None or output[24] < best_partial[24]):
+                best_partial = output
+            n_steps *= 2
+        if allow_unconverged_fallback and best_partial is not None:
+            return result_from_kernel_output(best_partial, max_iterations)
+        raise OffDesignMatchingError(
+            f"off-design matching failed even with {max_continuation_steps}-step continuation "
+            f"(map-based retry not available) from the reference point (target M0={mach_number}, "
+            f"T0={static_temperature}, P0={static_pressure}, Tt4={combustor_exit_temperature})"
+        )
+
     best_partial = None
 
     def track_best(result):

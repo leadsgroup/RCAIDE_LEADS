@@ -19,6 +19,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import co
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan             import compute_thrust
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance_surrogate import compute_turbofan_performance_surrogate
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
+    pack_design_constants, pack_reference_point,
     solve_turbofan_offdesign_robust, OffDesignMatchingError)
 
 import  numpy as  np
@@ -725,12 +726,15 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     pi_f_out        = np.full(n, np.nan)
     fuel_to_air_ratio_out = np.full(n, np.nan)
 
+    packed_design_constants = pack_design_constants(design_constants)
+    packed_reference_point  = pack_reference_point(reference_point)
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * throttle[i]
         try:
             result = solve_turbofan_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
-                combustor_exit_temperature)
+                combustor_exit_temperature, packed_design_constants=packed_design_constants,
+                packed_reference_point=packed_reference_point)
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise
