@@ -245,11 +245,11 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         results = mission.evaluate()
         segment = results.segments[cruise_segment_tag]
 
-        for segment in  mission.segments:
-            segment.analyses.aerodynamics.settings.reuse_training_data = True
+        for mission_segment in  mission.segments:
+            mission_segment.analyses.aerodynamics.settings.reuse_training_data = True
             # Neutral point is now computed — disable recomputation for speed
-            if segment.analyses.stability != None: 
-                segment.analyses.stability.settings.compute_neutral_point = False
+            if mission_segment.analyses.stability != None: 
+                mission_segment.analyses.stability.settings.compute_neutral_point = False
         
         
         # Distance convergency in order to have total fuel equal to target fuel 
