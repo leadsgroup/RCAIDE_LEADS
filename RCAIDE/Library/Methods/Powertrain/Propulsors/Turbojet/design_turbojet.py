@@ -17,17 +17,21 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import compute_supersonic_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet           import size_core
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.build_turbojet_offdesign_matching import build_turbojet_offdesign_matching
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.design_turbojet_offdesign_matching import design_turbojet_offdesign_matching
+from RCAIDE.Framework.Core                                           import Data
 from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor import design_optimal_motor
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_generator import design_optimal_generator
 
 # Python package imports   
 import numpy as np
+from scipy.optimize import brentq
 
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turbojet
 # ----------------------------------------------------------------------------------------------------------------------   
-def design_turbojet(turbojet):
+def design_turbojet(turbojet, build_idle_fallback=True):
     """
     Designs a turbojet engine by computing performance properties and sizing components based on design conditions.
     
@@ -113,6 +117,12 @@ def design_turbojet(turbojet):
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.size_core
     RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_static_sea_level_performance
     """
+    # sized from the rated takeoff thrust alone: solve design_thrust (see size_turbojet_to_rated_takeoff_thrust)
+    if turbojet.rated_takeoff_thrust > 0 and turbojet.design_thrust <= 0:
+        from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.size_turbojet_to_rated_takeoff_thrust import size_turbojet_to_rated_takeoff_thrust
+        size_turbojet_to_rated_takeoff_thrust(turbojet)
+        return
+
     #check if mach number and temperature are passed
     if(turbojet.design_mach_number==None or turbojet.design_altitude==None):
         
@@ -332,13 +342,59 @@ def design_turbojet(turbojet):
     # Specific shaft work at the converged design point, same rationale as design_turbofan.py
     turbojet.design_shaft_work_specific = float(np.ravel(external_shaft_work)[0])
 
-    # Step 21: Static Sea Level Thrust
+    # Step 21: Off-design matching is the default performance model -- attach it from the sized design
+    # point (see design_turbofan)
+    turbojet.offdesign_matching       = None
+    design_constants, reference_point = design_turbojet_offdesign_matching(turbojet)
+    turbojet.offdesign_matching       = Data(design_constants = design_constants, reference_point = reference_point)
+
+    # Step 22: Sea-level static operating point, dry
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state       = setup_operating_conditions(turbojet,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)
-    operating_state.conditions.energy.propulsors[turbojet.tag].throttle[:,0] = 1.0
     operating_state.unknowns.network['electrical_power'] = np.array([[design_power_offtake]])
-    _,sls_outputs,_,_      = turbojet.compute_performance(operating_state)
+    afterburner_active          = turbojet.afterburner_active
+    turbojet.afterburner_active = False
+
+    def sea_level_static_performance(throttle):
+        operating_state.conditions.energy.propulsors[turbojet.tag].throttle[:,0] = throttle
+        _,outputs,_,_ = turbojet.compute_performance(operating_state)
+        return outputs
+
+    # Step 23: Takeoff rating -- the throttle (fraction of the design combustor exit temperature) at which
+    # the dry sea-level static thrust equals the rated takeoff thrust (see design_turbofan)
+    try:
+        if turbojet.rated_takeoff_thrust > 0:
+            def thrust_residual(throttle):
+                return sea_level_static_performance(throttle).thrust[0][0] - turbojet.rated_takeoff_thrust
+            throttle_step   = 0.05
+            lower, upper    = 1.0, 1.0
+            residual        = thrust_residual(1.0)
+            direction       = 1.0 if residual < 0 else -1.0
+            while (residual < 0) == (direction > 0):
+                next_throttle = (upper if direction > 0 else lower) + direction * throttle_step
+                if not 0.5 <= next_throttle <= 2.0:
+                    raise ValueError(f"Turbojet '{turbojet.tag}': no takeoff throttle between 0.5 and 2.0 gives the rated takeoff "
+                                     f"thrust of {turbojet.rated_takeoff_thrust:.0f} N at sea level; check design_thrust against it.")
+                residual = thrust_residual(next_throttle)
+                if direction > 0:
+                    lower, upper = upper, next_throttle
+                else:
+                    lower, upper = next_throttle, lower
+            turbojet.rated_takeoff_throttle = brentq(thrust_residual, lower, upper, xtol=1e-6)
+        else:
+            turbojet.rated_takeoff_throttle = 1.0
+
+        # idle_fallback deck spans part power up to the takeoff rating
+        if build_idle_fallback:
+            combustor_exit_temperature_fractions = sorted(set([turbojet.rated_takeoff_throttle, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
+            turbojet.offdesign_matching          = None
+            turbojet.offdesign_matching          = build_turbojet_offdesign_matching(turbojet, combustor_exit_temperature_fractions = combustor_exit_temperature_fractions)
+
+        # Step 24: Dry sea-level static thrust at the takeoff rating
+        sls_outputs = sea_level_static_performance(turbojet.rated_takeoff_throttle)
+    finally:
+        turbojet.afterburner_active = afterburner_active
     turbojet.sealevel_static_thrust = sls_outputs.thrust[0][0]
     turbojet.sealevel_static_power  = sls_outputs.power.propulsive[0][0]
     

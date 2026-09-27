@@ -16,7 +16,8 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet           import compute_thrust
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.Turbojet_OffDesign_Matching import (
-    solve_turbojet_offdesign_robust, OffDesignMatchingError, pack_turbojet_design_constants, pack_turbojet_reference_point)
+    solve_turbojet_offdesign_robust, OffDesignMatchingError, pack_turbojet_design_constants, pack_turbojet_reference_point,
+    apply_turbojet_afterburner)
 
 # python imports 
 import  numpy as  np 
@@ -598,18 +599,20 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     turbojet_conditions  = conditions.energy.propulsors[turbojet.tag]
     noise_conditions     = conditions.aeroacoustics.propulsors[turbojet.tag]
 
-    altitude            = conditions.freestream.altitude[:, 0]
-    mach_number         = conditions.freestream.mach_number[:, 0]
-    static_temperature  = conditions.freestream.temperature[:, 0]
-    static_pressure     = conditions.freestream.pressure[:, 0]
-    velocity            = conditions.freestream.velocity[:, 0]
-    throttle            = turbojet_conditions.throttle[:, 0]
+    # freestream quantities may be column vectors or 1-D arrays, and may hold a single value for all
+    # control points -- broadcast each onto the throttle rows (see compute_turbofan_performance_offdesign)
+    throttle            = np.ravel(turbojet_conditions.throttle)
+    n                   = len(throttle)
+    altitude            = np.ravel(conditions.freestream.altitude)    * np.ones(n)
+    mach_number         = np.ravel(conditions.freestream.mach_number) * np.ones(n)
+    static_temperature  = np.ravel(conditions.freestream.temperature) * np.ones(n)
+    static_pressure     = np.ravel(conditions.freestream.pressure)    * np.ones(n)
+    velocity            = np.ravel(conditions.freestream.velocity)    * np.ones(n)
 
     design_constants = turbojet.offdesign_matching.design_constants
     reference_point  = turbojet.offdesign_matching.reference_point
     idle_fallback    = getattr(turbojet.offdesign_matching, 'idle_fallback', None)
 
-    n = len(mach_number)
     thrust_N              = np.zeros(n)
     fuel_mass_flow_rate    = np.zeros(n)
     core_nozzle_exit_velocity               = np.full(n, np.nan)
@@ -643,6 +646,9 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
             fuel_mass_flow_rate[i]  = FF[0]
             continue
         
+        if turbojet.afterburner_active and turbojet.afterburner is not None:
+            result = apply_turbojet_afterburner(result, design_constants, turbojet.afterburner, turbojet.working_fluid,
+                                                static_temperature[i], static_pressure[i])
         thrust_N[i]                                 = result.thrust
         fuel_mass_flow_rate[i]                       = result.fuel_mass_flow_rate
         core_nozzle_exit_velocity[i]                = result.core_nozzle_exit_velocity
@@ -662,7 +668,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
 
     TSFC           = np.zeros(n)
     positive       = thrust_N > 0
-    gravity        = conditions.freestream.gravity[:, 0] if hasattr(conditions.freestream, 'gravity') \
+    gravity        = np.ravel(conditions.freestream.gravity) * np.ones(n) if hasattr(conditions.freestream, 'gravity') \
                      else 9.80665 * np.ones(n)
     TSFC[positive] = fuel_mass_flow_rate[positive] * gravity[positive] / thrust_N[positive]
 
@@ -682,6 +688,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     turbojet_conditions.outputs.thrust                     = thrust_vector
     turbojet_conditions.outputs.moment                     = moment
     turbojet_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
+    turbojet_conditions.power                              = power_propulsive.reshape(-1,1)
 
     # same fields the analytical path sets; NaN at idle_fallback points
     turbojet_conditions.flow_through_core           = 1.0
@@ -706,6 +713,14 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     )
     noise_conditions.fan_nozzle = None
     noise_conditions.fan        = Data(angular_velocity = np.full((n,1), np.nan))
+
+    # core nozzle exit state, in the same conditions the analytical cycle populates
+    nozzle_outputs                        = conditions.energy.converters[turbojet.core_nozzle.tag].outputs
+    nozzle_outputs.velocity               = core_nozzle_exit_velocity.reshape(-1,1)
+    nozzle_outputs.static_temperature     = core_nozzle_exit_static_temperature.reshape(-1,1)
+    nozzle_outputs.static_pressure        = core_nozzle_exit_static_pressure.reshape(-1,1)
+    nozzle_outputs.stagnation_temperature = core_nozzle_exit_stagnation_temperature.reshape(-1,1)
+    nozzle_outputs.stagnation_pressure    = core_nozzle_exit_stagnation_pressure.reshape(-1,1)
 
     stored_results_flag   = True
     stored_propulsor_tag  = turbojet.tag

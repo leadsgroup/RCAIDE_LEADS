@@ -63,6 +63,12 @@ def main():
     # ------------------------------------------------------------------------------------
     design_thrust = turbojet.design_thrust
 
+    # design_turbojet builds off-design matching (with its idle_fallback) as the default model
+    assert turbojet.offdesign_matching is not None and turbojet.offdesign_matching.idle_fallback is not None, \
+        "design_turbojet should build off-design matching as the default performance model"
+    default_offdesign_matching  = turbojet.offdesign_matching
+
+    turbojet.offdesign_matching = None
     F_analytical_design = evaluate_thrust(turbojet, fuel_line, turbojet.design_altitude, turbojet.design_mach_number)
     check('design point, analytical vs design_thrust [N]', F_analytical_design, design_thrust, 1e-6, results)
 
@@ -78,10 +84,14 @@ def main():
     # ------------------------------------------------------------------------------------
     # 2. Sea-level static
     # ------------------------------------------------------------------------------------
-    turbojet.offdesign_matching = None
-    F_analytical_sls = evaluate_thrust(turbojet, fuel_line, 0.0, 0.01)
-    check('SLS (M=0.01), analytical vs turbojet.sealevel_static_thrust [N]',
-          F_analytical_sls, turbojet.sealevel_static_thrust, 1e-6, results)
+    # turbojet.sealevel_static_thrust is evaluated (dry) by design_turbojet with its default off-design
+    # model at the takeoff rating
+    turbojet.offdesign_matching = default_offdesign_matching
+    F_default_sls = evaluate_thrust(turbojet, fuel_line, 0.0, 0.01, throttle=turbojet.rated_takeoff_throttle)
+    check('SLS (M=0.01), default off-design model at the takeoff rating vs turbojet.sealevel_static_thrust [N]',
+          F_default_sls, turbojet.sealevel_static_thrust, 1e-6, results)
+    check('SLS (M=0.01), takeoff rating vs turbojet.rated_takeoff_thrust [N]',
+          F_default_sls, turbojet.rated_takeoff_thrust, 1e-4, results)
 
     turbojet.offdesign_matching = Data(design_constants=design_constants, reference_point=reference_point)
     F_offdesign_sls_001    = evaluate_thrust(turbojet, fuel_line, 0.0, 0.01)

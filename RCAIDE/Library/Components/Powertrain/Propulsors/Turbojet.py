@@ -103,12 +103,31 @@ class Turbojet(Propulsor):
     OpenVSP_flow_through : bool
         Flag for OpenVSP flow-through analysis. Default is False.
 
+    rated_takeoff_thrust : float, optional
+        Rated (maximum dry) sea-level static takeoff thrust [N]. When set (> 0) without
+        `design_thrust`, `design_turbojet` sizes the engine to it and solves `design_thrust`; when set
+        together with `design_thrust`, it solves `rated_takeoff_throttle` so that the dry sea-level
+        static thrust equals it. Default is 0.0.
+
+    rated_takeoff_throttle : float
+        Throttle (fraction of the design-point combustor exit temperature) of the takeoff rating, set
+        by `design_turbojet`; `sealevel_static_thrust` (dry) is evaluated at it. Default is 1.0.
+
+    takeoff_combustor_exit_temperature_ratio : float
+        Combustor exit temperature at the takeoff rating divided by its design-point value, used when
+        sizing the engine to `rated_takeoff_thrust`. Default is 1.13, the ratio of the SAFAM engine
+        data (T41 of 1900 K at maximum takeoff, 1686 K at maximum climb).
+
     offdesign_matching : Data, optional
         If set (as `Data(design_constants=..., reference_point=...)` from
         `design_turbojet_offdesign_matching`), `compute_turbojet_performance`
         uses live off-design component matching
         (`Turbojet_OffDesign_Matching.solve_turbojet_offdesign_robust`)
-        instead of the analytical cycle model. Default is None.
+        instead of the analytical cycle model. Built by `design_turbojet` by
+        default (see `build_turbojet_offdesign_matching`), making off-design
+        matching the default performance model; set to None after
+        `design_turbojet` to use the analytical cycle model instead. Default is
+        None.
 
     areas : Data
         Collection of engine areas
@@ -177,6 +196,9 @@ class Turbojet(Propulsor):
         self.design_power_offtake                        = 0.0
         self.design_shaft_work_specific                  = 0.0 
         self.design_thrust                               = 0.0
+        self.rated_takeoff_thrust                        = 0.0     # see docstring
+        self.rated_takeoff_throttle                      = 1.0     # see docstring
+        self.takeoff_combustor_exit_temperature_ratio    = 1.13    # see docstring
         self.design_mass_flow_rate                       = 0.0
         self.OpenVSP_flow_through                        = False
         self.offdesign_matching                          = None    # see docstring

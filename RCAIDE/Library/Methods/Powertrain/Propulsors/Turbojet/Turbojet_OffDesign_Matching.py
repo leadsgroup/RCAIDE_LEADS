@@ -349,3 +349,78 @@ def solve_turbojet_offdesign_robust(design_constants, reference_point, mach_numb
         f"from the reference point (target M0={mach_number}, T0={static_temperature}, "
         f"P0={static_pressure}, Tt4={combustor_exit_temperature})"
     )
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  apply_turbojet_afterburner
+# ----------------------------------------------------------------------------------------------------------------------
+def apply_turbojet_afterburner(result, design_constants, afterburner, working_fluid, static_temperature, static_pressure):
+    """
+    Adds afterburner (reheat) operation to a converged dry off-design turbojet solution.
+
+    Parameters
+    ----------
+    result : Data
+        Converged solve_turbojet_offdesign / solve_turbojet_offdesign_robust result (dry).
+    design_constants : Data
+        The engine's design constants (see design_turbojet_offdesign_matching).
+    afterburner : RCAIDE.Library.Components.Powertrain.Converters.Combustor
+        Afterburner with turbine_inlet_temperature (afterburner exit stagnation temperature Tt7 [K]),
+        pressure_ratio, efficiency and fuel_data.specific_energy.
+    working_fluid : RCAIDE.Library.Attributes.Gases
+        Gas model used for the afterburner gas properties at Tt7.
+    static_temperature, static_pressure : float
+        Freestream static temperature [K] and pressure [Pa].
+
+    Returns
+    -------
+    result : Data
+        The same result with the nozzle exit state, thrust, fuel flow and fuel-to-air ratio for
+        afterburner operation (unchanged if Tt7 does not exceed the turbine exit temperature).
+
+    Notes
+    -----
+    With the afterburner lit, the variable-area exhaust nozzle is scheduled so that the turbine exit
+    conditions are unchanged, so the dry gas-generator solution (pi_tL, tau_tL, mass flow, main
+    burner fuel-to-air ratio) is retained and only the afterburner and nozzle are added,
+    Ref. [1] Sec. 8-4, Eqs. (8-39) and (8-45r)-(8-45z). The exhaust is fully expanded (P9 = P0), as
+    in the dry solution. Afterburner gas properties are those of the working fluid at Tt7.
+
+    References
+    ----------
+    [1] Mattingly, J. D., "Elements of Gas Turbine Propulsion", McGraw-Hill, 1996, Sec. 8-4.
+    """
+    Tt7 = afterburner.turbine_inlet_temperature
+    T0, P0 = static_temperature, static_pressure
+    Tt5 = result.tau_lambda * design_constants.tau_tH * result.tau_tL * design_constants.cpc * T0 / design_constants.cpt
+    if not (Tt7 > Tt5) or not np.isfinite(result.thrust):
+        return result
+
+    dc         = design_constants
+    gamma_c    = dc.gamma_c
+    Rc         = (gamma_c - 1) / gamma_c * dc.cpc
+    V0         = np.sqrt(gamma_c * Rc * T0) * np.sqrt(2 / (gamma_c - 1) * (result.tau_r - 1))
+    cp_AB      = float(np.ravel(working_fluid.compute_cp(Tt7, P0))[0])
+    gamma_AB   = float(np.ravel(working_fluid.compute_gamma(Tt7, P0))[0])
+    R_AB       = (gamma_AB - 1) / gamma_AB * cp_AB                                                   # (8-45r)
+    tau_lambda_AB = cp_AB * Tt7 / (dc.cpc * T0)                                                      # (8-45s)
+    f_AB = (tau_lambda_AB - result.tau_lambda * dc.tau_tH * result.tau_tL) / \
+           (afterburner.fuel_data.specific_energy * afterburner.efficiency / (dc.cpc * T0) - tau_lambda_AB)  # (8-45t)
+    Pt9_P9 = result.stagnation_to_ambient_core_nozzle_pressure_ratio * afterburner.pressure_ratio    # (8-45u), P9 = P0
+    M9     = np.sqrt(2 / (gamma_AB - 1) * (Pt9_P9 ** ((gamma_AB - 1) / gamma_AB) - 1))              # (8-45v)
+    T9     = Tt7 / (Pt9_P9 ** ((gamma_AB - 1) / gamma_AB))                                          # (8-45w)
+    V9     = M9 * np.sqrt(gamma_AB * R_AB * T9)                                                      # (8-45x)
+    f_0    = result.fuel_to_air_ratio + f_AB                                                         # (8-45y)
+    thrust = result.mass_flow_rate * ((1 + f_0) * V9 - V0)                                           # (8-45z), P9 = P0
+
+    result.stagnation_to_ambient_core_nozzle_pressure_ratio = Pt9_P9
+    result.M9                                    = M9
+    result.fuel_to_air_ratio                     = f_0
+    result.thrust                                = thrust
+    result.fuel_mass_flow_rate                   = f_0 * result.mass_flow_rate
+    result.specific_fuel_consumption             = result.fuel_mass_flow_rate / thrust if thrust > 0 else np.nan
+    result.core_nozzle_exit_velocity             = V9
+    result.core_nozzle_exit_static_temperature   = T9
+    result.core_nozzle_exit_static_pressure      = P0
+    result.core_nozzle_exit_stagnation_temperature = Tt7
+    result.core_nozzle_exit_stagnation_pressure  = Pt9_P9 * P0
+    return result
