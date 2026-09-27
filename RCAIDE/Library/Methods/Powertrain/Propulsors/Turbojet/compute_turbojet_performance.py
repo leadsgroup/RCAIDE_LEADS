@@ -16,7 +16,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet           import compute_thrust
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.Turbojet_OffDesign_Matching import (
-    solve_turbojet_offdesign_robust, OffDesignMatchingError)
+    solve_turbojet_offdesign_robust, OffDesignMatchingError, pack_turbojet_design_constants, pack_turbojet_reference_point)
 
 # python imports 
 import  numpy as  np 
@@ -625,12 +625,15 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     pi_c_out              = np.full(n, np.nan)
     fuel_to_air_ratio_out = np.full(n, np.nan)
 
+    packed_design_constants = pack_turbojet_design_constants(design_constants)
+    packed_reference_point  = pack_turbojet_reference_point(reference_point)
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * throttle[i]
         try:
             result = solve_turbojet_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
-                combustor_exit_temperature)
+                combustor_exit_temperature, packed_design_constants=packed_design_constants,
+                packed_reference_point=packed_reference_point)
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise
