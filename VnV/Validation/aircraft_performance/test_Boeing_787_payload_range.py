@@ -52,7 +52,6 @@ def main():
     # ########################################### WARNING #################################################
     # #####################################################################################################
         
-    # FLOPS OEW is 2.6% below the APM (114,913 vs 117,934 kg), so the max-payload range is 4% above the APM
     truth_values = {
         "range":            np.array([       0.        , 10601618.27332284, 17759990.44359219, 18631784.57780205]),
         "payload":          np.array([44000.        , 44000.        , 11693.83       ,     0.        ]),
@@ -637,6 +636,7 @@ def base_analysis(vehicle):
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
     weights.settings.FLOPS.fidelity                                          = 'Complex'      
     weights.settings.advanced_composites                                     = True
+    weights.settings.FLOPS.composite_utilization_factor                      = 0.0 # calibrated to the APM OEW (117,934 kg); not a measure of the wing's composite content
     weights.settings.weight_correction_additions.empty.structural.paint      = 450 
     weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.number_of_passengers
     weights.settings.weight_correction_additions.empty.propulsion.battery    = 150 

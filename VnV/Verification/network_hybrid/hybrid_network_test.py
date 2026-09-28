@@ -47,7 +47,7 @@ def main():
     parallel_hybrid  = True
     
     convetional_cruise_CL_truth      = 0.6879290379225934
-    electric_cruise_CL_truth         = 0.7983384361189546
+    electric_cruise_CL_truth         = 0.8314170769490901
     series_hybrid_cruise_CL_truth    = 0.69414909471798
     parallel_hybrid_cruise_CL_truth  = 0.6939160533504246
 

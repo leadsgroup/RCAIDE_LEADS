@@ -53,7 +53,7 @@ def vehicle_setup():
     vehicle.mass_properties.max_takeoff               = 51800. # kg
     vehicle.mass_properties.takeoff                   = 51800. # kg
     vehicle.mass_properties.max_zero_fuel             = 40900. # kg
-    vehicle.mass_properties.max_fuel                  = 14125. # kg
+    vehicle.mass_properties.max_fuel                  = 13100. # kg, APM max usable fuel
     vehicle.mass_properties.max_payload               = 12900. # kg
     vehicle.mass_properties.operating_empty           = 27900  #  
 
@@ -649,7 +649,7 @@ def vehicle_setup():
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.98
     combustor.alphac                               = 1.0     
-    combustor.turbine_inlet_temperature            = 1550
+    combustor.turbine_inlet_temperature            = 1400
     combustor.pressure_ratio                       = 0.95
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan.combustor                             = combustor

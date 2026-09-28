@@ -40,14 +40,14 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     vehicle.mass_properties.fuel                      = 57500 *Units.kilogram
     vehicle.mass_properties.max_payload               = 44000
     vehicle.mass_properties.center_of_gravity         = [[27.0, 0, 0]]
-    vehicle.flight_envelope.ultimate_load             = 3.5
+    vehicle.flight_envelope.ultimate_load             = 3.75 # 1.5 x limit load (14 CFR 25.303)
     vehicle.flight_envelope.positive_limit_load       = 2.5  
     vehicle.flight_envelope.negative_limit_load       = 1
     vehicle.flight_envelope.design_mach_number        = 0.85  
     vehicle.flight_envelope.design_cruise_altitude    = 35000.0*Units.feet 
     vehicle.flight_envelope.design_range              = 7305.0 * Units.nmi
     vehicle.reference_area                            = 395.0 * Units['meters**2']    
-    vehicle.number_of_passengers                      = 248 
+    vehicle.number_of_passengers                      = 294 # seats in the cabin layout below
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "long range" 
 

@@ -119,10 +119,10 @@ def BWB_Test():
     print('BWB  OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
     print('BWB  Moment of Inertia')
     print(computed_moi)
-    truth_OEW_CG_mass_percentage = 100.52
-    truth_moi = np.array([[ 3554321.9367739768,  1084856.3745924414,  -581978.28536697337],
-                          [ 1084856.3745924414, 13138586.312746527,     8480.7338457926235],
-                          [ -581978.28536697337,    8480.7338457926235, 15658194.283308093]])
+    truth_OEW_CG_mass_percentage = 100.49
+    truth_moi = np.array([[ 3999046.2354454231,  1117920.4146222714,  -603781.97208385251],
+                          [ 1117920.4146222714, 13333348.732972268,    14766.416105292457],
+                          [ -603781.97208385251,   14766.416105292457, 16283481.258334357]])
 
     error_moi = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_moi < 1e-2),\
@@ -194,10 +194,10 @@ def General_Aviation_Test():
     print('GA Moment of Inertia')
     print(MOI)
 
-    truth_OEW_CG_mass_percentage = 98.78
-    truth_moi  = np.array([[  449.57227680822189, -6.9540381428015504e-15,  -29.317141217591523],
-                           [-6.9540381428015504e-15,  3767.6375607799655 , -6.1325903062975410e-15],
-                           [ -29.317141217591523 , -6.1325903062975410e-15,  3518.9283237494451 ]])
+    truth_OEW_CG_mass_percentage = 98.83
+    truth_moi  = np.array([[  469.9760819071937, -6.954038142801550e-15,  -50.4585283236692],
+                           [-6.954038142801550e-15,  3809.946998019658 , -6.132590306297541e-15],
+                           [ -50.4585283236692 , -6.132590306297541e-15,  3540.833955890165 ]])
 
     error_moi = abs(MOI - truth_moi)
     assert np.all(error_moi < 1e-5),\
