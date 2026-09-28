@@ -109,9 +109,12 @@ def design_turbofan(turbofan, build_idle_fallback=True):
           design-point combustor exit temperature) equals rated_takeoff_thrust, and design_thrust
           is solved (size_turbofan_to_rated_takeoff_thrust)
         * design_thrust and rated_takeoff_thrust: the engine is sized from design_thrust and
-          rated_takeoff_throttle is solved so the sea-level static thrust equals
+          rated_takeoff_temperature_ratio is solved so the sea-level static thrust equals
           rated_takeoff_thrust -- a consistency check between two documented operating points
-        * design_thrust only: the engine is sized from design_thrust and rated_takeoff_throttle is 1
+        * design_thrust only: the engine is sized from design_thrust and rated_takeoff_temperature_ratio is 1
+
+    Throttle is a fraction of the takeoff rating: throttle 1 runs at rated_takeoff_temperature_ratio
+    times the design-point combustor exit temperature.
     
     Returns
     -------
@@ -161,6 +164,9 @@ def design_turbofan(turbofan, build_idle_fallback=True):
         from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.size_turbofan_to_rated_takeoff_thrust import size_turbofan_to_rated_takeoff_thrust
         size_turbofan_to_rated_takeoff_thrust(turbofan)
         return
+
+    # throttle equals the design-point fraction until the takeoff rating is solved below
+    turbofan.rated_takeoff_temperature_ratio = 1.0
 
     # check if mach number and temperature are passed
     if(turbofan.design_mach_number==None) and (turbofan.design_altitude==None): 
@@ -439,9 +445,10 @@ def design_turbofan(turbofan, build_idle_fallback=True):
         inputs,outputs,_,_ = turbofan.compute_performance(operating_state,dummy_network)
         return outputs
 
-    # Step 25: Takeoff rating -- the throttle (fraction of the design combustor exit temperature) at
-    # which the sea-level static thrust equals the rated takeoff thrust. Engines are rated hotter at
-    # takeoff than at the climb/cruise design point, so this is typically above 1.
+    # Step 25: Takeoff rating -- the fraction of the design combustor exit temperature at which the
+    # sea-level static thrust equals the rated takeoff thrust. Engines are rated hotter at takeoff
+    # than at the climb/cruise design point, so this is typically above 1. Throttle is then a
+    # fraction of this rating.
     if turbofan.rated_takeoff_thrust > 0:
         def thrust_residual(throttle):
             return sea_level_static_performance(throttle).thrust[0][0] - turbofan.rated_takeoff_thrust
@@ -462,18 +469,16 @@ def design_turbofan(turbofan, build_idle_fallback=True):
                 lower, upper = upper, next_throttle
             else:
                 lower, upper = next_throttle, lower
-        turbofan.rated_takeoff_throttle = brentq(thrust_residual, lower, upper, xtol=1e-6)
-    else:
-        turbofan.rated_takeoff_throttle = 1.0
+        turbofan.rated_takeoff_temperature_ratio = brentq(thrust_residual, lower, upper, xtol=1e-6)
 
     # idle_fallback deck spans part power up to the takeoff rating
     if offdesign_matching_default and build_idle_fallback:
-        combustor_exit_temperature_fractions = sorted(set([turbofan.rated_takeoff_throttle, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
+        combustor_exit_temperature_fractions = sorted(set([turbofan.rated_takeoff_temperature_ratio, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
         turbofan.offdesign_matching          = None
         turbofan.offdesign_matching          = build_turbofan_offdesign_matching(turbofan, combustor_exit_temperature_fractions = combustor_exit_temperature_fractions)
 
     # Step 26: Sea-level static thrust at the takeoff rating
-    outputs                                = sea_level_static_performance(turbofan.rated_takeoff_throttle)
+    outputs                                = sea_level_static_performance(1.0)
     turbofan.sealevel_static_thrust        = outputs.thrust[0][0]
 
     # Fan design-point speed from its rated (100% N1, sea-level static takeoff) speed, using the

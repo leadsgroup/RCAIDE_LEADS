@@ -209,8 +209,11 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     # ----------------------------------------------------------------------------
     # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
     # ----------------------------------------------------------------------------
+    # throttle is a fraction of the takeoff rating; the cycle runs on the fraction of the design point
+    design_point_throttle        = turbojet_conditions.throttle * turbojet.rated_takeoff_temperature_ratio
+
     # absolute power [W], converted to specific work with the core mass flow before the HP turbine below
-    lpc_conditions.omega         = low_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+    lpc_conditions.omega         = low_pressure_compressor.design_angular_velocity * design_point_throttle
     external_shaft_work, _, _, _ = compute_gas_generator_shaft_power_offtake(turbojet, state, lpc_conditions.omega)
 
     # Set the working fluid to determine the fluid properties
@@ -377,7 +380,7 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
  
 
     # compute shaft RPMs (lpc_conditions.omega already set above, alongside the offtake block)
-    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * design_point_throttle
 
     # store data
     core_nozzle_res = Data(
@@ -536,7 +539,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     Notes
     -----
     Throttle is consumed the same way `compute_turbofan_performance_
-    offdesign` does: `Tt4 = reference_point.Tt4 * throttle` (see that
+    offdesign` does: `Tt4 = reference_point.Tt4 * rated_takeoff_temperature_ratio * throttle` (see that
     module's own docstring Notes for the caveats).
 
     There is no fan nozzle at all for a turbojet (all flow exits through the
@@ -555,7 +558,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
 
     # freestream quantities may be column vectors or 1-D arrays, and may hold a single value for all
     # control points -- broadcast each onto the throttle rows (see compute_turbofan_performance_offdesign)
-    throttle            = np.ravel(turbojet_conditions.throttle)
+    throttle            = np.ravel(turbojet_conditions.throttle) * turbojet.rated_takeoff_temperature_ratio  # design-point Tt4 fraction
     n                   = len(throttle)
     altitude            = np.ravel(conditions.freestream.altitude)    * np.ones(n)
     mach_number         = np.ravel(conditions.freestream.mach_number) * np.ones(n)
@@ -588,7 +591,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     # gas-generator shaft power to/from the integrated drive motor or generator at the mission's electrical
     # power; the design-point offtake outside a mission
     lpc_conditions       = conditions.energy.converters[turbojet.low_pressure_compressor.tag]
-    lpc_conditions.omega = turbojet.low_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+    lpc_conditions.omega = turbojet.low_pressure_compressor.design_angular_velocity * throttle.reshape(-1, 1)
     external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbojet, state, lpc_conditions.omega)
     shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
     for i in range(n):

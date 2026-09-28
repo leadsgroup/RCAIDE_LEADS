@@ -949,7 +949,7 @@ def mission_setup(analyses):
     segment.friction_coefficient     = 0.03
     segment.altitude                 = 0.0   
     # full power on the ground run is the engine's takeoff rating
-    segment.throttle                 = analyses.takeoff.vehicle.networks.fuel.propulsors['starboard_propulsor'].rated_takeoff_throttle
+    segment.throttle                 = 1.0  # takeoff rating
     mission.append_segment(segment)
 
     # ------------------------------------------------------------------------------------------------------------------------------------ 

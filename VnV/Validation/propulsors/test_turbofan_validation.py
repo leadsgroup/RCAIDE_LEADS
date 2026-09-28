@@ -84,8 +84,8 @@ def main():
         if issubclass(type(item), RCAIDE.Library.Components.Component):
             item.append_operating_conditions(segment)
 
-    # set throttle
-    segment.state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1  
+    # design point: throttle is a fraction of the takeoff rating
+    segment.state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0 / turbofan.rated_takeoff_temperature_ratio
 
     # the component station values below validate the design-point cycle solve, so evaluate it
     # with the analytical cycle rather than the default off-design model

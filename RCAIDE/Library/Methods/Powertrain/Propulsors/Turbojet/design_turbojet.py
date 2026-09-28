@@ -123,6 +123,9 @@ def design_turbojet(turbojet, build_idle_fallback=True):
         size_turbojet_to_rated_takeoff_thrust(turbojet)
         return
 
+    # throttle equals the design-point fraction until the takeoff rating is solved below
+    turbojet.rated_takeoff_temperature_ratio = 1.0
+
     #check if mach number and temperature are passed
     if(turbojet.design_mach_number==None or turbojet.design_altitude==None):
         
@@ -361,8 +364,8 @@ def design_turbojet(turbojet, build_idle_fallback=True):
         _,outputs,_,_ = turbojet.compute_performance(operating_state)
         return outputs
 
-    # Step 23: Takeoff rating -- the throttle (fraction of the design combustor exit temperature) at which
-    # the dry sea-level static thrust equals the rated takeoff thrust (see design_turbofan)
+    # Step 23: Takeoff rating -- the fraction of the design combustor exit temperature at which the dry
+    # sea-level static thrust equals the rated takeoff thrust; throttle is a fraction of it (see design_turbofan)
     try:
         if turbojet.rated_takeoff_thrust > 0:
             def thrust_residual(throttle):
@@ -381,18 +384,16 @@ def design_turbojet(turbojet, build_idle_fallback=True):
                     lower, upper = upper, next_throttle
                 else:
                     lower, upper = next_throttle, lower
-            turbojet.rated_takeoff_throttle = brentq(thrust_residual, lower, upper, xtol=1e-6)
-        else:
-            turbojet.rated_takeoff_throttle = 1.0
+            turbojet.rated_takeoff_temperature_ratio = brentq(thrust_residual, lower, upper, xtol=1e-6)
 
         # idle_fallback deck spans part power up to the takeoff rating
         if build_idle_fallback:
-            combustor_exit_temperature_fractions = sorted(set([turbojet.rated_takeoff_throttle, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
+            combustor_exit_temperature_fractions = sorted(set([turbojet.rated_takeoff_temperature_ratio, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
             turbojet.offdesign_matching          = None
             turbojet.offdesign_matching          = build_turbojet_offdesign_matching(turbojet, combustor_exit_temperature_fractions = combustor_exit_temperature_fractions)
 
         # Step 24: Dry sea-level static thrust at the takeoff rating
-        sls_outputs = sea_level_static_performance(turbojet.rated_takeoff_throttle)
+        sls_outputs = sea_level_static_performance(1.0)
     finally:
         turbojet.afterburner_active = afterburner_active
     turbojet.sealevel_static_thrust = sls_outputs.thrust[0][0]

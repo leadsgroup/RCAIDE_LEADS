@@ -222,7 +222,7 @@ def compute_thrust(turboprop, conditions):
     # efficiency (while it sizes the engine from the specific thrust above) the propeller efficiency is its
     # design value, eta*P/V0; afterwards the propeller is an actuator disk driven by the shaft power it
     # receives, which equals eta*P/V0 at the design point and stays finite as V0 -> 0
-    mdot_throttle                                  = mdot_core*turboprop_conditions.throttle
+    mdot_throttle                                  = mdot_core*turboprop_conditions.throttle*turboprop.rated_takeoff_temperature_ratio  # throttle is a fraction of the takeoff rating
     propeller_shaft_power                          = (propeller_work_output_coefficient/propeller_efficiency)*compressor_cp*T0*mdot_throttle
     if turboprop.propeller_polytropic_efficiency is None:
         FD2                                        = Fsp*mdot_throttle

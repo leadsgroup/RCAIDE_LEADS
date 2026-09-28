@@ -82,7 +82,7 @@ def size_turbojet_to_rated_takeoff_thrust(turbojet, relative_tolerance=1e-6, max
         turbojet.rated_takeoff_thrust = rated_takeoff_thrust
         turbojet.afterburner_active   = afterburner_active
 
-    # final design at the converged size: solves rated_takeoff_throttle, evaluates sealevel_static_thrust
+    # final design at the converged size: solves rated_takeoff_temperature_ratio, evaluates sealevel_static_thrust
     # at it and builds the idle_fallback deck
     design_turbojet(turbojet)
     return

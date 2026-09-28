@@ -191,8 +191,9 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     lpt_conditions           = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions           = conditions.energy.converters[high_pressure_turbine.tag]
 
-    # Externally supplied/delivered shaft power from electric motors or generators
-    compressor_conditions.omega = compressor.design_angular_velocity * turboprop_conditions.throttle
+    # Externally supplied/delivered shaft power from electric motors or generators (throttle is a
+    # fraction of the takeoff rating; the cycle runs on the fraction of the design point)
+    compressor_conditions.omega = compressor.design_angular_velocity * turboprop_conditions.throttle * turboprop.rated_takeoff_temperature_ratio
     external_shaft_work, motor_electrical_power, gen_electrical_power, _ = compute_gas_generator_shaft_power_offtake(turboprop, state, compressor_conditions.omega)
 
     # Step 1: Set the working fluid to determine the fluid properties
@@ -473,7 +474,7 @@ def compute_turboprop_performance_offdesign(turboprop, state, center_of_gravity=
     Notes
     -----
     Throttle is consumed the same way `compute_turbofan_performance_
-    offdesign` does: `Tt4 = reference_point.Tt4 * throttle`.
+    offdesign` does: `Tt4 = reference_point.Tt4 * rated_takeoff_temperature_ratio * throttle`.
 
     There is no fan nozzle at all for a turboprop (all core flow exits
     through the single core nozzle; the propeller's own thrust is folded
@@ -495,7 +496,7 @@ def compute_turboprop_performance_offdesign(turboprop, state, center_of_gravity=
     static_temperature  = conditions.freestream.temperature[:, 0]
     static_pressure     = conditions.freestream.pressure[:, 0]
     velocity            = conditions.freestream.velocity[:, 0]
-    throttle            = turboprop_conditions.throttle[:, 0]
+    throttle            = turboprop_conditions.throttle[:, 0] * turboprop.rated_takeoff_temperature_ratio  # design-point Tt4 fraction
 
     design_constants = turboprop.offdesign_matching.design_constants
     reference_point  = turboprop.offdesign_matching.reference_point
@@ -521,7 +522,7 @@ def compute_turboprop_performance_offdesign(turboprop, state, center_of_gravity=
     # gas-generator shaft power to/from the integrated drive motor or generator; the design-point
     # offtake when neither is being evaluated
     compressor_conditions       = conditions.energy.converters[turboprop.compressor.tag]
-    compressor_conditions.omega = turboprop.compressor.design_angular_velocity * turboprop_conditions.throttle
+    compressor_conditions.omega = turboprop.compressor.design_angular_velocity * throttle.reshape(-1, 1)
     external_shaft_power, motor_electrical_power, generator_electrical_power, in_mission = \
         compute_gas_generator_shaft_power_offtake(turboprop, state, compressor_conditions.omega)
     shaft_power_offtake = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n

@@ -88,8 +88,8 @@ def design_turboprop(turboprop, build_idle_fallback=True):
                 Propulsive efficiency at design point [-]
             - offdesign_matching : Data
                 Off-design matching model (the default performance model)
-            - rated_takeoff_throttle : float
-                Throttle of the takeoff rating
+            - rated_takeoff_temperature_ratio : float
+                Combustor exit temperature of the takeoff rating over its design-point value
             - sealevel_static_power : float
                 Sea-level static shaft power at the takeoff rating [W]
             - sealevel_static_thrust : float
@@ -130,6 +130,9 @@ def design_turboprop(turboprop, build_idle_fallback=True):
         from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.size_turboprop_to_rated_takeoff_power import size_turboprop_to_rated_takeoff_power
         size_turboprop_to_rated_takeoff_power(turboprop)
         return
+
+    # throttle equals the design-point fraction until the takeoff rating is solved below
+    turboprop.rated_takeoff_temperature_ratio = 1.0
 
     # the design point defines the propeller by its design efficiency; its actuator-disk polytropic
     # efficiency is calibrated from it once the engine is sized (Step 25b)
@@ -386,8 +389,8 @@ def design_turboprop(turboprop, build_idle_fallback=True):
         _,outputs,_,_ = turboprop.compute_performance(operating_state)
         return outputs
 
-    # Step 28: Takeoff rating -- the throttle (fraction of the design combustor exit temperature) at which
-    # the sea-level static shaft power equals the rated takeoff power (see design_turbofan)
+    # Step 28: Takeoff rating -- the fraction of the design combustor exit temperature at which the
+    # sea-level static shaft power equals the rated takeoff power; throttle is a fraction of it (see design_turbofan)
     if turboprop.rated_takeoff_power > 0:
         def power_residual(throttle):
             return sea_level_static_performance(throttle).power.mechanical[0][0] - turboprop.rated_takeoff_power
@@ -405,19 +408,17 @@ def design_turboprop(turboprop, build_idle_fallback=True):
                 lower, upper = upper, next_throttle
             else:
                 lower, upper = next_throttle, lower
-        turboprop.rated_takeoff_throttle = brentq(power_residual, lower, upper, xtol=1e-6)
-    else:
-        turboprop.rated_takeoff_throttle = 1.0
+        turboprop.rated_takeoff_temperature_ratio = brentq(power_residual, lower, upper, xtol=1e-6)
 
     # idle_fallback deck spans part power up to the takeoff rating
     if build_idle_fallback:
-        combustor_exit_temperature_fractions = sorted(set([turboprop.rated_takeoff_throttle, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
+        combustor_exit_temperature_fractions = sorted(set([turboprop.rated_takeoff_temperature_ratio, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
         turboprop.offdesign_matching         = None
         turboprop.offdesign_matching         = build_turboprop_offdesign_matching(turboprop, combustor_exit_temperature_fractions = combustor_exit_temperature_fractions)
 
     # Step 29: Sea-level static shaft power and thrust at the takeoff rating (the propeller as an actuator
     # disk, finite at zero speed)
-    sls_outputs                      = sea_level_static_performance(turboprop.rated_takeoff_throttle)
+    sls_outputs                      = sea_level_static_performance(1.0)
     turboprop.sealevel_static_thrust = sls_outputs.thrust[0][0]
     turboprop.sealevel_static_power  = sls_outputs.power.mechanical[0][0]
     
@@ -433,7 +434,7 @@ def design_turboprop(turboprop, build_idle_fallback=True):
     if turboprop.integrated_drive_motor != None:
         V                     = turboprop.design_freestream_velocity
         operating_state       = setup_operating_conditions(turboprop,fuel_line,velocity_range=np.array([V]), altitude = turboprop.design_altitude, angle_of_attack=0, temperature_deviation=0)
-        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0
+        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0 / turboprop.rated_takeoff_temperature_ratio  # design point
         _,outputs,_,_           = turboprop.compute_performance(operating_state)
 
         T = outputs.thrust

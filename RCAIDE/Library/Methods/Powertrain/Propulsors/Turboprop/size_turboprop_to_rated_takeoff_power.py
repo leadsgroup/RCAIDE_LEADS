@@ -39,7 +39,7 @@ def size_turboprop_to_rated_takeoff_power(turboprop, relative_tolerance=1e-6, ma
     -------
     None
         Sets turboprop.design_thrust and runs design_turboprop at the converged size, which sets
-        rated_takeoff_throttle, sealevel_static_power, sealevel_static_thrust and the off-design
+        rated_takeoff_temperature_ratio, sealevel_static_power, sealevel_static_thrust and the off-design
         matching model.
 
     Notes
@@ -91,7 +91,7 @@ def size_turboprop_to_rated_takeoff_power(turboprop, relative_tolerance=1e-6, ma
     finally:
         turboprop.rated_takeoff_power = rated_takeoff_power
 
-    # final design at the converged size: solves rated_takeoff_throttle, evaluates the sea-level static
+    # final design at the converged size: solves rated_takeoff_temperature_ratio, evaluates the sea-level static
     # power and thrust at it and builds the idle_fallback deck
     design_turboprop(turboprop)
     return

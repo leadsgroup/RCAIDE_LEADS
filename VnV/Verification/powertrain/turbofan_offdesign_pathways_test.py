@@ -63,19 +63,22 @@ def main():
     # ------------------------------------------------------------------------------------
     design_thrust = turbofan.design_thrust
 
+    # throttle is a fraction of the takeoff rating, so the design point is at 1/rated_takeoff_temperature_ratio
+    design_point_throttle = 1.0 / turbofan.rated_takeoff_temperature_ratio
+
     # design_turbofan builds off-design matching (with its idle_fallback) as the default model
     assert turbofan.offdesign_matching is not None and turbofan.offdesign_matching.idle_fallback is not None, \
         "design_turbofan should build off-design matching as the default performance model"
     default_offdesign_matching  = turbofan.offdesign_matching
 
     turbofan.offdesign_matching = None
-    F_analytical_design = evaluate_thrust(turbofan, fuel_line, turbofan.design_altitude, turbofan.design_mach_number)
+    F_analytical_design = evaluate_thrust(turbofan, fuel_line, turbofan.design_altitude, turbofan.design_mach_number, throttle=design_point_throttle)
     check('design point, analytical vs design_thrust [N]', F_analytical_design, design_thrust, 1e-6, results)
 
     design_constants, reference_point = design_turbofan_offdesign_matching(turbofan)
     turbofan.offdesign_matching = Data(design_constants=design_constants, reference_point=reference_point)
 
-    F_offdesign_design = evaluate_thrust(turbofan, fuel_line, turbofan.design_altitude, turbofan.design_mach_number)
+    F_offdesign_design = evaluate_thrust(turbofan, fuel_line, turbofan.design_altitude, turbofan.design_mach_number, throttle=design_point_throttle)
     # ~2% gap: one representative gamma_c vs RCAIDE's temperature-dependent gas model
     check('design point, off-design matching vs design_thrust [N]', F_offdesign_design, design_thrust, 5e-2, results)
 
@@ -84,7 +87,7 @@ def main():
     # ------------------------------------------------------------------------------------
     # turbofan.sealevel_static_thrust is evaluated by design_turbofan with its default off-design model
     turbofan.offdesign_matching = default_offdesign_matching
-    F_default_sls = evaluate_thrust(turbofan, fuel_line, 0.0, 0.01, throttle=turbofan.rated_takeoff_throttle)
+    F_default_sls = evaluate_thrust(turbofan, fuel_line, 0.0, 0.01, throttle=1.0)
     check('SLS (M=0.01), default off-design model at the takeoff rating vs turbofan.sealevel_static_thrust [N]',
           F_default_sls, turbofan.sealevel_static_thrust, 1e-6, results)
     check('SLS (M=0.01), takeoff rating vs turbofan.rated_takeoff_thrust [N]',
@@ -156,7 +159,7 @@ def main():
     # full dispatch through compute_turbofan_performance should match a direct query() call
     # (this caught compute_turbofan_performance_surrogate.py rescaling every output against
     # turbofan.design_thrust instead of the deck's own SLS reference -- now fixed)
-    F_via_dispatch = evaluate_thrust(turbofan, fuel_line, deck.altitude_m[0], deck.mach_number[0])
+    F_via_dispatch = evaluate_thrust(turbofan, fuel_line, deck.altitude_m[0], deck.mach_number[0], throttle=design_point_throttle)
     check('surrogate: compute_performance dispatch vs direct query() [N]',
           F_via_dispatch, F_tabulated[0], 1e-8, results)
 

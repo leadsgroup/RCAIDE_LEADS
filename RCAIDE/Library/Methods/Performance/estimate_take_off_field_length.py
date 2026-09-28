@@ -223,7 +223,7 @@ def estimate_take_off_field_length(analyses=None,altitude = 0, delta_isa = 0, co
     thrust =  np.array([[0.0, 0.0, 0.0]])
     for network in vehicle.networks:
         for propulsor in  network.propulsors:
-            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[getattr(propulsor, 'rated_takeoff_throttle', 1.0)]])
+            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1.0]])  # takeoff rating
             
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):

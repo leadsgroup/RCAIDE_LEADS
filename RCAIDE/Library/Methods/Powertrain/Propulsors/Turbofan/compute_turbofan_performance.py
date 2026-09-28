@@ -232,8 +232,11 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     # ----------------------------------------------------------------------------
     # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
     # ----------------------------------------------------------------------------
+    # throttle is a fraction of the takeoff rating; the cycle runs on the fraction of the design point
+    design_point_throttle   = turbofan_conditions.throttle * turbofan.rated_takeoff_temperature_ratio
+
     # absolute power [W], converted to specific work with the core mass flow before the HP turbine below
-    lpc_conditions.omega    = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
+    lpc_conditions.omega    = low_pressure_compressor.design_angular_velocity * design_point_throttle
     external_shaft_work, _, _, _ = compute_gas_generator_shaft_power_offtake(turbofan, state, lpc_conditions.omega)
 
     # ----------------------------------------------------------------------------
@@ -428,8 +431,8 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
         
     # compute shaft RPMs 
     fan_conditions.omega        = compute_fan_angular_velocity(fan, fan_conditions.outputs.stagnation_temperature - fan_conditions.inputs.stagnation_temperature)
-    lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
-    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle 
+    lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * design_point_throttle
+    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * design_point_throttle
   
     # store data
     fan_res         = Data(
@@ -608,8 +611,8 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     regardless of throttle and applies throttle as a post-hoc thrust
     multiplier downstream (`compute_thrust`). This solver instead needs an
     actual combustor exit temperature to match against, so throttle is used
-    directly as a fraction of the reference point's own design Tt4:
-    `Tt4 = reference_point.Tt4 * throttle`. This is a simplification (a real
+    as a fraction of the takeoff rating:
+    `Tt4 = reference_point.Tt4 * rated_takeoff_temperature_ratio * throttle`. This is a simplification (a real
     engine's throttle-to-Tt4 relationship is not perfectly linear), not a
     validated correlation -- consistent with how this solver was stress-
     tested throughout its development (as a Tt4-fraction sweep), but worth
@@ -633,7 +636,8 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
 
     # freestream quantities may be column vectors or 1-D arrays (e.g. estimate_take_off_field_length),
     # and may hold a single value for all control points -- broadcast each onto the throttle rows
-    throttle            = np.ravel(turbofan_conditions.throttle)
+    # throttle is a fraction of the takeoff rating; the solver runs on the fraction of the design-point Tt4
+    throttle            = np.ravel(turbofan_conditions.throttle) * turbofan.rated_takeoff_temperature_ratio
     n                   = len(throttle)
     altitude            = np.ravel(conditions.freestream.altitude)    * np.ones(n)
     mach_number         = np.ravel(conditions.freestream.mach_number) * np.ones(n)
@@ -675,7 +679,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     # HP-spool shaft power to/from the integrated drive motor or generator at the mission's electrical
     # power; the design-point offtake outside a mission
     lpc_conditions       = conditions.energy.converters[turbofan.low_pressure_compressor.tag]
-    lpc_conditions.omega = turbofan.low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
+    lpc_conditions.omega = turbofan.low_pressure_compressor.design_angular_velocity * throttle.reshape(-1, 1)
     external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbofan, state, lpc_conditions.omega)
     shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
     for i in range(n):

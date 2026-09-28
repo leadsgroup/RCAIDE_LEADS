@@ -39,7 +39,7 @@ def size_turbofan_to_rated_takeoff_thrust(turbofan, relative_tolerance=1e-6, max
     -------
     None
         Sets turbofan.design_thrust and runs design_turbofan at the converged size, which sets
-        rated_takeoff_throttle, sealevel_static_thrust and the off-design matching model.
+        rated_takeoff_temperature_ratio, sealevel_static_thrust and the off-design matching model.
 
     Notes
     -----
@@ -92,7 +92,7 @@ def size_turbofan_to_rated_takeoff_thrust(turbofan, relative_tolerance=1e-6, max
     finally:
         turbofan.rated_takeoff_thrust = rated_takeoff_thrust
 
-    # final design at the converged size: solves rated_takeoff_throttle (equal to the requested ratio to
+    # final design at the converged size: solves rated_takeoff_temperature_ratio (equal to the requested ratio to
     # within tolerance), evaluates sealevel_static_thrust at it, and builds the idle_fallback deck
     design_turbofan(turbofan)
     return

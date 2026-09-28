@@ -72,7 +72,7 @@ def main():
 
     # sized to the rated takeoff power: sea-level static shaft power at the takeoff rating, through the
     # off-design matching model design_turboprop attaches by default
-    P_sls = evaluate_performance(turboprop, fuel_line, 0.0, 0.01, turboprop.rated_takeoff_throttle).power.mechanical[0, 0]
+    P_sls = evaluate_performance(turboprop, fuel_line, 0.0, 0.01, 1.0).power.mechanical[0, 0]
     check('sea-level static shaft power at the takeoff rating vs rated_takeoff_power [W]', P_sls, turboprop.rated_takeoff_power, 1e-5, results)
 
     # analytical cycle model: the design point it was sized at
@@ -99,7 +99,7 @@ def main():
     disk_area    = np.pi * turboprop.propeller.tip_radius ** 2
     ideal_static = (2 * rho_sl * disk_area) ** (1 / 3) * (turboprop.propeller_polytropic_efficiency * P_sls) ** (2 / 3)
     check('sea-level static thrust vs actuator-disk static propeller thrust [N]', turboprop.sealevel_static_thrust, ideal_static, 2e-2, results)
-    thrust_vs_speed = [evaluate_thrust(turboprop, fuel_line, 0.0, mach_number, turboprop.rated_takeoff_throttle)
+    thrust_vs_speed = [evaluate_thrust(turboprop, fuel_line, 0.0, mach_number, 1.0)
                        for mach_number in [0.01, 0.05, 0.1, 0.2, 0.3]]
     assert np.all(np.diff(thrust_vs_speed) < 0), f"sea-level thrust should fall with speed: {thrust_vs_speed}"
 

@@ -104,7 +104,7 @@ def design_turboprop_offdesign_matching(turboprop):
     state = setup_operating_conditions(turboprop, fuel_line, velocity_range=np.array([design_velocity]),
                                         altitude=turboprop.design_altitude, angle_of_attack=0,
                                         temperature_deviation=turboprop.design_isa_deviation)
-    state.conditions.energy.propulsors[turboprop.tag].throttle[:, 0] = 1.0
+    state.conditions.energy.propulsors[turboprop.tag].throttle[:, 0] = 1.0 / turboprop.rated_takeoff_temperature_ratio  # design point
     # the design point is read back from the analytical cycle, not the matching model itself
     offdesign_matching           = turboprop.offdesign_matching
     turboprop.offdesign_matching = None

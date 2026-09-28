@@ -141,8 +141,8 @@ class Turbofan(Propulsor):
         Rated (certified) sea-level static takeoff thrust [N]. When set (> 0)
         without `design_thrust`, `design_turbofan` sizes the engine to it and
         solves `design_thrust`; when set together with `design_thrust`, it
-        solves `rated_takeoff_throttle` so that the sea-level static thrust
-        equals it. Default is 0.0.
+        solves `rated_takeoff_temperature_ratio` so that the sea-level static
+        thrust equals it. Default is 0.0.
 
     takeoff_combustor_exit_temperature_ratio : float
         Combustor exit temperature at the takeoff rating divided by its
@@ -150,12 +150,17 @@ class Turbofan(Propulsor):
         `rated_takeoff_thrust`. Default is 1.13, the ratio of the SAFAM engine
         data (T41 of 1900 K at maximum takeoff, 1686 K at maximum climb).
 
-    rated_takeoff_throttle : float
-        Throttle (fraction of the design-point combustor exit temperature) of the
-        takeoff rating, set by `design_turbofan` from `rated_takeoff_thrust`;
-        `sealevel_static_thrust` is evaluated at it. Engines are rated hotter at
-        takeoff than at the climb/cruise design point, so it is typically above 1.
-        Default is 1.0.
+    rated_takeoff_temperature_ratio : float
+        Combustor exit temperature at the takeoff rating divided by its
+        design-point value, set by `design_turbofan` from `rated_takeoff_thrust`
+        (1.0 without a takeoff rating). Throttle is a fraction of the takeoff
+        rating, so throttle 1 runs at this ratio times the design-point combustor
+        exit temperature. Default is 1.0.
+
+    maximum_climb_throttle : float, optional
+        Throttle of the maximum climb rating. None (default) takes the design
+        point, 1/rated_takeoff_temperature_ratio, as maximum climb; set it for an
+        engine whose design point is not maximum climb (e.g. sea-level static).
 
     offdesign_matching : Data, optional
         If set (as `Data(design_constants=..., reference_point=...)` from
@@ -228,8 +233,9 @@ class Turbofan(Propulsor):
         self.reference_pressure                         = 1.01325*Units.bar
         self.design_thrust                              = 0.0 
         self.rated_takeoff_thrust                       = 0.0     # see docstring
-        self.rated_takeoff_throttle                     = 1.0     # see docstring
+        self.rated_takeoff_temperature_ratio            = 1.0     # see docstring
         self.takeoff_combustor_exit_temperature_ratio   = 1.13    # see docstring
+        self.maximum_climb_throttle                     = None    # see docstring
         self.design_power_offtake                       = 0.0
         self.design_mass_flow_rate                      = 0.0
         self.design_shaft_work_specific                 = 0.0

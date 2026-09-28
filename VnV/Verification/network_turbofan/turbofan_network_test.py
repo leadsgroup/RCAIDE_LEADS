@@ -100,33 +100,33 @@ def main():
             print(val)
     
     # Truth values
-    takeoff_thrust_truth     = 70551.0384406596
-    ICA_climb_CL_truth       = 1.7250605929914813
-    climb_throttle_1_truth   = 1.076387518667908
-    climb_throttle_2_truth   = 1.0426874750217805
-    climb_throttle_3_truth   = 0.8364027306295007
-    climb_throttle_4_truth   = 0.9572341962080559
-    climb_throttle_5_truth   = 1.026163181622068
-    climb_throttle_6_truth   = 1.178412013823312
-    climb_throttle_7_truth   = 1.236960345137322
-    climb_throttle_8_truth   = 0.8884206871410861
-    climb_throttle_9_truth   = 0.9782111865306617
-    climb_throttle_10_truth  = 0.9416721456240054
-    cruise_CL_1_truth        = 0.6840281580022518
-    cruise_CL_2_truth        = 0.5255496646433276
-    descent_throttle_1_truth = 0.45411737751120984
-    descent_2_CL_truth       = 0.6980674855508445
-    curved_cruise_CL_truth   = 1.3134017872010382
+    takeoff_thrust_truth     = 97347.93566737135
+    ICA_climb_CL_truth       = 1.6935815285239886
+    climb_throttle_1_truth   = 0.9528659103016713
+    climb_throttle_2_truth   = 0.9230527241839993
+    climb_throttle_3_truth   = 0.7405070734960904
+    climb_throttle_4_truth   = 0.8474340177191976
+    climb_throttle_5_truth   = 0.9082984130169443
+    climb_throttle_6_truth   = 0.894530596679989
+    climb_throttle_7_truth   = 0.9102508791112505
+    climb_throttle_8_truth   = 0.7861662296935076
+    climb_throttle_9_truth   = 0.8655555930676816
+    climb_throttle_10_truth  = 0.8331895456480639
+    cruise_CL_1_truth        = 0.6837126780656785
+    cruise_CL_2_truth        = 0.5254835983480753
+    descent_throttle_1_truth = 0.4016862226927819
+    descent_2_CL_truth       = 0.6977466350628719
+    curved_cruise_CL_truth   = 1.3128088972893193
     descent_throttle_3_truth = 0.1
-    single_pt_CL_1_truth     = 0.2447024243713413
-    single_pt_CL_2_truth     = 8.274157436587876e-05
-    cruise_4_CL_truth        = 0.49862415587825154
-    cruise_5_CL_truth        = 0.498620262613625
-    cruise_6_CL_truth        = 0.33905003209807755
-    cruise_7_CL_truth        = 0.3329192007873832
-    cruise_8_CL_truth        = 0.3275010072605849
-    descent_throttle_4_truth = 0.6115867826350165
-    landing_thrust_truth     = -850.0923461422557
+    single_pt_CL_1_truth     = 0.24458960255918
+    single_pt_CL_2_truth     = 0.00017910156097772023
+    cruise_4_CL_truth        = 0.4983942802221695
+    cruise_5_CL_truth        = 0.49839038779858713
+    cruise_6_CL_truth        = 0.3388925052536755
+    cruise_7_CL_truth        = 0.3327629304178307
+    cruise_8_CL_truth        = 0.3273458443715805
+    descent_throttle_4_truth = 0.5411610048290223
+    landing_thrust_truth     = 1440.724806187101
     
     # Store errors 
     error = Data()
@@ -436,8 +436,9 @@ def mission_setup(analyses):
     segment = Segments.Climb.Constant_Mach_Linear_Altitude(base_segment)
     segment.tag = "climb_6"
     segment.analyses.extend( analyses.base )  
-    segment.altitude_end                                             = 6. * Units.km   
-    segment.mach_number                                              = 0.75   
+    segment.altitude_end                                             = 6. * Units.km
+    segment.distance                                                 = 25. * Units.km  # ~2.3 deg, ~2000 ft/min
+    segment.mach_number                                              = 0.75
                                                            
     # define flight dynamics to model                      
     segment.flight_dynamics.force_x                                  = True  
@@ -456,8 +457,9 @@ def mission_setup(analyses):
     segment = Segments.Climb.Constant_Speed_Linear_Altitude(base_segment)
     segment.tag = "climb_7"
     segment.analyses.extend( analyses.base )  
-    segment.altitude_end                                             = 7.    * Units.km   
-    segment.air_speed                                                = 250.2 * Units.m / Units.s 
+    segment.altitude_end                                             = 7.    * Units.km
+    segment.distance                                                 = 25.   * Units.km  # ~2.3 deg, ~1800 ft/min
+    segment.air_speed                                                = 230.  * Units.m / Units.s
                  
     # define flight dynamics to model              
     segment.flight_dynamics.force_x                                  = True  

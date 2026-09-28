@@ -42,8 +42,8 @@ def main():
     plot_noise_certification_contour(results)
 
     truth_approach_noise_2000m  = 85.9302781903295
-    truth_flyover_noise_6000m   = 118.42648790801647
-    truth_sideline_noise_450m   = 116.78251880487713
+    truth_flyover_noise_6000m   = 91.56760618534958
+    truth_sideline_noise_450m   = 119.2373888178075
 
     # Check the errors
     error = Data()
