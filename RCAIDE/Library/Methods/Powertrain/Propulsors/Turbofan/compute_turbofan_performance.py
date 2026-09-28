@@ -17,6 +17,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine              import co
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle     import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan             import compute_thrust
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common               import compute_gas_generator_shaft_power_offtake
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance_surrogate import compute_turbofan_performance_surrogate
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
     pack_design_constants, pack_reference_point,
@@ -209,8 +210,6 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     low_pressure_compressor   = turbofan.low_pressure_compressor
     high_pressure_compressor  = turbofan.high_pressure_compressor
     combustor                 = turbofan.combustor
-    integrated_drive_generator= turbofan.integrated_drive_generator 
-    integrated_drive_motor    = turbofan.integrated_drive_motor
     high_pressure_turbine     = turbofan.high_pressure_turbine
     low_pressure_turbine      = turbofan.low_pressure_turbine
     core_nozzle               = turbofan.core_nozzle
@@ -233,65 +232,9 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     # ----------------------------------------------------------------------------
     # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
     # ----------------------------------------------------------------------------
-    external_shaft_work       =  0*state.ones_row(1)
-    lpc_conditions.omega      = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
-    # external_shaft_work below is a power (W), but compute_turbine_performance
-    # sums it with compressor/fan work, which is specific work (J/kg) -- divide
-    # by mass flow to convert. core_mass_flow_rate isn't set yet this early in
-    # the cycle (compute_thrust sets it later), so use the previous iterate's
-    # value, falling back to the design mass flow rate before any iterate has run.
-    shaft_power_mass_flow_rate = getattr(turbofan_conditions, 'core_mass_flow_rate', None)
-    if shaft_power_mass_flow_rate is None or np.all(shaft_power_mass_flow_rate == 0):
-        shaft_power_mass_flow_rate = turbofan.design_mass_flow_rate * state.ones_row(1)
-
-    # Motor: consumes electrical power from the bus, delivers mechanical power to the shaft
-    if integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
-        motor_conditions = conditions.energy.converters[integrated_drive_motor.tag]
-
-        # Determine the electrical power the motor consumes
-        # phi controls what fraction of propulsive power comes from the motor
-        phi = state.conditions.energy.hybrid_power_split_ratio
-        if 'electrical_power' in state.unknowns.network:
-            motor_electrical_power = state.unknowns.network['electrical_power'] * phi
-        else:
-            motor_electrical_power = state.conditions.energy.inputs.power.electrical * phi
-
-        # Mechanical power delivered to shaft = electrical input * motor efficiency
-        eta_motor = integrated_drive_motor.efficiency
-        motor_mechanical_power = motor_electrical_power * eta_motor
-
-        turbofan_conditions.inputs.power.electrical        = motor_electrical_power
-        motor_conditions.inputs.power.electrical           = motor_electrical_power
-        motor_conditions.outputs.power.mechanical          = motor_mechanical_power
-        motor_conditions.outputs.efficiency                = eta_motor * state.ones_row(1)
-        motor_conditions.outputs.omega                     = lpc_conditions.omega
-        motor_conditions.outputs.torque                    = motor_mechanical_power / lpc_conditions.omega
-
-        # Motor delivers power to shaft 
-        external_shaft_work -= motor_mechanical_power / shaft_power_mass_flow_rate
-            
-    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
-        IDG_conditions = conditions.energy.converters[integrated_drive_generator.tag]
-
-        # Determine the electrical power the generator must produce
-        if 'electrical_power' in state.unknowns.network:
-            generator_electrical_power = state.unknowns.network['electrical_power'] * integrated_drive_generator.power_split_ratio
-        else:
-            generator_electrical_power = state.conditions.energy.inputs.power.electrical * integrated_drive_generator.power_split_ratio
-
-        # Mechanical power extracted from shaft = electrical power / generator efficiency
-        eta_gen = integrated_drive_generator.efficiency
-        generator_mechanical_power = generator_electrical_power / eta_gen
-
-        turbofan_conditions.outputs.power.electrical      = generator_electrical_power
-        IDG_conditions.outputs.power.electrical            = generator_electrical_power
-        IDG_conditions.inputs.power.mechanical             = generator_mechanical_power
-        IDG_conditions.outputs.efficiency                  = eta_gen * state.ones_row(1)
-        IDG_conditions.inputs.omega                        = lpc_conditions.omega
-        IDG_conditions.inputs.torque                       = generator_mechanical_power / lpc_conditions.omega
-
-        # Generator extracts mechanical power from the shaft 
-        external_shaft_work += generator_mechanical_power / shaft_power_mass_flow_rate
+    # absolute power [W], converted to specific work with the core mass flow before the HP turbine below
+    lpc_conditions.omega    = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
+    external_shaft_work, _, _, _ = compute_gas_generator_shaft_power_offtake(turbofan, state, lpc_conditions.omega)
 
     # ----------------------------------------------------------------------------
     # Compute Turbofan Performance
@@ -728,13 +671,20 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
 
     packed_design_constants = pack_design_constants(design_constants)
     packed_reference_point  = pack_reference_point(reference_point)
+
+    # HP-spool shaft power to/from the integrated drive motor or generator at the mission's electrical
+    # power; the design-point offtake outside a mission
+    lpc_conditions       = conditions.energy.converters[turbofan.low_pressure_compressor.tag]
+    lpc_conditions.omega = turbofan.low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
+    external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbofan, state, lpc_conditions.omega)
+    shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * throttle[i]
         try:
             result = solve_turbofan_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
                 combustor_exit_temperature, packed_design_constants=packed_design_constants,
-                packed_reference_point=packed_reference_point)
+                packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise

@@ -33,7 +33,7 @@ def vehicle_setup():
     vehicle.mass_properties.max_takeoff               = 51800. # kg
     vehicle.mass_properties.takeoff                   = 51800. # kg
     vehicle.mass_properties.max_zero_fuel             = 40900. # kg
-    vehicle.mass_properties.max_fuel                  = 13975. # kg
+    vehicle.mass_properties.max_fuel                  = 14250. # kg
     vehicle.mass_properties.max_payload               = 12900. # kg
     vehicle.mass_properties.operating_empty           = 27900  #     
     vehicle.mass_properties.center_of_gravity         = [[16.8, 0, 1.6]]
@@ -119,9 +119,9 @@ def vehicle_setup():
     wing.origin                  = [[13.0,0,-1.]]
     wing.vertical                = False
     wing.xz_plane_symmetric      = True
-    wing.areas.exposed           = 0.80 * wing.areas.wetted
-    wing.twists.root             = 3.0 * Units.degrees
-    wing.twists.tip              = -2.0 * Units.degrees
+    wing.areas.exposed           = 0.80 * wing.areas.wetted    
+    wing.twists.root             = 1.0 * Units.degrees
+    wing.twists.tip              = -1.0 * Units.degrees    
     wing.dynamic_pressure_ratio  = 1.0
      
     ospath                                = os.path.abspath(__file__)

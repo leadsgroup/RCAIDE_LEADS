@@ -42,14 +42,12 @@ def estimate_rate_of_climb(analyses=None, altitude=0., mach_number=0., weight=No
     Notes
     -----
     This solves a short (0.1 nmi), level, constant-Mach/constant-altitude segment for the
-    throttle and pitch angle that balance the vehicle at the requested condition, then infers
-    maximum available power by assuming available power scales linearly with throttle. This is
-    the same procedure used historically for ICA/service-ceiling sweeps in this codebase
-    (``ICA_evaluation_mission_setup`` / ``Test_R_ICA``), refactored into a single-condition,
-    reusable Performance function.
+    throttle and pitch angle that balance the vehicle at the requested condition, then
+    re-evaluates the propulsors at full throttle at that same condition to obtain the maximum
+    available power.
 
     **Major Assumptions**
-        * Available power varies linearly with throttle (``P_avail = P_required / throttle``)
+        * Available power is the propulsive power at throttle 1 at the evaluated flight condition
         * Quasi-steady, unaccelerated flight at the evaluated condition (rate of climb read off
           as the specific excess power, not a full climbing trajectory)
         * Vehicle mass is held fixed at the requested weight for the evaluation
@@ -126,11 +124,16 @@ def estimate_rate_of_climb(analyses=None, altitude=0., mach_number=0., weight=No
         conditions.energy.propulsors[tag].outputs.power.propulsive[0, 0]
         for tag in propulsor_tags
     )
-    throttle = conditions.energy.propulsors[propulsor_tags[0]].throttle[0, 0]
-    if throttle <= 0:
-        raise ValueError("Solved throttle is zero or negative; cannot back out available power.")
-
-    power_available = power / throttle
+    # available power: re-evaluate the propulsors at full throttle at the same flight condition
+    state = results.segments[0].state
+    for tag in propulsor_tags:
+        conditions.energy.propulsors[tag].throttle[:] = 1.0
+    for network in vehicle.networks:
+        network.evaluate(state, vehicle)
+    power_available = sum(
+        conditions.energy.propulsors[tag].outputs.power.propulsive[0, 0]
+        for tag in propulsor_tags
+    )
     excess_power     = power_available - power
     vehicle_mass     = conditions.weights.vehicle.mass[0, 0]
     gravity          = conditions.freestream.gravity[0, 0]

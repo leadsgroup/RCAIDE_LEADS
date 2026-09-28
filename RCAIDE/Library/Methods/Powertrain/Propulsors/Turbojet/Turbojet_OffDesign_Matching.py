@@ -40,11 +40,11 @@ def pack_turbojet_reference_point(reference_point):
 
 @njit(cache=True)
 def solve_turbojet_offdesign_kernel(design, reference, M0, T0, P0, Tt4, tolerance, max_iterations, relaxation_factor,
-                                    guess_tau_c, guess_tau_tL, guess_pi_tL):
+                                    guess_tau_c, guess_tau_tL, guess_pi_tL, shaft_power_offtake):
     """
     Compiled solve_turbojet_offdesign: design and reference are the packed design constants and reference
     point, and the result is a float array in TURBOJET_KERNEL_OUTPUT_FIELDS order. A NaN guess starts from
-    the reference point.
+    the reference point, and a NaN shaft_power_offtake uses the design-point offtake.
     """
     gamma_c, gamma_t, cpc, cpt, pi_dmax, fuel_heating_value, eta_b, pi_b = design[0], design[1], design[2], design[3], design[4], design[5], design[6], design[7]
     pi_tH, tau_tH, pi_n, eta_cH, eta_c, eta_tL, shaft_work_specific_design = design[8], design[9], design[10], design[11], design[12], design[13], design[14]
@@ -71,7 +71,7 @@ def solve_turbojet_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
     else:
         tau_c, tau_tL, pi_tL = guess_tau_c, guess_tau_tL, guess_pi_tL
 
-    P_offtake_design = shaft_work_specific_design * m0R
+    P_offtake = shaft_work_specific_design * m0R if np.isnan(shaft_power_offtake) else shaft_power_offtake
     phiR = shaft_work_specific_design / (cpt * Tt4R)
     mass_flow_rate_estimate = m0R
     converged = False
@@ -88,7 +88,7 @@ def solve_turbojet_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
         tau_c_prev = tau_c
         X  = tau_lambda / (tau_r * tau_c)
         XR = tau_lambdaR / (tau_rR * tau_cR)
-        shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+        shaft_work_specific = P_offtake / mass_flow_rate_estimate
         phi = shaft_work_specific / (cpt * Tt4)
         tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
         pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
@@ -122,7 +122,7 @@ def solve_turbojet_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
 
     X  = tau_lambda / (tau_r * tau_c)
     XR = tau_lambdaR / (tau_rR * tau_cR)
-    shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+    shaft_work_specific = P_offtake / mass_flow_rate_estimate
     phi = shaft_work_specific / (cpt * Tt4)
     tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
     pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
@@ -169,7 +169,7 @@ def turbojet_result_from_kernel_output(output, max_iterations):
 # ----------------------------------------------------------------------------------------------------------------------
 def solve_turbojet_offdesign(design_constants, reference_point, mach_number, static_temperature, static_pressure,
                               combustor_exit_temperature, tolerance=1e-8, max_iterations=200, relaxation_factor=0.5,
-                              initial_guess=None):
+                              initial_guess=None, shaft_power_offtake=None):
     """
     Off-design component-matching solve for RCAIDE's `Turbojet` (two spools,
     LP+HP compressor, no bypass) with a fully-expanded convergent-divergent
@@ -223,6 +223,9 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
         point's own values -- for `solve_turbojet_offdesign_robust`'s
         continuation stepping. Same rationale as the turbofan solver's own
         `initial_guess` (see its docstring).
+    shaft_power_offtake : float, optional
+        Net shaft power taken from the gas-generator spool [W] (positive for a generator, negative for a
+        motor); None uses the design-point offtake.
 
     Returns
     -------
@@ -275,7 +278,8 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
                                              pack_turbojet_reference_point(reference_point),
                                              float(mach_number), float(static_temperature), float(static_pressure),
                                              float(combustor_exit_temperature), float(tolerance), int(max_iterations),
-                                             float(relaxation_factor), float(guess[0]), float(guess[1]), float(guess[2]))
+                                             float(relaxation_factor), float(guess[0]), float(guess[1]), float(guess[2]),
+                                             np.nan if shaft_power_offtake is None else float(shaft_power_offtake))
     return turbojet_result_from_kernel_output(output, max_iterations)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -284,7 +288,7 @@ def solve_turbojet_offdesign(design_constants, reference_point, mach_number, sta
 def solve_turbojet_offdesign_robust(design_constants, reference_point, mach_number, static_temperature,
                                      static_pressure, combustor_exit_temperature, tolerance=1e-8, max_iterations=200,
                                      relaxation_factor=0.5, max_continuation_steps=32, allow_unconverged_fallback=False,
-                                     packed_design_constants=None, packed_reference_point=None):
+                                     packed_design_constants=None, packed_reference_point=None, shaft_power_offtake=None):
     """
     Robust wrapper around `solve_turbojet_offdesign`: tries a direct solve
     first, falls back to *continuation* if that fails (stepping from the
@@ -299,6 +303,9 @@ def solve_turbojet_offdesign_robust(design_constants, reference_point, mach_numb
     packed_design_constants, packed_reference_point : numpy.ndarray, optional
         pack_turbojet_design_constants(design_constants) and pack_turbojet_reference_point(reference_point),
         when the caller solves many points of the same engine and has already packed them.
+    shaft_power_offtake : float, optional
+        Passed to `solve_turbojet_offdesign`; continuation steps it from the design-point offtake along
+        with the flight condition and combustor exit temperature.
     allow_unconverged_fallback : bool, optional
         If every tier fails, raises `OffDesignMatchingError` by default. If
         `True`, returns the best (smallest convergence delta) partial result
@@ -313,13 +320,24 @@ def solve_turbojet_offdesign_robust(design_constants, reference_point, mach_numb
     ------
     OffDesignMatchingError
         If every tier fails and `allow_unconverged_fallback` is False.
+        Also raised, without solving, when the combustor exit temperature is not above the inlet
+        stagnation temperature.
     """
+    # a combustor exit temperature at or below the inlet stagnation temperature (e.g. zero throttle) has no
+    # matched operating point; fail cleanly so callers route the point to their idle_fallback
+    inlet_stagnation_temperature = float(static_temperature) * (1 + (design_constants.gamma_c - 1) / 2 * float(mach_number) ** 2)
+    if not float(combustor_exit_temperature) > inlet_stagnation_temperature:
+        raise OffDesignMatchingError(
+            f"turbojet off-design matching: combustor exit temperature {float(combustor_exit_temperature):.1f} K is not above "
+            f"the inlet stagnation temperature {inlet_stagnation_temperature:.1f} K (throttle too low for a matched operating point)")
     # direct solve and continuation run in the compiled kernel; only the returned point becomes a Data result
     design    = pack_turbojet_design_constants(design_constants) if packed_design_constants is None else packed_design_constants
     reference = pack_turbojet_reference_point(reference_point)  if packed_reference_point  is None else packed_reference_point
     M0, T0, P0, Tt4 = float(mach_number), float(static_temperature), float(static_pressure), float(combustor_exit_temperature)
+    offtake_design = getattr(design_constants, 'shaft_work_specific_design', 0.0) * reference_point.m0
+    offtake        = offtake_design if shaft_power_offtake is None else float(shaft_power_offtake)
     output = solve_turbojet_offdesign_kernel(design, reference, M0, T0, P0, Tt4, tolerance, max_iterations,
-                                             relaxation_factor, np.nan, np.nan, np.nan)
+                                             relaxation_factor, np.nan, np.nan, np.nan, offtake)
     if output[18] == 1.0:
         return turbojet_result_from_kernel_output(output, max_iterations)
     best_partial = output if np.isfinite(output[19]) else None
@@ -333,7 +351,8 @@ def solve_turbojet_offdesign_robust(design_constants, reference_point, mach_numb
                                                      reference_point.T0 + frac * (T0 - reference_point.T0),
                                                      reference_point.P0 + frac * (P0 - reference_point.P0),
                                                      reference_point.Tt4 + frac * (Tt4 - reference_point.Tt4),
-                                                     tolerance, max_iterations, relaxation_factor, tau_c, tau_tL, pi_tL)
+                                                     tolerance, max_iterations, relaxation_factor, tau_c, tau_tL, pi_tL,
+                                                     offtake_design + frac * (offtake - offtake_design))
             if output[18] != 1.0:
                 break
             tau_c, tau_tL, pi_tL = output[6], output[8], output[9]

@@ -52,12 +52,13 @@ def main():
     # ########################################### WARNING #################################################
     # #####################################################################################################
         
+    # FLOPS OEW is 2.6% below the APM (114,913 vs 117,934 kg), so the max-payload range is 4% above the APM
     truth_values = {
-        "range":            np.array([       0.        , 10381833.99602455, 17758948.49934158, 18487095.5382325 ]),
-        "payload":          np.array([44000.        , 44000.        , 10339.83       ,     0.        ]),
-        "oew_plus_payload": np.array([160267.17      , 160267.17      , 126607.        , 116267.17      ]),
-        "fuel":             np.array([     0.        ,  67662.83      , 101323.        , 101323.        ]),
-        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 217590.17      ]),
+        "range":            np.array([       0.        , 10601618.27332284, 17759990.44359219, 18631784.57780205]),
+        "payload":          np.array([44000.        , 44000.        , 11693.83       ,     0.        ]),
+        "oew_plus_payload": np.array([158913.17      , 158913.17      , 126607.        , 114913.17      ]),
+        "fuel":             np.array([     0.        ,  69016.83      , 101323.        , 101323.        ]),
+        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 216236.17      ]),
     }
     # ########################################### WARNING #################################################
     ###### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ################
@@ -492,16 +493,61 @@ def payload_range_mission_setup(analyses):
     mission.append_segment(segment)
     
     # ------------------------------------------------------------------
-    #   First Descent Segment to 5000ft: Constant CAS Constant Rate  
+    #   First Descent Segment: cruise Mach to the 300 KCAS crossover altitude
     # ------------------------------------------------------------------
 
-    segment = Segments.Descent.Constant_CAS_Constant_Rate(base_segment)
+    segment = Segments.Descent.Linear_Mach_Constant_Rate(base_segment)
     segment.tag = "descent_1" 
     segment.analyses.extend( analyses.cruise ) 
     segment.altitude_start                                = 35000.0  * Units.ft
-    segment.altitude_end                                  = 5000.0   * Units.ft
+    segment.altitude_end                                  = 29700.0  * Units.ft
+    segment.mach_number_start                             = 0.8
+    segment.mach_number_end                               = 0.8
+    segment.descent_rate                                  = 2000.0 * Units['ft/min']
+    
+    # define flight dynamics to model 
+    segment.flight_dynamics.force_x                       = True  
+    segment.flight_dynamics.force_z                       = True     
+    
+    # define flight controls 
+    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
+    segment.assigned_control_variables.pitch_angle.active             = True     
+    
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Second Descent Segment: 300 KCAS to 10000 ft
+    # ------------------------------------------------------------------
+
+    segment = Segments.Descent.Constant_CAS_Constant_Rate(base_segment)
+    segment.tag = "descent_2" 
+    segment.analyses.extend( analyses.cruise ) 
+    segment.altitude_end                                  = 10000.0  * Units.ft
     segment.calibrated_air_speed                          = 300.0 * Units.kts
-    segment.descent_rate                                  = 4.5   * Units['m/s']  
+    segment.descent_rate                                  = 2000.0 * Units['ft/min']
+    
+    # define flight dynamics to model 
+    segment.flight_dynamics.force_x                       = True  
+    segment.flight_dynamics.force_z                       = True     
+    
+    # define flight controls 
+    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
+    segment.assigned_control_variables.pitch_angle.active             = True     
+    
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Third Descent Segment: 250 KCAS to 5000 ft
+    # ------------------------------------------------------------------
+
+    segment = Segments.Descent.Constant_CAS_Constant_Rate(base_segment)
+    segment.tag = "descent_3" 
+    segment.analyses.extend( analyses.cruise ) 
+    segment.altitude_end                                  = 5000.0   * Units.ft
+    segment.calibrated_air_speed                          = 250.0 * Units.kts
+    segment.descent_rate                                  = 1500.0 * Units['ft/min']
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  

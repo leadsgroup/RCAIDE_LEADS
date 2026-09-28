@@ -57,6 +57,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     # ------------------------------------------------------------------ 
     forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
     forward_cargo_bay.mass_properties.mass        = 1850
+    forward_cargo_bay.containerized               = True # LD3 containers
     forward_cargo_bay.origin                      = [[5.82, 0, -0.6]]
     forward_cargo_bay.length                      = 10
     forward_cargo_bay.width                       = 106 *  Units.inches 
@@ -65,6 +66,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
  
     aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
     aft_cargo_bay.mass_properties.mass           = 1440
+    aft_cargo_bay.containerized                  = True # LD3 containers
     aft_cargo_bay.origin                         = [[30, 0, -0.6]]
     aft_cargo_bay.length                         =  10
     aft_cargo_bay.width                          =  106 *  Units.inches 

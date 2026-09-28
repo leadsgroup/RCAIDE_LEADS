@@ -63,7 +63,7 @@ def parasite_drag_nacelle(state,settings,geometry):
 #  Nacelle Drag 
 # ---------------------------------------------------------------------------------------------------------------------- 
 def nacelle_drag(state,settings, nacelle):
-    """
+    r"""
     Computes the parasite drag coefficient for a single nacelle accounting for compressibility effects.
 
     Parameters

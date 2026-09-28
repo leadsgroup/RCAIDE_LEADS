@@ -11,6 +11,7 @@ from RCAIDE.Framework.Core      import Units
 
 # Python package imports
 import numpy as np
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_actuator_disk_propeller_thrust import compute_actuator_disk_propeller_thrust
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_thrust
@@ -116,7 +117,10 @@ def compute_thrust(turboprop, conditions):
     **Major Assumptions**
         * Perfect gas behavior
         * Constant component efficiencies
-        * Propeller efficiency is constant
+        * Propeller modelled as an actuator disk with a constant polytropic efficiency (Ref. [2]),
+          calibrated by design_turboprop so that the propeller efficiency equals
+          propeller.design_efficiency at the design point; before that calibration (while
+          design_turboprop sizes the engine) the propeller efficiency is design_efficiency
     
     **Theory**
     The turboprop performance is calculated using gas turbine cycle analysis. The thrust
@@ -137,6 +141,7 @@ def compute_thrust(turboprop, conditions):
     References
     ----------
     [1] Mattingly, J.D., "Elements of Gas Turbine Propulsion", AIAA Education Series, 1996.
+    [2] Cantwell, B. J., "AA283 Aircraft and Rocket Propulsion", Stanford University, Ch. 6.
     
     See Also
     --------
@@ -213,8 +218,23 @@ def compute_thrust(turboprop, conditions):
     total_pressure_reference                       = turboprop_conditions.total_pressure_reference
     mdot_core                                      = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
 
-    # computing the dimensional thrust
-    FD2                                            = Fsp*mdot_core*turboprop_conditions.throttle
+    # computing the dimensional thrust. Before design_turboprop calibrates the propeller polytropic
+    # efficiency (while it sizes the engine from the specific thrust above) the propeller efficiency is its
+    # design value, eta*P/V0; afterwards the propeller is an actuator disk driven by the shaft power it
+    # receives, which equals eta*P/V0 at the design point and stays finite as V0 -> 0
+    mdot_throttle                                  = mdot_core*turboprop_conditions.throttle
+    propeller_shaft_power                          = (propeller_work_output_coefficient/propeller_efficiency)*compressor_cp*T0*mdot_throttle
+    if turboprop.propeller_polytropic_efficiency is None:
+        FD2                                        = Fsp*mdot_throttle
+    else:
+        density                                    = P0/(compressor_gas_constant*T0)
+        disk_area                                  = np.pi*turboprop.propeller.tip_radius**2
+        propeller_thrust                           = compute_actuator_disk_propeller_thrust(propeller_shaft_power, V0, density, disk_area,
+                                                                                            turboprop.propeller_polytropic_efficiency)
+        core_thrust                                = compressor_work_output_coefficient*compressor_cp*T0/V0*mdot_throttle
+        FD2                                        = core_thrust + propeller_thrust
+        Fsp                                        = FD2/mdot_throttle
+        TSFC                                       = (1 - SFC_adjustment) * (fuel_to_air_ratio/(Fsp)) * Units.hour    # [kg/(N*hr)]
 
     # fuel flow rate
     a                                              = np.array([0.])
@@ -240,10 +260,7 @@ def compute_thrust(turboprop, conditions):
     turboprop_conditions.thermal_efficiency                = eta_T
     turboprop_conditions.propulsive_efficiency             = eta_P
 
-    # Exposed for design_turboprop.py's static-thrust recomputation (see its Notes) -- this
-    # F=P/V0-based thrust/power above is not meaningful as V0->0, but these two coefficients
-    # (and mdot_core above) are the well-behaved cycle quantities a dedicated static-thrust
-    # formula needs; storing them here avoids re-deriving the cycle a second time.
+    turboprop_conditions.propeller_shaft_power              = propeller_shaft_power
     turboprop_conditions.propeller_work_output_coefficient  = propeller_work_output_coefficient
     turboprop_conditions.compressor_work_output_coefficient = compressor_work_output_coefficient
 

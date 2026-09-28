@@ -325,7 +325,7 @@ def _static_thrust(vehicle, altitude, delta_isa, velocity, speed_of_sound):
     thrust = np.array([[0.0, 0.0, 0.0]])
     for network in vehicle.networks:
         for propulsor in network.propulsors:
-            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]])
+            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[getattr(propulsor, 'rated_takeoff_throttle', 1.0)]])
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 fuel = source.fuel

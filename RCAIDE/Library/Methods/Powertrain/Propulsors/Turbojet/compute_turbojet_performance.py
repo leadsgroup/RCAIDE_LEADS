@@ -15,6 +15,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import compute_supersonic_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet           import compute_thrust
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common             import compute_gas_generator_shaft_power_offtake
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.Turbojet_OffDesign_Matching import (
     solve_turbojet_offdesign_robust, OffDesignMatchingError, pack_turbojet_design_constants, pack_turbojet_reference_point,
     apply_turbojet_afterburner)
@@ -208,56 +209,9 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     # ----------------------------------------------------------------------------
     # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
     # ----------------------------------------------------------------------------
-    # Computed here (absolute power [W], same as Turbofan's own block) rather than after
-    # thrust like the old electrical-bus-only bookkeeping did -- external_shaft_work needs
-    # to actually reach hpt_conditions.inputs.external_shaft.work_done (converted to
-    # *specific* work once mass flow is available, right before the HPT link below) for the
-    # offtake to affect the thermodynamic cycle at all; previously it never did.
-    external_shaft_work        = 0*state.ones_row(1)
-    integrated_drive_motor     = turbojet.integrated_drive_motor
-    integrated_drive_generator = turbojet.integrated_drive_generator
-    lpc_conditions.omega       = low_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
-
-    # Motor: consumes electrical power from the bus, delivers mechanical power to the shaft
-    if integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
-        motor_conditions = conditions.energy.converters[integrated_drive_motor.tag]
-        phi = conditions.energy.hybrid_power_split_ratio
-        if 'electrical_power' in state.unknowns.network:
-            motor_electrical_power = state.unknowns.network['electrical_power'] * phi
-        else:
-            motor_electrical_power = conditions.energy.inputs.power.electrical * phi
-
-        eta_motor = integrated_drive_motor.efficiency
-        motor_mechanical_power = motor_electrical_power * eta_motor
-
-        turbojet_conditions.inputs.power.electrical = motor_electrical_power
-        motor_conditions.inputs.power.electrical    = motor_electrical_power
-        motor_conditions.outputs.power.mechanical   = motor_mechanical_power
-        motor_conditions.outputs.omega              = lpc_conditions.omega
-        motor_conditions.outputs.torque             = motor_mechanical_power / lpc_conditions.omega
-
-        # Motor delivers power to shaft (negative = reduces turbine burden)
-        external_shaft_work -= motor_mechanical_power
-
-    # Generator: extracts mechanical power from the shaft, provides electrical to bus
-    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
-        gen_conditions = conditions.energy.converters[integrated_drive_generator.tag]
-        if 'electrical_power' in state.unknowns.network:
-            gen_electrical_power = state.unknowns.network['electrical_power'] * integrated_drive_generator.power_split_ratio
-        else:
-            gen_electrical_power = conditions.energy.inputs.power.electrical * integrated_drive_generator.power_split_ratio
-
-        eta_gen = integrated_drive_generator.efficiency
-        gen_mechanical_power = gen_electrical_power / eta_gen
-
-        turbojet_conditions.outputs.power.electrical = gen_electrical_power
-        gen_conditions.outputs.power.electrical      = gen_electrical_power
-        gen_conditions.inputs.power.mechanical       = gen_mechanical_power
-        gen_conditions.inputs.omega                  = lpc_conditions.omega
-        gen_conditions.inputs.torque                 = gen_mechanical_power / lpc_conditions.omega
-
-        # Generator extracts mechanical power from the shaft (positive = more turbine work needed)
-        external_shaft_work += gen_mechanical_power
+    # absolute power [W], converted to specific work with the core mass flow before the HP turbine below
+    lpc_conditions.omega         = low_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+    external_shaft_work, _, _, _ = compute_gas_generator_shaft_power_offtake(turbojet, state, lpc_conditions.omega)
 
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbojet.working_fluid
@@ -630,13 +584,20 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
 
     packed_design_constants = pack_turbojet_design_constants(design_constants)
     packed_reference_point  = pack_turbojet_reference_point(reference_point)
+
+    # gas-generator shaft power to/from the integrated drive motor or generator at the mission's electrical
+    # power; the design-point offtake outside a mission
+    lpc_conditions       = conditions.energy.converters[turbojet.low_pressure_compressor.tag]
+    lpc_conditions.omega = turbojet.low_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+    external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbojet, state, lpc_conditions.omega)
+    shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * throttle[i]
         try:
             result = solve_turbojet_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
                 combustor_exit_temperature, packed_design_constants=packed_design_constants,
-                packed_reference_point=packed_reference_point)
+                packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise

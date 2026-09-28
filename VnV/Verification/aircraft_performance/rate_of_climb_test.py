@@ -61,11 +61,11 @@ def main():
     print('Rate of Climb (ft/min): ', rate_of_climb / Units['ft/min'])
     print('Excess Power (kW): ', excess_power / 1000.)
 
-    truth_ROC = 982.5757551693393
+    truth_ROC = 893.0102165441431
     ROC_error = np.max(np.abs(rate_of_climb / Units['ft/min'] - truth_ROC))
     assert (ROC_error < 1e-6)
 
-    truth_Pex = 2527126.53667102
+    truth_Pex = 2296769.286107721
     Pex_error = np.max(np.abs(excess_power - truth_Pex))
     assert (Pex_error < 1e-6)
 

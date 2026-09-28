@@ -42,18 +42,22 @@ def check(name, computed, truth, tol, results):
     return error
 
 
-def evaluate_thrust(turboprop, fuel_line, altitude, mach_number, throttle=1.0):
+def evaluate_performance(turboprop, fuel_line, altitude, mach_number, throttle=1.0):
     atmosphere     = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     speed_of_sound = float(np.ravel(atmosphere.compute_values(altitude).speed_of_sound)[0])
     state = setup_operating_conditions(turboprop, fuel_line, velocity_range=np.array([speed_of_sound * mach_number]),
                                         altitude=altitude)
     state.conditions.energy.propulsors[turboprop.tag].throttle[:, 0] = throttle
-    turboprop.compute_performance(state, fuel_line)
-    return float(state.conditions.energy.propulsors[turboprop.tag].thrust[0, 0])
+    _, outputs, _, _ = turboprop.compute_performance(state, fuel_line)
+    return outputs
+
+
+def evaluate_thrust(turboprop, fuel_line, altitude, mach_number, throttle=1.0):
+    return float(evaluate_performance(turboprop, fuel_line, altitude, mach_number, throttle).thrust[0, 0])
 
 
 def main():
-    turboprop = atr_72_vehicle_setup().networks.fuel.propulsors[ENGINE_TAG]   # already design_turboprop()-ed
+    turboprop = atr_72_vehicle_setup().networks.fuel.propulsors[ENGINE_TAG]   # already design_turboprop()-ed, sized to its rated takeoff power
     fuel_line = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     # design_turboprop() stores this as a (1,1) array (derived from design_freestream_velocity), unlike
     # Turbofan/Turbojet's plain float -- flatten once here rather than at every call site below
@@ -66,6 +70,14 @@ def main():
     # ------------------------------------------------------------------------------------
     design_thrust = turboprop.design_thrust
 
+    # sized to the rated takeoff power: sea-level static shaft power at the takeoff rating, through the
+    # off-design matching model design_turboprop attaches by default
+    P_sls = evaluate_performance(turboprop, fuel_line, 0.0, 0.01, turboprop.rated_takeoff_throttle).power.mechanical[0, 0]
+    check('sea-level static shaft power at the takeoff rating vs rated_takeoff_power [W]', P_sls, turboprop.rated_takeoff_power, 1e-5, results)
+
+    # analytical cycle model: the design point it was sized at
+    offdesign_matching           = turboprop.offdesign_matching
+    turboprop.offdesign_matching = None
     F_analytical_design = evaluate_thrust(turboprop, fuel_line, turboprop.design_altitude, turboprop.design_mach_number)
     check('design point, analytical vs design_thrust [N]', F_analytical_design, design_thrust, 1e-6, results)
 
@@ -78,17 +90,18 @@ def main():
     # ------------------------------------------------------------------------------------
     # 2. Near-static behavior
     # ------------------------------------------------------------------------------------
-    # Not checked here: compute_thrust.py's propeller term is F=P/V0, which -- by design,
-    # per design_turboprop.py's own Step 26 comment -- blows up approaching V0=0. That's why
-    # turboprop.sealevel_static_thrust is computed there with a *different* actuator-disk
-    # formula instead of reading it off compute_performance() at low Mach, and both the
-    # analytical and off-design-matching dispatch paths inherit the same F=P/V0 blowup at
-    # M=0.01 -- unlike Turbofan/Turbojet, there is no well-behaved low-Mach point to check
-    # continuity against. Sanity-check sealevel_static_thrust on its own terms instead: a
-    # propeller's static thrust should exceed its cruise-design thrust, but by a bounded amount.
-    assert design_thrust < turboprop.sealevel_static_thrust < 5 * design_thrust, \
-        f"sealevel_static_thrust ({turboprop.sealevel_static_thrust:.0f} N) should exceed " \
-        f"design_thrust ({design_thrust:.0f} N) but not implausibly so"
+    # The propeller is an actuator disk (compute_actuator_disk_propeller_thrust), so thrust stays finite
+    # at zero speed. Sea-level static thrust at the takeoff rating: the matching model's shaft power
+    # through the actuator-disk static relation T = (2 rho A)^(1/3) (eta_pc P)^(2/3), plus the core jet,
+    # which is small at static conditions -- checked to 2%. And thrust falls monotonically with speed.
+    turboprop.offdesign_matching = offdesign_matching
+    rho_sl       = float(np.ravel(RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976().compute_values(0.0).density)[0])
+    disk_area    = np.pi * turboprop.propeller.tip_radius ** 2
+    ideal_static = (2 * rho_sl * disk_area) ** (1 / 3) * (turboprop.propeller_polytropic_efficiency * P_sls) ** (2 / 3)
+    check('sea-level static thrust vs actuator-disk static propeller thrust [N]', turboprop.sealevel_static_thrust, ideal_static, 2e-2, results)
+    thrust_vs_speed = [evaluate_thrust(turboprop, fuel_line, 0.0, mach_number, turboprop.rated_takeoff_throttle)
+                       for mach_number in [0.01, 0.05, 0.1, 0.2, 0.3]]
+    assert np.all(np.diff(thrust_vs_speed) < 0), f"sea-level thrust should fall with speed: {thrust_vs_speed}"
 
     # Off-design matching at a moderate off-design point (not the design altitude/Mach, not
     # near-static). Not cross-compared against the analytical model, same reasoning as
@@ -107,9 +120,8 @@ def main():
     turboprop.offdesign_matching = None
 
     # Turbofan_Surrogate requires an exact (ALT=0, XM=0) row to normalize against (see its
-    # validate_deck()), so Mach=0 can't be dropped here despite the F=P/V0 caveat above --
-    # this section only exercises the deck-generation/surrogate code paths (round-trip
-    # self-consistency), not turboprop's near-static thrust physics (checked in section 2).
+    # validate_deck()) -- this section only exercises the deck-generation/surrogate code paths
+    # (round-trip self-consistency), not turboprop's near-static thrust physics (checked in section 2).
     altitude_range = np.array([0.0, turboprop.design_altitude, 12000.0])
     mach_range     = np.array([0.0, 0.2, turboprop.design_mach_number])
     deck_full = generate_turboprop_deck(turboprop, altitude_range, mach_range)

@@ -176,11 +176,12 @@ def constant_efficiency_pressure_ratio_kernel(temperature_ratio, efficiency, gam
 
 @njit(cache=True)
 def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, tolerance, max_iterations, relaxation_factor,
-                                    guess_tau_f, guess_tau_tL, guess_pi_tL):
+                                    guess_tau_f, guess_tau_tL, guess_pi_tL, shaft_power_offtake):
     """
     Compiled solve_turbofan_offdesign for constant-efficiency compressors: design and reference are
     the packed design constants and reference point, and the result is a float array in
-    KERNEL_OUTPUT_FIELDS order. A NaN guess starts from the reference point.
+    KERNEL_OUTPUT_FIELDS order. A NaN guess starts from the reference point, and a NaN
+    shaft_power_offtake uses the design-point offtake.
     """
     gamma_c, gamma_t, cpc, cpt, pi_dmax, fuel_heating_value = design[0], design[1], design[2], design[3], design[4], design[5]
     eta_b, pi_b, pi_tH, tau_tH, pi_n, pi_fn = design[6], design[7], design[8], design[9], design[10], design[11]
@@ -210,7 +211,7 @@ def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
     else:
         tau_f, tau_tL, pi_tL = guess_tau_f, guess_tau_tL, guess_pi_tL
 
-    P_offtake_design = shaft_work_specific_design * m0R
+    P_offtake = shaft_work_specific_design * m0R if np.isnan(shaft_power_offtake) else shaft_power_offtake
     phiR = shaft_work_specific_design / (cpt * Tt4R)
     alpha = alphaR
     mass_flow_rate_estimate = m0R
@@ -236,7 +237,7 @@ def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
         tau_f_prev = tau_f
         X  = tau_lambda / (tau_r * tau_f)
         XR = tau_lambdaR / (tau_rR * tau_fR)
-        shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+        shaft_work_specific = P_offtake / mass_flow_rate_estimate
         phi = shaft_work_specific / (cpt * Tt4)
         tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
         pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
@@ -278,7 +279,7 @@ def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
 
     X  = tau_lambda / (tau_r * tau_f)
     XR = tau_lambdaR / (tau_rR * tau_fR)
-    shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+    shaft_work_specific = P_offtake / mass_flow_rate_estimate
     phi = shaft_work_specific / (cpt * Tt4)
     tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
     pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
@@ -455,7 +456,7 @@ class OffDesignMatchingError(RuntimeError):
 # ----------------------------------------------------------------------------------------------------------------------
 def solve_turbofan_offdesign(design_constants, reference_point, mach_number, static_temperature, static_pressure,
                               combustor_exit_temperature, tolerance=1e-8, max_iterations=200, relaxation_factor=0.5,
-                              initial_guess=None, fan_map=None, high_pressure_compressor_map=None):
+                              initial_guess=None, fan_map=None, high_pressure_compressor_map=None, shaft_power_offtake=None):
     """
     Off-design component-matching solve for a separate-exhaust, two-spool
     turbofan with convergent nozzles: iterates the fan/LP-turbine and HP-
@@ -520,6 +521,9 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         unchanged) -- only how the corresponding pressure ratio is obtained.
         `None` (the default) preserves the constant-efficiency behavior
         exactly.
+    shaft_power_offtake : float, optional
+        Net shaft power taken from the HP spool [W] (positive for a generator, negative for a motor);
+        None uses the design-point offtake.
 
     Returns
     -------
@@ -575,7 +579,8 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         output = solve_turbofan_offdesign_kernel(pack_design_constants(design_constants), pack_reference_point(reference_point),
                                                  float(mach_number), float(static_temperature), float(static_pressure),
                                                  float(combustor_exit_temperature), float(tolerance), int(max_iterations),
-                                                 float(relaxation_factor), float(guess[0]), float(guess[1]), float(guess[2]))
+                                                 float(relaxation_factor), float(guess[0]), float(guess[1]), float(guess[2]),
+                                                 np.nan if shaft_power_offtake is None else float(shaft_power_offtake))
         return result_from_kernel_output(output, max_iterations)
 
     dc, ref = design_constants, reference_point
@@ -614,7 +619,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
     # this field (e.g. RESEARCH/22_ATI/Engine_Validation/validate_rcaide_offdesign_si.py's
     # standalone SI cross-check, which predates this addition).
     shaft_work_specific_design = getattr(dc, 'shaft_work_specific_design', 0.0)
-    P_offtake_design = shaft_work_specific_design * ref.m0
+    P_offtake = shaft_work_specific_design * ref.m0 if shaft_power_offtake is None else shaft_power_offtake
     phiR = shaft_work_specific_design / (dc.cpt * ref.Tt4)
 
     alpha = ref.alpha
@@ -636,7 +641,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         # already uses, e.g. tau_tL's pre-update pi_tL).
         X  = tau_lambda / (tau_r * tau_f)
         XR = tau_lambdaR / (tau_rR * ref.tau_f)
-        shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+        shaft_work_specific = P_offtake / mass_flow_rate_estimate
         phi = shaft_work_specific / (dc.cpt * Tt4)
         tau_cH = 1 + (X / XR) * (ref.tau_cH - 1) + X * (phiR - phi)
         # HP compressor pressure ratio/efficiency -- map-consistent if high_pressure_compressor_map given,
@@ -736,7 +741,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         # so recomputed fresh here rather than reused.
         X  = tau_lambda / (tau_r * tau_f)
         XR = tau_lambdaR / (tau_rR * ref.tau_f)
-        shaft_work_specific = P_offtake_design / mass_flow_rate_estimate
+        shaft_work_specific = P_offtake / mass_flow_rate_estimate
         phi = shaft_work_specific / (dc.cpt * Tt4)
         tau_cH = 1 + (X / XR) * (ref.tau_cH - 1) + X * (phiR - phi)
         pi_cH, eta_cH_used = compressor_pressure_ratio(tau_cH, dc.eta_cH, gamma_c, high_pressure_compressor_map)
@@ -830,7 +835,7 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
                                      static_pressure, combustor_exit_temperature, tolerance=1e-8, max_iterations=200,
                                      relaxation_factor=0.5, max_continuation_steps=32, fan_map=None,
                                      high_pressure_compressor_map=None, allow_unconverged_fallback=False,
-                                     packed_design_constants=None, packed_reference_point=None):
+                                     packed_design_constants=None, packed_reference_point=None, shaft_power_offtake=None):
     """
     Robust wrapper around `solve_turbofan_offdesign`: tries a direct solve
     first, falls back to *continuation* if that fails (stepping from the
@@ -852,6 +857,10 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
     packed_design_constants, packed_reference_point : numpy.ndarray, optional
         pack_design_constants(design_constants) and pack_reference_point(reference_point), when the
         caller solves many points of the same engine and has already packed them.
+    shaft_power_offtake : float, optional
+        Net shaft power taken from the HP spool [W] (positive for a generator, negative for a motor),
+        passed to `solve_turbofan_offdesign`; None uses the design-point offtake. Continuation steps it
+        from the design-point offtake along with the flight condition and combustor exit temperature.
     allow_unconverged_fallback : bool, optional
         If every tier fails, raises `OffDesignMatchingError` by default. If
         `True`, returns the best (smallest convergence delta) partial result
@@ -870,15 +879,26 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
     OffDesignMatchingError
         If every tier fails and `allow_unconverged_fallback` is False (the
         default).
+        Also raised, without solving, when the combustor exit temperature is not above the inlet
+        stagnation temperature.
     """
+    # a combustor exit temperature at or below the inlet stagnation temperature (e.g. zero throttle) has no
+    # matched operating point; fail cleanly so callers route the point to their idle_fallback
+    inlet_stagnation_temperature = float(static_temperature) * (1 + (design_constants.gamma_c - 1) / 2 * float(mach_number) ** 2)
+    if not float(combustor_exit_temperature) > inlet_stagnation_temperature:
+        raise OffDesignMatchingError(
+            f"off-design matching: combustor exit temperature {float(combustor_exit_temperature):.1f} K is not above "
+            f"the inlet stagnation temperature {inlet_stagnation_temperature:.1f} K (throttle too low for a matched operating point)")
     # constant-efficiency compressors: direct solve and continuation run in the compiled kernel, and
     # only the returned point is converted to a Data result
     if fan_map is None and high_pressure_compressor_map is None:
         design    = pack_design_constants(design_constants) if packed_design_constants is None else packed_design_constants
         reference = pack_reference_point(reference_point)  if packed_reference_point  is None else packed_reference_point
         M0, T0, P0, Tt4 = float(mach_number), float(static_temperature), float(static_pressure), float(combustor_exit_temperature)
+        offtake_design  = getattr(design_constants, 'shaft_work_specific_design', 0.0) * reference_point.m0
+        offtake         = offtake_design if shaft_power_offtake is None else float(shaft_power_offtake)
         output = solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, tolerance, max_iterations,
-                                                 relaxation_factor, np.nan, np.nan, np.nan)
+                                                 relaxation_factor, np.nan, np.nan, np.nan, offtake)
         if output[23] == 1.0:
             return result_from_kernel_output(output, max_iterations)
         best_partial = output if np.isfinite(output[24]) else None
@@ -892,7 +912,8 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
                                                          reference_point.T0 + frac * (T0 - reference_point.T0),
                                                          reference_point.P0 + frac * (P0 - reference_point.P0),
                                                          reference_point.Tt4 + frac * (Tt4 - reference_point.Tt4),
-                                                         tolerance, max_iterations, relaxation_factor, tau_f, tau_tL, pi_tL)
+                                                         tolerance, max_iterations, relaxation_factor, tau_f, tau_tL, pi_tL,
+                                                         offtake_design + frac * (offtake - offtake_design))
                 if output[23] != 1.0:
                     break
                 tau_f, tau_tL, pi_tL = output[6], output[10], output[11]
@@ -933,10 +954,13 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
                 T0_k = reference_point.T0 + frac * (static_temperature - reference_point.T0)
                 P0_k = reference_point.P0 + frac * (static_pressure - reference_point.P0)
                 Tt4_k = reference_point.Tt4 + frac * (combustor_exit_temperature - reference_point.Tt4)
+                offtake_k = None if shaft_power_offtake is None else \
+                    offtake_design + frac * (shaft_power_offtake - offtake_design)
                 result = solve_turbofan_offdesign(design_constants, reference_point, M0_k, T0_k, P0_k, Tt4_k,
                                                    tolerance=tolerance, max_iterations=max_iterations,
                                                    relaxation_factor=relaxation_factor, initial_guess=state,
-                                                   fan_map=fan_map_used, high_pressure_compressor_map=hpc_map_used)
+                                                   fan_map=fan_map_used, high_pressure_compressor_map=hpc_map_used,
+                                                   shaft_power_offtake=offtake_k)
                 if not result.converged:
                     break
                 state = (result.tau_f, result.tau_tL, result.pi_tL)
@@ -946,9 +970,11 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
             n_steps *= 2
         return None
 
+    offtake_design = getattr(design_constants, 'shaft_work_specific_design', 0.0) * reference_point.m0
     direct = solve_turbofan_offdesign(design_constants, reference_point, mach_number, static_temperature,
                                        static_pressure, combustor_exit_temperature, tolerance=tolerance,
-                                       max_iterations=max_iterations, relaxation_factor=relaxation_factor)
+                                       max_iterations=max_iterations, relaxation_factor=relaxation_factor,
+                                       shaft_power_offtake=shaft_power_offtake)
     result = direct if direct.converged else None
     if result is None:
         track_best(direct)
