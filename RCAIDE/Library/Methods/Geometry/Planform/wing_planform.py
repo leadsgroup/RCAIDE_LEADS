@@ -339,24 +339,24 @@ def wing_planform(wing):
     seg_keys = list(wing.segments.keys())  
     for tag, segment in enumerate(wing.segments): 
         if segment.chords.reference_area_root:                      
-            segment_root_chord       = wing.segments[seg_keys[tag]].root_chord_percent * wing.chords.root 
-            segment_tip_chord        = wing.segments[seg_keys[tag+1]].root_chord_percent * wing.chords.root 
+            segment_root_chord       = wing.segments[seg_keys[tag]].root_chord_percent * wing.chords.root
             segnent_start_span       = wing.segments[seg_keys[tag]].percent_span_location * wing.spans.projected
-            reference_wing_span      = wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected
 
             next_seg = wing.segments[seg_keys[tag+1]]
-            trailing_edge_sweep = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=1.0) 
-            leading_edge_sweep  = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.0) 
+            trailing_edge_sweep = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=1.0)
+            leading_edge_sweep  = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.0)
 
+            # reference trapezoid: this panel's leading and trailing edges extended from the centerline to the tip
+            span                 = wing.spans.projected
             projected_root_chord = segment_root_chord + segnent_start_span/2 * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
-            wing.areas.reference = (projected_root_chord + segment_tip_chord)/2 * reference_wing_span
-            wing.aspect_ratio    = wing.spans.projected**2 / wing.areas.reference
-            wing.chords.mean_aerodynamic =   2./3.*( projected_root_chord+segment_tip_chord - projected_root_chord*segment_tip_chord/(projected_root_chord+segment_tip_chord) )
-            
+            projected_tip_chord  = projected_root_chord + span/2 * (np.tan(trailing_edge_sweep) - np.tan(leading_edge_sweep))
+            wing.areas.reference = (projected_root_chord + projected_tip_chord)/2 * span
+            wing.aspect_ratio    = span**2 / wing.areas.reference
+            wing.chords.mean_aerodynamic =   2./3.*( projected_root_chord+projected_tip_chord - projected_root_chord*projected_tip_chord/(projected_root_chord+projected_tip_chord) )
+
             # estimating aerodynamic center coordinates
             outboard_segment_origin =  wing.segments[seg_keys[tag+1]].origin
-            span = wing.spans.projected
-            taper = segment_tip_chord/projected_root_chord
+            taper = projected_tip_chord/projected_root_chord
             y_coord = span / 6. * (( 1. + 2. * taper ) / (1. + taper))
             x_coord = wing.chords.mean_aerodynamic * 0.25 + y_coord * np.tan(leading_edge_sweep) 
             LEMAC = wing.origin[0][0] + outboard_segment_origin[0][0] + np.tan(leading_edge_sweep)*(y_coord - wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected/2)
