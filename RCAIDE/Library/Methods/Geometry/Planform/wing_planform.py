@@ -359,7 +359,7 @@ def wing_planform(wing):
             taper = segment_tip_chord/projected_root_chord
             y_coord = span / 6. * (( 1. + 2. * taper ) / (1. + taper))
             x_coord = wing.chords.mean_aerodynamic * 0.25 + y_coord * np.tan(leading_edge_sweep) 
-            LEMAC = outboard_segment_origin[0][0] + np.tan(leading_edge_sweep)*(y_coord - wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected/2)
+            LEMAC = wing.origin[0][0] + outboard_segment_origin[0][0] + np.tan(leading_edge_sweep)*(y_coord - wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected/2)
             # estimate LEMAC
             wing.LEMAC =  LEMAC
 
