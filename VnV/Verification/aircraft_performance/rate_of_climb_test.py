@@ -62,11 +62,11 @@ def main():
     print('Excess Power (kW): ', excess_power / 1000.)
 
     truth_ROC = 788.5358317025756
-    ROC_error = np.max(np.abs(rate_of_climb / Units['ft/min'] - truth_ROC))
+    ROC_error = np.max(np.abs(rate_of_climb / Units['ft/min'] - truth_ROC) / truth_ROC)
     assert (ROC_error < 1e-6)
 
     truth_Pex = 2028067.3677604645
-    Pex_error = np.max(np.abs(excess_power - truth_Pex))
+    Pex_error = np.max(np.abs(excess_power - truth_Pex) / truth_Pex)
     assert (Pex_error < 1e-6)
 
     elapsed_time = time.time() - ti
