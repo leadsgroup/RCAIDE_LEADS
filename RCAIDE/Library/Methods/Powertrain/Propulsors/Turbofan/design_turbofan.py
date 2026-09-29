@@ -8,6 +8,7 @@
 
 # RCAIDE Imports
 import RCAIDE 
+from RCAIDE.Framework.Core                                           import Data
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor          import compute_combustor_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor         import compute_compressor_performance 
@@ -17,17 +18,20 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan           import size_core
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate import Turbofan_Surrogate
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.build_turbofan_offdesign_matching import build_turbofan_offdesign_matching
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan_offdesign_matching import design_turbofan_offdesign_matching
 from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor import   design_optimal_motor
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_generator import design_optimal_generator
 
 # Python package imports
 import numpy as np
+from scipy.optimize import brentq
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_turbofan(turbofan):
+def design_turbofan(turbofan, build_idle_fallback=True):
     """
     Computes performance properties of a turbofan engine at the design point by linking
     and analyzing the thermodynamic cycle of its components.
@@ -92,6 +96,25 @@ def design_turbofan(turbofan):
                 Fan nozzle component
                     - tag : str
                         Identifier for the fan nozzle
+            - design_thrust : float
+                Thrust at the design point [N]; sizes the engine
+            - rated_takeoff_thrust : float
+                Rated sea-level static takeoff thrust [N]
+    build_idle_fallback : bool, optional
+        Build the off-design idle_fallback deck. Default is True.
+
+    The engine is sized one of three ways:
+        * rated_takeoff_thrust only: the standard way -- the engine is sized so its sea-level
+          static thrust at the takeoff rating (takeoff_combustor_exit_temperature_ratio times the
+          design-point combustor exit temperature) equals rated_takeoff_thrust, and design_thrust
+          is solved (size_turbofan_to_rated_takeoff_thrust)
+        * design_thrust and rated_takeoff_thrust: the engine is sized from design_thrust and
+          rated_takeoff_temperature_ratio is solved so the sea-level static thrust equals
+          rated_takeoff_thrust -- a consistency check between two documented operating points
+        * design_thrust only: the engine is sized from design_thrust and rated_takeoff_temperature_ratio is 1
+
+    Throttle is a fraction of the takeoff rating: throttle 1 runs at rated_takeoff_temperature_ratio
+    times the design-point combustor exit temperature.
     
     Returns
     -------
@@ -136,6 +159,15 @@ def design_turbofan(turbofan):
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.size_core
     """
+    # sized from the rated takeoff thrust alone: solve design_thrust (see size_turbofan_to_rated_takeoff_thrust)
+    if turbofan.rated_takeoff_thrust > 0 and turbofan.design_thrust <= 0:
+        from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.size_turbofan_to_rated_takeoff_thrust import size_turbofan_to_rated_takeoff_thrust
+        size_turbofan_to_rated_takeoff_thrust(turbofan)
+        return
+
+    # throttle equals the design-point fraction until the takeoff rating is solved below
+    turbofan.rated_takeoff_temperature_ratio = 1.0
+
     # check if mach number and temperature are passed
     if(turbofan.design_mach_number==None) and (turbofan.design_altitude==None): 
         raise NameError('The sizing conditions require an altitude and a Mach number') 
@@ -389,18 +421,76 @@ def design_turbofan(turbofan):
     # the offtake would silently read back as zero there.
     turbofan.design_shaft_work_specific = float(np.ravel(external_shaft_work)[0])
 
-    # Step 23: Static Sea Level Thrust
+    # Total temperature rise across the fan at the design point, the reference for scaling fan
+    # angular velocity with operating condition (see compute_fan_angular_velocity)
+    fan.design_total_temperature_rise   = float(np.ravel(fan_conditions.outputs.stagnation_temperature - fan_conditions.inputs.stagnation_temperature)[0])
+
+    # Step 23: Off-design matching is the default performance model -- attach it from the sized
+    # design point (with offdesign_matching still None, so the design-point readback dispatches
+    # through the cycle solve above), unless a deck-driven surrogate was requested instead
+    offdesign_matching_default = turbofan.surrogate_deck_path is None and turbofan.surrogate is None
+    if offdesign_matching_default:
+        turbofan.offdesign_matching       = None
+        design_constants, reference_point = design_turbofan_offdesign_matching(turbofan)
+        turbofan.offdesign_matching       = Data(design_constants = design_constants, reference_point = reference_point)
+
+    # Step 24: Sea-level static operating point
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state       = setup_operating_conditions(turbofan,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0  
     operating_state.unknowns.network['electrical_power'] = np.array([[design_power_offtake]])
-    inputs,outputs,_,_                     = turbofan.compute_performance(operating_state,dummy_network) 
+
+    def sea_level_static_performance(throttle):
+        operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = throttle
+        inputs,outputs,_,_ = turbofan.compute_performance(operating_state,dummy_network)
+        return outputs
+
+    # Step 25: Takeoff rating -- the fraction of the design combustor exit temperature at which the
+    # sea-level static thrust equals the rated takeoff thrust. Engines are rated hotter at takeoff
+    # than at the climb/cruise design point, so this is typically above 1. Throttle is then a
+    # fraction of this rating.
+    if turbofan.rated_takeoff_thrust > 0:
+        def thrust_residual(throttle):
+            return sea_level_static_performance(throttle).thrust[0][0] - turbofan.rated_takeoff_thrust
+
+        # bracket the rating by stepping outward from the design throttle, so the matching solver is
+        # only evaluated near the solution
+        throttle_step   = 0.05
+        lower, upper    = 1.0, 1.0
+        residual        = thrust_residual(1.0)
+        direction       = 1.0 if residual < 0 else -1.0
+        while (residual < 0) == (direction > 0):
+            next_throttle = (upper if direction > 0 else lower) + direction * throttle_step
+            if not 0.5 <= next_throttle <= 2.0:
+                raise ValueError(f"Turbofan '{turbofan.tag}': no takeoff throttle between 0.5 and 2.0 gives the rated takeoff "
+                                 f"thrust of {turbofan.rated_takeoff_thrust:.0f} N at sea level; check design_thrust against it.")
+            residual = thrust_residual(next_throttle)
+            if direction > 0:
+                lower, upper = upper, next_throttle
+            else:
+                lower, upper = next_throttle, lower
+        turbofan.rated_takeoff_temperature_ratio = brentq(thrust_residual, lower, upper, xtol=1e-6)
+
+    # idle_fallback deck spans part power up to the takeoff rating
+    if offdesign_matching_default and build_idle_fallback:
+        combustor_exit_temperature_fractions = sorted(set([turbofan.rated_takeoff_temperature_ratio, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
+        turbofan.offdesign_matching          = None
+        turbofan.offdesign_matching          = build_turbofan_offdesign_matching(turbofan, combustor_exit_temperature_fractions = combustor_exit_temperature_fractions)
+
+    # Step 26: Sea-level static thrust at the takeoff rating
+    outputs                                = sea_level_static_performance(1.0)
     turbofan.sealevel_static_thrust        = outputs.thrust[0][0]
+
+    # Fan design-point speed from its rated (100% N1, sea-level static takeoff) speed, using the
+    # same total temperature rise scaling as compute_fan_angular_velocity
+    if fan.rated_angular_velocity > 0:
+        sls_fan_conditions                   = operating_state.conditions.energy.converters[fan.tag]
+        sls_total_temperature_rise           = float(np.ravel(sls_fan_conditions.outputs.stagnation_temperature - sls_fan_conditions.inputs.stagnation_temperature)[0])
+        fan.design_angular_velocity          = fan.rated_angular_velocity * np.sqrt(fan.design_total_temperature_rise / sls_total_temperature_rise)
     turbofan.sealevel_static_power         = outputs.power.propulsive[0][0]
     turbofan.design_power                  = design_power_offtake
 
-    # Step 24: Build the deck-driven surrogate, if requested
+    # Step 27: Build the deck-driven surrogate, if requested
     if turbofan.surrogate_deck_path is not None:
         turbofan.surrogate = Turbofan_Surrogate().build(deck_path=turbofan.surrogate_deck_path)
 

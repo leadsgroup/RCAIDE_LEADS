@@ -6,7 +6,7 @@ from RCAIDE.Framework.Core import Data
 
 
 def generate_3d_cargo_bay_points(cargo_bay):
-    """
+    r"""
     Generate VTK geometry for a cargo container with an LD-style chamfered profile.
 
     Parameters

@@ -216,7 +216,16 @@ def diff(A,B):
         elif isinstance(va,DataOrdered) or isinstance(vb,DataOrdered):
             result[key] = va        
 
-        elif not np.all(va == vb):
+        elif not values_equal(va, vb):
             result[key] = va
 
-    return result    
+    return result
+
+def values_equal(va, vb):
+    """True if two leaf values are equal, including lists or tuples of arrays and arrays of different shapes."""
+    if isinstance(va, (list, tuple)) and isinstance(vb, (list, tuple)):
+        return len(va) == len(vb) and all(values_equal(a, b) for a, b in zip(va, vb))
+    try:
+        return bool(np.all(va == vb))
+    except ValueError:
+        return False

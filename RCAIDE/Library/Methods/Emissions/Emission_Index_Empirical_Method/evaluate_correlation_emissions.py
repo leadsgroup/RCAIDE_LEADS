@@ -18,7 +18,7 @@ import numpy as np
 #  evaluate_correlation_emissions_indices
 # ---------------------------------------------------------------------------------------------------------------------- 
 def evaluate_correlation_emissions(segment, settings, vehicle):
-    """
+    r"""
     Computes emission indices using empirical correlations.
 
     Parameters

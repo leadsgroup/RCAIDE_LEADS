@@ -33,7 +33,7 @@ def vehicle_setup():
     vehicle.mass_properties.max_takeoff               = 51800. # kg
     vehicle.mass_properties.takeoff                   = 51800. # kg
     vehicle.mass_properties.max_zero_fuel             = 40900. # kg
-    vehicle.mass_properties.max_fuel                  = 13975. # kg
+    vehicle.mass_properties.max_fuel                  = 13100. # kg, APM max usable fuel
     vehicle.mass_properties.max_payload               = 12900. # kg
     vehicle.mass_properties.operating_empty           = 27900  #     
     vehicle.mass_properties.center_of_gravity         = [[16.8, 0, 1.6]]
@@ -119,9 +119,9 @@ def vehicle_setup():
     wing.origin                  = [[13.0,0,-1.]]
     wing.vertical                = False
     wing.xz_plane_symmetric      = True
-    wing.areas.exposed           = 0.80 * wing.areas.wetted
-    wing.twists.root             = 3.0 * Units.degrees
-    wing.twists.tip              = -2.0 * Units.degrees
+    wing.areas.exposed           = 0.80 * wing.areas.wetted    
+    wing.twists.root             = 1.0 * Units.degrees
+    wing.twists.tip              = -1.0 * Units.degrees    
     wing.dynamic_pressure_ratio  = 1.0
      
     ospath                                = os.path.abspath(__file__)
@@ -561,7 +561,7 @@ def vehicle_setup():
     turbofan.diameter                               = 52 *  Units.inches
     turbofan.design_altitude                        = 35000.0*Units.ft
     turbofan.design_mach_number                     = 0.78
-    turbofan.design_thrust                          = 19700 * Units.N
+    turbofan.rated_takeoff_thrust                   = 83720. * Units.N # CF34-10E6 maximum takeoff rating, 83.72 kN (EASA TCDS IM.E.021, Issue 06)
     turbofan.origin                                 = [[13.15,4.38,-2.1]]
     turbofan.mass_properties.center_of_gravity      = [[turbofan.length /2,0,0]]
 
@@ -584,6 +584,7 @@ def vehicle_setup():
     fan.tag                                         = 'fan'
     fan.polytropic_efficiency                       = 0.93
     fan.pressure_ratio                              = 1.7   
+    fan.rated_angular_velocity                      = 5954.4 * Units.rpm # CF34-10E 100% N1 (EASA TCDS IM.E.021, Issue 06)
     turbofan.fan                                    = fan        
                         
     # working fluid                        
@@ -633,7 +634,7 @@ def vehicle_setup():
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.98
     combustor.alphac                               = 1.0     
-    combustor.turbine_inlet_temperature            = 1550
+    combustor.turbine_inlet_temperature            = 1400
     combustor.pressure_ratio                       = 0.95
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan.combustor                             = combustor

@@ -17,7 +17,7 @@ import  numpy as  np
 #  Vertical Tail Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_vertical_tail_weight(vehicle, wing, settings):
-    """
+    r"""
     Calculates vertical tail weight using Raymer's empirical method.
 
     Parameters

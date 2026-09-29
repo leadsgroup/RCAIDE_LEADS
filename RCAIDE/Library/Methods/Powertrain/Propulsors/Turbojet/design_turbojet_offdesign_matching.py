@@ -96,8 +96,16 @@ def design_turbojet_offdesign_matching(turbojet):
     state = setup_operating_conditions(turbojet, fuel_line, velocity_range=np.array([design_velocity]),
                                         altitude=turbojet.design_altitude, angle_of_attack=0,
                                         temperature_deviation=turbojet.design_isa_deviation)
-    state.conditions.energy.propulsors[turbojet.tag].throttle[:, 0] = 1.0
-    turbojet.compute_performance(state)
+    state.conditions.energy.propulsors[turbojet.tag].throttle[:, 0] = 1.0 / turbojet.rated_takeoff_temperature_ratio  # design point
+
+    # the reference point is read back from the dry design-point cycle solve, so dispatch through the
+    # analytical cycle with the afterburner off even when the turbojet already carries an off-design model
+    offdesign_matching, afterburner_active = turbojet.offdesign_matching, turbojet.afterburner_active
+    turbojet.offdesign_matching, turbojet.afterburner_active = None, False
+    try:
+        turbojet.compute_performance(state)
+    finally:
+        turbojet.offdesign_matching, turbojet.afterburner_active = offdesign_matching, afterburner_active
 
     conditions = state.conditions
     converters = conditions.energy.converters

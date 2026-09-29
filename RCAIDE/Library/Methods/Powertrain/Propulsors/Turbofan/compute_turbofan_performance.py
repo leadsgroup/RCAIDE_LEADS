@@ -12,13 +12,15 @@ from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                  import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor            import compute_combustor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor           import compute_compressor_performance
-from RCAIDE.Library.Methods.Powertrain.Converters.Fan                  import compute_fan_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Fan                  import compute_fan_performance, compute_fan_angular_velocity
 from RCAIDE.Library.Methods.Powertrain.Converters.Turbine              import compute_turbine_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle     import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan             import compute_thrust
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common               import compute_gas_generator_shaft_power_offtake
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance_surrogate import compute_turbofan_performance_surrogate
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
+    pack_design_constants, pack_reference_point,
     solve_turbofan_offdesign_robust, OffDesignMatchingError)
 
 import  numpy as  np
@@ -208,8 +210,6 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     low_pressure_compressor   = turbofan.low_pressure_compressor
     high_pressure_compressor  = turbofan.high_pressure_compressor
     combustor                 = turbofan.combustor
-    integrated_drive_generator= turbofan.integrated_drive_generator 
-    integrated_drive_motor    = turbofan.integrated_drive_motor
     high_pressure_turbine     = turbofan.high_pressure_turbine
     low_pressure_turbine      = turbofan.low_pressure_turbine
     core_nozzle               = turbofan.core_nozzle
@@ -232,65 +232,12 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     # ----------------------------------------------------------------------------
     # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
     # ----------------------------------------------------------------------------
-    external_shaft_work       =  0*state.ones_row(1)
-    lpc_conditions.omega      = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
-    # external_shaft_work below is a power (W), but compute_turbine_performance
-    # sums it with compressor/fan work, which is specific work (J/kg) -- divide
-    # by mass flow to convert. core_mass_flow_rate isn't set yet this early in
-    # the cycle (compute_thrust sets it later), so use the previous iterate's
-    # value, falling back to the design mass flow rate before any iterate has run.
-    shaft_power_mass_flow_rate = getattr(turbofan_conditions, 'core_mass_flow_rate', None)
-    if shaft_power_mass_flow_rate is None or np.all(shaft_power_mass_flow_rate == 0):
-        shaft_power_mass_flow_rate = turbofan.design_mass_flow_rate * state.ones_row(1)
+    # throttle is a fraction of the takeoff rating; the cycle runs on the fraction of the design point
+    design_point_throttle   = turbofan_conditions.throttle * turbofan.rated_takeoff_temperature_ratio
 
-    # Motor: consumes electrical power from the bus, delivers mechanical power to the shaft
-    if integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
-        motor_conditions = conditions.energy.converters[integrated_drive_motor.tag]
-
-        # Determine the electrical power the motor consumes
-        # phi controls what fraction of propulsive power comes from the motor
-        phi = state.conditions.energy.hybrid_power_split_ratio
-        if 'electrical_power' in state.unknowns.network:
-            motor_electrical_power = state.unknowns.network['electrical_power'] * phi
-        else:
-            motor_electrical_power = state.conditions.energy.inputs.power.electrical * phi
-
-        # Mechanical power delivered to shaft = electrical input * motor efficiency
-        eta_motor = integrated_drive_motor.efficiency
-        motor_mechanical_power = motor_electrical_power * eta_motor
-
-        turbofan_conditions.inputs.power.electrical        = motor_electrical_power
-        motor_conditions.inputs.power.electrical           = motor_electrical_power
-        motor_conditions.outputs.power.mechanical          = motor_mechanical_power
-        motor_conditions.outputs.efficiency                = eta_motor * state.ones_row(1)
-        motor_conditions.outputs.omega                     = lpc_conditions.omega
-        motor_conditions.outputs.torque                    = motor_mechanical_power / lpc_conditions.omega
-
-        # Motor delivers power to shaft 
-        external_shaft_work -= motor_mechanical_power / shaft_power_mass_flow_rate
-            
-    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
-        IDG_conditions = conditions.energy.converters[integrated_drive_generator.tag]
-
-        # Determine the electrical power the generator must produce
-        if 'electrical_power' in state.unknowns.network:
-            generator_electrical_power = state.unknowns.network['electrical_power'] * integrated_drive_generator.power_split_ratio
-        else:
-            generator_electrical_power = state.conditions.energy.inputs.power.electrical * integrated_drive_generator.power_split_ratio
-
-        # Mechanical power extracted from shaft = electrical power / generator efficiency
-        eta_gen = integrated_drive_generator.efficiency
-        generator_mechanical_power = generator_electrical_power / eta_gen
-
-        turbofan_conditions.outputs.power.electrical      = generator_electrical_power
-        IDG_conditions.outputs.power.electrical            = generator_electrical_power
-        IDG_conditions.inputs.power.mechanical             = generator_mechanical_power
-        IDG_conditions.outputs.efficiency                  = eta_gen * state.ones_row(1)
-        IDG_conditions.inputs.omega                        = lpc_conditions.omega
-        IDG_conditions.inputs.torque                       = generator_mechanical_power / lpc_conditions.omega
-
-        # Generator extracts mechanical power from the shaft 
-        external_shaft_work += generator_mechanical_power / shaft_power_mass_flow_rate
+    # absolute power [W], converted to specific work with the core mass flow before the HP turbine below
+    lpc_conditions.omega    = low_pressure_compressor.design_angular_velocity * design_point_throttle
+    external_shaft_work, _, _, _ = compute_gas_generator_shaft_power_offtake(turbofan, state, lpc_conditions.omega)
 
     # ----------------------------------------------------------------------------
     # Compute Turbofan Performance
@@ -483,20 +430,20 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     power_hydraulic  = Q * hpc_conditions.outputs.stagnation_pressure  
         
     # compute shaft RPMs 
-    fan_conditions.omega        = fan.design_angular_velocity * turbofan_conditions.throttle
-    lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
-    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle 
+    fan_conditions.omega        = compute_fan_angular_velocity(fan, fan_conditions.outputs.stagnation_temperature - fan_conditions.inputs.stagnation_temperature)
+    lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * design_point_throttle
+    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * design_point_throttle
   
     # store data
     fan_res         = Data(
-                angular_velocity   = fan.angular_velocity
+                angular_velocity   = fan_conditions.omega
     )
 
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
                 exit_static_pressure                = core_nozzle_conditions.outputs.static_pressure,
                 exit_stagnation_temperature         = core_nozzle_conditions.outputs.stagnation_temperature,
-                exit_stagnation_pressure            = core_nozzle_conditions.outputs.static_pressure,
+                exit_stagnation_pressure            = core_nozzle_conditions.outputs.stagnation_pressure,
                 exit_velocity                       = core_nozzle_conditions.outputs.velocity
             )
 
@@ -504,7 +451,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
                 exit_static_temperature             = fan_nozzle_conditions.outputs.static_temperature,
                 exit_static_pressure                = fan_nozzle_conditions.outputs.static_pressure,
                 exit_stagnation_temperature         = fan_nozzle_conditions.outputs.stagnation_temperature,
-                exit_stagnation_pressure            = fan_nozzle_conditions.outputs.static_pressure,
+                exit_stagnation_pressure            = fan_nozzle_conditions.outputs.stagnation_pressure,
                 exit_velocity                       = fan_nozzle_conditions.outputs.velocity
                 )
                 
@@ -664,8 +611,8 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     regardless of throttle and applies throttle as a post-hoc thrust
     multiplier downstream (`compute_thrust`). This solver instead needs an
     actual combustor exit temperature to match against, so throttle is used
-    directly as a fraction of the reference point's own design Tt4:
-    `Tt4 = reference_point.Tt4 * throttle`. This is a simplification (a real
+    as a fraction of the takeoff rating:
+    `Tt4 = reference_point.Tt4 * rated_takeoff_temperature_ratio * throttle`. This is a simplification (a real
     engine's throttle-to-Tt4 relationship is not perfectly linear), not a
     validated correlation -- consistent with how this solver was stress-
     tested throughout its development (as a Tt4-fraction sweep), but worth
@@ -687,18 +634,21 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     turbofan_conditions  = conditions.energy.propulsors[turbofan.tag]
     noise_conditions      = conditions.aeroacoustics.propulsors[turbofan.tag]
 
-    altitude            = conditions.freestream.altitude[:, 0]
-    mach_number         = conditions.freestream.mach_number[:, 0]
-    static_temperature  = conditions.freestream.temperature[:, 0]
-    static_pressure     = conditions.freestream.pressure[:, 0]
-    velocity            = conditions.freestream.velocity[:, 0]
-    throttle            = turbofan_conditions.throttle[:, 0]
+    # freestream quantities may be column vectors or 1-D arrays (e.g. estimate_take_off_field_length),
+    # and may hold a single value for all control points -- broadcast each onto the throttle rows
+    # throttle is a fraction of the takeoff rating; the solver runs on the fraction of the design-point Tt4
+    throttle            = np.ravel(turbofan_conditions.throttle) * turbofan.rated_takeoff_temperature_ratio
+    n                   = len(throttle)
+    altitude            = np.ravel(conditions.freestream.altitude)    * np.ones(n)
+    mach_number         = np.ravel(conditions.freestream.mach_number) * np.ones(n)
+    static_temperature  = np.ravel(conditions.freestream.temperature) * np.ones(n)
+    static_pressure     = np.ravel(conditions.freestream.pressure)    * np.ones(n)
+    velocity            = np.ravel(conditions.freestream.velocity)    * np.ones(n)
 
     design_constants = turbofan.offdesign_matching.design_constants
     reference_point  = turbofan.offdesign_matching.reference_point
     idle_fallback    = getattr(turbofan.offdesign_matching, 'idle_fallback', None)
 
-    n = len(mach_number)
     thrust_N             = np.zeros(n)
     fuel_mass_flow_rate   = np.zeros(n)
     # NaN, not zero: a point routed to idle_fallback has no real station data (see Notes),
@@ -717,17 +667,28 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     alpha_out       = np.full(n, np.nan)
     tau_r_out       = np.full(n, np.nan)
     tau_f_out       = np.full(n, np.nan)
+    tau_f_alone_out = np.full(n, np.nan)
     pi_r_out        = np.full(n, np.nan)
     pi_d_out        = np.full(n, np.nan)
     pi_f_out        = np.full(n, np.nan)
     fuel_to_air_ratio_out = np.full(n, np.nan)
 
+    packed_design_constants = pack_design_constants(design_constants)
+    packed_reference_point  = pack_reference_point(reference_point)
+
+    # HP-spool shaft power to/from the integrated drive motor or generator at the mission's electrical
+    # power; the design-point offtake outside a mission
+    lpc_conditions       = conditions.energy.converters[turbofan.low_pressure_compressor.tag]
+    lpc_conditions.omega = turbofan.low_pressure_compressor.design_angular_velocity * throttle.reshape(-1, 1)
+    external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbofan, state, lpc_conditions.omega)
+    shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * throttle[i]
         try:
             result = solve_turbofan_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
-                combustor_exit_temperature)
+                combustor_exit_temperature, packed_design_constants=packed_design_constants,
+                packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise
@@ -772,6 +733,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
         alpha_out[i]                                = result.alpha
         tau_r_out[i]                                = result.tau_r
         tau_f_out[i]                                = result.tau_f
+        tau_f_alone_out[i]                          = result.tau_f_alone
         pi_r_out[i]                                 = result.pi_r
         pi_d_out[i]                                 = result.pi_d
         pi_f_out[i]                                 = result.pi_f
@@ -782,7 +744,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
 
     TSFC           = np.zeros(n)
     positive       = thrust_N > 0
-    gravity        = conditions.freestream.gravity[:, 0] if hasattr(conditions.freestream, 'gravity') \
+    gravity        = np.ravel(conditions.freestream.gravity) * np.ones(n) if hasattr(conditions.freestream, 'gravity') \
                      else 9.80665 * np.ones(n)
     TSFC[positive] = fuel_mass_flow_rate[positive] * gravity[positive] / thrust_N[positive]
 
@@ -821,8 +783,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     # thermal_efficiency not set: needs internal enthalpies the offdesign solver doesn't return
 
     # noise_conditions schema match -- real values at points the live solver handled,
-    # NaN at any point routed to idle_fallback (no station data there either) and for
-    # fan angular velocity always (no equivalent computed by either path)
+    # NaN at any point routed to idle_fallback (no station data there either)
     noise_conditions.core_nozzle = Data(
         exit_static_temperature      = core_nozzle_exit_static_temperature.reshape(-1,1),
         exit_static_pressure         = core_nozzle_exit_static_pressure.reshape(-1,1),
@@ -837,7 +798,30 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
         exit_stagnation_pressure     = fan_nozzle_exit_stagnation_pressure.reshape(-1,1),
         exit_velocity                = fan_nozzle_exit_velocity.reshape(-1,1),
     )
-    noise_conditions.fan = Data(angular_velocity = np.full((n,1), np.nan))
+    # fan total temperature rise (fan inlet Tt2 = T0*tau_r) sets the fan angular velocity
+    fan_inlet_stagnation_temperature  = tau_r_out * static_temperature
+    fan_exit_stagnation_temperature   = fan_inlet_stagnation_temperature * tau_f_alone_out
+    fan_angular_velocity              = compute_fan_angular_velocity(turbofan.fan, fan_exit_stagnation_temperature - fan_inlet_stagnation_temperature)
+    noise_conditions.fan = Data(angular_velocity = fan_angular_velocity.reshape(-1,1))
+
+    # component station states, in the same conditions the analytical cycle populates, so that
+    # downstream consumers (e.g. the aeroacoustic engine noise models) read one location
+    converters = conditions.energy.converters
+    for nozzle, V, T_s, P_s, T_t, P_t in [
+            (turbofan.core_nozzle, core_nozzle_exit_velocity, core_nozzle_exit_static_temperature, core_nozzle_exit_static_pressure,
+             core_nozzle_exit_stagnation_temperature, core_nozzle_exit_stagnation_pressure),
+            (turbofan.fan_nozzle, fan_nozzle_exit_velocity, fan_nozzle_exit_static_temperature, fan_nozzle_exit_static_pressure,
+             fan_nozzle_exit_stagnation_temperature, fan_nozzle_exit_stagnation_pressure)]:
+        nozzle_outputs                        = converters[nozzle.tag].outputs
+        nozzle_outputs.velocity               = V.reshape(-1,1)
+        nozzle_outputs.static_temperature     = T_s.reshape(-1,1)
+        nozzle_outputs.static_pressure        = P_s.reshape(-1,1)
+        nozzle_outputs.stagnation_temperature = T_t.reshape(-1,1)
+        nozzle_outputs.stagnation_pressure    = P_t.reshape(-1,1)
+    fan_conditions                                = converters[turbofan.fan.tag]
+    fan_conditions.inputs.stagnation_temperature  = fan_inlet_stagnation_temperature.reshape(-1,1)
+    fan_conditions.outputs.stagnation_temperature = fan_exit_stagnation_temperature.reshape(-1,1)
+    fan_conditions.omega                          = fan_angular_velocity.reshape(-1,1)
 
     stored_results_flag   = True
     stored_propulsor_tag  = turbofan.tag

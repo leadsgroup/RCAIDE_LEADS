@@ -37,3 +37,5 @@ from .Turboprop_OffDesign_Matching  import OffDesignMatchingError
 from .Turboprop_OffDesign_Matching  import solve_turboprop_offdesign
 from .Turboprop_OffDesign_Matching  import solve_turboprop_offdesign_robust
 from .generate_turboprop_deck import generate_turboprop_deck
+from .build_turboprop_offdesign_matching import build_turboprop_offdesign_matching
+from .size_turboprop_to_rated_takeoff_power import size_turboprop_to_rated_takeoff_power
