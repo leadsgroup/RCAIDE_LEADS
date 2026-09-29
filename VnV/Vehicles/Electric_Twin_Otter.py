@@ -80,251 +80,386 @@ def vehicle_setup(rotor_type, cell_chemistry='lithium_ion_nmc', btms_type=None):
     # ################################################# Vehicle-level Properties ########################################################  
 
     # mass properties
-    vehicle.mass_properties.max_takeoff   = 5670  # kg 
-    vehicle.mass_properties.takeoff       = 5670  # kg 
-    vehicle.mass_properties.max_zero_fuel = 5670  # kg 
-    vehicle.mass_properties.max_payload   = 1414. # kg  
-    vehicle.mass_properties.payload       = 100   # kg
-    vehicle.reference_area                = 39 
-    vehicle.number_of_passengers          = 19
+    vehicle.mass_properties.max_takeoff   = 5670. # kg
+    vehicle.mass_properties.takeoff       = 5670. # kg
+    vehicle.mass_properties.max_zero_fuel = 5670. # kg
+    vehicle.mass_properties.max_payload   = 1414. # kg
+    vehicle.mass_properties.max_fuel      = 1138. # kg
+    vehicle.reference_area                = 39
+    vehicle.number_of_passengers          = 18
     vehicle.systems.control               = "fully powered"
-    vehicle.systems.accessories           = "commuter"    
-     
+    vehicle.systems.accessories           = "commuter"
+
     vehicle.flight_envelope.design_cruise_altitude   = 5000 * Units.feet
     vehicle.flight_envelope.design_dynamic_pressure  = 2130.457961
     vehicle.flight_envelope.design_mach_number       = 0.19
     vehicle.flight_envelope.ultimate_load            = 5.7
-    vehicle.flight_envelope.limit_load               = 3.8       
-    vehicle.flight_envelope.positive_limit_load      = 2.5  
-    vehicle.flight_envelope.design_range             = 350 * Units.nmi
-    
+    vehicle.flight_envelope.limit_load               = 3.8
+    vehicle.flight_envelope.positive_limit_load      = 2.5
+    vehicle.flight_envelope.design_range             = 3500 * Units.nmi
+
     #------------------------------------------------------------------------------------------------------------------------------------
-    # ##################################################### Landing Gear ################################################################    
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 6  *  Units.inches 
-    main_gear.rim_diameter                   = 3  *  Units.inches 
-    main_gear.tire_width                     = 6  *  Units.inches 
-    main_gear.strut_length                   = 12  * Units.ft 
-    main_gear.wheels                         = 4   
+    # ##################################################### Landing Gear ################################################################
+    #------------------------------------------------------------------------------------------------------------------------------------
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 22.0 *  Units.inches
+    main_gear.rim_diameter                   = 10.0 *  Units.inches
+    main_gear.tire_width                     = 8.5  *  Units.inches
+    main_gear.strut_length                   = 0.65 * Units.m
+    main_gear.origin                         = [[5.7, 2.055, -.5]]
+    main_gear.wheels                         = 4
     main_gear.number_of_gear_types_in_tandem = 1
-    main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.xz_plane_symmetric             = True
-    vehicle.append_component(main_gear)  
+    main_gear.number_of_wheels_in_gear_type  = 1
+    main_gear.symmetric                      = True
+    vehicle.append_component(main_gear)
 
-    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                  =  5 *  Units.inches   
-    nose_gear.rim_diameter                   =  3 *  Units.inches 
-    nose_gear.tire_width                     =  5 *  Units.inches 
-    nose_gear.strut_length                   =  6.* Units.ft 
-    nose_gear.wheels                         = 2   
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 22.0 *  Units.inches
+    nose_gear.rim_diameter                   = 10.0 *  Units.inches
+    nose_gear.tire_width                     = 8.5  *  Units.inches
+    nose_gear.strut_length                   = 0.65 * Units.m
+    nose_gear.origin                         = [[2.0, 0, -.5]]
+    nose_gear.wheels                         = 1
     nose_gear.number_of_gear_types_in_tandem = 1
-    nose_gear.number_of_wheels_in_gear_type  = 2    
+    nose_gear.number_of_wheels_in_gear_type  = 1
     vehicle.append_component(nose_gear)
-            
 
-         
-    # ##########################################################  Wings ################################################################    
-    #------------------------------------------------------------------------------------------------------------------------------------  
+
+
+    # ##########################################################  Wings ################################################################
+    #------------------------------------------------------------------------------------------------------------------------------------
     #  Main Wing
     #------------------------------------------------------------------------------------------------------------------------------------
-    wing                                  = RCAIDE.Library.Components.Wings.Main_Wing()
-    wing.tag                              = 'main_wing' 
-    wing.sweeps.quarter_chord             = 0.0 * Units.deg
-    wing.thickness_to_chord               = 0.12
-    wing.areas.reference                  = 39 
-    wing.spans.projected                  = 19.81
-    wing.chords.root                      = 2.03 
-    wing.chords.tip                       = 2.03 
-    wing.chords.mean_aerodynamic          = 2.03 
-    wing.taper                            = wing.chords.root/wing.chords.tip 
-    wing.aspect_ratio                     = wing.spans.projected**2. / wing.areas.reference 
-    wing.twists.root                      = 3. * Units.degree 
-    wing.twists.tip                       = 0
-    wing.origin                           = [[5.38, 0, 1.35]] 
-    wing.aerodynamic_center               = [[5.38 + 0.25 *wing.chords.root , 0, 1.35]]  
-    wing.vertical                         = False
-    wing.xz_plane_symmetric               = True
-    wing.high_lift                        = True 
-    wing.winglet_fraction                 = 0.0  
-    wing.dynamic_pressure_ratio           = 1.0  
     ospath                                = os.path.abspath(__file__)
     separator                             = os.path.sep
     rel_path                              = os.path.dirname(ospath)   + separator
-    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.tag                           = 'Clark_y' 
-    airfoil.coordinate_file               = rel_path + separator + 'Airfoils' + separator + 'Clark_y.txt'   # absolute path     
+
+    wing                                  = RCAIDE.Library.Components.Wings.Main_Wing()
+    wing.tag                              = 'main_wing'
+    wing.sweeps.quarter_chord             = 0.0 * Units.deg
+    wing.thickness_to_chord               = 0.12
+    wing.areas.reference                  = 39
+    wing.spans.projected                  = 19.81
+    wing.chords.root                      = 2.04
+    wing.chords.tip                       = 2.02
+    wing.chords.mean_aerodynamic          = 2.03
+    wing.taper                            = wing.chords.root/wing.chords.tip
+    wing.aspect_ratio                     = wing.spans.projected**2. / wing.areas.reference
+    wing.twists.root                      = 3. * Units.degree
+    wing.twists.tip                       = 0
+    wing.origin                           = [[5.38, 0, 1.35]]
+    wing.aerodynamic_center               = [[5.38 + 0.25 *wing.chords.root , 0, 1.35]]
+    wing.vertical                         = False
+    wing.xz_plane_symmetric               = True
+    wing.winglet_fraction                 = 0.0
+    wing.dynamic_pressure_ratio           = 1.0
     cg_x                                  = wing.origin[0][0] + 0.25*wing.chords.mean_aerodynamic
     cg_z                                  = wing.origin[0][2] - 0.2*wing.chords.mean_aerodynamic
     vehicle.mass_properties.center_of_gravity = [[cg_x,   0.  ,  cg_z ]]  # SOURCE: Design and aerodynamic analysis of a twin-engine commuter aircraft
+    vehicle.mass_properties.center_of_gravity = [[6.3133, 0, 0.38]]
 
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'inboard'
-    segment.percent_span_location         = 0.0 
-    segment.twist                         = 3. * Units.degree 
-    segment.root_chord_percent            = 1. 
-    segment.dihedral_outboard             = 3. * Units.degree 
+    segment.percent_span_location         = 0.0
+    segment.twist                         = 3. * Units.degree
+    segment.root_chord_percent            = 1.
+    segment.dihedral_outboard             = 0. * Units.degree
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.tag                           = 'Clark_y'
+    airfoil.coordinate_file               = rel_path + 'Airfoils' + separator + 'Clark_y.txt'   # absolute path
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
-    
+
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'tip'
     segment.percent_span_location         = 1.
     segment.twist                         = 0
-    segment.root_chord_percent            = 0.99
+    segment.root_chord_percent            = 0.999
     segment.dihedral_outboard             = 0.
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.tag                           = 'Clark_y'
+    airfoil.coordinate_file               = rel_path + 'Airfoils' + separator + 'Clark_y.txt'   # absolute path
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
-    
+
+    # control surfaces -------------------------------------------
+    aileron                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron()
+    aileron.tag                   = 'aileron'
+    aileron.span_fraction_start   = 0.55
+    aileron.span_fraction_end     = 0.98
+    aileron.deflection            = 0.0  * Units.deg
+    aileron.chord_fraction        = 0.25
+    wing.append_control_surface(aileron)
+
+    # control surfaces -------------------------------------------
+    flap                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
+    flap.tag                   = 'flap'
+    flap.span_fraction_start   = 0.15
+    flap.span_fraction_end     = 0.55
+    flap.deflection            = 0.0  * Units.deg
+    flap.chord_fraction        = 0.25
+    wing.append_control_surface(flap)
+
     # add to vehicle
     vehicle.append_component(wing)
 
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     #   Horizontal Tail
-    #------------------------------------------------------------------------------------------------------------------------------------    
-    wing                                  = RCAIDE.Library.Components.Wings.Wing()
-    wing.tag                              = 'horizontal_stabilizer' 
-    wing.sweeps.quarter_chord             = 0.0 * Units.degree
-    wing.thickness_to_chord               = 0.12 
-    wing.areas.reference                  = 9.762 
-    wing.spans.projected                  = 6.29   
-    wing.chords.root                      = 1.552 
-    wing.chords.tip                       = 1.552 
-    wing.chords.mean_aerodynamic          = 1.552  
-    wing.taper                            = 1 
-    wing.aspect_ratio                     = wing.spans.projected**2. / wing.areas.reference 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    wing                                  = RCAIDE.Library.Components.Wings.Horizontal_Tail()
+    wing.tag                              = 'horizontal_stabilizer'
+    wing.sweeps.quarter_chord            = 0.01 * Units.degree
+    wing.thickness_to_chord               = 0.12
+    wing.areas.reference                  = 9.762
+    wing.spans.projected                  = 6.29
+    wing.chords.root                      = 1.552
+    wing.chords.tip                       = 1.552
+    wing.chords.mean_aerodynamic          = 1.552
+    wing.taper                            = 1
+    wing.aspect_ratio                     = wing.spans.projected**2. / wing.areas.reference
     wing.twists.root                      = 0.0 * Units.degree
-    wing.twists.tip                       = 0.0 * Units.degree 
-    wing.origin                           = [[13.17 , 0 , 1.25]] 
-    wing.aerodynamic_center               = [[13.17 , 0 , 1.25]]  
+    wing.twists.tip                       = 0.0 * Units.degree
+    wing.origin                           = [[12.96 , 0 , 1.25]]
+    wing.aerodynamic_center               = [12.96 + wing.chords.root /4 , 0 , 1.25]
     wing.vertical                         = False
-    wing.winglet_fraction                 = 0.0  
+    wing.winglet_fraction                 = 0.0
     wing.xz_plane_symmetric               = True
-    wing.high_lift                        = False 
     wing.dynamic_pressure_ratio           = 0.9
 
+     # Wing Segments
+    segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment.tag                           = 'root'
+    segment.percent_span_location         = 0.0
+    segment.root_chord_percent            = 1.
+    segment.dihedral_outboard             = 0.
+    segment.sweeps.quarter_chord          = 0
+    segment.thickness_to_chord            = 0.1
+    wing.append_segment(segment)
+
+    # Wing Segments
+    segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment.tag                           = 'yip'
+    segment.percent_span_location         = 1.0
+    segment.root_chord_percent            = wing.taper
+    segment.dihedral_outboard             = 0.
+    segment.sweeps.quarter_chord          = 0 * Units.deg
+    segment.thickness_to_chord            = 0.1
+    wing.append_segment(segment)
+
+    # control surfaces -------------------------------------------
+    elevator                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
+    elevator.tag                   = 'elevator'
+    elevator.span_fraction_start   = 0.01
+    elevator.span_fraction_end     = 1.00
+    elevator.deflection            = 0.0  * Units.deg
+    elevator.chord_fraction        = 0.45
+    wing.append_control_surface(elevator)
+
     # add to vehicle
     vehicle.append_component(wing)
 
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     #   Vertical Stabilizer
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    wing                                  = RCAIDE.Library.Components.Wings.Wing()
-    wing.tag                              = 'vertical_stabilizer'     
-    wing.sweeps.leading_edge              = 28.6 * Units.degree 
-    wing.thickness_to_chord               = 0.12 
-    wing.areas.reference                  = 8.753 
-    wing.spans.projected                  = 3.9 
-    wing.chords.root                      = 2.975 
-    wing.chords.tip                       = 1.514
-    wing.chords.mean_aerodynamic          = 2.24 # incorrect 
-    wing.taper                            = wing.chords.tip/wing.chords.root 
-    wing.aspect_ratio                     = wing.spans.projected**2. / wing.areas.reference 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    wing                                  = RCAIDE.Library.Components.Wings.Vertical_Tail()
+    wing.tag                              = 'vertical_stabilizer'
+    wing.sweeps.quarter_chord             = 23.73 * Units.degree
+    wing.thickness_to_chord               = 0.12
+    wing.areas.reference                  = 8.2
+    wing.spans.projected                  = 3.5
+    wing.chords.root                      = 3.0
+    wing.chords.tip                       = 1.68
+    wing.chords.mean_aerodynamic          = 2.34
+    wing.taper                            = wing.chords.tip/wing.chords.root
+    wing.aspect_ratio                     = wing.spans.projected**2. / wing.areas.reference
     wing.twists.root                      = 0.0 * Units.degree
-    wing.twists.tip                       = 0.0 * Units.degree 
-    wing.origin                           = [[ 12.222 , 0 , 0.385 ]]  
-    wing.aerodynamic_center               = [[ 12.222 + 0.25 * wing.chords.root, 0 , 0.385 ]]  
-    wing.vertical                         = True 
+    wing.twists.tip                       = 0.0 * Units.degree
+    wing.origin                           = [[ 12.222 , 0 , 0.75 ]]
+    wing.aerodynamic_center               = [ 12.222 + 0.25 * wing.chords.root, 0 , 0.385 ]
+    wing.vertical                         = True
     wing.xz_plane_symmetric               = False
     wing.t_tail                           = False
-    wing.winglet_fraction                 = 0.0  
+    wing.winglet_fraction                 = 0.0
     wing.dynamic_pressure_ratio           = 1.0
+
+    # Wing Segments
+    segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment.tag                           = 'root'
+    segment.percent_span_location         = 0.0
+    segment.root_chord_percent            = 1.
+    segment.dihedral_outboard             = 0.
+    segment.sweeps.quarter_chord          = 23.73 * Units.deg
+    segment.thickness_to_chord            = 0.1
+    wing.append_segment(segment)
+
+    # Wing Segments
+    segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment.tag                           = 'tip'
+    segment.percent_span_location         = 1.0
+    segment.root_chord_percent            = wing.taper
+    segment.dihedral_outboard             = 0.
+    segment.sweeps.quarter_chord          = 0 * Units.deg
+    segment.thickness_to_chord            = 0.1
+    wing.append_segment(segment)
+
+    # control surfaces -------------------------------------------
+    rudder                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder()
+    rudder.tag                   = 'rudder'
+    rudder.span_fraction_start   = 0.01
+    rudder.span_fraction_end     = 1.0
+    rudder.deflection            = 0.0  * Units.deg
+    rudder.chord_fraction        = 0.44
+    wing.append_control_surface(rudder)
 
     # add to vehicle
     vehicle.append_component(wing)
 
- 
-    # ##########################################################   Fuselage  ############################################################    
-    fuselage = RCAIDE.Library.Components.Fuselages.Fuselage() 
+
+    # ##########################################################   Fuselage  ############################################################
+    fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
 
     # define cabin
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                      = [[2, 0, 0]]
-    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 2
-    economy_class.number_of_rows                      = 10
-    economy_class.galley_lavatory_percent_x_locations = []  
-    economy_class.emergency_exit_percent_x_locations  = []      
-    economy_class.type_A_exit_percent_x_locations     = [] 
+    cabin.origin                                      = [[3.5,0, 0]]
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy()
+    economy_class.number_of_seats_abrest              = 3
+    economy_class.seat_arm_rest_width                 = 0
+    economy_class.number_of_rows                      = 6
+    economy_class.aisle_width                         = 8  *  Units.inches
+    economy_class.galley_lavatory_percent_x_locations = []
+    economy_class.emergency_exit_percent_x_locations  = []
+    economy_class.type_A_exit_percent_x_locations     = []
     cabin.append_cabin_class(economy_class)
-    fuselage.append_cabin(cabin) 
-        
+    fuselage.append_cabin(cabin)
+
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.
-    fuselage.lengths.nose                       = 2.95  
+    fuselage.lengths.nose                       = 2.95
     fuselage.lengths.tail                       = 7.57
-    fuselage.lengths.cabin                      = 4.62 
-    fuselage.lengths.total                      = 15.77  
-    fuselage.width                              = 1.75  
-    fuselage.heights.maximum                    = 1.50  
-    fuselage.heights.at_quarter_length          = 1.50  
-    fuselage.heights.at_three_quarters_length   = 1.50  
-    fuselage.heights.at_wing_root_quarter_chord = 1.50  
-    fuselage.areas.side_projected               = fuselage.lengths.total *fuselage.heights.maximum  # estimate    
+    fuselage.lengths.cabin                      = 4.62
+    fuselage.lengths.total                      = 15.77
+    fuselage.width                              = 1.75
+    fuselage.heights.maximum                    = 1.50
+    fuselage.heights.at_quarter_length          = 1.50
+    fuselage.heights.at_three_quarters_length   = 1.50
+    fuselage.heights.at_wing_root_quarter_chord = 1.50
+    fuselage.areas.side_projected               = fuselage.lengths.total *fuselage.heights.maximum  # estimate
     fuselage.areas.wetted                       = 2 * np.pi * fuselage.width *  fuselage.lengths.total +  2 * np.pi * fuselage.width ** 2
-    fuselage.areas.front_projected              =  np.pi * fuselage.width ** 2 
-    fuselage.effective_diameter                 = 1.75 
+    fuselage.areas.front_projected              =  np.pi * fuselage.width ** 2
+    fuselage.effective_diameter                 = 1.75
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
     segment.tag                                 = 'segment_0'
     segment.percent_x_location                  = 0
     segment.percent_z_location                  = 0
-    segment.height                              = 0.01
-    segment.width                               = 0.01
+    segment.height                              = 0.0
+    segment.width                               = 0.0
+    fuselage.segments.append(segment)
+
+    # Segment
+    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment.tag                                 = 'segment_1a'
+    segment.percent_x_location                  = 0.00985
+    segment.percent_z_location                  = 0
+    segment.height                              = 0.629
+    segment.width                               = 0.56185
     fuselage.segments.append(segment)
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
     segment.tag                                 = 'segment_1'
-    segment.percent_x_location                  = 0.005345402
-    segment.percent_z_location                  = -0.027433333/ fuselage.lengths.total	 
-    segment.height                              = 0.421666667
-    segment.width                               = 0.106025757
+    segment.percent_x_location                  = 0.019706071
+    segment.percent_z_location                  = 0.0
+    segment.height                              = 0.8130
+    segment.width                               = 0.7152
     fuselage.segments.append(segment)
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
     segment.tag                                 = 'segment_2'
-    segment.percent_x_location                  = 0.019706071
-    segment.percent_z_location                  = 6.66667E-05/ fuselage.lengths.total	 
-    segment.height                              = 0.733333333
-    segment.width                               = 0.61012023
-    fuselage.segments.append(segment) 
+    segment.percent_x_location                  = 0.054892307
+    segment.percent_z_location                  = 0.00152
+    segment.height                              = 1.10
+    segment.width                               = 1.11
+    fuselage.segments.append(segment)
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
     segment.tag                                 = 'segment_3'
-    segment.percent_x_location                  = 0.054892307
-    segment.percent_z_location                  = 0.009233333/ fuselage.lengths.total	 
-    segment.height                              = 1.008333333
-    segment.width                               = 1.009178159
-    fuselage.segments.append(segment)  
+    segment.percent_x_location                  = 0.11688
+    segment.percent_z_location                  = 0.0049
+    segment.height                              = 1.47905
+    segment.width                               = 1.5
+    segment.curvature                           = 2.5
+    fuselage.segments.append(segment)
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
     segment.tag                                 = 'segment_4'
-    segment.percent_x_location                  = 0.082575704 
-    segment.percent_z_location                  = 0.0459 / fuselage.lengths.total	 
-    segment.height                              = 1.228333333 
-    segment.width                               = 1.275456588 
-    fuselage.segments.append(segment) 
+    segment.percent_x_location                  = 0.14226
+    segment.percent_z_location                  = 0.00582
+    segment.height                              = 1.6
+    segment.width                               = 1.6
+    segment.curvature                           = 3
+    fuselage.segments.append(segment)
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
     segment.tag                                 = 'segment_5'
-    segment.percent_x_location                  = 0.116879689
-    segment.percent_z_location                  = 0.055066667/ fuselage.lengths.total	 
-    segment.height                              = 1.393333333
-    segment.width                               = 1.436068974
-    fuselage.segments.append(segment) 
+    segment.percent_x_location                  = 0.17164
+    segment.percent_z_location                  = 0.01737
+    segment.height                              = 2.07562
+    segment.width                               = 1.72
+    segment.curvature                           = 3.5
+    fuselage.segments.append(segment)
+
+
+    # Segment
+    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment.tag                                 = 'segment_6'
+    segment.percent_x_location                  = 0.19455
+    segment.percent_z_location                  = 0.01836
+    segment.height                              = 2.17
+    segment.width                               = 1.75
+    segment.curvature                           = 4
+    fuselage.segments.append(segment)
+
+    # Segment
+    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment.tag                                 = 'segment_7'
+    segment.percent_x_location                  =  0.54
+    segment.percent_z_location                  = 0.01977
+    segment.height                              = 2.09
+    segment.width                               = 1.75
+    segment.curvature                           = 4
+    fuselage.segments.append(segment)
+
+    # Segment
+    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment.tag                                 = 'segment_8'
+    segment.percent_x_location                  = 0.98
+    segment.percent_z_location                  = 0.03867
+    segment.height                              = 0.36
+    segment.width                               = 0.05
+    fuselage.segments.append(segment)
+
+    # Segment
+    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment.tag                                 = 'segment_9'
+    segment.percent_x_location                  = 1.0
+    segment.percent_z_location                  = 0.03586
+    segment.height                              = 0.0
+    segment.width                               = 0.0
+    fuselage.segments.append(segment)
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
