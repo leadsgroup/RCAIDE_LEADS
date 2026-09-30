@@ -11,7 +11,7 @@
 import numpy as np
 from concurrent.futures                import ThreadPoolExecutor
 from RCAIDE.Framework.Core            import orientation_transpose
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_induced_velocity, initialize_wake_geometry, initialize_lifting_line
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_induced_velocity_soa, initialize_wake_geometry, initialize_lifting_line
 
 def free_wake(rotor, wake_inputs, conditions):
 
@@ -146,6 +146,20 @@ def free_wake(rotor, wake_inputs, conditions):
     A_blade_all = Bgrid_start.transpose(0, 2, 1, 3, 4).reshape(ctrl_pts, J, B*Nr_s, 3)
     B_blade_all = Bgrid_end.transpose(  0, 2, 1, 3, 4).reshape(ctrl_pts, J, B*Nr_s, 3)
 
+    # SoA (x/y/z) split of the blade geometry, done ONCE here rather than once per (cp,j) task
+    # inside _compute_one below. A_blade_all/B_blade_all's leading two axes are exactly
+    # (ctrl_pts, J) -- the same two indices _compute_one indexes by with plain integers -- so
+    # A_blade_all[cp, j] is already a fully contiguous view (basic integer indexing on the
+    # leading axes never copies; only the trailing (,3) axis needs splitting). Splitting that
+    # trailing axis here, once for the whole (ctrl_pts, J, B*Nr_s) array, is the only copy ever
+    # paid for this data -- versus once per (cp,j) task, tens of thousands of times per mission.
+    Ax_blade_all = np.ascontiguousarray(A_blade_all[..., 0])
+    Ay_blade_all = np.ascontiguousarray(A_blade_all[..., 1])
+    Az_blade_all = np.ascontiguousarray(A_blade_all[..., 2])
+    Bx_blade_all = np.ascontiguousarray(B_blade_all[..., 0])
+    By_blade_all = np.ascontiguousarray(B_blade_all[..., 1])
+    Bz_blade_all = np.ascontiguousarray(B_blade_all[..., 2])
+
     # Each (cp,j) task below is fully independent -- no data dependency between columns/control
     # points within compute_V_ind (that coupling happens through the OUTER predictor/corrector
     # loop, not here) -- and each writes to a disjoint V_ind[cp,:,j,:,:] slice, so this is safe
@@ -191,18 +205,54 @@ def free_wake(rotor, wake_inputs, conditions):
         """
         V_ind = np.zeros_like(field_grid)
 
+        # Split field_grid/source_grid into contiguous x/y/z components ONCE per compute_V_ind
+        # call (not once per (cp,j) task, as a naive per-task reshape would) -- field_grid[cp,:,j,:,:]
+        # is non-contiguous (j is a middle axis of a 5-D array), so extracting P for a single task
+        # always forces a copy; doing that copy here, for the whole grid in one vectorized pass,
+        # and having _compute_one slice the ALREADY-split result (still one copy per task, since
+        # cp/j slicing a middle-axis-containing array is still non-contiguous, but now only ONE
+        # copy instead of the two a (M,3)-round-trip through biot_savart_induced_velocity used to
+        # cost: one to build (M,3) here, one more inside that function to re-split it into x/y/z).
+        # field_grid and source_grid are the same object at every real call site in this function
+        # (always invoked as compute_V_ind(X, X)) -- the `is` check below skips splitting
+        # source_grid a second time in that case, the only case this codebase exercises.
+        Fx = np.ascontiguousarray(field_grid[..., 0])
+        Fy = np.ascontiguousarray(field_grid[..., 1])
+        Fz = np.ascontiguousarray(field_grid[..., 2])
+        if source_grid is field_grid:
+            Sx, Sy, Sz = Fx, Fy, Fz
+        else:
+            Sx = np.ascontiguousarray(source_grid[..., 0])
+            Sy = np.ascontiguousarray(source_grid[..., 1])
+            Sz = np.ascontiguousarray(source_grid[..., 2])
+
         def _compute_one(cp, j):
-            P = field_grid[cp, :, j, :, :].reshape(B*(N_wake+1), 3)
+            Px = Fx[cp, :, j, :].reshape(-1)
+            Py = Fy[cp, :, j, :].reshape(-1)
+            Pz = Fz[cp, :, j, :].reshape(-1)
 
-            wake_src  = source_grid[cp, :, j, :, :]
-            r_w_start = wake_src[:, :-1, :].reshape(B*N_wake, 3)
-            r_w_end   = wake_src[:,  1:, :].reshape(B*N_wake, 3)
-            v_wake = biot_savart_induced_velocity(
-                P, r_w_start, r_w_end, Gamma_w_flat[cp], rcvf_flat[cp], vc_correction)
+            wx, wy, wz = Sx[cp, :, j, :], Sy[cp, :, j, :], Sz[cp, :, j, :]
+            r_w_start_x, r_w_end_x = wx[:, :-1].reshape(-1), wx[:, 1:].reshape(-1)
+            r_w_start_y, r_w_end_y = wy[:, :-1].reshape(-1), wy[:, 1:].reshape(-1)
+            r_w_start_z, r_w_end_z = wz[:, :-1].reshape(-1), wz[:, 1:].reshape(-1)
 
-            v_blade = biot_savart_induced_velocity(
-                P, A_blade_all[cp, j], B_blade_all[cp, j], Gamma_b_flat[cp], rcb_flat[cp], vc_correction)
-            v_sum = (v_blade + v_wake).reshape(B, N_wake+1, 3)
+            vwx, vwy, vwz = biot_savart_induced_velocity_soa(
+                Px, Py, Pz, r_w_start_x, r_w_start_y, r_w_start_z, r_w_end_x, r_w_end_y, r_w_end_z,
+                Gamma_w_flat[cp], rcvf_flat[cp], vc_correction)
+
+            vbx, vby, vbz = biot_savart_induced_velocity_soa(
+                Px, Py, Pz,
+                Ax_blade_all[cp, j], Ay_blade_all[cp, j], Az_blade_all[cp, j],
+                Bx_blade_all[cp, j], By_blade_all[cp, j], Bz_blade_all[cp, j],
+                Gamma_b_flat[cp], rcb_flat[cp], vc_correction)
+
+            # Same elementwise sum as before (v_blade + v_wake), just done per-component -- each
+            # scalar addition happens identically either way, so this is bit-exact by
+            # construction, not merely bit-exact by verification.
+            vx = (vbx + vwx).reshape(B, N_wake+1)
+            vy = (vby + vwy).reshape(B, N_wake+1)
+            vz = (vbz + vwz).reshape(B, N_wake+1)
+            v_sum = np.stack((vx, vy, vz), axis=-1)
             V_ind[cp, :, j, :, :] = np.where(CW[cp], -v_sum, v_sum)
 
         list(_executor.map(lambda t: _compute_one(*t), _tasks))

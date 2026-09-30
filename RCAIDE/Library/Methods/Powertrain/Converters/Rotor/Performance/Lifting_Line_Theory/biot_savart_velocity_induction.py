@@ -588,20 +588,76 @@ def biot_savart_induced_velocity(P, A, B, Gamma, rc=1e-6, vc_correction=1, tol=1
             Px = np.ascontiguousarray(P_arr[:, 0]); Py = np.ascontiguousarray(P_arr[:, 1]); Pz = np.ascontiguousarray(P_arr[:, 2])
             Ax = np.ascontiguousarray(A_arr[:, 0]); Ay = np.ascontiguousarray(A_arr[:, 1]); Az = np.ascontiguousarray(A_arr[:, 2])
             Bx = np.ascontiguousarray(B_arr[:, 0]); By = np.ascontiguousarray(B_arr[:, 1]); Bz = np.ascontiguousarray(B_arr[:, 2])
-            if vc_int == 1:
-                rx, ry, rz = _biot_savart_kernel_2d_contracted_vc1_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
-            elif vc_int == 2:
-                rx, ry, rz = _biot_savart_kernel_2d_contracted_vc2_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
-            elif vc_int == 3:
-                rx, ry, rz = _biot_savart_kernel_2d_contracted_vc3_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_qd_arr, tol_f, Gamma_arr)
-            else:
-                rx, ry, rz = _biot_savart_kernel_2d_contracted_vc4_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
+            rx, ry, rz = _dispatch_soa_kernel(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz,
+                                               rc_sq_arr, rc_qd_arr, vc_int, tol_f, Gamma_arr)
             return np.stack((rx, ry, rz), axis=1)
         return _biot_savart_kernel_2d_contracted(P_arr, A_arr, B_arr, rc_sq_arr, rc_qd_arr,
                                                   vc_int, tol_f, Gamma_arr)
 
     cross = biot_savart_velocity_induction(P_arr, A_arr, B_arr, rc, vc_correction, tol)
     return np.einsum('mnk,n->mk', cross, Gamma)
+
+
+def _dispatch_soa_kernel(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, rc_qd_arr, vc_int, tol_f, Gamma_arr):
+    """Shared vc_correction dispatch for callers that already have P/A/B split into
+    contiguous per-axis arrays -- factored out of biot_savart_induced_velocity so
+    biot_savart_induced_velocity_soa (below) can reuse the exact same dispatch
+    without re-deriving it. Returns (rx, ry, rz) UNSTACKED, not (M,3): a caller
+    working entirely in SoA (free_wake.py's _compute_one) can accumulate/negate
+    components directly and only ever pay for one stack at the very end, instead
+    of stacking here just to be immediately re-split by the caller.
+
+    vc_int is assumed to already be one of {1,2,3,4} -- callers route anything
+    else to the generic (M,3)-layout kernel themselves, since that kernel needs
+    P/A/B in (M,3) form anyway (no SoA variant exists for the generic fallback).
+    """
+    if vc_int == 1:
+        return _biot_savart_kernel_2d_contracted_vc1_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
+    elif vc_int == 2:
+        return _biot_savart_kernel_2d_contracted_vc2_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
+    elif vc_int == 3:
+        return _biot_savart_kernel_2d_contracted_vc3_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_qd_arr, tol_f, Gamma_arr)
+    else:
+        return _biot_savart_kernel_2d_contracted_vc4_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
+
+
+def biot_savart_induced_velocity_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, Gamma, rc=1e-6, vc_correction=1, tol=1e-6):
+    """Same computation as biot_savart_induced_velocity, for a caller that already
+    has P/A/B split into contiguous (M,)/(N,) per-axis arrays (free_wake.py's
+    _compute_one, which builds its field/source/blade points in this layout up
+    front -- see free_wake.py's grid-splitting comments) and wants to skip both
+    the (M,3)-assembly this function would otherwise require AND the immediate
+    re-split biot_savart_induced_velocity does internally to reach the SoA
+    kernels. Returns (rx, ry, rz) UNSTACKED (not (M,3)) so the caller can keep
+    working in SoA -- e.g. summing a wake and a blade contribution component-
+    wise -- and pay for exactly one np.stack at the point it actually needs an
+    (M,3) array, rather than stacking here just to be re-split there.
+
+    Only the Numba/SoA fast path is implemented here (no numpy fallback): every
+    call site for this function already requires Numba (free_wake.py's own
+    ThreadPoolExecutor-based parallelism assumes the GIL-releasing Numba kernels
+    are in use), so there is no scenario where this gets called without
+    _NUMBA_AVAILABLE being true.
+    """
+    N = Ax.shape[0]
+    rc_1d = np.atleast_1d(np.asarray(rc, dtype=float))
+    if rc_1d.shape[0] == 1 and N > 1:
+        rc_1d = np.full(N, rc_1d[0])
+    rc_sq_arr = rc_1d**2
+    rc_qd_arr = rc_1d**4
+    Gamma_arr = np.asarray(Gamma, dtype=float)
+    vc_int = int(vc_correction)
+    tol_f  = float(tol)
+
+    if vc_int in (1, 2, 3, 4):
+        return _dispatch_soa_kernel(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz,
+                                     rc_sq_arr, rc_qd_arr, vc_int, tol_f, Gamma_arr)
+
+    P = np.stack((Px, Py, Pz), axis=1)
+    A = np.stack((Ax, Ay, Az), axis=1)
+    B = np.stack((Bx, By, Bz), axis=1)
+    result = _biot_savart_kernel_2d_contracted(P, A, B, rc_sq_arr, rc_qd_arr, vc_int, tol_f, Gamma_arr)
+    return result[:, 0], result[:, 1], result[:, 2]
 
 
 def _biot_savart_velocity_induction_numpy(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
