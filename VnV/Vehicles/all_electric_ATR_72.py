@@ -793,13 +793,13 @@ def configs_setup(vehicle):
     climb_config     = RCAIDE.Library.Components.Configs.Config(vehicle)
     climb_config.tag = 'climb' 
     for propulsor in climb_config.networks.electric.propulsors:
-        propulsor.rotor.pitch_command =  30 *  Units.degree
+        propulsor.rotor.blade_pitch_command =  30 *  Units.degree
     configs.append(climb_config) 
     
     cruise_config     = RCAIDE.Library.Components.Configs.Config(vehicle)
     cruise_config.tag = 'cruise' 
     for propulsor in cruise_config.networks.electric.propulsors:
-        propulsor.rotor.pitch_command =  20 *  Units.degree
+        propulsor.rotor.blade_pitch_command =  20 *  Units.degree
     configs.append(cruise_config)        
     
     return configs 
