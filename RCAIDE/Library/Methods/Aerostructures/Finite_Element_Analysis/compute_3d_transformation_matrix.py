@@ -21,8 +21,8 @@ def compute_3d_transformation_matrix(sweep_arr, dihedral_arr, twist_arr, num_ele
     
     # Sweep Rotation Stack (Yaw)
     R_sweep = np.zeros((num_elements, 3, 3))
-    R_sweep[:, 0, 0] = c_sw;  R_sweep[:, 0, 1] = -s_sw
-    R_sweep[:, 1, 0] = s_sw;  R_sweep[:, 1, 1] = c_sw
+    R_sweep[:, 0, 0] = c_sw;  R_sweep[:, 0, 1] = s_sw
+    R_sweep[:, 1, 0] = -s_sw; R_sweep[:, 1, 1] = c_sw
     R_sweep[:, 2, 2] = 1.0
     
     # Dihedral Rotation Stack (Roll)

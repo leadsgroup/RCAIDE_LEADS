@@ -286,25 +286,25 @@ def prepare_deflection_row_mapping(row_Y, fea_pts):
     return Data(idx_l=idx_l, idx_r=idx_r, w_l=w_l, w_r=w_r, a0=a0, tangent=tangent)
 
 
-def apply_deflection_row_mapping(mapping, pts_grid, deflection, elastic_twist):
+def apply_deflection_row_mapping(mapping, pts_grid, deflection, rotation):
     """
     Cheap, per-iteration half of the structure-to-aero kinematic transfer: apply a
     mapping already prepared by prepare_deflection_row_mapping to actual 3D points,
-    given the current iteration's FEA deflection/elastic_twist. Every point sharing
+    given the current iteration's FEA deflection/rotation. Every point sharing
     a row (e.g. all chordwise points of a VLM strip, which share the same spanwise
-    Y in the rigid mesh) reuses that row's cached bracket/weights/tangent.
+    Y in the rigid mesh) reuses that row's cached bracket/weights.
 
-    Rotation is Rodrigues' about the beam's own local tangent (not a fixed global
-    axis), which is what makes this correct automatically for a beam running in
-    either spanwise direction (e.g. the mirrored half of an xz-symmetric wing) --
-    a rotation is a pseudovector, so a fixed-axis assumption would get the mirrored
-    side's chirality wrong, while rotating about the true local tangent self-corrects.
+    Each row's cross-section is rotated rigidly (Rodrigues) by the full nodal
+    rotation vector in the global frame, not just its component about the beam
+    tangent (the elastic twist). The components normal to the tangent are the
+    bending slopes; on a swept wing they tilt streamwise sections, which is the
+    bend-twist coupling (wash-out) the aerodynamics must see.
 
     Args:
-        mapping       : Data from prepare_deflection_row_mapping, length R
-        pts_grid      : (R, C, 3) undeformed point positions, C points per row
-        deflection    : (M,3) FEA nodal translation (dx,dy,dz)
-        elastic_twist : (M,)  FEA nodal rotation about the local beam tangent
+        mapping    : Data from prepare_deflection_row_mapping, length R
+        pts_grid   : (R, C, 3) undeformed point positions, C points per row
+        deflection : (M,3) FEA nodal translation (dx,dy,dz)
+        rotation   : (M,3) FEA nodal rotation vector (rx,ry,rz) about the global axes
 
     Returns:
         (R, C, 3) deformed point positions
@@ -312,87 +312,82 @@ def apply_deflection_row_mapping(mapping, pts_grid, deflection, elastic_twist):
     idx_l, idx_r = mapping.idx_l, mapping.idx_r
     w_l, w_r     = mapping.w_l[:, None], mapping.w_r[:, None]
 
-    trans = w_l * deflection[idx_l]    + w_r * deflection[idx_r]                  # (R,3)
-    theta = w_l[:, 0] * elastic_twist[idx_l] + w_r[:, 0] * elastic_twist[idx_r]    # (R,)
+    trans = w_l * deflection[idx_l] + w_r * deflection[idx_r]    # (R,3)
+    omega = w_l * rotation[idx_l]   + w_r * rotation[idx_r]      # (R,3)
 
-    a0      = mapping.a0[:, None, :]        # (R,1,3), broadcasts over C
-    tangent = mapping.tangent[:, None, :]   # (R,1,3)
-    trans   = trans[:, None, :]             # (R,1,3)
-    cos_t   = np.cos(theta)[:, None, None]  # (R,1,1)
-    sin_t   = np.sin(theta)[:, None, None]
+    theta = np.linalg.norm(omega, axis=1)                                     # (R,)
+    axis  = omega / np.where(theta > 1e-14, theta, 1.0)[:, None]              # (R,3), zero where theta = 0
+
+    a0    = mapping.a0[:, None, :]        # (R,1,3), broadcasts over C
+    axis  = axis[:, None, :]              # (R,1,3)
+    trans = trans[:, None, :]             # (R,1,3)
+    cos_t = np.cos(theta)[:, None, None]  # (R,1,1)
+    sin_t = np.sin(theta)[:, None, None]
 
     r   = pts_grid - a0                                    # (R,C,3)
-    dot = np.sum(tangent * r, axis=-1, keepdims=True)       # (R,C,1)
-    r_rot = r * cos_t + np.cross(tangent, r) * sin_t + tangent * dot * (1.0 - cos_t)
+    dot = np.sum(axis * r, axis=-1, keepdims=True)          # (R,C,1)
+    r_rot = r * cos_t + np.cross(axis, r) * sin_t + axis * dot * (1.0 - cos_t)
 
     return a0 + trans + r_rot
 
 
-def apply_structural_deflection_to_vd(pts, fea_pts, deflection, elastic_twist):
+def apply_structural_deflection_to_vd(pts, fea_pts, deflection, rotation):
     """
     Point-wise convenience wrapper around prepare/apply_deflection_row_mapping,
     for arbitrary (unstructured) points that don't share rows -- see those two
     functions for the batched form used across a VLM mesh's point-sets.
 
     Args:
-        pts           : (N,3) point positions in the undeformed (jig) shape
-        fea_pts       : (M,3) undeformed FEA node positions, ordered along the beam
-        deflection    : (M,3) FEA nodal translation (dx,dy,dz)
-        elastic_twist : (M,)  FEA nodal rotation about the local beam tangent
+        pts        : (N,3) point positions in the undeformed (jig) shape
+        fea_pts    : (M,3) undeformed FEA node positions, ordered along the beam, same frame as pts
+        deflection : (M,3) FEA nodal translation (dx,dy,dz)
+        rotation   : (M,3) FEA nodal rotation vector (rx,ry,rz) about the global axes
 
     Returns:
         (N,3) deformed point positions
     """
     pts     = np.atleast_2d(pts)
     mapping = prepare_deflection_row_mapping(pts[:, 1], fea_pts)
-    return apply_deflection_row_mapping(mapping, pts[:, None, :], deflection, elastic_twist)[:, 0, :]
+    return apply_deflection_row_mapping(mapping, pts[:, None, :], deflection, rotation)[:, 0, :]
 
 
-def _mirror_fea_reference(fea_pts, deflection, elastic_twist):
+def _mirror_fea_reference(fea_pts, deflection, rotation):
     """
     Build the FEA reference arrays for an xz-symmetric wing's mirrored half from
-    the solved (positive) half: reverse node order and negate Y (a true vector,
-    both for node position and the deflection's Y-component) so Y stays monotonic
-    increasing in the mirrored array; elastic_twist is left unchanged (a rotation
-    about the local tangent is a pseudovector -- reversing the node order already
-    flips the tangent direction, which is what correctly flips the physical sense
-    of the rotation; negating the angle itself would double-flip it).
+    the solved (positive) half.
     """
     fea_pts_m       = fea_pts[::-1].copy()
     fea_pts_m[:, 1] *= -1
     deflection_m    = deflection[::-1].copy()
     deflection_m[:, 1] *= -1
-    elastic_twist_m = elastic_twist[::-1].copy()
-    return fea_pts_m, deflection_m, elastic_twist_m
+    rotation_m      = rotation[::-1].copy()
+    rotation_m[:, 0] *= -1
+    rotation_m[:, 2] *= -1
+    return fea_pts_m, deflection_m, rotation_m
 
 
 def deform_vortex_distribution(VD, geometry, structural_results, ti=0):
     """
-    Apply each wing's current FEA deflection/elastic_twist to every point-set in a
-    jig-shape (rigid) vortex distribution, returning a deformed copy. This is the
+    Apply each wing's current FEA deflection/rotation to every point-set in a
+    rigid vortex distribution, returning a deformed copy. This is the
     structure-to-aero half of the two-way aeroelastic coupling loop: it does not
-    recompute the mesh from wing geometry (that stays fixed, the jig shape), it
-    only rigidly displaces/rotates the existing points -- see
+    recompute the mesh from wing geometry (that stays fixed), it
+    only rigidly displaces/rotates the existing points - see
     prepare_/apply_deflection_row_mapping for the per-point transform.
 
-    Point-sets sharing a spanwise row (confirmed against generate_wing_vortex_
-    distribution.py) are transformed together via one shared row mapping rather
-    than independently:
-      - "A" family (row i of the raw (n_sw+1) grid): XA1, XA2, XAH, XAC
-      - "B" family (row i+1):                        XB1, XB2, XBH, XBC
-      - "center" family (midpoint of rows i, i+1):    XC,  XCH
-      - the raw grid itself (all n_sw+1 rows):        X, Y, Z
-
-    Symmetric (xz_plane_symmetric) wings get a second, mirrored group per the
-    generation-order convention already used in FEA.py (surface_ID = +ID for the
-    positive half, -ID for the mirrored half; vd_idx advances by 2 for such wings).
+    Every point-set is reshaped into spanwise rows and each row is moved rigidly
+    with the FEA solution interpolated at that row's own Y:
+      - "A" family (n_sw rows):      XA1, XA2, XAH, XAC
+      - "B" family (n_sw rows):      XB1, XB2, XBH, XBC
+      - "center" family (n_sw rows): XC,  XCH
+      - the raw grid (n_sw+1 rows):  X, Y, Z
 
     Args:
         VD                  : jig-shape vortex distribution (unmodified; a deformed copy is returned)
         geometry            : vehicle (wings iterated in the same order used to build VD)
         structural_results  : Data keyed by wing.tag, each holding .structural_node_data
-                               (from discretize_wing) and .deflection / .elastic_twist
-        ti                  : control-point row to use from .deflection / .elastic_twist
+                               (from discretize_wing) and .deflection / .rotation
+        ti                  : control-point row to use from .deflection / .rotation
 
     Returns:
         deformed copy of VD
@@ -435,47 +430,31 @@ def deform_vortex_distribution(VD, geometry, structural_results, ti=0):
     for wing in geometry.wings.values():
         sr = structural_results[wing.tag]
         node = sr.structural_node_data
-        fea_pts_jig   = np.column_stack((node.X_nodes, node.Y_nodes, node.Z_nodes))
+        # discretize_wing nodes are relative to the wing origin
+        fea_pts_jig   = np.column_stack((node.X_nodes, node.Y_nodes, node.Z_nodes)) + np.array(wing.origin[0])
         deflection    = sr.deflection[ti]        # (n_nodes, 3)
-        elastic_twist = sr.elastic_twist[ti, :, 0]  # (n_nodes,)
+        rotation      = sr.rotation[ti]          # (n_nodes, 3)
 
-        groups = [(vd_idx, fea_pts_jig, deflection, elastic_twist)]
-        if wing.xz_plane_symmetric:
-            groups.append((vd_idx + 1, *_mirror_fea_reference(fea_pts_jig, deflection, elastic_twist)))
+        reference_pos = (fea_pts_jig, deflection, rotation)
+        reference_neg = _mirror_fea_reference(fea_pts_jig, deflection, rotation) if wing.xz_plane_symmetric else reference_pos
 
-        for g_idx, fea_pts, defl, twist in groups:
+        def deform_point_set(prefix, sl, n_rows, n_cols):
+            pts     = stack(prefix, sl).reshape(n_rows, n_cols, 3)
+            row_Y   = pts[:, :, 1].mean(axis=1)
+            fea_pts, defl, rot = reference_neg if np.mean(row_Y) < 0 else reference_pos
+            mapping = prepare_deflection_row_mapping(row_Y, fea_pts)
+            unstack_into(prefix, sl, apply_deflection_row_mapping(mapping, pts, defl, rot).reshape(-1, 3))
+
+        for g_idx in ([vd_idx, vd_idx + 1] if wing.xz_plane_symmetric else [vd_idx]):
             n_sw = int(n_sw_flat[g_idx])
             n_cw = int(n_cw_flat[g_idx])
 
             panel_sl = slice(int(panel_offsets[g_idx]), int(panel_offsets[g_idx + 1]))
             grid_sl  = slice(int(grid_offsets[g_idx]),  int(grid_offsets[g_idx + 1]))
 
-            # raw grid: (n_sw+1) rows
-            grid_pts = stack(RAW_GRID, grid_sl).reshape(n_sw + 1, n_cw + 1, 3)
-            row_Y_raw = grid_pts[:, 0, 1]
-            mapping_raw = prepare_deflection_row_mapping(row_Y_raw, fea_pts)
-            grid_def = apply_deflection_row_mapping(mapping_raw, grid_pts, defl, twist)
-            unstack_into(RAW_GRID, grid_sl, grid_def.reshape(-1, 3))
-
-            mapping_A = Data(idx_l=mapping_raw.idx_l[:-1], idx_r=mapping_raw.idx_r[:-1],
-                              w_l=mapping_raw.w_l[:-1],     w_r=mapping_raw.w_r[:-1],
-                              a0=mapping_raw.a0[:-1],       tangent=mapping_raw.tangent[:-1])
-            mapping_B = Data(idx_l=mapping_raw.idx_l[1:],  idx_r=mapping_raw.idx_r[1:],
-                              w_l=mapping_raw.w_l[1:],      w_r=mapping_raw.w_r[1:],
-                              a0=mapping_raw.a0[1:],        tangent=mapping_raw.tangent[1:])
-
-            for family, mapping in ((A_FAMILY, mapping_A), (B_FAMILY, mapping_B)):
-                for prefix in family:
-                    pts = stack(prefix, panel_sl).reshape(n_sw, n_cw, 3)
-                    pts_def = apply_deflection_row_mapping(mapping, pts, defl, twist)
-                    unstack_into(prefix, panel_sl, pts_def.reshape(-1, 3))
-
-            row_Y_mid = 0.5 * (row_Y_raw[:-1] + row_Y_raw[1:])
-            mapping_C = prepare_deflection_row_mapping(row_Y_mid, fea_pts)
-            for prefix in C_FAMILY:
-                pts = stack(prefix, panel_sl).reshape(n_sw, n_cw, 3)
-                pts_def = apply_deflection_row_mapping(mapping_C, pts, defl, twist)
-                unstack_into(prefix, panel_sl, pts_def.reshape(-1, 3))
+            deform_point_set(RAW_GRID, grid_sl, n_sw + 1, n_cw + 1)
+            for prefix in A_FAMILY + B_FAMILY + C_FAMILY:
+                deform_point_set(prefix, panel_sl, n_sw, n_cw)
 
         vd_idx += 2 if wing.xz_plane_symmetric else 1
 

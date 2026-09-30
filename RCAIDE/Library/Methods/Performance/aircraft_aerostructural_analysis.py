@@ -210,6 +210,7 @@ def aircraft_aerostructural_analysis(analyses                         = None,
                           VLM_results,
                           analyses.aerodynamics.settings.vortex_distribution,
                           analyses.aerostructures.settings,analyses.vehicle)
+        FEA_results.lift_coefficient = VLM_results.CLift
 
     return FEA_results
 
@@ -225,7 +226,8 @@ def _run_coupled_rows(full_conditions, settings, vehicle, aerostructural_analyse
 
     Returns a Data keyed by wing.tag (deflection, elastic_twist, stresses -
     same shape FEA() returns), plus a .convergence.delta (n_cases, max_iter)
-    NaN-padded relative-deflection trace for plotting iteration vs. deflection.
+    NaN-padded relative-deflection trace for plotting iteration vs. deflection,
+    and .lift_coefficient (n_cases, 1) of the converged deformed wing.
     """
     from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import _converge_aeroelastic
     from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_vortex_distribution
@@ -233,6 +235,7 @@ def _run_coupled_rows(full_conditions, settings, vehicle, aerostructural_analyse
     num_cases  = len(full_conditions.aerodynamics.angles.alpha)
     jig_vd     = None
     conv_delta = np.full((num_cases, max_iter), np.nan)
+    CL         = np.zeros((num_cases, 1))
     structural_results = None
 
     for i in range(num_cases):
@@ -262,10 +265,11 @@ def _run_coupled_rows(full_conditions, settings, vehicle, aerostructural_analyse
         if jig_vd is None:
             jig_vd = generate_vortex_distribution(conditions, settings, vehicle)
 
-        _, structural_i, history_i = _converge_aeroelastic(
+        VLM_results_i, structural_i, history_i = _converge_aeroelastic(
             conditions, settings, vehicle, aerostructural_analyses, jig_vd, tol, max_iter)
 
         conv_delta[i, :len(history_i)] = history_i
+        CL[i, 0]                       = VLM_results_i.CLift[0, 0]
 
         if structural_results is None:
             structural_results = Data()
@@ -275,6 +279,8 @@ def _run_coupled_rows(full_conditions, settings, vehicle, aerostructural_analyse
                     load                  = structural_i[wing_tag].load,
                     deflection            = structural_i[wing_tag].deflection,
                     elastic_twist         = structural_i[wing_tag].elastic_twist,
+                    rotation              = structural_i[wing_tag].rotation,
+                    compliance            = structural_i[wing_tag].compliance,
                     normal_stress         = structural_i[wing_tag].normal_stress,
                     shear_stress          = structural_i[wing_tag].shear_stress,
                     margin_of_safety      = structural_i[wing_tag].margin_of_safety)
@@ -284,10 +290,13 @@ def _run_coupled_rows(full_conditions, settings, vehicle, aerostructural_analyse
                 s.load             = np.vstack((s.load            , structural_i[wing_tag].load))
                 s.deflection       = np.vstack((s.deflection      , structural_i[wing_tag].deflection))
                 s.elastic_twist    = np.vstack((s.elastic_twist   , structural_i[wing_tag].elastic_twist))
+                s.rotation         = np.vstack((s.rotation        , structural_i[wing_tag].rotation))
+                s.compliance       = np.vstack((s.compliance      , structural_i[wing_tag].compliance))
                 s.normal_stress    = np.vstack((s.normal_stress   , structural_i[wing_tag].normal_stress))
                 s.shear_stress     = np.vstack((s.shear_stress    , structural_i[wing_tag].shear_stress))
                 s.margin_of_safety = np.vstack((s.margin_of_safety, structural_i[wing_tag].margin_of_safety))
 
     structural_results.convergence       = Data()
     structural_results.convergence.delta = conv_delta
+    structural_results.lift_coefficient  = CL
     return structural_results

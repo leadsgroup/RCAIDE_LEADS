@@ -53,6 +53,8 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         structural_results[wing.tag].load                 = np.zeros((n_cpts,num_nodes,3))   # load x,y,z (formally w_z_load)
         structural_results[wing.tag].deflection           = np.zeros((n_cpts,num_nodes,3))   # deflection x,y,z
         structural_results[wing.tag].elastic_twist        = np.zeros((n_cpts,num_nodes,1))   # twist x,y,z
+        structural_results[wing.tag].rotation             = np.zeros((n_cpts,num_nodes,3))   # global nodal rotations about x,y,z (rotation about y = streamwise twist)
+        structural_results[wing.tag].compliance           = np.zeros((n_cpts,1))             # F . u over the whole (half) wing [N m]
         structural_results[wing.tag].normal_stress        = np.zeros((n_cpts,num_elements))  # combined axial + bending, per element
         structural_results[wing.tag].shear_stress         = np.zeros((n_cpts,num_elements))  # torsional shear (thinnest wall), per element
         structural_results[wing.tag].margin_of_safety     = np.zeros((n_cpts,num_elements))  # min(yield/normal, yield_shear/shear) - 1
@@ -107,8 +109,8 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         for wing in geometry.wings.values():
             VD_structural_wing = structural_results[wing.tag].structural_node_data
             
-            # Geernate FEA geometry 
-            fea_pts = np.column_stack((VD_structural_wing.X_elems, VD_structural_wing.Y_elems, VD_structural_wing.Z_elems))
+            # Adding vehicle frame to the FEA geometry
+            fea_pts = np.column_stack((VD_structural_wing.X_elems, VD_structural_wing.Y_elems, VD_structural_wing.Z_elems)) + np.array(wing.origin[0])
             
             # Extract VLM control points 
             start_idx = int(b_pts[vd_idx])
@@ -121,11 +123,16 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
 
             # Force (N) = Cp * Normal_Vector * q_dyn * Area
             F_vec      = np.tile(Delta_CP[:, np.newaxis], (1, 3)) * Normals * q_dyn[ti,0] * Panel_Areas[:, np.newaxis]
-            Fx         = -F_vec[:, 1]
-            Fy         =  F_vec[:, 0]
-            Fz         =  F_vec[:, 2]
-            aero_loads = np.column_stack((Fx, Fy, Fz))
-            aero_pts   = np.column_stack((VD.XC[vd_ti, start_idx:end_idx], VD.YC[vd_ti, start_idx:end_idx], VD.ZC[vd_ti, start_idx:end_idx]))
+            aero_loads = F_vec
+
+            # Kutta-Joukowski panel forces act on the bound vortex at 1/4 of the panel
+            def corners(A, B):
+                return np.column_stack(((VD['X' + A][vd_ti, start_idx:end_idx] + VD['X' + B][vd_ti, start_idx:end_idx]) / 2,
+                                        (VD['Y' + A][vd_ti, start_idx:end_idx] + VD['Y' + B][vd_ti, start_idx:end_idx]) / 2,
+                                        (VD['Z' + A][vd_ti, start_idx:end_idx] + VD['Z' + B][vd_ti, start_idx:end_idx]) / 2))
+            panel_LE   = corners('A1', 'B1')
+            panel_TE   = corners('A2', 'B2')
+            aero_pts   = panel_LE + 0.25 * (panel_TE - panel_LE)
 
             total_loads = np.concatenate((aero_loads, propulsive_loads, ti_source_loads), axis=0)
             total_pts   = np.concatenate((aero_pts,   propulsive_pts,   ti_source_pts),   axis=0)
@@ -137,9 +144,9 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             w_z_aero = fea_forces[:, 2] / VD_structural_wing.Le
 
             # Project eccentricity moments onto the elastic axis for torsion
-            M_x = fea_moments[:, 0]
-            M_y = fea_moments[:, 1]
-            M_z = fea_moments[:, 2]
+            M_x = fea_moments[:, 0] / VD_structural_wing.Le
+            M_y = fea_moments[:, 1] / VD_structural_wing.Le
+            M_z = fea_moments[:, 2] / VD_structural_wing.Le
             load_t_y_aero = (M_x * np.sin(VD_structural_wing.sweep_mid_elems) * np.cos(VD_structural_wing.dihedral_elems) +
                              M_y * np.cos(VD_structural_wing.sweep_mid_elems) * np.cos(VD_structural_wing.dihedral_elems) +
                              M_z * np.sin(VD_structural_wing.dihedral_elems))
@@ -274,6 +281,10 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             structural_results[wing.tag].deflection[ti,:,0]     = u_full[0::6]  # X deflection (Chordwise)
             structural_results[wing.tag].deflection[ti,:,1]     = u_full[1::6]  # Y deflection (Spanwise)
             structural_results[wing.tag].deflection[ti,:,2]     = u_full[2::6]  # Z deflection (Vertical)
+            structural_results[wing.tag].rotation[ti,:,0]       = u_full[3::6]
+            structural_results[wing.tag].rotation[ti,:,1]       = u_full[4::6]
+            structural_results[wing.tag].rotation[ti,:,2]       = u_full[5::6]
+            structural_results[wing.tag].compliance[ti,0]       = np.dot(F_global, u_full)
             structural_results[wing.tag].normal_stress[ti,:]    = normal_stress
             structural_results[wing.tag].shear_stress[ti,:]     = shear_stress
             structural_results[wing.tag].margin_of_safety[ti,:] = margin_of_safety
