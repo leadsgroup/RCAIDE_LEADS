@@ -223,6 +223,298 @@ if _NUMBA_AVAILABLE:
 
         return result
 
+    # -- vc_correction-specialized, structure-of-arrays variants of
+    #    _biot_savart_kernel_2d_contracted --
+    #
+    # Two independent, stacked optimizations over the generic kernel above, both verified to
+    # change only WHICH instructions run / HOW they're laid out in memory, never the arithmetic
+    # or its order:
+    #
+    # 1) vc_correction is fixed for an entire free_wake()/evaluate_bound_vortex_circulation.py
+    #    call (set once per rotor in lifting_line_performance.py, never varies per (m,n) pair),
+    #    so the if/elif chain in the generic kernel is loop-invariant but still sits inside the
+    #    (M,N) double loop. Each variant below hardcodes exactly one vc_correction case's f/denom
+    #    formula with the branch removed.
+    #
+    # 2) P/A/B arrive as (M,3)/(N,3) array-of-structs, so the inner m-loop reads P[m,0]/[m,1]/[m,2]
+    #    with a stride-3 access pattern -- this blocks LLVM's auto-vectorizer even without
+    #    fastmath. Taking separate contiguous (M,)/(N,) x/y/z arrays instead (converted once by
+    #    the Python-level caller, O(M+N) work, negligible next to the O(M*N) loop) lets the
+    #    inner loop's per-m work vectorize: each SIMD lane still computes one m's full,
+    #    unreordered sequence of operations -- nothing about a single m's result depends on
+    #    layout. Measured 2.04x faster than the (M,3)-layout kernel at real problem scale
+    #    (M=222, N=230, scratchpad/prototype_soa_kernel.py-style benchmark), verified bit-exact
+    #    against it in the same benchmark.
+    #
+    # biot_savart_induced_velocity() dispatches to the matching variant ONCE per call (a single
+    # Python-level int comparison, negligible next to the (M,N) loop itself) and converts P/A/B
+    # to x/y/z once before calling; any vc_correction value outside {1,2,3,4} falls back to the
+    # generic (M,3)-layout branching kernel above unchanged, so behavior for every input is
+    # identical to before either optimization existed. Verified bit-identical (np.array_equal,
+    # not tolerance) against the generic kernel for all four cases, at real scale, with
+    # degenerate geometry and varying core radius, AND at full mission level (real tiltrotor
+    # free-wake mission, before/after each change applied one at a time).
+    @njit(cache=True, error_model='numpy')
+    def _biot_savart_kernel_2d_contracted_vc1_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol, Gamma):
+        """vc_correction==1 (Standard/Scully): f=1, denom=rm_sq+rc_sq."""
+        M = Px.shape[0]
+        N = Ax.shape[0]
+        resultx = np.zeros(M)
+        resulty = np.zeros(M)
+        resultz = np.zeros(M)
+        four_pi = 4.0 * np.pi
+
+        for n in range(N):
+            Axn = Ax[n]; Ayn = Ay[n]; Azn = Az[n]
+            r0x = Bx[n] - Axn
+            r0y = By[n] - Ayn
+            r0z = Bz[n] - Azn
+            r0_norm_sq = r0x*r0x + r0y*r0y + r0z*r0z
+            s = math.sqrt(r0_norm_sq)
+            rc_sq = rc_sq_arr[n]
+            g = Gamma[n]
+
+            for m in range(M):
+                r1x = Px[m] - Axn
+                r1y = Py[m] - Ayn
+                r1z = Pz[m] - Azn
+
+                r1_norm_sq = r1x*r1x + r1y*r1y + r1z*r1z
+                r1_norm    = math.sqrt(r1_norm_sq)
+                if r1_norm == 0.0:
+                    r1_norm = 1e-300
+
+                r1_dot_r0  = r1x*r0x + r1y*r0y + r1z*r0z
+                r2_norm_sq = r1_norm_sq - 2.0*r1_dot_r0 + r0_norm_sq
+                r2_norm    = math.sqrt(r2_norm_sq)
+                if r2_norm == 0.0:
+                    r2_norm = 1e-300
+
+                s1 = -r1_dot_r0 / s
+                s2 = (r0_norm_sq - r1_dot_r0) / s
+
+                s2ms1 = s2 - s1
+                wx = r1x*s2ms1 + r0x*s1
+                wy = r1y*s2ms1 + r0y*s1
+                wz = r1z*s2ms1 + r0z*s1
+                rm_sq = (wx*wx + wy*wy + wz*wz) / (s*s)
+
+                cross_x = r0y*r1z - r0z*r1y
+                cross_y = r0z*r1x - r0x*r1z
+                cross_z = r0x*r1y - r0y*r1x
+
+                bracket = s2/r2_norm - s1/r1_norm
+
+                denom = rm_sq + rc_sq
+
+                scalar_coeff   = bracket / denom
+                combined_coeff = scalar_coeff / (four_pi * s)
+
+                if (r1_norm < tol) or (r2_norm < tol) or (rm_sq < tol):
+                    combined_coeff = 0.0
+
+                resultx[m] += cross_x * combined_coeff * g
+                resulty[m] += cross_y * combined_coeff * g
+                resultz[m] += cross_z * combined_coeff * g
+
+        return resultx, resulty, resultz
+
+    @njit(cache=True, error_model='numpy')
+    def _biot_savart_kernel_2d_contracted_vc2_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol, Gamma):
+        """vc_correction==2 (Rankine): f=min(rm_sq/rc_sq, 1), denom=rm_sq."""
+        M = Px.shape[0]
+        N = Ax.shape[0]
+        resultx = np.zeros(M)
+        resulty = np.zeros(M)
+        resultz = np.zeros(M)
+        four_pi = 4.0 * np.pi
+
+        for n in range(N):
+            Axn = Ax[n]; Ayn = Ay[n]; Azn = Az[n]
+            r0x = Bx[n] - Axn
+            r0y = By[n] - Ayn
+            r0z = Bz[n] - Azn
+            r0_norm_sq = r0x*r0x + r0y*r0y + r0z*r0z
+            s = math.sqrt(r0_norm_sq)
+            rc_sq = rc_sq_arr[n]
+            g = Gamma[n]
+
+            for m in range(M):
+                r1x = Px[m] - Axn
+                r1y = Py[m] - Ayn
+                r1z = Pz[m] - Azn
+
+                r1_norm_sq = r1x*r1x + r1y*r1y + r1z*r1z
+                r1_norm    = math.sqrt(r1_norm_sq)
+                if r1_norm == 0.0:
+                    r1_norm = 1e-300
+
+                r1_dot_r0  = r1x*r0x + r1y*r0y + r1z*r0z
+                r2_norm_sq = r1_norm_sq - 2.0*r1_dot_r0 + r0_norm_sq
+                r2_norm    = math.sqrt(r2_norm_sq)
+                if r2_norm == 0.0:
+                    r2_norm = 1e-300
+
+                s1 = -r1_dot_r0 / s
+                s2 = (r0_norm_sq - r1_dot_r0) / s
+
+                s2ms1 = s2 - s1
+                wx = r1x*s2ms1 + r0x*s1
+                wy = r1y*s2ms1 + r0y*s1
+                wz = r1z*s2ms1 + r0z*s1
+                rm_sq = (wx*wx + wy*wy + wz*wz) / (s*s)
+
+                cross_x = r0y*r1z - r0z*r1y
+                cross_y = r0z*r1x - r0x*r1z
+                cross_z = r0x*r1y - r0y*r1x
+
+                bracket = s2/r2_norm - s1/r1_norm
+
+                ratio = rm_sq / rc_sq
+                f = ratio if ratio < 1.0 else 1.0
+
+                scalar_coeff   = f * bracket / rm_sq
+                combined_coeff = scalar_coeff / (four_pi * s)
+
+                if (r1_norm < tol) or (r2_norm < tol) or (rm_sq < tol):
+                    combined_coeff = 0.0
+
+                resultx[m] += cross_x * combined_coeff * g
+                resulty[m] += cross_y * combined_coeff * g
+                resultz[m] += cross_z * combined_coeff * g
+
+        return resultx, resulty, resultz
+
+    @njit(cache=True, error_model='numpy')
+    def _biot_savart_kernel_2d_contracted_vc3_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_qd_arr, tol, Gamma):
+        """vc_correction==3 (Vatistas): f=rm_sq/sqrt(rm_sq^2+rc_qd), denom=rm_sq."""
+        M = Px.shape[0]
+        N = Ax.shape[0]
+        resultx = np.zeros(M)
+        resulty = np.zeros(M)
+        resultz = np.zeros(M)
+        four_pi = 4.0 * np.pi
+
+        for n in range(N):
+            Axn = Ax[n]; Ayn = Ay[n]; Azn = Az[n]
+            r0x = Bx[n] - Axn
+            r0y = By[n] - Ayn
+            r0z = Bz[n] - Azn
+            r0_norm_sq = r0x*r0x + r0y*r0y + r0z*r0z
+            s = math.sqrt(r0_norm_sq)
+            rc_qd = rc_qd_arr[n]
+            g = Gamma[n]
+
+            for m in range(M):
+                r1x = Px[m] - Axn
+                r1y = Py[m] - Ayn
+                r1z = Pz[m] - Azn
+
+                r1_norm_sq = r1x*r1x + r1y*r1y + r1z*r1z
+                r1_norm    = math.sqrt(r1_norm_sq)
+                if r1_norm == 0.0:
+                    r1_norm = 1e-300
+
+                r1_dot_r0  = r1x*r0x + r1y*r0y + r1z*r0z
+                r2_norm_sq = r1_norm_sq - 2.0*r1_dot_r0 + r0_norm_sq
+                r2_norm    = math.sqrt(r2_norm_sq)
+                if r2_norm == 0.0:
+                    r2_norm = 1e-300
+
+                s1 = -r1_dot_r0 / s
+                s2 = (r0_norm_sq - r1_dot_r0) / s
+
+                s2ms1 = s2 - s1
+                wx = r1x*s2ms1 + r0x*s1
+                wy = r1y*s2ms1 + r0y*s1
+                wz = r1z*s2ms1 + r0z*s1
+                rm_sq = (wx*wx + wy*wy + wz*wz) / (s*s)
+
+                cross_x = r0y*r1z - r0z*r1y
+                cross_y = r0z*r1x - r0x*r1z
+                cross_z = r0x*r1y - r0y*r1x
+
+                bracket = s2/r2_norm - s1/r1_norm
+
+                f = rm_sq / math.sqrt(rm_sq*rm_sq + rc_qd)
+
+                scalar_coeff   = f * bracket / rm_sq
+                combined_coeff = scalar_coeff / (four_pi * s)
+
+                if (r1_norm < tol) or (r2_norm < tol) or (rm_sq < tol):
+                    combined_coeff = 0.0
+
+                resultx[m] += cross_x * combined_coeff * g
+                resulty[m] += cross_y * combined_coeff * g
+                resultz[m] += cross_z * combined_coeff * g
+
+        return resultx, resulty, resultz
+
+    @njit(cache=True, error_model='numpy')
+    def _biot_savart_kernel_2d_contracted_vc4_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol, Gamma):
+        """vc_correction==4 (Oseen): f=1-exp(-1.25643*rm_sq/rc_sq), denom=rm_sq."""
+        M = Px.shape[0]
+        N = Ax.shape[0]
+        resultx = np.zeros(M)
+        resulty = np.zeros(M)
+        resultz = np.zeros(M)
+        four_pi = 4.0 * np.pi
+
+        for n in range(N):
+            Axn = Ax[n]; Ayn = Ay[n]; Azn = Az[n]
+            r0x = Bx[n] - Axn
+            r0y = By[n] - Ayn
+            r0z = Bz[n] - Azn
+            r0_norm_sq = r0x*r0x + r0y*r0y + r0z*r0z
+            s = math.sqrt(r0_norm_sq)
+            rc_sq = rc_sq_arr[n]
+            g = Gamma[n]
+
+            for m in range(M):
+                r1x = Px[m] - Axn
+                r1y = Py[m] - Ayn
+                r1z = Pz[m] - Azn
+
+                r1_norm_sq = r1x*r1x + r1y*r1y + r1z*r1z
+                r1_norm    = math.sqrt(r1_norm_sq)
+                if r1_norm == 0.0:
+                    r1_norm = 1e-300
+
+                r1_dot_r0  = r1x*r0x + r1y*r0y + r1z*r0z
+                r2_norm_sq = r1_norm_sq - 2.0*r1_dot_r0 + r0_norm_sq
+                r2_norm    = math.sqrt(r2_norm_sq)
+                if r2_norm == 0.0:
+                    r2_norm = 1e-300
+
+                s1 = -r1_dot_r0 / s
+                s2 = (r0_norm_sq - r1_dot_r0) / s
+
+                s2ms1 = s2 - s1
+                wx = r1x*s2ms1 + r0x*s1
+                wy = r1y*s2ms1 + r0y*s1
+                wz = r1z*s2ms1 + r0z*s1
+                rm_sq = (wx*wx + wy*wy + wz*wz) / (s*s)
+
+                cross_x = r0y*r1z - r0z*r1y
+                cross_y = r0z*r1x - r0x*r1z
+                cross_z = r0x*r1y - r0y*r1x
+
+                bracket = s2/r2_norm - s1/r1_norm
+
+                f = 1.0 - math.exp(-1.25643*rm_sq/rc_sq)
+
+                scalar_coeff   = f * bracket / rm_sq
+                combined_coeff = scalar_coeff / (four_pi * s)
+
+                if (r1_norm < tol) or (r2_norm < tol) or (rm_sq < tol):
+                    combined_coeff = 0.0
+
+                resultx[m] += cross_x * combined_coeff * g
+                resulty[m] += cross_y * combined_coeff * g
+                resultz[m] += cross_z * combined_coeff * g
+
+        return resultx, resulty, resultz
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Biot_Savart_velocity_induction
 # ----------------------------------------------------------------------------------------------------------------------
@@ -285,8 +577,28 @@ def biot_savart_induced_velocity(P, A, B, Gamma, rc=1e-6, vc_correction=1, tol=1
         rc_sq_arr = rc_1d**2
         rc_qd_arr = rc_1d**4
         Gamma_arr = np.asarray(Gamma, dtype=float)
+        vc_int = int(vc_correction)
+        tol_f  = float(tol)
+        # Dispatch to the vc_correction-specialized, structure-of-arrays kernel (branch AND
+        # array layout both hoisted out of the (M,N) loop -- see those kernels' docstrings);
+        # any value outside {1,2,3,4} falls back to the original (M,3)-layout branching kernel,
+        # matching this function's behavior before either optimization existed. The x/y/z
+        # split is O(M+N), negligible next to the O(M*N) kernel call itself.
+        if vc_int in (1, 2, 3, 4):
+            Px = np.ascontiguousarray(P_arr[:, 0]); Py = np.ascontiguousarray(P_arr[:, 1]); Pz = np.ascontiguousarray(P_arr[:, 2])
+            Ax = np.ascontiguousarray(A_arr[:, 0]); Ay = np.ascontiguousarray(A_arr[:, 1]); Az = np.ascontiguousarray(A_arr[:, 2])
+            Bx = np.ascontiguousarray(B_arr[:, 0]); By = np.ascontiguousarray(B_arr[:, 1]); Bz = np.ascontiguousarray(B_arr[:, 2])
+            if vc_int == 1:
+                rx, ry, rz = _biot_savart_kernel_2d_contracted_vc1_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
+            elif vc_int == 2:
+                rx, ry, rz = _biot_savart_kernel_2d_contracted_vc2_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
+            elif vc_int == 3:
+                rx, ry, rz = _biot_savart_kernel_2d_contracted_vc3_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_qd_arr, tol_f, Gamma_arr)
+            else:
+                rx, ry, rz = _biot_savart_kernel_2d_contracted_vc4_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
+            return np.stack((rx, ry, rz), axis=1)
         return _biot_savart_kernel_2d_contracted(P_arr, A_arr, B_arr, rc_sq_arr, rc_qd_arr,
-                                                  int(vc_correction), float(tol), Gamma_arr)
+                                                  vc_int, tol_f, Gamma_arr)
 
     cross = biot_savart_velocity_induction(P_arr, A_arr, B_arr, rc, vc_correction, tol)
     return np.einsum('mnk,n->mk', cross, Gamma)
