@@ -149,6 +149,11 @@ def compute_systems_weight(vehicle):
     FPAREA      = XL * WF
     NPASS       = vehicle.number_of_seats or vehicle.number_of_passengers
     WAPU        = 54 * FPAREA ** 0.3 + 5.4 * NPASS ** 0.9  # apu weight
+
+    # APU weight only counts when an APU is defined on the vehicle
+    has_APU = any(isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit) for network in vehicle.networks for system in network.systems)
+    if not has_APU:
+        WAPU = 0.0
     if NPASS >= 150:
         NFLCR = 3  # number of flight crew
     else:
@@ -201,7 +206,7 @@ def compute_systems_weight(vehicle):
                 elif isinstance(system, Systems.Flight_Controls):
                     WSC    = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Auxiliary_Power_Unit):
-                    WAPU   += system.mass_properties.mass / Units.lbs
+                    WAPU   = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Electrical):
                     WELEC  = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Hydraulics):
