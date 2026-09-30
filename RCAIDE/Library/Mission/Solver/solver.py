@@ -510,11 +510,11 @@ def add_mission_variables(segment):
         aliases.append([ 'nothing'                   , 'postprocess.nothing'])
         optimization_problem.objective = np.array([ [  'nothing'  ,  1   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "energy":
-        obj_scale = _magnitude_scale(np.atleast_1d(segment_energy_consumed(segment)))[0]
+        obj_scale = objective_scale(segment_energy_consumed(segment))
         aliases.append([ 'energy_consumed'          , 'postprocess.energy_consumed'])
         optimization_problem.objective = np.array([ [  'energy_consumed'  ,  obj_scale   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "power":
-        obj_scale = _magnitude_scale(np.atleast_1d(_segment_soft_max_power(segment)))[0]
+        obj_scale = objective_scale(_segment_soft_max_power(segment))
         aliases.append([ 'maximum_power'          , 'postprocess.maximum_power'])
         optimization_problem.objective = np.array([ [  'maximum_power'  ,  obj_scale   ,    1*Units.less]  ],dtype=object)
     else:
@@ -537,7 +537,14 @@ def add_mission_variables(segment):
 
     return nexus
 
-def iterate_segment(): 
+def objective_scale(initial_value):
+    """Objective scale equal to the magnitude of its initial value, so the scaled objective starts at 1
+    (power-of-ten rounding made the scale jump 10x between nearby initial guesses). Zero or non-finite -> 1.
+    """
+    magnitude = abs(float(initial_value))
+    return magnitude if np.isfinite(magnitude) and magnitude > 0 else 1.0
+
+def iterate_segment():
     procedure                           = Process()  
     procedure.segment                   = Process()
     procedure.segment.design_mission    = iterate_optimizer     
