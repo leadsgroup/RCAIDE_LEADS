@@ -145,6 +145,13 @@ def geometry_preprocess_routine(analyses):
             compute_layout_of_passenger_accommodations(wing)
             main_wing_chord = wing.chords.mean_aerodynamic
 
+            # the centre-body root chord is the body axis, so a twisted centreline only offsets the angle of attack
+            root_twist = wing.segments[list(wing.segments.keys())[0]].twist if len(wing.segments) > 0 else wing.twists.root
+            if abs(root_twist) > 1e-6:
+                print(f'Warning: {wing.tag} centreline twist is {root_twist / Units.degrees:.2f} deg. A blended wing body has no fuselage, '
+                      f'so its root chord is the body axis; this twist tilts the body and offsets the angle of attack. '
+                      f'Twist the other sections relative to the root chord instead.')
+
             # update reference properties 
             if settings.overwrite_reference:
                 vehicle.reference_area = wing.areas.reference
