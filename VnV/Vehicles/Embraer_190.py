@@ -83,7 +83,7 @@ def vehicle_setup():
     main_gear.wheels                         = 4   
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2
-    main_gear.origin                         = [[18, 5.72/2, -0.5]]
+    main_gear.origin                         = [[17.34, 5.94/2, -0.5]]  # gear CG at the 17.96 m main axle, 5.94 m track (APM-1901 Fig. 2.1)
     main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
@@ -95,7 +95,7 @@ def vehicle_setup():
     nose_gear.wheels                         = 2   
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2   
-    nose_gear.origin                         = [[5, 0, -0.5]]
+    nose_gear.origin                         = [[3.14, 0, -0.5]]  # gear CG at the 4.13 m nose axle (APM-1901 Fig. 2.1)
     vehicle.append_component(nose_gear)
     
 
