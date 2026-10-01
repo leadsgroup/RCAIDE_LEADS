@@ -305,10 +305,6 @@ def set_powertrain_residuals_and_unknowns(segment):
             if ctrls.throttle.bounds !=  None:
                 segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] = ctrls.throttle.bounds[i][0] * ones_row(1)
                 segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] = ctrls.throttle.bounds[i][1] * ones_row(1)
-            elif segment.state.numerics.mission_solver.type == "optimize":
-                # physical throttle range by default so the optimizer cannot enter the non-physical throttle > 1 regime
-                segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] = 0.0 * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] = 1.0 * ones_row(1)
             else:
                 segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] =  -np.inf * ones_row(1)
                 segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] =   np.inf * ones_row(1)
