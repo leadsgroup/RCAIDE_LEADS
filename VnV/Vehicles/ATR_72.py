@@ -671,7 +671,15 @@ def vehicle_setup():
     port_propulsor.assigned_distributors      = [[fuel_line.tag]]
     net.distributors.append(fuel_line)
 
-    # Append energy network to aircraft 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    #  Systems
+    #------------------------------------------------------------------------------------------------------------------------------------
+    Systems = RCAIDE.Library.Components.Powertrain.Systems
+    for system in [Systems.Avionics(), Systems.Flight_Controls(), Systems.Electrical(), Systems.Hydraulics(),
+                   Systems.Environmental_Controls(), Systems.Instruments(), Systems.Furnishings()]:
+        net.systems.append(system)
+
+    # Append energy network to aircraft
     vehicle.append_energy_network(net)     
 
     return vehicle
