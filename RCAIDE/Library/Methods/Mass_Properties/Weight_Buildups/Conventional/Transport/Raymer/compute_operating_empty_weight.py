@@ -32,12 +32,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##------------------------------------------------------------------------------- 
     W_oper = RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.Common.compute_operating_items_weight(vehicle)
 
-    # assign operation items weight to fuselage and wings (if BWB)
-    for fuselage in vehicle.fuselages:
-        fuselage.operational_items.mass_properties.mass = W_oper.total
-    for wing in vehicle.wings:
-        if isinstance(wing, Wings.Blended_Wing_Body):
-            wing.operational_items.mass_properties.mass = W_oper.total
+    # split the operational items over the fuselages and blended wing bodies and place them in the cabin
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.assign_operational_items(vehicle, W_oper)
 
     ##-------------------------------------------------------------------------------         
     # System Weight
