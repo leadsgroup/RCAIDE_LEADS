@@ -18,6 +18,8 @@ import numpy as np
 from copy import deepcopy 
 import os
 
+# Stability note: the rigid VLM neutral point (~20.5 m) is 0.4-0.8 m aft of the point giving a 15-25% static margin at the
+# APM aft CG limit (19.10 m, D6-58325-6); aeroelastic and power effects that would move it forward are not modeled.
 def vehicle_setup(): 
 
     # ------------------------------------------------------------------
