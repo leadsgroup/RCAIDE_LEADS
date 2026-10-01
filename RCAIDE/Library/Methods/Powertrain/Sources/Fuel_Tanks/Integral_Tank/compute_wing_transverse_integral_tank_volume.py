@@ -248,10 +248,11 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
     tank_mesh.density = 1.0
     I_fuel_nd = tank_mesh.moment_inertia / tank_mesh.mass
 
-    fuel_tank.mass_properties.center_of_gravity                              = [[cg_x, cg_y, cg_z]]
-    fuel_tank.fuel.mass_properties.center_of_gravity                         = [[cg_x, cg_y, cg_z]]
-    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
-    fuel_tank.origin                                                         = [[cg_x, cg_y, cg_z]]
+    # the tank sits at its centroid, so its CG and the fuel CG are zero relative to that origin
+    fuel_tank.origin                                                         = [[wing.origin[0][0] + cg_x, cg_y, wing.origin[0][2] + cg_z]]
     fuel_tank.fuel.origin                                                    = fuel_tank.origin
+    fuel_tank.mass_properties.center_of_gravity                              = [[0.0, 0.0, 0.0]]
+    fuel_tank.fuel.mass_properties.center_of_gravity                         = [[0.0, 0.0, 0.0]]
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
     
     return
