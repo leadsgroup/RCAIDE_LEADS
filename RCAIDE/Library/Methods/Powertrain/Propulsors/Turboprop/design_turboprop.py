@@ -21,14 +21,18 @@ from RCAIDE.Library.Methods.Powertrain                                        im
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor                       import design_optimal_motor
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common   import compute_motor_weight
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_generator import design_optimal_generator
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.build_turboprop_offdesign_matching import build_turboprop_offdesign_matching
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_actuator_disk_propeller_thrust import propeller_polytropic_efficiency_from_design_point
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.design_turboprop_offdesign_matching import design_turboprop_offdesign_matching
 
 # Python package imports   
 import numpy                                                                as np
+from scipy.optimize import brentq
 
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turboshaft
 # ----------------------------------------------------------------------------------------------------------------------   
-def design_turboprop(turboprop):
+def design_turboprop(turboprop, build_idle_fallback=True):
     """
     Sizes a turboprop engine based on design point conditions and computes its performance characteristics.
 
@@ -52,6 +56,13 @@ def design_turboprop(turboprop):
                 - high_pressure_turbine : Turbine
                 - low_pressure_turbine : Turbine
                 - core_nozzle : Expansion_Nozzle
+            - design_thrust : float
+                Design-point thrust [N]; solved when only rated_takeoff_power is given
+            - rated_takeoff_power : float
+                Rated sea-level static takeoff shaft power [W] (see Turboprop)
+    build_idle_fallback : bool, optional
+        Build the off-design matching model's idle_fallback deck. False while iterating the engine
+        size (size_turboprop_to_rated_takeoff_power), where only the design point is needed.
 
     Returns
     -------
@@ -75,6 +86,14 @@ def design_turboprop(turboprop):
                 Thermal efficiency at design point [-]
             - design_propulsive_efficiency : float
                 Propulsive efficiency at design point [-]
+            - offdesign_matching : Data
+                Off-design matching model (the default performance model)
+            - rated_takeoff_temperature_ratio : float
+                Combustor exit temperature of the takeoff rating over its design-point value
+            - sealevel_static_power : float
+                Sea-level static shaft power at the takeoff rating [W]
+            - sealevel_static_thrust : float
+                Sea-level static thrust at the takeoff rating [N]
 
     Notes
     -----
@@ -106,6 +125,19 @@ def design_turboprop(turboprop):
     RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance
     RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance
     """
+    # sized from the rated takeoff power alone: solve design_thrust (see size_turboprop_to_rated_takeoff_power)
+    if turboprop.rated_takeoff_power > 0 and turboprop.design_thrust <= 0:
+        from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.size_turboprop_to_rated_takeoff_power import size_turboprop_to_rated_takeoff_power
+        size_turboprop_to_rated_takeoff_power(turboprop)
+        return
+
+    # throttle equals the design-point fraction until the takeoff rating is solved below
+    turboprop.rated_takeoff_temperature_ratio = 1.0
+
+    # the design point defines the propeller by its design efficiency; its actuator-disk polytropic
+    # efficiency is calibrated from it once the engine is sized (Step 25b)
+    turboprop.propeller_polytropic_efficiency = None
+
     #check if mach number and temperature are passed
     if turboprop.design_altitude==None:
         if turboprop.design_mach_number==None and turboprop.design_freestream_velocity ==None:
@@ -330,41 +362,65 @@ def design_turboprop(turboprop):
     # absolute power once the design mass flow rate is known -- for reporting only.
     turboprop.design_power = float(np.ravel(lpt_shaft_work)[0]) * float(np.ravel(turboprop.design_mass_flow_rate)[0])
 
-    # Step 26: Static Sea Level Thrust
+    # Step 25b: Propeller polytropic efficiency -- the actuator-disk loss factor that gives the propeller its
+    # design efficiency at the design point (see compute_actuator_disk_propeller_thrust); compute_thrust
+    # and the off-design matching model use it for the propeller thrust everywhere else
+    design_propeller_shaft_power = float(np.ravel(turboprop_conditions.propeller_work_output_coefficient)[0]) / turboprop.propeller.design_efficiency * \
+        float(np.ravel(compressor_conditions.outputs.cp)[0]) * float(np.ravel(T)[0]) * float(np.ravel(turboprop.design_mass_flow_rate)[0])
+    design_density               = float(np.ravel(p)[0]) / (float(np.ravel(compressor_conditions.outputs.gas_constant)[0]) * float(np.ravel(T)[0]))
+    turboprop.propeller_polytropic_efficiency = float(propeller_polytropic_efficiency_from_design_point(
+        turboprop.propeller.design_efficiency, float(np.ravel(conditions.freestream.velocity)[0]), design_density,
+        np.pi*turboprop.propeller.tip_radius**2, design_propeller_shaft_power))
+
+    # Step 26: Off-design matching is the default performance model -- attach it from the sized design
+    # point (see design_turbofan)
+    turboprop.offdesign_matching      = None
+    design_constants, reference_point = design_turboprop_offdesign_matching(turboprop)
+    turboprop.offdesign_matching      = Data(design_constants = design_constants, reference_point = reference_point)
+
+    # Step 27: Sea-level static operating point
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01
     operating_state       = setup_operating_conditions(turboprop,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)
-    operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0
     operating_state.unknowns.network['electrical_power'] = np.array([[design_power_offtake]])
-    _,sls_outputs,_,_                                 = turboprop.compute_performance(operating_state)
 
-    # compute_thrust.py's F=P/V0 propeller-thrust term assumes constant propulsive efficiency,
-    # which is only valid away from V0=0 -- static propulsive efficiency is exactly zero by its
-    # own definition (Muller-Hoffmann, "Static Thrust of Propellers"; Gudmundsson, "General
-    # Aviation Aircraft Design", 2nd ed., Ch. 7, notes the same relation "breaks down" near
-    # static conditions), so it is not used here. Static thrust instead uses actuator-disk
-    # momentum theory for the propeller-shaft contribution (ideal disk thrust T=(2*rho*A)^(1/3)*
-    # P^(2/3), ex. Leishman, "Principles of Helicopter Aerodynamics", 2nd ed., Eq. 2.52), scaled
-    # by a 0.5 static figure of merit -- real propellers reach only "50% or less" of the ideal
-    # disk value at static conditions vs. 80-90% near their cruise design point (Muller-Hoffmann,
-    # same source). The core-jet contribution is not touched: it already scales with M0 and
-    # stays well-behaved down to V0=0 (unlike the propeller term, see compute_thrust.py).
-    sls_conditions          = operating_state.conditions.energy.propulsors[turboprop.tag]
-    sls_compressor_cp       = float(np.ravel(operating_state.conditions.energy.converters[compressor.tag].outputs.cp)[0])
-    T0_sl                   = atmo_data_sea_level.temperature[0][0]
-    rho_sl                  = atmo_data_sea_level.density[0][0]
-    mdot_core_sl            = float(np.ravel(sls_conditions.core_mass_flow_rate)[0])
-    Ccore_sl                = float(np.ravel(sls_conditions.compressor_work_output_coefficient)[0])
-    Cprop_sl                = float(np.ravel(sls_conditions.propeller_work_output_coefficient)[0])
+    def sea_level_static_performance(throttle):
+        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = throttle
+        _,outputs,_,_ = turboprop.compute_performance(operating_state)
+        return outputs
 
-    static_figure_of_merit  = 0.5
-    propeller_disk_area     = np.pi*turboprop.propeller.tip_radius**2
-    propeller_shaft_power   = Cprop_sl*sls_compressor_cp*T0_sl*mdot_core_sl
-    propeller_static_thrust = static_figure_of_merit*(2*rho_sl*propeller_disk_area)**(1/3)*propeller_shaft_power**(2/3)
-    core_static_thrust      = Ccore_sl*sls_compressor_cp*T0_sl/V*mdot_core_sl
+    # Step 28: Takeoff rating -- the fraction of the design combustor exit temperature at which the
+    # sea-level static shaft power equals the rated takeoff power; throttle is a fraction of it (see design_turbofan)
+    if turboprop.rated_takeoff_power > 0:
+        def power_residual(throttle):
+            return sea_level_static_performance(throttle).power.mechanical[0][0] - turboprop.rated_takeoff_power
+        throttle_step   = 0.05
+        lower, upper    = 1.0, 1.0
+        residual        = power_residual(1.0)
+        direction       = 1.0 if residual < 0 else -1.0
+        while (residual < 0) == (direction > 0):
+            next_throttle = (upper if direction > 0 else lower) + direction * throttle_step
+            if not 0.5 <= next_throttle <= 2.0:
+                raise ValueError(f"Turboprop '{turboprop.tag}': no takeoff throttle between 0.5 and 2.0 gives the rated takeoff "
+                                 f"power of {turboprop.rated_takeoff_power:.0f} W at sea level; check design_thrust against it.")
+            residual = power_residual(next_throttle)
+            if direction > 0:
+                lower, upper = upper, next_throttle
+            else:
+                lower, upper = next_throttle, lower
+        turboprop.rated_takeoff_temperature_ratio = brentq(power_residual, lower, upper, xtol=1e-6)
 
-    turboprop.sealevel_static_thrust                  = core_static_thrust + propeller_static_thrust
-    turboprop.sealevel_static_power                   = turboprop.sealevel_static_thrust*V
+    # idle_fallback deck spans part power up to the takeoff rating
+    if build_idle_fallback:
+        combustor_exit_temperature_fractions = sorted(set([turboprop.rated_takeoff_temperature_ratio, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]), reverse=True)
+        turboprop.offdesign_matching         = None
+        turboprop.offdesign_matching         = build_turboprop_offdesign_matching(turboprop, combustor_exit_temperature_fractions = combustor_exit_temperature_fractions)
+
+    # Step 29: Sea-level static shaft power and thrust at the takeoff rating (the propeller as an actuator
+    # disk, finite at zero speed)
+    sls_outputs                      = sea_level_static_performance(1.0)
+    turboprop.sealevel_static_thrust = sls_outputs.thrust[0][0]
+    turboprop.sealevel_static_power  = sls_outputs.power.mechanical[0][0]
     
     turboprop.design_thrust_specific_fuel_consumption = turboprop_conditions.thrust_specific_fuel_consumption  
     turboprop.design_non_dimensional_thrust           = turboprop_conditions.non_dimensional_thrust            
@@ -378,7 +434,7 @@ def design_turboprop(turboprop):
     if turboprop.integrated_drive_motor != None:
         V                     = turboprop.design_freestream_velocity
         operating_state       = setup_operating_conditions(turboprop,fuel_line,velocity_range=np.array([V]), altitude = turboprop.design_altitude, angle_of_attack=0, temperature_deviation=0)
-        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0
+        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0 / turboprop.rated_takeoff_temperature_ratio  # design point
         _,outputs,_,_           = turboprop.compute_performance(operating_state)
 
         T = outputs.thrust

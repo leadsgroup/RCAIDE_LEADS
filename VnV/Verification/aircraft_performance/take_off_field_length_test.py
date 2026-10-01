@@ -53,11 +53,11 @@ def main():
     print('Weight (kg): ',takeoff_weight)
     
     print('Takeoff field length (m): ', takeoff_field_length)    
-    truth_TOFL = 1637.188901963899
+    truth_TOFL = 1761.949510265746
     TOFL_error = np.max(np.abs(takeoff_field_length-truth_TOFL))
     assert(TOFL_error<1e-6)
 
-    truth_SSCG = 0.08786619733587281
+    truth_SSCG = 0.07435401231361374
     print('Second Segment Climb Gradient (%): ', second_seg_clb_grad)
     SSCG_error = np.max(np.abs(second_seg_clb_grad-truth_SSCG))
     assert(SSCG_error<1e-6)

@@ -432,7 +432,7 @@ def vehicle_setup() :
     turbofan1.bypass_ratio                         = 8.         
     turbofan1.design_altitude                      = 40000*Units.ft             
     turbofan1.design_mach_number                   = 0.78                      
-    turbofan1.design_thrust                        = 34000.0
+    turbofan1.rated_takeoff_thrust                 = 40900. * Units.lbf # representative engine: PW2040 takeoff rating, 40,900 lbf (FAA TCDS E17NE, Rev. 13)
     turbofan1.wing_mounted                         = False
     # working fluid                   
     turbofan1.working_fluid                        = RCAIDE.Library.Attributes.Gases.Air() 

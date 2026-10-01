@@ -518,7 +518,7 @@ def vehicle_setup():
     starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()            
     starboard_propulsor.gearbox.efficiency           = 0.99                                             
-    starboard_propulsor.design_thrust                = 9705.21 * Units.N
+    starboard_propulsor.rated_takeoff_power          = 2051 * Units.kW # PW127M maximum take-off power, EASA TCDS IM.E.041
     starboard_propulsor.design_altitude              = 25000*Units.ft
     starboard_propulsor.design_freestream_velocity   = 270 * Units.kts
     starboard_propulsor.length                       = 2.0
@@ -529,12 +529,11 @@ def vehicle_setup():
     propeller.tag                                    = 'starboard_propulsor_propeller' 
     propeller.origin                                 = [[9.1,4.219315295, 1.616135105 ]]
     propeller.active                                 = True          
-    propeller.tip_radius                             = 2.8/2
+    propeller.tip_radius                             = 3.93/2 # Hamilton Standard 568F, ATR 72-600 factsheet
     propeller.hub_radius                             = 0.1 
-    propeller.number_of_blades                       = 3   
+    propeller.number_of_blades                       = 6   
     propeller.design_efficiency                      = 0.83      
-    propeller.design_angular_velocity                = 3000.0 * Units.rpm        
-    propeller.design_thrust                          = starboard_propulsor.design_thrust              
+    propeller.design_angular_velocity                = 1200.0 * Units.rpm # 100% NP; PW127M maximum output shaft speed 1212 rpm, EASA TCDS IM.E.041
     propeller.design_altitude                        = starboard_propulsor.design_altitude                                        
     propeller.design_freestream_velocity             = starboard_propulsor.design_freestream_velocity                                                               
     starboard_propulsor.propeller                    = propeller     

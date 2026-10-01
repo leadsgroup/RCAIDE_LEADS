@@ -84,9 +84,12 @@ def main():
         if issubclass(type(item), RCAIDE.Library.Components.Component):
             item.append_operating_conditions(segment)
 
-    # set throttle
-    segment.state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1  
+    # design point: throttle is a fraction of the takeoff rating
+    segment.state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0 / turbofan.rated_takeoff_temperature_ratio
 
+    # the component station values below validate the design-point cycle solve, so evaluate it
+    # with the analytical cycle rather than the default off-design model
+    turbofan.offdesign_matching = None
     turbofan.compute_performance(segment.state,fuel_line)
 
     high_pressure_compressor                          = turbofan.high_pressure_compressor
@@ -172,6 +175,7 @@ def GE90_94B():
     turbofan.design_altitude                    = 35000*Units.ft              
     turbofan.design_mach_number                 = 0.8                        
     turbofan.design_thrust                      = 72988.199552 * Units.N            
+    turbofan.rated_takeoff_thrust               = 432810. * Units.N   # GE90-94B takeoff rating, 43281 daN (EASA TCDS IM.E.002, Issue 05)
 
     # working fluid                   
     turbofan.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air() 

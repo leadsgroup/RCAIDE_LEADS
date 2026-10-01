@@ -15,8 +15,10 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import compute_supersonic_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet           import compute_thrust
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common             import compute_gas_generator_shaft_power_offtake
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.Turbojet_OffDesign_Matching import (
-    solve_turbojet_offdesign_robust, OffDesignMatchingError)
+    solve_turbojet_offdesign_robust, OffDesignMatchingError, pack_turbojet_design_constants, pack_turbojet_reference_point,
+    apply_turbojet_afterburner)
 
 # python imports 
 import  numpy as  np 
@@ -207,56 +209,12 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     # ----------------------------------------------------------------------------
     # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
     # ----------------------------------------------------------------------------
-    # Computed here (absolute power [W], same as Turbofan's own block) rather than after
-    # thrust like the old electrical-bus-only bookkeeping did -- external_shaft_work needs
-    # to actually reach hpt_conditions.inputs.external_shaft.work_done (converted to
-    # *specific* work once mass flow is available, right before the HPT link below) for the
-    # offtake to affect the thermodynamic cycle at all; previously it never did.
-    external_shaft_work        = 0*state.ones_row(1)
-    integrated_drive_motor     = turbojet.integrated_drive_motor
-    integrated_drive_generator = turbojet.integrated_drive_generator
-    lpc_conditions.omega       = low_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+    # throttle is a fraction of the takeoff rating; the cycle runs on the fraction of the design point
+    design_point_throttle        = turbojet_conditions.throttle * turbojet.rated_takeoff_temperature_ratio
 
-    # Motor: consumes electrical power from the bus, delivers mechanical power to the shaft
-    if integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
-        motor_conditions = conditions.energy.converters[integrated_drive_motor.tag]
-        phi = conditions.energy.hybrid_power_split_ratio
-        if 'electrical_power' in state.unknowns.network:
-            motor_electrical_power = state.unknowns.network['electrical_power'] * phi
-        else:
-            motor_electrical_power = conditions.energy.inputs.power.electrical * phi
-
-        eta_motor = integrated_drive_motor.efficiency
-        motor_mechanical_power = motor_electrical_power * eta_motor
-
-        turbojet_conditions.inputs.power.electrical = motor_electrical_power
-        motor_conditions.inputs.power.electrical    = motor_electrical_power
-        motor_conditions.outputs.power.mechanical   = motor_mechanical_power
-        motor_conditions.outputs.omega              = lpc_conditions.omega
-        motor_conditions.outputs.torque             = motor_mechanical_power / lpc_conditions.omega
-
-        # Motor delivers power to shaft (negative = reduces turbine burden)
-        external_shaft_work -= motor_mechanical_power
-
-    # Generator: extracts mechanical power from the shaft, provides electrical to bus
-    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
-        gen_conditions = conditions.energy.converters[integrated_drive_generator.tag]
-        if 'electrical_power' in state.unknowns.network:
-            gen_electrical_power = state.unknowns.network['electrical_power'] * integrated_drive_generator.power_split_ratio
-        else:
-            gen_electrical_power = conditions.energy.inputs.power.electrical * integrated_drive_generator.power_split_ratio
-
-        eta_gen = integrated_drive_generator.efficiency
-        gen_mechanical_power = gen_electrical_power / eta_gen
-
-        turbojet_conditions.outputs.power.electrical = gen_electrical_power
-        gen_conditions.outputs.power.electrical      = gen_electrical_power
-        gen_conditions.inputs.power.mechanical       = gen_mechanical_power
-        gen_conditions.inputs.omega                  = lpc_conditions.omega
-        gen_conditions.inputs.torque                 = gen_mechanical_power / lpc_conditions.omega
-
-        # Generator extracts mechanical power from the shaft (positive = more turbine work needed)
-        external_shaft_work += gen_mechanical_power
+    # absolute power [W], converted to specific work with the core mass flow before the HP turbine below
+    lpc_conditions.omega         = low_pressure_compressor.design_angular_velocity * design_point_throttle
+    external_shaft_work, _, _, _ = compute_gas_generator_shaft_power_offtake(turbojet, state, lpc_conditions.omega)
 
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbojet.working_fluid
@@ -422,7 +380,7 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
  
 
     # compute shaft RPMs (lpc_conditions.omega already set above, alongside the offtake block)
-    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
+    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * design_point_throttle
 
     # store data
     core_nozzle_res = Data(
@@ -581,7 +539,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     Notes
     -----
     Throttle is consumed the same way `compute_turbofan_performance_
-    offdesign` does: `Tt4 = reference_point.Tt4 * throttle` (see that
+    offdesign` does: `Tt4 = reference_point.Tt4 * rated_takeoff_temperature_ratio * throttle` (see that
     module's own docstring Notes for the caveats).
 
     There is no fan nozzle at all for a turbojet (all flow exits through the
@@ -598,18 +556,20 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     turbojet_conditions  = conditions.energy.propulsors[turbojet.tag]
     noise_conditions     = conditions.aeroacoustics.propulsors[turbojet.tag]
 
-    altitude            = conditions.freestream.altitude[:, 0]
-    mach_number         = conditions.freestream.mach_number[:, 0]
-    static_temperature  = conditions.freestream.temperature[:, 0]
-    static_pressure     = conditions.freestream.pressure[:, 0]
-    velocity            = conditions.freestream.velocity[:, 0]
-    throttle            = turbojet_conditions.throttle[:, 0]
+    # freestream quantities may be column vectors or 1-D arrays, and may hold a single value for all
+    # control points -- broadcast each onto the throttle rows (see compute_turbofan_performance_offdesign)
+    throttle            = np.ravel(turbojet_conditions.throttle) * turbojet.rated_takeoff_temperature_ratio  # design-point Tt4 fraction
+    n                   = len(throttle)
+    altitude            = np.ravel(conditions.freestream.altitude)    * np.ones(n)
+    mach_number         = np.ravel(conditions.freestream.mach_number) * np.ones(n)
+    static_temperature  = np.ravel(conditions.freestream.temperature) * np.ones(n)
+    static_pressure     = np.ravel(conditions.freestream.pressure)    * np.ones(n)
+    velocity            = np.ravel(conditions.freestream.velocity)    * np.ones(n)
 
     design_constants = turbojet.offdesign_matching.design_constants
     reference_point  = turbojet.offdesign_matching.reference_point
     idle_fallback    = getattr(turbojet.offdesign_matching, 'idle_fallback', None)
 
-    n = len(mach_number)
     thrust_N              = np.zeros(n)
     fuel_mass_flow_rate    = np.zeros(n)
     core_nozzle_exit_velocity               = np.full(n, np.nan)
@@ -625,12 +585,22 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     pi_c_out              = np.full(n, np.nan)
     fuel_to_air_ratio_out = np.full(n, np.nan)
 
+    packed_design_constants = pack_turbojet_design_constants(design_constants)
+    packed_reference_point  = pack_turbojet_reference_point(reference_point)
+
+    # gas-generator shaft power to/from the integrated drive motor or generator at the mission's electrical
+    # power; the design-point offtake outside a mission
+    lpc_conditions       = conditions.energy.converters[turbojet.low_pressure_compressor.tag]
+    lpc_conditions.omega = turbojet.low_pressure_compressor.design_angular_velocity * throttle.reshape(-1, 1)
+    external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbojet, state, lpc_conditions.omega)
+    shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * throttle[i]
         try:
             result = solve_turbojet_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
-                combustor_exit_temperature)
+                combustor_exit_temperature, packed_design_constants=packed_design_constants,
+                packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise
@@ -640,6 +610,9 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
             fuel_mass_flow_rate[i]  = FF[0]
             continue
         
+        if turbojet.afterburner_active and turbojet.afterburner is not None:
+            result = apply_turbojet_afterburner(result, design_constants, turbojet.afterburner, turbojet.working_fluid,
+                                                static_temperature[i], static_pressure[i])
         thrust_N[i]                                 = result.thrust
         fuel_mass_flow_rate[i]                       = result.fuel_mass_flow_rate
         core_nozzle_exit_velocity[i]                = result.core_nozzle_exit_velocity
@@ -659,7 +632,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
 
     TSFC           = np.zeros(n)
     positive       = thrust_N > 0
-    gravity        = conditions.freestream.gravity[:, 0] if hasattr(conditions.freestream, 'gravity') \
+    gravity        = np.ravel(conditions.freestream.gravity) * np.ones(n) if hasattr(conditions.freestream, 'gravity') \
                      else 9.80665 * np.ones(n)
     TSFC[positive] = fuel_mass_flow_rate[positive] * gravity[positive] / thrust_N[positive]
 
@@ -679,6 +652,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     turbojet_conditions.outputs.thrust                     = thrust_vector
     turbojet_conditions.outputs.moment                     = moment
     turbojet_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
+    turbojet_conditions.power                              = power_propulsive.reshape(-1,1)
 
     # same fields the analytical path sets; NaN at idle_fallback points
     turbojet_conditions.flow_through_core           = 1.0
@@ -703,6 +677,14 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     )
     noise_conditions.fan_nozzle = None
     noise_conditions.fan        = Data(angular_velocity = np.full((n,1), np.nan))
+
+    # core nozzle exit state, in the same conditions the analytical cycle populates
+    nozzle_outputs                        = conditions.energy.converters[turbojet.core_nozzle.tag].outputs
+    nozzle_outputs.velocity               = core_nozzle_exit_velocity.reshape(-1,1)
+    nozzle_outputs.static_temperature     = core_nozzle_exit_static_temperature.reshape(-1,1)
+    nozzle_outputs.static_pressure        = core_nozzle_exit_static_pressure.reshape(-1,1)
+    nozzle_outputs.stagnation_temperature = core_nozzle_exit_stagnation_temperature.reshape(-1,1)
+    nozzle_outputs.stagnation_pressure    = core_nozzle_exit_stagnation_pressure.reshape(-1,1)
 
     stored_results_flag   = True
     stored_propulsor_tag  = turbojet.tag

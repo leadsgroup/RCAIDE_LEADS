@@ -29,3 +29,5 @@ from .Turbofan_OffDesign_Matching                                import solve_tu
 from .Turbofan_OffDesign_Matching                                import solve_turbofan_offdesign_robust
 from .design_turbofan_offdesign_matching                         import design_turbofan_offdesign_matching
 from .generate_turbofan_deck                           import generate_turbofan_deck
+from .build_turbofan_offdesign_matching                         import build_turbofan_offdesign_matching
+from .size_turbofan_to_rated_takeoff_thrust                      import size_turbofan_to_rated_takeoff_thrust
