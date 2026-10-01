@@ -218,6 +218,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
                                                 overwrite_center_of_gravity =  weights_analysis.settings.run_center_of_gravity_analysis ,
                                                 segment=segment,
                                                 verbose=verbose_flag)  
+        if i == 0:
+            check_center_of_gravity(analyses.vehicle)
 
         if i==0 and weights_analysis.settings.write_mass_properties:
             # Centre of Gravity sheet
@@ -372,4 +374,19 @@ def solve_for_mtow(analyses, weights_analysis, i, max_bracket_expansions=10):
     _mtow_residual(mtow_converged)
     analyses.vehicle.mass_properties.max_takeoff = mtow_converged
 
+    return
+
+def check_center_of_gravity(vehicle):
+    """Prints a warning when the components miss or double count operating empty mass, or the empty aircraft would tip onto its tail."""
+    mass_properties = vehicle.mass_properties
+    OEW_CG_mass_percentage = mass_properties.get('OEW_CG_mass_percentage')
+    OEW_CG                 = mass_properties.get('operating_empty_center_of_gravity')
+    if OEW_CG_mass_percentage is not None and abs(OEW_CG_mass_percentage - 100) > 2:
+        print(f'Warning: components carry {OEW_CG_mass_percentage:.1f}% of the operating empty weight; the center of gravity omits or double counts mass.')
+    main_gears = [gear for gear in vehicle.landing_gears if isinstance(gear, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear)]
+    if len(main_gears) > 0 and OEW_CG is not None:
+        x_OEW       = np.array(OEW_CG)[0][0]
+        x_main_gear = np.mean([np.array(gear.mass_properties.center_of_gravity)[0][0] + np.array(gear.origin)[0][0] for gear in main_gears])
+        if x_OEW > x_main_gear:
+            print(f'Warning: operating empty center of gravity (x = {x_OEW:.2f} m) is aft of the main landing gear (x = {x_main_gear:.2f} m).')
     return
