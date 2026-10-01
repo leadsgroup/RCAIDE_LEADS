@@ -319,7 +319,6 @@ def vehicle_setup():
     fuselage.areas.front_projected              = np.pi * (fuselage.heights.maximum  / 2) ** 2
     fuselage.effective_diameter                 = 3.18 
     fuselage.differential_pressure              = 10**5 * Units.pascal    # Maximum differential pressure   
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
     
 
     # Segment  
