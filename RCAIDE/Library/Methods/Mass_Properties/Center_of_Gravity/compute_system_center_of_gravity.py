@@ -30,9 +30,10 @@ def compute_system_center_of_gravity(system, vehicle):
     are placed at their weighted mean. Systems with a non-zero origin, and system types not listed below, are
     left unchanged.
 
-        * Avionics, instruments: between the nose and the nose-wheel well
+        * Avionics, instruments: between the nose and the nose-wheel well; at the front of the seated cabin
+          (instrument panel) for an unpressurized fuselage, which has no forward pressure bulkhead or equipment bay
         * Environmental controls: between the wing spars on the aircraft centerline
-        * Electrical: half between the nose and the nose-wheel well, half between the wing spars
+        * Electrical: half with the avionics, half between the wing spars
         * Hydraulics: wing and empennage groups split by surface area; empennage group in the tail cone
         * Flight controls: between the rear spar and trailing edge of each surface, split by surface area
         * Auxiliary power unit: in the tail cone
@@ -77,10 +78,11 @@ def compute_system_center_of_gravity(system, vehicle):
     else:
         x_cabin_front, x_cabin_rear = x_nose + 0.2 * length, x_nose + 0.8 * length
 
-    # nose bay between the nose and the nose-wheel well
-    nose_gears = [gear for gear in vehicle.landing_gears if isinstance(gear, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear)]
+    # nose bay between the nose and the nose-wheel well; instrument panel at the cabin front if unpressurized
+    nose_gears  = [gear for gear in vehicle.landing_gears if isinstance(gear, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear)]
     x_nose_gear = nose_gears[0].origin[0][0] if len(nose_gears) > 0 else x_cabin_front
-    x_nose_bay  = (x_nose + x_nose_gear) / 2
+    pressurized = body.get('differential_pressure', 1.0) > 0
+    x_nose_bay  = (x_nose + x_nose_gear) / 2 if pressurized else x_cabin_front
 
     # wing box on the centerline (root chord), or on the reference chord for a blended wing body
     main_wings = [wing for wing in vehicle.wings if isinstance(wing, (Wings.Main_Wing, Wings.Blended_Wing_Body))]
