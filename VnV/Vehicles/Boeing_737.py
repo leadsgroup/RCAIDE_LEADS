@@ -203,17 +203,17 @@ def vehicle_setup():
 
     wing     = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag = 'horizontal_stabilizer'
-    wing.aspect_ratio            = 4.99
+    wing.aspect_ratio            = 6.282
     wing.sweeps.quarter_chord    = 28.2250 * Units.deg  
     wing.thickness_to_chord      = 0.08
-    wing.taper                   = 0.3333  
-    wing.spans.projected         = 14.35 
-    wing.chords.root             = 4.1
-    wing.chords.tip              = 1.4243 
-    wing.chords.mean_aerodynamic = 8.0 
-    wing.areas.reference         = 41.49
-    wing.areas.exposed           = 59.354    # Exposed area of the horizontal tail
-    wing.areas.wetted            = 71.81     # Wetted area of the horizontal tail
+    wing.taper                   = 0.3474  
+    wing.spans.projected         = 14.35     # APM D6-58325-6 Sec. 2.2.11
+    wing.chords.root             = 3.391
+    wing.chords.tip              = 1.178 
+    wing.chords.mean_aerodynamic = 2.463 
+    wing.areas.reference         = 32.78     # Jenkinson, Simpkin and Rhodes, Civil Jet Aircraft Design (2001)
+    wing.areas.exposed           = 46.89     # Exposed area of the horizontal tail
+    wing.areas.wetted            = 56.73     # Wetted area of the horizontal tail
     wing.twists.root             = 0.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees 
     wing.origin                  = [[33.02,0,1.466]]
