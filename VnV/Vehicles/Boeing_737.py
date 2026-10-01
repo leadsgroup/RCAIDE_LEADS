@@ -61,7 +61,7 @@ def vehicle_setup():
     main_gear.rim_diameter      = 21   *  Units.inches 
     main_gear.tire_width        = 16.5  *  Units.inches 
     main_gear.strut_length      = 1.8  * Units.m
-    main_gear.origin            = [[18,5.72/2,-0.5]]  
+    main_gear.origin            = [[19.07,5.72/2,-0.5]]  # gear CG at the 19.69 m main axle (APM D6-58325-6 Sec. 2.2.11)
     main_gear.wheels            = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
@@ -73,7 +73,7 @@ def vehicle_setup():
     nose_gear.rim_diameter      = 15    *  Units.inches 
     nose_gear.tire_width        = 7.75  *  Units.inches 
     nose_gear.strut_length      = 1.8   * Units.m  
-    nose_gear.origin            = [[5,0,-0.5]]  
+    nose_gear.origin            = [[3.09,0,-0.5]]  # gear CG at the 4.09 m nose axle (APM D6-58325-6 Sec. 2.2.11)
     nose_gear.wheels            = 2   
     nose_gear.number_of_gear_types_in_tandem  = 1
     nose_gear.number_of_wheels_in_gear_type  = 2    
