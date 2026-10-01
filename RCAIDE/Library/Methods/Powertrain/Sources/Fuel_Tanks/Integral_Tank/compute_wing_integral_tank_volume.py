@@ -169,9 +169,9 @@ def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor
     # Compute centroid
     centroid = combinde_mesh.centroid
 
-    # Create scaling transform about centroid
+    # scale_factor is the usable fraction of the tank volume, so each dimension scales by its cube root
     T = trimesh.transformations.scale_matrix(
-        scale_factor,
+        scale_factor**(1/3),
         origin=centroid
     )
     combinde_mesh.apply_transform(T)
