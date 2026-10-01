@@ -194,6 +194,7 @@ def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor
     I_fuel_nd = combined_mesh_full.moment_inertia / combined_mesh_full.mass
 
     fuel_tank.fuel.mass_properties.center_of_gravity                         = [[cg_x, cg_y, cg_z]]
+    fuel_tank.mass_properties.center_of_gravity                              = [[cg_x, cg_y, cg_z]]
     fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
     fuel_tank.volume_properties.gross_volume                                 = combined_mesh_full.volume
     fuel_tank.volume_properties.net_volume                                   = combined_mesh_full.volume
