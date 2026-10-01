@@ -298,8 +298,9 @@ def generate_fuseform_vortex_distribution(VD,fus,n_cw,n_sw,spc,precision):
         # increment fuslage lifting surface sections  
         VD.n_f    += 1    
         n_panels   = len(fhs_xch)
-        VD.n_w    += 1             
-        VD.n_cp   += n_panels        
+        VD.n_w    += 1
+        VD.horizontal_tail = np.append(VD.horizontal_tail, 0)
+        VD.n_cp   += n_panels
         
         # store this wing's discretization information
         first_panel_ind  = VD.n_cp - n_panels # equal to the old VD.XAH.size, now that XAH is accumulated as a list

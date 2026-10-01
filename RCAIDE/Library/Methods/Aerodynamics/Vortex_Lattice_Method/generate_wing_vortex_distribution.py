@@ -406,6 +406,7 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
         # increment number of wings and panels
         n_panels = len(xch)
         VD.n_w  += 1             
+        VD.horizontal_tail = np.append(VD.horizontal_tail, int(isinstance(wing, RCAIDE.Library.Components.Wings.Horizontal_Tail)))
         VD.n_cp += n_panels 
         
         # store this wing's discretization information
