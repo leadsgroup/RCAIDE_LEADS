@@ -16,7 +16,7 @@ from RCAIDE.Library.Methods.Geometry.Planform import compute_segment_meshes
 # Python Imports 
 import numpy as np
 from scipy.interpolate import interp1d 
-from shapely import Polygon
+from shapely import Polygon, box
 import shapely
 import matplotlib.pyplot as plt
 import trimesh
@@ -138,17 +138,11 @@ def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor
         x_out = np.array(geometry_out.x_coordinates)[:-1] * wing.chords.root *outer_segment.root_chord_percent + outer_segment.origin[0][0]
         y_out = np.array(geometry_out.y_coordinates)[:-1] * wing.chords.root *outer_segment.root_chord_percent + outer_segment.origin[0][2]
 
-        # ---------------- Inner segment ----------------
-        mask_in = (x_in >= start_distance_in) & (x_in <= end_distance_in)
-
-        x_in_capped = x_in[mask_in]
-        y_in_capped = y_in[mask_in]
-        
-        # ---------------- Outer segment ----------------
-        mask_out = (x_out >= start_distance_out) & (x_out <= end_distance_out)
-
-        x_out_capped = x_out[mask_out]
-        y_out_capped = y_out[mask_out]
+        # cut each section exactly at the chord bounds so the volume varies continuously with them
+        section_in   = Polygon(np.column_stack((x_in, y_in))).buffer(0).intersection(box(start_distance_in, np.min(y_in) - 1, end_distance_in, np.max(y_in) + 1))
+        section_out  = Polygon(np.column_stack((x_out, y_out))).buffer(0).intersection(box(start_distance_out, np.min(y_out) - 1, end_distance_out, np.max(y_out) + 1))
+        x_in_capped, y_in_capped   = np.array(section_in.exterior.xy)[:, :-1]
+        x_out_capped, y_out_capped = np.array(section_out.exterior.xy)[:, :-1]
 
         solid_segment =  compute_segment_meshes(x_in_capped,y_in_capped, x_out_capped, y_out_capped, L, spanwise_shift) 
         segment_meshes.append(solid_segment)
