@@ -83,7 +83,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     main_gear.wheels                         = 8
     main_gear.number_of_gear_types_in_tandem = 2
     main_gear.number_of_wheels_in_gear_type  = 2
-    main_gear.origin                         = [[28, 5.335, -1.5]]
+    main_gear.origin                         = [[27.49, 4.90, -1.5]]  # gear CG at the 28.19 m main axle, 9.80 m track (APM D6-58333 Sec. 2.2.1)
     main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)
 
@@ -95,7 +95,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     nose_gear.wheels                         = 2
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2
-    nose_gear.origin                         = [[7.0, 0, -1.5]]
+    nose_gear.origin                         = [[4.49, 0, -1.5]]  # gear CG at the 5.41 m nose axle (APM D6-58333 Sec. 2.2.1)
     vehicle.append_component(nose_gear)
 
 
