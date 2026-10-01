@@ -37,6 +37,8 @@ def main():
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
+# Stability note: the rigid VLM neutral point (~18.4 m) is 0.6-0.9 m aft of the point giving a 15-25% static margin at the
+# APM aft CG limit (16.91 m, APM-1901); aeroelastic and power effects that would move it forward are not modeled.
 def vehicle_setup(): 
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
@@ -101,7 +103,7 @@ def vehicle_setup():
     main_gear.rim_diameter                    = 21   *  Units.inches 
     main_gear.tire_width                      = 16.5  *  Units.inches 
     main_gear.strut_length                    = 1.8  * Units.m
-    main_gear.origin                          = [[18,5.72/2,-0.5]]  
+    main_gear.origin = [[17.338, 2.970, -0.5]]  # gear CG at the 17.96 m axle (APM-1901 Fig. 2.1)
     main_gear.wheels                          = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type   = 2  
@@ -113,7 +115,7 @@ def vehicle_setup():
     nose_gear.rim_diameter                    = 15    *  Units.inches 
     nose_gear.tire_width                      = 7.75  *  Units.inches 
     nose_gear.strut_length                    = 1.8   * Units.m  
-    nose_gear.origin                          = [[5,0,-0.5]]  
+    nose_gear.origin = [[3.140, 0.000, -0.5]]  # gear CG at the 4.13 m axle (APM-1901 Fig. 2.1)
     nose_gear.wheels                          = 2   
     nose_gear.number_of_gear_types_in_tandem  = 1
     nose_gear.number_of_wheels_in_gear_type   = 2    
@@ -324,7 +326,6 @@ def vehicle_setup():
     fuselage.areas.front_projected              = np.pi * (fuselage.heights.maximum  / 2) ** 2
     fuselage.effective_diameter                 = 3.18 
     fuselage.differential_pressure              = 10**5 * Units.pascal    # Maximum differential pressure
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
 
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
@@ -486,35 +487,27 @@ def vehicle_setup():
 
     ##  Systems
     avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[4,0,0]]
     net.systems.append(avionics)
 
     flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[16,0,0]]
     net.systems.append(flight_controls)
 
     auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxillary_power_unit.origin       = [[33,0,0]]
     net.systems.append(auxillary_power_unit)
 
     electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[15,0,0]]
     net.systems.append(electrical)
 
     hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[16,0,0]]
     net.systems.append(hydraulics)
 
     environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[15,0,-0.5]]
     net.systems.append(environmental_controls)
 
     instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
-    instruments.origin                = [[14,0,0]]
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[17,0,0]]
     net.systems.append(furnishings)
 
     #------------------------------------------------------------------------------------------------------------------------------------
