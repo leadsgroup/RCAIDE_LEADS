@@ -72,7 +72,7 @@ def vehicle_setup():
     main_gear.wheels                          = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type   = 2  
-    main_gear.origin                          = [[13.0, 2.05, -0.5]]
+    main_gear.origin                          = [[12.08, 2.05, -0.5]]  # gear CG at the 12.50 m main axle (APM AC-ATR Fig. 2.2.5)
     main_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_gear)  
 
@@ -84,7 +84,7 @@ def vehicle_setup():
     nose_gear.wheels                          = 2   
     nose_gear.number_of_gear_types_in_tandem  = 1
     nose_gear.number_of_wheels_in_gear_type   = 2    
-    nose_gear.origin                          = [[5,0,-0.5]]  
+    nose_gear.origin                          = [[1.18,0,-0.5]]  # gear CG at the 1.728 m nose axle (APM AC-ATR Fig. 2.2.5)
     vehicle.append_component(nose_gear)
  
     # ################################################# Wings #############################################################   
@@ -106,8 +106,8 @@ def vehicle_setup():
     wing.chords.mean_aerodynamic          = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 )/( 1 + wing.taper )) 
     wing.areas.exposed                    = 2 * wing.areas.reference
     wing.areas.wetted                     = 2 * wing.areas.reference  
-    wing.origin                           = [[11.52756129,0,2.009316366]]  
-    wing.aerodynamic_center               = [11.52756129 + 0.25*wing.chords.root ,0,2.009316366]  
+    wing.origin                           = [[11.08,0,2.009316366]]  
+    wing.aerodynamic_center               = [11.08 + 0.25*wing.chords.root ,0,2.009316366]  
     wing.vertical                         = False   
     wing.xz_plane_symmetric               = True  
     wing.dynamic_pressure_ratio           = 1.0 
@@ -152,13 +152,13 @@ def vehicle_setup():
     # ------------------------------------------------------------------ 
     wing                         = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag                     = 'horizontal_stabilizer'  
-    wing.spans.projected         = 3.61*2 
-    wing.areas.reference         = 15.2 
+    wing.spans.projected         = 7.31  # APM AC-ATR Fig. 2.2.5
+    wing.areas.reference         = 11.73  # APM AC-ATR Fig. 2.2.5
     wing.aspect_ratio            = (wing.spans.projected**2) /  wing.areas.reference
     wing.sweeps.leading_edge     = 11.56*Units.degrees  
     wing.thickness_to_chord      = 0.15  
-    wing.chords.root             = 2.078645129 
-    wing.chords.tip              = 0.953457347 
+    wing.chords.root             = 2.200130 
+    wing.chords.tip              = 1.009180 
     wing.total_length            = wing.chords.root  
     wing.taper                   = wing.chords.tip/wing.chords.root  
     wing.chords.mean_aerodynamic = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 )/( 1 + wing.taper ))
@@ -487,7 +487,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop()    
     starboard_propulsor.tag                          = 'starboard_propulsor'  
-    starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
+    starboard_propulsor.origin                       = [[ 9.111545 ,4.219315295, 1.616135105]]
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()               
     starboard_propulsor.gearbox.efficiency           = 0.99                                             
     starboard_propulsor.rated_takeoff_power          = 2051 * Units.kW # PW127M maximum take-off power, EASA TCDS IM.E.041
@@ -568,7 +568,7 @@ def vehicle_setup():
     nacelle.length                              = 5
     nacelle.diameter                            = 0.85 
     nacelle.areas.wetted                        = 1.0   
-    nacelle.origin                              = [[8.941625295,4.219315295, 1.616135105 ]]
+    nacelle.origin                              = [[8.494064,4.219315295, 1.616135105 ]]
     nacelle.flow_through                        = False     
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
@@ -643,9 +643,9 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------      
     port_propulsor                                  = deepcopy(starboard_propulsor) 
     port_propulsor.tag                              = 'port_propulsor' 
-    port_propulsor.origin                           = [[ 9.559106394 ,-4.219315295, 1.616135105]]  # change origin 
+    port_propulsor.origin                           = [[ 9.111545 ,-4.219315295, 1.616135105]]  # change origin 
     port_propulsor.nacelle.tag                      = 'port_propulsor_nacelle' 
-    port_propulsor.nacelle.origin                   = [[8.941625295,-4.219315295, 1.616135105 ]]
+    port_propulsor.nacelle.origin                   = [[8.494064,-4.219315295, 1.616135105 ]]
     port_propulsor.propeller.tag                    = 'port_propulsor_propeller' 
     port_propulsor.propeller.origin                 = [[9.1,-4.219315295, 1.616135105 ]]
          
