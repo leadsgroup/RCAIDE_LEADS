@@ -196,23 +196,25 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
     if np.allclose(coords[0], coords[-1]):
         coords = coords[:-1]
 
-    # Ensure it's 4-sided
-    if len(coords) != 4:
-        raise AttributeError(f"Polygon has {len(coords)} sides, not 4.")
-
-    # Compute edge lengths
+    # Compute edge lengths; section intersections can add vertices where upper/lower bounds cross
     edge_lengths = []
+    vertical_edge = []
+    x_tol = 1e-6 * (x_tank_bounds[-1] - x_tank_bounds[0])
     for i in range(len(coords)):
         x1, y1 = coords[i]
         x2, y2 = coords[(i + 1) % len(coords)]
         length = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
         edge_lengths.append(length)
+        vertical_edge.append(abs(x2 - x1) < x_tol)
+    edge_lengths  = np.array(edge_lengths)
+    vertical_edge = np.array(vertical_edge)
 
-    fuel_tank.max_volume_intersection_edge_lengths = np.array(edge_lengths)
-    fuel_tank.max_volume_intersection_num_edges    = int(len(edge_lengths)) 
-    fuel_tank.widths.external                      = (edge_lengths[0]+edge_lengths[2])/2
+    # chordwise edges (upper + lower chains) give width, vertical walls give height
+    fuel_tank.max_volume_intersection_edge_lengths = edge_lengths
+    fuel_tank.max_volume_intersection_num_edges    = int(len(edge_lengths))
+    fuel_tank.widths.external                      = np.sum(edge_lengths[~vertical_edge])/2
     fuel_tank.lengths.external                     = fuel_tank.length_external
-    fuel_tank.heights.external                     = (edge_lengths[1]+edge_lengths[3])/2 
+    fuel_tank.heights.external                     = np.sum(edge_lengths[vertical_edge])/2
     fuel_tank.aspect_ratio                         = fuel_tank.lengths.external /fuel_tank.heights.external 
     fuel_tank.volume_properties.net_volume         = max_volume
     fuel_tank.volume_properties.gross_volume       = max_volume
