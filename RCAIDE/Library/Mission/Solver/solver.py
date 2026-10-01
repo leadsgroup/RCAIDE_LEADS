@@ -12,7 +12,6 @@ from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
 from RCAIDE.Framework.Optimization.Packages.pyopt import pyopt_setup
 from RCAIDE.Framework.Optimization.Common  import Nexus
 from RCAIDE.Framework.Analyses.Process            import Process
-from RCAIDE.Library.Methods.Utilities.Chebyshev   import chebyshev_data
 
 import scipy
 import scipy.optimize
@@ -592,26 +591,6 @@ def segment_energy_consumed(segment):
     if type(segment) in single_point_types:
         return 0.0
 
-    power   = np.ravel(segment.state.conditions.energy.outputs.power.propulsive)
-    time    = np.ravel(segment.state.conditions.frames.inertial.time)
-    weights = segment_quadrature_weights(time, segment.state.numerics.discretization_method)
-    return float(np.dot(weights, power))
-
-
-def segment_quadrature_weights(time, discretization_method):
-    """Quadrature weights over the segment that include every control point: Clenshaw-Curtis on Chebyshev
-    (cosine-spaced) points, trapezoidal otherwise. The time.integrate matrix cannot be used here because its
-    first column is zero (the initial condition replaces the first collocation equation), so it ignores the
-    integrand at the first control point.
-    """
-    if discretization_method is chebyshev_data:
-        x        = 2 * (time - time[0]) / (time[-1] - time[0]) - 1
-        k        = np.arange(len(time))
-        V        = np.cos(np.outer(np.arccos(np.clip(x, -1, 1)), k))
-        moments  = np.where(k % 2 == 0, 2 / (1 - k.astype(float)**2), 0.0)
-        return np.linalg.solve(V.T, moments) * (time[-1] - time[0]) / 2
-    dt      = np.diff(time)
-    weights = np.zeros_like(time)
-    weights[:-1] += dt / 2
-    weights[1:]  += dt / 2
-    return weights
+    power = segment.state.conditions.energy.outputs.power.propulsive
+    I     = segment.state.numerics.time.integrate
+    return float(np.dot(I, power)[-1][0])  
