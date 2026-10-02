@@ -15,7 +15,7 @@ from RCAIDE.Framework.Core import Units
 import os
 import numpy as np
 from functools          import lru_cache
-from scipy.interpolate  import interp1d
+from .linear_table_interpolator import linear_table_interpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Liquid Hydrogen
@@ -259,7 +259,7 @@ def _property_interpolator(prop_name, phase):
     phase_mask = np.array(data["Phase"]) == phase
     temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
     props = np.array(data[prop_name], dtype=float)[phase_mask]
-    return interp1d(temps, props, kind="linear", fill_value=None)
+    return linear_table_interpolator(temps, props)
 
 @lru_cache(maxsize=None)
 def _saturation_temperature_interpolator():
@@ -267,4 +267,4 @@ def _saturation_temperature_interpolator():
     phase_mask = np.array(data["Phase"]) == 'liquid'
     temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
     pressures = np.array(data["Pressure (MPa)"], dtype=float)[phase_mask]
-    return interp1d(pressures, temps, kind="linear", fill_value=None)
+    return linear_table_interpolator(pressures, temps)
