@@ -42,15 +42,32 @@ def train_VLM_surrogates(aerodynamics, vehicle):
     sup_Mach      = Mach[sub_len:] 
 
     training.subsonic    =  train_model(aerodynamics, sub_Mach, vehicle)
-    
-    # only build supersonic surrogates if necessary
-    if len(sup_Mach) > 2: 
+
+    # supersonic/transonic surrogates are trained on first need (see train_VLM_supersonic_surrogates)
+    training.supersonic  = None
+    training.transonic   = None
+    return 
+
+def train_VLM_supersonic_surrogates(aerodynamics, vehicle):
+    """Trains the supersonic and transonic surrogates; called the first time a flight condition reaches
+    the subsonic smoothing limit, so subsonic-only missions never pay for them.
+
+    Args:
+        aerodynamics       : VLM analysis, already trained subsonic
+        vehicle            : vehicle the subsonic surrogates were trained on
+
+    Returns:
+        None
+    """
+    Mach          = aerodynamics.training.Mach
+    training      = aerodynamics.training
+    sub_len       = int(sum(Mach<1.))
+    sub_Mach      = Mach[:sub_len]
+    sup_Mach      = Mach[sub_len:]
+    if len(sup_Mach) > 2:
         training.supersonic  =  train_model(aerodynamics, sup_Mach, vehicle)
         training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach, vehicle)
-    else:
-        training.supersonic  = None
-        training.transonic   = None
-    return 
+    return
     
 def train_model(aerodynamics,Mach, vehicle): 
     """Sub function that call methods to run VLM for sample point evaluation. 
