@@ -20,7 +20,7 @@ import numpy as np
 #  Vortex Lattice
 # ----------------------------------------------------------------------
 
-def VLM(conditions,settings,geometry):
+def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     """Uses the vortex lattice method to compute the lift, induced drag and moment coefficients.
 
     The user should be forwarned that this will cause very slight differences in results for 0 deflection due to
@@ -85,6 +85,7 @@ def VLM(conditions,settings,geometry):
     settings.propeller_wake_model              [Unitless]
     settings.use_VORLAX_matrix_calculation     [boolean]
     settings.floating_point_precision          [float16/32/64]
+    induced_velocity_cache                     [dict], optional; reuses C_mn across calls with the same geometry and Mach
 
     conditions.aerodynamics.angles.alpha       [radians]
     conditions.aerodynamics.angles.beta        [radians]
@@ -211,7 +212,14 @@ def VLM(conditions,settings,geometry):
     ONSET   = rhs.ONSET*1
 
     # Build induced velocity matrix, C_mn
-    C_mn, s, RFLAG, EW = compute_wing_induced_velocity(VD,mach,compute_EW=True)
+    mach_key = mach.tobytes()
+    if induced_velocity_cache is not None and mach_key in induced_velocity_cache:
+        C_mn, s, RFLAG, EW = induced_velocity_cache[mach_key]
+    else:
+        C_mn, s, RFLAG, EW = compute_wing_induced_velocity(VD,mach,compute_EW=True)
+        if induced_velocity_cache is not None:
+            induced_velocity_cache.clear()  # keep only the latest Mach to bound memory
+            induced_velocity_cache[mach_key] = (C_mn, s, RFLAG, EW)
 
     # Turn off sonic vortices when Mach>1
     RHS = RHS*RFLAG

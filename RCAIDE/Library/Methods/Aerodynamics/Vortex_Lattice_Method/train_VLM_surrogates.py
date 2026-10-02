@@ -551,6 +551,8 @@ def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_n
 
 def call_VLM(full_conditions,settings,vehicle): 
 
+    # geometry is fixed within this call, so cases at the same Mach share C_mn
+    induced_velocity_cache = {}
     num_cases =  len(full_conditions.aerodynamics.angles.alpha)
     for i in  range(num_cases): 
         conditions                                      = RCAIDE.Framework.Mission.Common.Results() 
@@ -562,7 +564,7 @@ def call_VLM(full_conditions,settings,vehicle):
         conditions.static_stability.roll_rate           = np.atleast_2d(full_conditions.static_stability.roll_rate[i,:])   
         conditions.static_stability.yaw_rate            = np.atleast_2d(full_conditions.static_stability.yaw_rate[i,:])   
 
-        VLM_results         = VLM(conditions,settings,vehicle)         
+        VLM_results         = VLM(conditions,settings,vehicle,induced_velocity_cache)
         if i == 0: 
             RES                 = Data()
             RES.CLift           = VLM_results.CLift
