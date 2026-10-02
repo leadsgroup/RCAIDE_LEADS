@@ -394,27 +394,33 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     Q_env_liq = np.zeros(n_nodes)
     Q_env_gas = np.zeros(n_nodes)
 
+    # the heat-leak root solves are scalar; Python floats make each residual evaluation several times cheaper than numpy scalars
+    scalar  = lambda v: np.asarray(v, dtype=float).item()
+    t_ins_s, k_mat_s, k_ins_s = scalar(t_ins), scalar(k_mat), scalar(k_ins_mat)
+    T_env_l, T_l_l, T_g_l     = T_env.tolist(), np.ravel(T_l_c).tolist(), np.ravel(T_g_c).tolist()
+    k_air_l, nu_l, alpha_l, Pr_l = k_air.tolist(), nu_air.tolist(), alpha_air.tolist(), Pr_air.tolist()
+
     if tank.geometry_type == 'cylindrical':
-        ro = tank.inner_structure.diameters.external / 2
-        ri = tank.inner_structure.diameters.internal / 2
-        li = tank.inner_structure.lengths.internal
+        ro = scalar(tank.inner_structure.diameters.external / 2)
+        ri = scalar(tank.inner_structure.diameters.internal / 2)
+        li = scalar(tank.inner_structure.lengths.internal)
         for i in range(n_nodes):
             _, Q_env_liq[i] = compute_cryogenic_tank_heat_leak(
-                t_ins, T_env[i], T_l_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], ro, ri, li)
+                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], ro, ri, li)
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak(
-                t_ins, T_env[i], T_g_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], ro, ri, li)
+                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], ro, ri, li)
     else:
         # Conformal/prismatic tanks: same heat-leak model, using flat-plate
         # free-convection correlations per face instead of cylinder/sphere ones.
-        l_o = tank.inner_structure.lengths.external
-        w_o = tank.inner_structure.widths.external
-        h_o = tank.inner_structure.heights.external
-        th  = tank.inner_structure.thickness
+        l_o = scalar(tank.inner_structure.lengths.external)
+        w_o = scalar(tank.inner_structure.widths.external)
+        h_o = scalar(tank.inner_structure.heights.external)
+        th  = scalar(tank.inner_structure.thickness)
         for i in range(n_nodes):
             _, Q_env_liq[i] = compute_cryogenic_tank_heat_leak_cuboid(
-                t_ins, T_env[i], T_l_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], l_o, w_o, h_o, th)
+                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], l_o, w_o, h_o, th)
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak_cuboid(
-                t_ins, T_env[i], T_g_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], l_o, w_o, h_o, th)
+                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], l_o, w_o, h_o, th)
 
     Q_e_l = Q_env_liq * A_wet_frac
     Q_e_g = Q_env_gas * (1 - A_wet_frac)
