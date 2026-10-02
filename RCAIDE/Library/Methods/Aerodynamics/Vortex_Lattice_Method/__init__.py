@@ -14,7 +14,7 @@ from .postprocess_vortex_distribution           import postprocess_vortex_distri
 from .generate_vortex_distribution              import generate_vortex_distribution
 from .generate_wing_vortex_distribution         import generate_wing_vortex_distribution
 from .generate_fuseform_vortex_distribution     import generate_fuseform_vortex_distribution
-from .train_VLM_surrogates                      import train_VLM_surrogates
+from .train_VLM_surrogates                      import train_VLM_surrogates, train_VLM_supersonic_surrogates
 from .VLM                                       import VLM
 from .evaluate_VLM                              import *  
 

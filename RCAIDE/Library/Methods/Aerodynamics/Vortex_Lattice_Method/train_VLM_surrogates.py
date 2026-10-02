@@ -42,15 +42,32 @@ def train_VLM_surrogates(aerodynamics, vehicle):
     sup_Mach      = Mach[sub_len:] 
 
     training.subsonic    =  train_model(aerodynamics, sub_Mach, vehicle)
-    
-    # only build supersonic surrogates if necessary
-    if len(sup_Mach) > 2: 
+
+    # supersonic/transonic surrogates are trained on first need (see train_VLM_supersonic_surrogates)
+    training.supersonic  = None
+    training.transonic   = None
+    return 
+
+def train_VLM_supersonic_surrogates(aerodynamics, vehicle):
+    """Trains the supersonic and transonic surrogates; called the first time a flight condition reaches
+    the subsonic smoothing limit, so subsonic-only missions never pay for them.
+
+    Args:
+        aerodynamics       : VLM analysis, already trained subsonic
+        vehicle            : vehicle the subsonic surrogates were trained on
+
+    Returns:
+        None
+    """
+    Mach          = aerodynamics.training.Mach
+    training      = aerodynamics.training
+    sub_len       = int(sum(Mach<1.))
+    sub_Mach      = Mach[:sub_len]
+    sup_Mach      = Mach[sub_len:]
+    if len(sup_Mach) > 2:
         training.supersonic  =  train_model(aerodynamics, sup_Mach, vehicle)
         training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach, vehicle)
-    else:
-        training.supersonic  = None
-        training.transonic   = None
-    return 
+    return
     
 def train_model(aerodynamics,Mach, vehicle): 
     """Sub function that call methods to run VLM for sample point evaluation. 
@@ -78,13 +95,11 @@ def train_model(aerodynamics,Mach, vehicle):
     # loop through wings to determine what control surfaces are present
     delta_0     = {}
     delta_train = {}
-    len_delta   = {}
     for wing in vehicle.wings:
         for control_surface in wing.control_surfaces:
             for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
                 delta_0[letter]     = getattr(control_surface, deflection_attr)
                 delta_train[letter] = getattr(aerodynamics.training, channel + '_deflection')
-                len_delta[letter]   = len(delta_train[letter])
                 setattr(aerodynamics, flag, True)
             control_surface.deflection           = 0 # set all control surfaces to be 0
             control_surface.secondary_deflection = 0
@@ -331,52 +346,25 @@ def train_model(aerodynamics,Mach, vehicle):
     training.dCN_dp     = (CN_p[0,:] - CN_p[1,:]) / ((roll_rate[0]-roll_rate[1])* b / (2 *V[0,:]))  
     training.dCN_dr     = (CN_r[0,:] - CN_r[1,:]) / ((yaw_rate[0]-yaw_rate[1])* b / (2 *V[0,:]))  
 
-    # for control surfaces, subtract influence WITHOUT control surface deflected from coefficients WITH control
-    # surface deflected; see control_surface_registry.py for why every type is treated identically here.
-    Machs = np.atleast_2d(np.repeat(Mach,1)).T
+    # control surface derivatives: one deflected run per channel against a single undeflected reference
+    # shared by all channels; see control_surface_registry.py for why every type is treated identically here.
+    has_control_surfaces = any(len(wing.control_surfaces) > 0 for wing in vehicle.wings)
+    if has_control_surfaces:
+        VLM_ref = call_VLM(control_surface_conditions(Mach),settings,vehicle)  # all deflections are 0 here
     for wing in vehicle.wings:
         for control_surface in wing.control_surfaces:
             for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
-                delta = delta_train[letter]
-                len_d = len_delta[letter]
-
-                Clift_d = np.zeros((len_d,len_Mach))
-                Cdrag_d = np.zeros((len_d,len_Mach))
-                CX_d    = np.zeros((len_d,len_Mach))
-                CY_d    = np.zeros((len_d,len_Mach))
-                CZ_d    = np.zeros((len_d,len_Mach))
-                CL_d    = np.zeros((len_d,len_Mach))
-                CM_d    = np.zeros((len_d,len_Mach))
-                CN_d    = np.zeros((len_d,len_Mach))
-                for d_i in range(len_d):
-                    conditions                            = RCAIDE.Framework.Mission.Common.Results()
-                    conditions.expand_rows(len(Mach),override=False)
-                    conditions.aerodynamics.angles.alpha  = np.ones_like(Machs) *1E-12
-                    conditions.aerodynamics.angles.beta   = np.zeros_like(Machs)
-                    conditions.freestream.mach_number     = Machs
-                    conditions.freestream.velocity        = np.zeros_like(Machs)
-                    conditions.static_stability.pitch_rate= np.zeros_like(Machs)
-                    conditions.static_stability.roll_rate = np.zeros_like(Machs)
-                    conditions.static_stability.yaw_rate  = np.zeros_like(Machs)
-                    setattr(control_surface, deflection_attr, delta[d_i])
-                    VLM_results   = call_VLM(conditions,settings,vehicle)
-                    Clift_d[d_i,:] = VLM_results.CLift[:,0]         - Clift_alpha_0[0,:]
-                    Cdrag_d[d_i,:] = VLM_results.CDrag_induced[:,0] - Cdrag_alpha_0[0,:]
-                    CX_d[d_i,:]    = VLM_results.CX[:,0]            - CX_alpha_0[0,:]
-                    CY_d[d_i,:]    = VLM_results.CY[:,0]            - CY_alpha_0[0,:]
-                    CZ_d[d_i,:]    = VLM_results.CZ[:,0]            - CZ_alpha_0[0,:]
-                    CL_d[d_i,:]    = VLM_results.CL[:,0]            - CL_alpha_0[0,:]
-                    CM_d[d_i,:]    = VLM_results.CM[:,0]            - CM_alpha_0[0,:]
-                    CN_d[d_i,:]    = VLM_results.CN[:,0]            - CN_alpha_0[0,:]
-
-                training['dClift_ddelta_' + letter] = (Clift_d[0,:] - Clift_d[1,:]) / (delta[0] - delta[1])
-                training['dCdrag_ddelta_' + letter] = (Cdrag_d[0,:] - Cdrag_d[1,:]) / (delta[0] - delta[1])
-                training['dCX_ddelta_'    + letter] = (CX_d[0,:]    - CX_d[1,:]   ) / (delta[0] - delta[1])
-                training['dCY_ddelta_'    + letter] = (CY_d[0,:]    - CY_d[1,:]   ) / (delta[0] - delta[1])
-                training['dCZ_ddelta_'    + letter] = (CZ_d[0,:]    - CZ_d[1,:]   ) / (delta[0] - delta[1])
-                training['dCL_ddelta_'    + letter] = (CL_d[0,:]    - CL_d[1,:]   ) / (delta[0] - delta[1])
-                training['dCM_ddelta_'    + letter] = (CM_d[0,:]    - CM_d[1,:]   ) / (delta[0] - delta[1])
-                training['dCN_ddelta_'    + letter] = (CN_d[0,:]    - CN_d[1,:]   ) / (delta[0] - delta[1])
+                delta = delta_train[letter][0]
+                setattr(control_surface, deflection_attr, delta)
+                VLM_results = call_VLM(control_surface_conditions(Mach),settings,vehicle)
+                training['dClift_ddelta_' + letter] = (VLM_results.CLift[:,0]         - VLM_ref.CLift[:,0]        ) / delta
+                training['dCdrag_ddelta_' + letter] = (VLM_results.CDrag_induced[:,0] - VLM_ref.CDrag_induced[:,0]) / delta
+                training['dCX_ddelta_'    + letter] = (VLM_results.CX[:,0]            - VLM_ref.CX[:,0]           ) / delta
+                training['dCY_ddelta_'    + letter] = (VLM_results.CY[:,0]            - VLM_ref.CY[:,0]           ) / delta
+                training['dCZ_ddelta_'    + letter] = (VLM_results.CZ[:,0]            - VLM_ref.CZ[:,0]           ) / delta
+                training['dCL_ddelta_'    + letter] = (VLM_results.CL[:,0]            - VLM_ref.CL[:,0]           ) / delta
+                training['dCM_ddelta_'    + letter] = (VLM_results.CM[:,0]            - VLM_ref.CM[:,0]           ) / delta
+                training['dCN_ddelta_'    + letter] = (VLM_results.CN[:,0]            - VLM_ref.CN[:,0]           ) / delta
                 # reset to 0, not the real deflection, so later surfaces train in isolation
                 setattr(control_surface, deflection_attr, 0)
 
@@ -527,6 +515,21 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     return training
 
 
+def control_surface_conditions(Mach):
+    """Zero-incidence conditions, one case per Mach, for control-surface training."""
+    Machs                                  = np.atleast_2d(Mach).T
+    conditions                             = RCAIDE.Framework.Mission.Common.Results()
+    conditions.expand_rows(len(Mach),override=False)
+    conditions.aerodynamics.angles.alpha   = np.ones_like(Machs) *1E-12
+    conditions.aerodynamics.angles.beta    = np.zeros_like(Machs)
+    conditions.freestream.mach_number      = Machs
+    conditions.freestream.velocity         = np.zeros_like(Machs)
+    conditions.static_stability.pitch_rate = np.zeros_like(Machs)
+    conditions.static_stability.roll_rate  = np.zeros_like(Machs)
+    conditions.static_stability.yaw_rate   = np.zeros_like(Machs)
+    return conditions
+
+
 def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_np,Mach,AoA):
 
     len_Mach       = len(Mach)        
@@ -551,6 +554,8 @@ def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_n
 
 def call_VLM(full_conditions,settings,vehicle): 
 
+    # geometry is fixed within this call, so cases at the same Mach share C_mn
+    induced_velocity_cache = {}
     num_cases =  len(full_conditions.aerodynamics.angles.alpha)
     for i in  range(num_cases): 
         conditions                                      = RCAIDE.Framework.Mission.Common.Results() 
@@ -562,7 +567,7 @@ def call_VLM(full_conditions,settings,vehicle):
         conditions.static_stability.roll_rate           = np.atleast_2d(full_conditions.static_stability.roll_rate[i,:])   
         conditions.static_stability.yaw_rate            = np.atleast_2d(full_conditions.static_stability.yaw_rate[i,:])   
 
-        VLM_results         = VLM(conditions,settings,vehicle)         
+        VLM_results         = VLM(conditions,settings,vehicle,induced_velocity_cache)
         if i == 0: 
             RES                 = Data()
             RES.CLift           = VLM_results.CLift
