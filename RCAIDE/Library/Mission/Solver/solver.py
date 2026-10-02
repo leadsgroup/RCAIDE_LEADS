@@ -69,6 +69,8 @@ def converge(segment):
                                                    sense_step = numerics.mission_solver.step_size,
                                                    iter       = numerics.mission_solver.max_evaluations,
                                                    tolerance  = numerics.mission_solver.tolerance)
+                # leave the segment at the returned solution, not the optimizer's last evaluated point (as the pyopt branch does)
+                problem.evaluate(outputs[0])
 
                 if outputs[3] != 0:
                     mission_converge = False
