@@ -41,6 +41,13 @@ def evaluate_surrogate(state,settings,vehicle):
     """          
     conditions       = state.conditions
     aerodynamics     = state.analyses.aerodynamics  
+
+    # train the supersonic/transonic surrogates the first time a condition reaches the transonic blend
+    if aerodynamics.surrogates.get('supersonic_pending', False) and \
+       np.max(conditions.freestream.mach_number) >= aerodynamics.surrogates.subsonic_smoothing_min:
+        owner = aerodynamics.surrogate_owner if aerodynamics.surrogate_owner is not None else aerodynamics
+        owner.train_supersonic_surrogates()
+
     sub_sur          = aerodynamics.surrogates.subsonic
     sup_sur          = aerodynamics.surrogates.supersonic
     trans_sur        = aerodynamics.surrogates.transonic  
