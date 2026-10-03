@@ -435,6 +435,14 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     RM     = STRIP *(BMX *COSALF *COPSI + BMY *COSALF *SINPSI + BMZ *SINALF)
     YM     = STRIP *(BMZ *COSALF - (BMX *COPSI + BMY *SINPSI) *SINALF)
 
+    # horizontal tail strips see the tail dynamic pressure ratio, q_h/q (Raymer Eq. 16.6)
+    eta_h  = np.repeat(np.where(VD.horizontal_tail[0] == 1, settings.get('horizontal_tail_dynamic_pressure_ratio', 1.0), 1.0), VD.n_sw[0])
+    LIFT   = LIFT   * eta_h
+    MOMENT = MOMENT * eta_h
+    FY     = FY     * eta_h
+    RM     = RM     * eta_h
+    YM     = YM     * eta_h
+
     # Lift coefficient
     Clift_y   = LIFT/CHORD_strip/ES
     CL_wing   = np.add.reduceat(LIFT,span_breaks[0],axis=1)/VD.wing_areas

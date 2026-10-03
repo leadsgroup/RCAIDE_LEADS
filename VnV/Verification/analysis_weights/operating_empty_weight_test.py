@@ -355,7 +355,7 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
             vehicle.networks.fuel.sources.append(fuel_tank)
 
 
-            if cabin_type == 'PERSUS':
+            if cabin_type == 'PRSEUS':
                 weight_analysis.settings.PRSEUS = True
             elif cabin_type == 'Non-PRSEUS':
                 weight_analysis.settings.PRSEUS = False
