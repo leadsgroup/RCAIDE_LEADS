@@ -188,6 +188,9 @@ def check_compound_surface_mirroring(vehicle, control_surface, primary_coeff_nam
 def check_surrogate_roundtrip(vehicle):
     from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import train_VLM_surrogates
     from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.build_VLM_surrogates import build_VLM_surrogates
+    from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import VLM
+    from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import control_surface_conditions
+    from copy import deepcopy
 
     aero = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
     aero.vehicle = vehicle
@@ -204,6 +207,17 @@ def check_surrogate_roundtrip(vehicle):
 
     train_VLM_surrogates(aero, vehicle)
     build_VLM_surrogates(aero, vehicle)
+
+    # after training, the stored vortex distribution must be the clean-wing geometry, not the last
+    # deflected control-surface case (it is read later, e.g. by transonic_lift_wave_drag)
+    clean_vehicle = deepcopy(vehicle)
+    for wing in clean_vehicle.wings:
+        wing.control_surfaces = []
+    clean_settings = deepcopy(aero.settings)
+    VLM(control_surface_conditions(np.array([0.3])), clean_settings, clean_vehicle)
+    for key in ('chord_lengths', 'leading_edge_sweeps', 'chord_widths', 'XA1', 'ZA1'):
+        assert np.array_equal(aero.settings.vortex_distribution[key], clean_settings.vortex_distribution[key]), \
+            f"vortex_distribution.{key} after training is not the clean-wing geometry"
 
     assert aero.flaperon_flag and aero.elevon_flag and aero.ruddervator_flag, "compound flags not set during training"
 

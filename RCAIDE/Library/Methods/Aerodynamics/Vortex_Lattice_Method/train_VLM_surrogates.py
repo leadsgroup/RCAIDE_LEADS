@@ -138,7 +138,7 @@ def train_model(aerodynamics,Mach, vehicle):
         wing.control_surfaces = []
     VLM_results      = call_VLM(conditions,settings,clean_wing_vehicle)
     Clift_res        = VLM_results.CLift
-    VD_0             = settings.vortex_distribution
+    VD_clean         = deepcopy(settings.vortex_distribution)  # clean-wing geometry; VLM overwrites settings.vortex_distribution in place
     Cdrag_res        = VLM_results.CDrag_induced
     CX_res           = VLM_results.CX
     CY_res           = VLM_results.CY
@@ -375,7 +375,9 @@ def train_model(aerodynamics,Mach, vehicle):
                 setattr(control_surface, deflection_attr, delta_0[letter])
 
     # reset vortex distribution after training
-    settings.vortex_distribution = VD_0
+    # restore the clean-wing geometry in place: segments share this object, and the control-surface
+    # sweeps above left the last deflected geometry in it (read by e.g. transonic_lift_wave_drag)
+    settings.vortex_distribution.update(VD_clean)
     return training
 
 def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub_Mach, sup_Mach, vehicle): 
