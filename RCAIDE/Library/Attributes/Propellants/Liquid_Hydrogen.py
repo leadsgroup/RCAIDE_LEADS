@@ -15,7 +15,7 @@ from RCAIDE.Framework.Core import Units
 import os
 import numpy as np
 from functools          import lru_cache
-from .linear_table_interpolator import linear_table_interpolator
+from .linear_table_interpolator import linear_table_interpolator, linear_table_set_interpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Liquid Hydrogen
@@ -165,6 +165,27 @@ class Liquid_Hydrogen(Propellant):
          """
         return _property_interpolator(prop_name, phase)(T)
 
+    def cryogen_property_set(self, T, prop_names, phase='liquid'):
+        """
+            Several properties at the same temperature(s) in one call; identical to calling
+            cryogen_properties for each name, with one input conversion and bounds check.
+
+            Parameters
+            ----------
+            T : ndarray
+                Temperature(s) in Kelvin.
+            prop_names : tuple of str
+                Property names, as accepted by cryogen_properties.
+            phase : str
+                Saturation branch, 'liquid' or 'vapor' (default 'liquid').
+
+            Returns
+            -------
+            values : list of ndarray
+                One array per name, in the order given.
+        """
+        return property_set_interpolator(tuple(prop_names), phase)(T)
+
     def saturation_temperature(self, P):
         """
             Invert the saturated-liquid branch of the property table to return the
@@ -260,6 +281,14 @@ def _property_interpolator(prop_name, phase):
     temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
     props = np.array(data[prop_name], dtype=float)[phase_mask]
     return linear_table_interpolator(temps, props)
+
+@lru_cache(maxsize=None)
+def property_set_interpolator(prop_names, phase):
+    data = load_hydrogen_properties()
+    phase_mask = np.array(data["Phase"]) == phase
+    temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
+    props = np.column_stack([np.array(data[name], dtype=float)[phase_mask] for name in prop_names])
+    return linear_table_set_interpolator(temps, props)
 
 @lru_cache(maxsize=None)
 def _saturation_temperature_interpolator():
