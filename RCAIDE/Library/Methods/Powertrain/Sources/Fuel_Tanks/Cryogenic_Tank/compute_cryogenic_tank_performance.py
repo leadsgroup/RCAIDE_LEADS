@@ -327,7 +327,11 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # Liquid volume/density and their derivative, needed for V_g below and the
     # -P*dV_l coupling further down. drho_l_dT_l is a centered finite difference
     # (the property tables don't expose an analytic derivative).
-    rho_l = fuel.cryogen_properties(T_l_c, "Density (kg/m3)", phase='liquid')
+    rho_l, cp_liq, mu_liq, k_liq, h_l, u_l = fuel.cryogen_property_set(
+        T_l_c, ("Density (kg/m3)", "Cp (J/g*K)", "Viscosity (Pa*s)", "Therm. Cond. (W/m*K)", "Enthalpy (kJ/kg)", "Internal Energy (kJ/kg)"), phase='liquid')
+    cp_liq = cp_liq * 1000.0
+    h_l    = h_l    * 1000.0
+    u_l    = u_l    * 1000.0
     V_l_c = m_l_c / rho_l
     V_g_c = np.clip(tank.volume_properties.gross_volume - V_l_c, 1e-6, None)
 
@@ -353,25 +357,18 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # Interface geometry from the current liquid volume
     L_int, A_int, A_wet_frac = compute_interface_geometric_properties(tank, V_l_c)
 
-    # Bulk liquid/vapor properties at the current bulk temperatures
-    cp_liq = fuel.cryogen_properties(T_l_c, "Cp (J/g*K)",          phase='liquid') * 1000.0
-    mu_liq = fuel.cryogen_properties(T_l_c, "Viscosity (Pa*s)",    phase='liquid')
-    k_liq  = fuel.cryogen_properties(T_l_c, "Therm. Cond. (W/m*K)", phase='liquid')
-
-    rho_g = fuel.cryogen_properties(T_g_c, "Density (kg/m3)",     phase='vapor')
-    cp_g  = fuel.cryogen_properties(T_g_c, "Cp (J/g*K)",          phase='vapor') * 1000.0  # Prandtl-number convection correlation (Q_gas_to_int) uses Cp by convention
-    cv_g  = fuel.cryogen_properties(T_g_c, "Cv (J/g*K)",          phase='vapor') * 1000.0  # ullage energy balance (Eq. 16) uses Cv, a fixed-volume control mass
-    mu_g  = fuel.cryogen_properties(T_g_c, "Viscosity (Pa*s)",    phase='vapor')
-    k_g   = fuel.cryogen_properties(T_g_c, "Therm. Cond. (W/m*K)", phase='vapor')
+    # Bulk vapor properties at the current bulk temperature (liquid ones are computed with rho_l above)
+    rho_g, cp_g, cv_g, mu_g, k_g, h_g, u_g = fuel.cryogen_property_set(
+        T_g_c, ("Density (kg/m3)", "Cp (J/g*K)", "Cv (J/g*K)", "Viscosity (Pa*s)", "Therm. Cond. (W/m*K)", "Enthalpy (kJ/kg)", "Internal Energy (kJ/kg)"), phase='vapor')
+    cp_g = cp_g * 1000.0  # Prandtl-number convection correlation (Q_gas_to_int) uses Cp by convention
+    cv_g = cv_g * 1000.0  # ullage energy balance (Eq. 16) uses Cv, a fixed-volume control mass
+    h_g  = h_g  * 1000.0
+    u_g  = u_g  * 1000.0
 
     # Bulk ullage/liquid enthalpy and internal energy, at each region's own bulk
     # temperature (not the interface/saturation temperature): per Adler & Martins
     # (2025) Eq. 8/20, boil-off gas enters the interface as liquid at h_l/u_l(T_l)
     # and exits as gas at h_g/u_g(T_g); T_int drives only the interface heat transfer below.
-    h_g = fuel.cryogen_properties(T_g_c, "Enthalpy (kJ/kg)",        phase='vapor')  * 1000.0
-    h_l = fuel.cryogen_properties(T_l_c, "Enthalpy (kJ/kg)",        phase='liquid') * 1000.0
-    u_g = fuel.cryogen_properties(T_g_c, "Internal Energy (kJ/kg)", phase='vapor')  * 1000.0
-    u_l = fuel.cryogen_properties(T_l_c, "Internal Energy (kJ/kg)", phase='liquid') * 1000.0
 
     # Interface heat transfer (natural convection, bulk liquid/gas -> interface)
     Q_l_i = Q_liq_to_int(T_l_c, T_int, A_int, L_int, rho_l, cp_liq, mu_liq, k_liq)
@@ -394,27 +391,33 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     Q_env_liq = np.zeros(n_nodes)
     Q_env_gas = np.zeros(n_nodes)
 
+    # the heat-leak root solves are scalar; Python floats make each residual evaluation several times cheaper than numpy scalars
+    scalar  = lambda v: np.asarray(v, dtype=float).item()
+    t_ins_s, k_mat_s, k_ins_s = scalar(t_ins), scalar(k_mat), scalar(k_ins_mat)
+    T_env_l, T_l_l, T_g_l     = T_env.tolist(), np.ravel(T_l_c).tolist(), np.ravel(T_g_c).tolist()
+    k_air_l, nu_l, alpha_l, Pr_l = k_air.tolist(), nu_air.tolist(), alpha_air.tolist(), Pr_air.tolist()
+
     if tank.geometry_type == 'cylindrical':
-        ro = tank.inner_structure.diameters.external / 2
-        ri = tank.inner_structure.diameters.internal / 2
-        li = tank.inner_structure.lengths.internal
+        ro = scalar(tank.inner_structure.diameters.external / 2)
+        ri = scalar(tank.inner_structure.diameters.internal / 2)
+        li = scalar(tank.inner_structure.lengths.internal)
         for i in range(n_nodes):
             _, Q_env_liq[i] = compute_cryogenic_tank_heat_leak(
-                t_ins, T_env[i], T_l_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], ro, ri, li)
+                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], ro, ri, li)
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak(
-                t_ins, T_env[i], T_g_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], ro, ri, li)
+                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], ro, ri, li)
     else:
         # Conformal/prismatic tanks: same heat-leak model, using flat-plate
         # free-convection correlations per face instead of cylinder/sphere ones.
-        l_o = tank.inner_structure.lengths.external
-        w_o = tank.inner_structure.widths.external
-        h_o = tank.inner_structure.heights.external
-        th  = tank.inner_structure.thickness
+        l_o = scalar(tank.inner_structure.lengths.external)
+        w_o = scalar(tank.inner_structure.widths.external)
+        h_o = scalar(tank.inner_structure.heights.external)
+        th  = scalar(tank.inner_structure.thickness)
         for i in range(n_nodes):
             _, Q_env_liq[i] = compute_cryogenic_tank_heat_leak_cuboid(
-                t_ins, T_env[i], T_l_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], l_o, w_o, h_o, th)
+                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], l_o, w_o, h_o, th)
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak_cuboid(
-                t_ins, T_env[i], T_g_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], l_o, w_o, h_o, th)
+                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], l_o, w_o, h_o, th)
 
     Q_e_l = Q_env_liq * A_wet_frac
     Q_e_g = Q_env_gas * (1 - A_wet_frac)

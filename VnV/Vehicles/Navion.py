@@ -163,7 +163,7 @@ def vehicle_setup():
     aileron.span_fraction_start   = 0.7
     aileron.span_fraction_end     = 0.9 
     aileron.deflection            = 0.0 * Units.degrees
-    aileron.chord_fraction        = 0.15
+    aileron.chord_fraction        = 0.3561  # area 0.502 m^2 per aileron, NASA TN D-6643 Table I
     wing.append_control_surface(aileron)      
 
     # add to vehicle
@@ -198,7 +198,7 @@ def vehicle_setup():
     elevator.span_fraction_start          = 0.1
     elevator.span_fraction_end            = 0.9
     elevator.deflection                   = 0.0  * Units.deg
-    elevator.chord_fraction               = 0.35
+    elevator.chord_fraction               = 0.3956  # area 1.31 m^2, NASA TN D-6643 Table I
     wing.append_control_surface(elevator)
     
     
@@ -236,7 +236,7 @@ def vehicle_setup():
     rudder.span_fraction_start            = 0.1
     rudder.span_fraction_end              = 0.9
     rudder.deflection                     = 0.0  * Units.deg
-    rudder.chord_fraction                 = 0.45
+    rudder.chord_fraction                 = 0.5217  # area 0.558 m^2, NASA TN D-6643 Table I
     wing.append_control_surface(rudder) 
     
     # add to vehicle

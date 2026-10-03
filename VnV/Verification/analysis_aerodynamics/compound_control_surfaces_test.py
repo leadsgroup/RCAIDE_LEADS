@@ -150,14 +150,15 @@ def check_compound_surface_mirroring(vehicle, control_surface, primary_coeff_nam
     negligible secondary (antisymmetric) cross-term, secondary-only does the reverse, and the
     combined case is approximately the linear sum of both (VLM is a linear aerodynamic model)."""
 
-    # small deflections (2 deg) keep both the isolated and combined (up to 4 deg local panel
-    # angle) cases well within VLM's linear regime, so strict superposition holds
+    # small deflections (1 deg) keep both the isolated and combined cases within VLM's linear regime;
+    # on a dihedral V-tail the antisymmetric channel's pitch cross-term grows as deflection squared
+    # (cos(delta) in the panel normal), 20 % of the weak yaw response at 2 deg but 10 % at 1 deg
     settings = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method().settings
 
     r0 = run_vlm(vehicle, control_surface, 0.0, 0.0, settings)
-    r1 = run_vlm(vehicle, control_surface, 2.0, 0.0, settings)
-    r2 = run_vlm(vehicle, control_surface, 0.0, 2.0, settings)
-    r3 = run_vlm(vehicle, control_surface, 2.0, 2.0, settings)
+    r1 = run_vlm(vehicle, control_surface, 1.0, 0.0, settings)
+    r2 = run_vlm(vehicle, control_surface, 0.0, 1.0, settings)
+    r3 = run_vlm(vehicle, control_surface, 1.0, 1.0, settings)
 
     coeffs = {'CY': 'CY', 'CL': 'CL', 'CM': 'CM', 'CN': 'CN'}
     primary   = getattr(r1, coeffs[primary_coeff_name])[0,0]   - getattr(r0, coeffs[primary_coeff_name])[0,0]
@@ -187,6 +188,9 @@ def check_compound_surface_mirroring(vehicle, control_surface, primary_coeff_nam
 def check_surrogate_roundtrip(vehicle):
     from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import train_VLM_surrogates
     from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.build_VLM_surrogates import build_VLM_surrogates
+    from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import VLM
+    from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import control_surface_conditions
+    from copy import deepcopy
 
     aero = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
     aero.vehicle = vehicle
@@ -203,6 +207,17 @@ def check_surrogate_roundtrip(vehicle):
 
     train_VLM_surrogates(aero, vehicle)
     build_VLM_surrogates(aero, vehicle)
+
+    # after training, the stored vortex distribution must be the clean-wing geometry, not the last
+    # deflected control-surface case (it is read later, e.g. by transonic_lift_wave_drag)
+    clean_vehicle = deepcopy(vehicle)
+    for wing in clean_vehicle.wings:
+        wing.control_surfaces = []
+    clean_settings = deepcopy(aero.settings)
+    VLM(control_surface_conditions(np.array([0.3])), clean_settings, clean_vehicle)
+    for key in ('chord_lengths', 'leading_edge_sweeps', 'chord_widths', 'XA1', 'ZA1'):
+        assert np.array_equal(aero.settings.vortex_distribution[key], clean_settings.vortex_distribution[key]), \
+            f"vortex_distribution.{key} after training is not the clean-wing geometry"
 
     assert aero.flaperon_flag and aero.elevon_flag and aero.ruddervator_flag, "compound flags not set during training"
 

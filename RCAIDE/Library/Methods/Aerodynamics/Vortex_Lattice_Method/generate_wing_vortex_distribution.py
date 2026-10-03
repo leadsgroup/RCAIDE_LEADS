@@ -562,9 +562,10 @@ def apply_control_surface_deflections(airfoil_x_pts, airfoil_z_pts,LE_angle, LE_
     # if hinge distance is all 0, print warning that control surface is not actually deflecting anything. 
     if np.all(TE_hinge_distance == 0) and (TE_angle !=  0):
         print("Warning: Control surface deflection angle is non-zero but control surface is not actually deflecting any points. \n Check control surface chord fraction and airfoil discretization.")
-    LE_x_deflection = LE_chord_loc - np.tan(LE_angle)*LE_hinge_distance
+    # rigid rotation about the hinge: chordwise shift is d*(1 - cos), normal shift d*sin
+    LE_x_deflection = (1 - np.cos(LE_angle))*LE_hinge_distance
     LE_x_deflection[airfoil_x_pts >LE_chord_loc] = 0
-    TE_x_deflection = - np.sin(TE_angle)*TE_hinge_distance 
+    TE_x_deflection = -(1 - np.cos(TE_angle))*TE_hinge_distance 
     TE_x_deflection[airfoil_x_pts <TE_chord_loc] = 0
 
     LE_z_deflection = -np.sin(LE_angle)*LE_hinge_distance
