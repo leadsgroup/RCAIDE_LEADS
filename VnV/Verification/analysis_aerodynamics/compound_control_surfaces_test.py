@@ -150,14 +150,15 @@ def check_compound_surface_mirroring(vehicle, control_surface, primary_coeff_nam
     negligible secondary (antisymmetric) cross-term, secondary-only does the reverse, and the
     combined case is approximately the linear sum of both (VLM is a linear aerodynamic model)."""
 
-    # small deflections (2 deg) keep both the isolated and combined (up to 4 deg local panel
-    # angle) cases well within VLM's linear regime, so strict superposition holds
+    # small deflections (1 deg) keep both the isolated and combined cases within VLM's linear regime;
+    # on a dihedral V-tail the antisymmetric channel's pitch cross-term grows as deflection squared
+    # (cos(delta) in the panel normal), 20 % of the weak yaw response at 2 deg but 10 % at 1 deg
     settings = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method().settings
 
     r0 = run_vlm(vehicle, control_surface, 0.0, 0.0, settings)
-    r1 = run_vlm(vehicle, control_surface, 2.0, 0.0, settings)
-    r2 = run_vlm(vehicle, control_surface, 0.0, 2.0, settings)
-    r3 = run_vlm(vehicle, control_surface, 2.0, 2.0, settings)
+    r1 = run_vlm(vehicle, control_surface, 1.0, 0.0, settings)
+    r2 = run_vlm(vehicle, control_surface, 0.0, 1.0, settings)
+    r3 = run_vlm(vehicle, control_surface, 1.0, 1.0, settings)
 
     coeffs = {'CY': 'CY', 'CL': 'CL', 'CM': 'CM', 'CN': 'CN'}
     primary   = getattr(r1, coeffs[primary_coeff_name])[0,0]   - getattr(r0, coeffs[primary_coeff_name])[0,0]
