@@ -477,7 +477,6 @@ def payload_range_mission_setup(analyses):
     segment.tag = "cruise" 
     segment.analyses.extend(analyses.base) 
     segment.altitude                                      = 35000.0 * Units.ft  
-    segment.mach_number                                   = 0.8
     segment.distance                                      = 1000.0 * Units.nmi   
     
     # define flight dynamics to model 
