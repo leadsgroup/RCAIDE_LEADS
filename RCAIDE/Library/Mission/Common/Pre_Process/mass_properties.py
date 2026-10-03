@@ -228,6 +228,10 @@ def mass_properties_preprocess_routine(segment, i = 0):
             print(f"CG breakdown written to Excel:\n  {excel_filename}")
 
         analyses.vehicle.mass_properties.center_of_gravity_breakdown = centre_of_gravity_df  
+    else:
+        # use the vehicle's prescribed center of gravity
+        CG = np.atleast_2d(np.array(analyses.vehicle.mass_properties.center_of_gravity, dtype=float))
+        segment.state.conditions.weights.vehicle.global_center_of_gravity = CG * segment.state.ones_row(1)
 
     # ---------------------------------------------------------------------------------------------------------------------------         
     # STEP 6: Compute Moment of Inertia 
@@ -251,6 +255,14 @@ def mass_properties_preprocess_routine(segment, i = 0):
             with pd.ExcelWriter(excel_filename, engine="openpyxl",mode="a",if_sheet_exists="replace") as writer:
                 moment_of_inertia_df.to_excel(writer,sheet_name="Moment of Inertia",index=False)
             print(f"MOI breakdown written to Excel:\n  {excel_filename}") 
+    else:
+        # use the vehicle's prescribed moment of inertia tensor
+        tensor      = np.array(analyses.vehicle.mass_properties.moments_of_inertia.tensor, dtype=float)
+        ones_row    = segment.state.ones_row
+        vehicle_MOI = segment.state.conditions.weights.vehicle
+        for i_axis, axis_i in enumerate('xyz'):
+            for j_axis, axis_j in enumerate('xyz'):
+                vehicle_MOI['moments_of_inertia_I' + axis_i + axis_j] = tensor[i_axis, j_axis] * ones_row(1)
  
 
 def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
