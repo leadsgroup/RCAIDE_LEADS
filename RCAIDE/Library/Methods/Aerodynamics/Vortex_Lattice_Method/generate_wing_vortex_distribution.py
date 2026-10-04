@@ -397,9 +397,9 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
         xc  =  xc_w.flatten()  + wing_origin_x  # x coordinate of control points on panel
         yc  =  yc_w.flatten()  + wing_origin_y  # y coordinate of control points on panel
         zc  =  zc_w.flatten()  + wing_origin_z  # y coordinate of control points on panel
-        x   =   x_w.flatten()   + wing_origin_x  # x coordinate of control points on panel
-        y   =   y_w.flatten()   + wing_origin_y  # y coordinate of control points on panel
-        z   =   z_w.flatten()   + wing_origin_z  # y coordinate of control points on panel
+        x   =   x_w.flatten() * yz_sym_sign + wing_origin_x  # x coordinate of panel nodes (mirrored like the panel corners)
+        y   =   y_w.flatten() * xz_sym_sign + wing_origin_y  # y coordinate of panel nodes
+        z   =   z_w.flatten() * xy_sym_sign + wing_origin_z  # z coordinate of panel nodes
         
         # VD discretization information----------------------------------------------------------------------------
         
