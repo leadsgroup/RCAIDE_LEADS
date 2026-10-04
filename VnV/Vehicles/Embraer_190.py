@@ -512,14 +512,14 @@ def vehicle_setup():
     fuel_line.working_fluid                        = RCAIDE.Library.Attributes.Propellants.Jet_A()
 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    #  Fuel Tank & Fuel
+    #  Fuel Tank & Fuel: wing tanks only, spar-bounded (20-61% chord), 13,172 kg vs APM 13,100 kg max usable
     #------------------------------------------------------------------------------------------------------------------------------------   
     inboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
     inboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
     inboard_tank.tag = 'inboard_tank'
     inboard_tank.segments_bounding_tank       = ['root','yehudi']  
-    inboard_tank.segments_percent_chord_start = [0.15  ,0.15 ]
-    inboard_tank.segments_percent_chord_end   = [0.65  ,0.65]
+    inboard_tank.segments_percent_chord_start = [0.20 ,0.20 ]
+    inboard_tank.segments_percent_chord_end   = [0.61 ,0.61 ]
     inboard_tank.assigned_distributors        = [[fuel_line.tag]]
     net.sources.append(inboard_tank)
     
@@ -527,21 +527,10 @@ def vehicle_setup():
     outboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
     outboard_tank.tag = 'outboard_tank'
     outboard_tank.segments_bounding_tank       = ['yehudi', 'section_2']  
-    outboard_tank.segments_percent_chord_start = [0.15 ,0.15 ]
-    outboard_tank.segments_percent_chord_end   = [0.65 ,0.65]
+    outboard_tank.segments_percent_chord_start = [0.20 ,0.20 ]
+    outboard_tank.segments_percent_chord_end   = [0.61 ,0.61 ]
     outboard_tank.assigned_distributors        = [[fuel_line.tag]]
     net.sources.append(outboard_tank)
-
-    fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()  
-    fuel_tank.lengths.external                  = 2 
-    fuel_tank.widths.external                   = 2
-    fuel_tank.geometry_type                     = 'prismatic'   
-    fuel_tank.heights.external                  = 0.25
-    fuel_tank.origin                            = [[15.0,0.0, 0.0]]
-    fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A()
-    fuel_tank.fuel.origin                       = [[15.0,0.0, 0.0]]
-    fuel_tank.assigned_distributors        = [[fuel_line.tag]]
-    net.sources.append(fuel_tank)
     
 
     #------------------------------------------------------------------------------------------------------------------------------------  
