@@ -253,3 +253,20 @@ m_HVPC = P_rated / specific_power; m_wire = N·ρ_w·π·a²·b; m_collector = N
 14. **Identical thrusters.** Each thruster needs its own `electrode_array.tag` and
     `high_voltage_converter.tag`, because results are keyed by those tags (same rule as rotor/ESC tags
     in `VnV/Vehicles/Electric_Twin_Otter.py`).
+15. **MIT-like aircraft test** (`VnV/Verification/network_electric/ehd_mit_aircraft_test.py`, added
+    on request after the MVP). Not a validation case: chord, spacing, unit count/layout, wing and tail
+    geometry, and battery are guesses in a `GUESS` block (spec 2.4.1 marks them [UNVERIFIED]); sourced
+    values are in a separate `MIT` block. It asserts the spec's 4.3 N/m² frontal thrust-density check
+    at 40.3 kV with S = 0.10 m (δ = 1), and steady level flight at 5 m/s with SOC closure. It does not
+    assert agreement with the reported 3.2 N.
+16. **OpenVSP export.** RCAIDE's `export_vsp_vehicle` skips EHD propulsors. The MIT test's
+    `export_vsp_with_electrodes` adds wires (circular sections) and NACA 0010 collectors as
+    display-only OpenVSP wings in the `.vsp3` file only, never in the RCAIDE vehicle (drag
+    bookkeeping rule). **Upstream bug found:** in
+    `Framework/External_Interfaces/OpenVSP/export_vsp_vehicle.py` l.133-136 the `write_vsp_wing` call
+    is indented inside `if verbose:`, so `verbose=False` exports no wings. Not fixed here (Framework is
+    out of scope); the helper passes `verbose=True`. Worth a separate upstream issue/PR.
+17. **Environment for this work.** Conda env `rcaide1.5.0EHDproj` (Python 3.13) with the clone
+    installed via `pip install -e .`, plus pytest and the local OpenVSP 3.47 packages from
+    `C:\VSP313\python` (editable, `--no-deps`). Matches upstream's contributor setup; no PYTHONPATH
+    needed.
