@@ -37,7 +37,6 @@ def vehicle_setup():
     vehicle.mass_properties.max_zero_fuel             = 21000 
     vehicle.mass_properties.cargo                     = 7400
     vehicle.mass_properties.center_of_gravity         = [[0,0,0]] # Unknown 
-    vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]] # Unknown 
     vehicle.mass_properties.max_fuel                  = 5000 
 
     # envelope properties
