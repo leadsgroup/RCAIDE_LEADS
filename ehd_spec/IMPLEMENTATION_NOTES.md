@@ -178,9 +178,18 @@ Return values to the network: `thrust` = [T_net, 0, 0]; `P_mech` = P_EHD (power 
 electrodes, the EHD analogue of rotor shaft power, so it shows up in `conditions.energy.power`);
 `P_elec` = P_bus (what the bus and battery see).
 
+Throttle is clipped to [0, 1] before the voltage map (spec: throttle ∈ [0, 1]). The solver's unclipped
+throttle stays in `propulsors[tag].throttle`; a thrust-limited condition therefore shows up as a
+segment that cannot converge rather than as V_a > V_max.
+
+Output arrays are sized from the computed per-point arrays, not from `state.ones_row`, because the
+standalone state built by `setup_operating_conditions` does not update `ones_row` when given several
+velocities.
+
 Storage layout:
-* `conditions.energy.propulsors[thruster.tag]`: throttle, thrust, moment, power, net_thrust,
-  electrode_power (P_EHD), bus_power (P_bus), thrust_to_power_ratio, voltage_limit_flag
+* `conditions.energy.propulsors[thruster.tag]`: throttle, commanded_thrust_vector_angle, thrust,
+  moment, power, net_thrust, electrode_power (P_EHD), bus_power (P_bus), thrust_to_power_ratio
+  (electrical T_unit/P_unit in N/W; 0 below inception)
 * `conditions.energy.converters[array.tag]`: relative_air_density, inception_field,
   inception_voltage, applied_voltage, normalized_voltage, dimensionless_current, unit_current,
   unit_thrust, unit_power, collector_reynolds_number, collector_drag_coefficient,
@@ -210,11 +219,13 @@ m_HVPC = P_rated / specific_power; m_wire = N·ρ_w·π·a²·b; m_collector = N
    the spec.
 4. **"V̂ near 1" warning.** The spec asks for a warning but gives no threshold. Not implemented
    (would require an invented number). Gap 10–300 mm warning is implemented.
-5. **Non-optimizable marking.** RCAIDE has no attribute-level lock for Nexus. Implemented as a
-   declared `optimizer_permissions` table on `EHD_Electrode_Array` plus
+5. **Non-optimizable marking.** RCAIDE has no attribute-level lock for Nexus. Implemented as the
+   `EHD_OPTIMIZER_PERMISSIONS` table (defined in `check_ehd_electrode_array_inputs.py` to avoid a
+   Components↔Methods circular import, exposed as `EHD_Electrode_Array.optimizer_permissions`) plus
    `check_ehd_optimizer_inputs(problem)`, which raises for aliases ending in `.unit_spacing` /
    `.collector_chord` / `.sparkover_voltage` and warns for `.emitter_diameter`. Nexus does not call it
-   automatically; doing so would need a Framework edit.
+   automatically; the user must call it after defining `problem.inputs` / `problem.aliases`. Making
+   it automatic would need a Framework edit.
 6. **Weight buildups do not see EHD mass.** The FLOPS/Raymer weight buildups type-check propulsor
    classes (e.g. `Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/compute_propulsion_system_weight.py`
    l.82-89). Adding EHD there means editing existing files, which is out of scope. The thruster
@@ -228,3 +239,17 @@ m_HVPC = P_rated / specific_power; m_wire = N·ρ_w·π·a²·b; m_collector = N
    `VnV/test_automatic_regression.py` would modify an existing test file, so it was not done.
 10. **Bus voltage vs HVPC window.** The HVPC flags (does not raise) when bus voltage is outside its
     input window, matching the spec's "flag a constraint" wording for V_spark.
+11. **`spacing_correction` hook.** Attribute exists (default None, no coefficients). If coefficients
+    are supplied, `check_spacing_correction` validates that k1..k6 are present and then raises
+    `NotImplementedError`. Reason: the spec's Eq. 31 text is garbled in the PDF (subscripts lost) and
+    the fit is valid only at its fitted gap and voltage, so how it should replace the S-proportional
+    terms at other voltages is undefined; the spec says to leave the hook disabled.
+12. **HVPC rated power** sets mass only. No overload check (P_EHD > P_rated) is made, since the spec
+    does not ask for one.
+13. **Mission test weights.** A weights analysis is mandatory in RCAIDE missions
+    (`Library/Mission/Common/Pre_Process/mass_properties.py` l.106-107). The test attaches
+    `Weights.Electric_Drone` with `settings.run_weights_analysis = False`, so the hand-set mass is kept
+    (see item 6).
+14. **Identical thrusters.** Each thruster needs its own `electrode_array.tag` and
+    `high_voltage_converter.tag`, because results are keyed by those tags (same rule as rotor/ESC tags
+    in `VnV/Vehicles/Electric_Twin_Otter.py`).

@@ -38,3 +38,4 @@ from .Turbofan                                   import Turbofan
 from .Turbojet                                   import Turbojet
 from .Turboprop                                  import Turboprop
 from .Constant_Speed_Internal_Combustion_Engine  import Constant_Speed_Internal_Combustion_Engine
+from .EHD_Thruster                               import EHD_Thruster

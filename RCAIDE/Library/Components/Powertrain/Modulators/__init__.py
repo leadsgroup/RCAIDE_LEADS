@@ -16,3 +16,4 @@ from .Electronic_Speed_Controller                  import Electronic_Speed_Contr
 from .Fuel_Selector                                import Fuel_Selector
 
 
+from .High_Voltage_Converter                     import High_Voltage_Converter

@@ -34,3 +34,4 @@ from . import Turbine
 from . import Reformer
 from . import Turboshaft
 from . import Turboelectric_Generator
+from . import EHD_Electrode_Array

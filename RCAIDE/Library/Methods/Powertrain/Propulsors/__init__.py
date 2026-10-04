@@ -27,3 +27,4 @@ from . import Internal_Combustion_Engine
 from . import Turbofan 
 from . import Turbojet 
 from . import Turboprop 
+from . import EHD_Thruster

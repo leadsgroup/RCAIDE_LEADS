@@ -18,3 +18,4 @@ RCAIDE.Library.Components.Powertrain.Modulators
 # ----------------------------------------------------------------------------------------------------------------------
  
 from .                        import Electronic_Speed_Controller
+from .                        import High_Voltage_Converter
