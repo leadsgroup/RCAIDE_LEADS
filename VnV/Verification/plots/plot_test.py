@@ -51,6 +51,7 @@ def main():
     general_aviation_aircraft_geometry_test(show_figure)
     bwb_aircraft_geometry_test(show_figure)
     orthogonal_view_test(show_figure)
+    CO2e_emissions_plot_test()
 
     elapsed_time = time.time() - ti
     elapsed_time_min = elapsed_time / 60
@@ -308,6 +309,29 @@ def bwb_aircraft_geometry_test(show_figure):
                     show_figure=show_figure)
 
     return    
+
+def CO2e_emissions_plot_test():
+    # non-finite values are ignored when setting the axis limits
+    figure = plot_CO2e_emissions(CO2e_results(np.array([[0.], [1.], [2.]]), np.array([[np.nan], [1e6], [3e6]])), show_legend=False)
+    assert np.all(np.isfinite(figure.axes[0].get_ylim()))
+    assert np.allclose(figure.axes[0].get_ylim(), [0, 3.3])
+    plt.close(figure)
+
+    # a segment with no finite values still gives finite axis limits
+    figure = plot_CO2e_emissions(CO2e_results(np.array([[0.], [1.]]), np.array([[np.nan], [np.inf]])), show_legend=False)
+    assert np.all(np.isfinite(figure.axes[0].get_ylim()))
+    plt.close(figure)
+    return
+
+def CO2e_results(time, cumulative_gCO2e):
+    segment                                       = RCAIDE.Framework.Core.Data()
+    segment.tag                                   = 'mission'
+    segment.conditions                            = RCAIDE.Framework.Mission.Common.Results()
+    segment.conditions.frames.inertial.time       = time
+    segment.conditions.emissions.cumulative_gCO2e = cumulative_gCO2e
+    results          = RCAIDE.Framework.Core.Data()
+    results.segments = [segment]
+    return results
      
 if __name__ == '__main__': 
     main()    

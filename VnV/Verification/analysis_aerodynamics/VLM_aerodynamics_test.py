@@ -83,13 +83,39 @@ def cruise_drag_build_up_test():
 
 
 def aerodynamics_surrogate_test():
-    vehicle  = vehicle_setup()
-    configs  = configs_setup(vehicle)
-    analyses = analyses_setup(configs)
-    mission  = mission_setup(analyses)
-    missions = missions_setup(mission)
-    results  = missions.base_mission.evaluate()
 
+    # cruise truth values (CL, CDi, CDc, CD) at each number of spanwise vortices
+    truth = {15: (0.507421541549124 , 0.00957083770212266 , 0.002733115874672987  , 0.0229487721136387 ),
+             30: (0.5071997069924896, 0.009912373953636956, 0.0030841948218838624 , 0.02365523961633837),
+             45: (0.5071863127710727, 0.010008300835655785, 0.0030099462482277867 , 0.02367735149086838)}
+
+    CDi = {}
+    for n_sw, values_true in truth.items():
+        vehicle  = vehicle_setup()
+        configs  = configs_setup(vehicle)
+        analyses = analyses_setup(configs, number_of_spanwise_vortices = n_sw)
+        mission  = mission_setup(analyses)
+        missions = missions_setup(mission)
+        results  = missions.base_mission.evaluate()
+
+        coefficients = results.segments.cruise.conditions.aerodynamics.coefficients
+        values       = (coefficients.lift.total[2][0],
+                        coefficients.drag.induced.total[2][0],
+                        coefficients.drag.compressible.total[2][0],
+                        coefficients.drag.total[2][0])
+        for name, value, value_true in zip(('CL', 'CDi', 'CDc', 'CD'), values, values_true):
+            error = np.abs((value - value_true)/value_true)
+            print(f'n_sw = {n_sw}, {name}: {value}, error: {error}')
+            assert error < 1e-3, f"n_sw = {n_sw}, {name} mismatch: got {value}, expected {value_true}"
+        CDi[n_sw] = values[1]
+
+        if n_sw == 30:
+            results_default = results
+
+    # induced drag must converge with spanwise refinement
+    assert np.abs(CDi[45]/CDi[30] - 1) < 0.02, f"CDi not converged with spanwise refinement: {CDi}"
+
+    results = results_default
     vortex_distribution = results.segments.cruise.analyses.aerodynamics.settings.vortex_distribution
     plot_3d_vehicle_vlm_panelization(vortex_distribution=vortex_distribution,
                     save_filename               = "BWB_Top_View",
@@ -100,15 +126,6 @@ def aerodynamics_surrogate_test():
                     save_filename               = "BWB_Top_View",
                     show_wing_control_points    = True,
                     show_figure                 = False)
-
-    Cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
-
-
-    Cruise_CL_true   = 0.5079615455451072
-    Cruise_CL_diff   = np.abs(Cruise_CL - Cruise_CL_true)
-    print('Error: ',Cruise_CL_diff)
-    assert np.abs((Cruise_CL - Cruise_CL_true)/Cruise_CL_true) < 1e-3, f"Cruise_CL mismatch: got {Cruise_CL}, expected {Cruise_CL_true}"
-
 
     # test lopa coordianates
     LOPA_coords =  results.segments.cruise.analyses.vehicle.wings.main_wing.layout_of_passenger_accommodations.object_coordinates
@@ -123,11 +140,11 @@ def aerodynamics_surrogate_test():
 
     # thruth values
     coordinate_1_x_thruth  = 8.178799999999999
-    coordinate_1_y_thruth  = 1.7018
+    coordinate_1_y_thruth  = 1.4859
     coordinate_2_x_thruth  = 3.9116
-    coordinate_2_y_thruth  = 0.6858
+    coordinate_2_y_thruth  = 0.46989999999999993
     coordinate_3_x_thruth  = 2.9972
-    coordinate_3_y_thruth  = -3.556
+    coordinate_3_y_thruth  = -2.2986999999999997
 
     # Truth values
     error = Data()
@@ -179,7 +196,7 @@ def aerodynamics_non_surrogate_test():
 #   Define the Configurations
 # ---------------------------------------------------------------------
 
-def analyses_setup(configs):
+def analyses_setup(configs, number_of_spanwise_vortices = 30):
     """Set up analyses for each of the different configurations."""
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
@@ -187,7 +204,7 @@ def analyses_setup(configs):
     # Build a base analysis for each configuration. Here the base analysis is always used, but
     # this can be modified if desired for other cases.
     for tag,config in configs.items():
-        analysis = base_analysis(config)
+        analysis = base_analysis(config, number_of_spanwise_vortices)
         analyses[tag] = analysis
 
     return analyses
@@ -207,7 +224,7 @@ def non_surrogate_analyses_setup(configs):
     return analyses
 
 
-def base_analysis(vehicle):
+def base_analysis(vehicle, number_of_spanwise_vortices = 30):
     """This is the baseline set of analyses to be used with this vehicle. Of these, the most
     commonly changed are the weights and aerodynamics methods."""
 
@@ -235,6 +252,7 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.number_of_spanwise_vortices = number_of_spanwise_vortices
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------

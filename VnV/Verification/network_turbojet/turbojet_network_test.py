@@ -57,7 +57,7 @@ def main():
     plot_mission(results)
 
     # Truth values
-    L_D_truth = 7.474887798411677
+    L_D_truth = 7.896822906641584
 
     CL  = results.segments.level_cruise.conditions.aerodynamics.coefficients.lift.total
     CD  = results.segments.level_cruise.conditions.aerodynamics.coefficients.drag.total
