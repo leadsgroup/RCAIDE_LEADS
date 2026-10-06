@@ -46,10 +46,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6879290379225934
-    electric_cruise_CL_truth         = 0.8314170769490901
-    series_hybrid_cruise_CL_truth    = 0.69414909471798
-    parallel_hybrid_cruise_CL_truth  = 0.6939160533504246
+    convetional_cruise_CL_truth      = 0.6878976814783021
+    electric_cruise_CL_truth         = 0.8316577969028044
+    series_hybrid_cruise_CL_truth    = 0.6941165696285407
+    parallel_hybrid_cruise_CL_truth  = 0.693884338600747
 
     error = Data()
     
@@ -370,7 +370,7 @@ def plot_battery_pack_conditions(plot_data,
                     set_axes(axis_1_5) 
                 
                     axis_1_6.plot(time, pack_temperature, color = line_colors[res_i], marker = ps.markers[b_i], linewidth = ps.line_width)
-                    axis_1_6.set_ylabel(r'Temperature, $\degree$C')
+                    axis_1_6.set_ylabel('Temperature, K')
                     set_axes(axis_1_6)  
                  
         

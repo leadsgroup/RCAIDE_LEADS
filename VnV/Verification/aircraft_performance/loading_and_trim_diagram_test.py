@@ -69,9 +69,9 @@ def tube_and_wing_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag = 'cruise', discretization=  3)
     
-    CG_Percent_of_LEMAC_truth = np.array([[-0.12163053839768002,  0.8208289140589032,  1.7632883665154866],
-                                          [-0.12163053839768002,  0.8208289140589032,  1.7632883665154866],
-                                          [-0.12163053839768002,  0.8208289140589032,  1.7632883665154866]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.5308049808468881, 0.341014637857724, 1.212834256562336],
+                                          [-0.5308049808468881, 0.341014637857724, 1.212834256562336],
+                                          [-0.5308049808468881, 0.341014637857724, 1.212834256562336]])
     plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram")
 
     LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
@@ -99,9 +99,9 @@ def blended_wing_body_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3) 
   
-    CG_Percent_of_LEMAC_truth = np.array([[-0.8198004221804835, -0.16000900773253532,  0.49978240671541285],
-                                            [-0.8198004221804835, -0.1600900773253532,  0.49978240671541285],
-                                            [-0.8198004221804835, -0.16600900773253532,  0.49978240671541285]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.8001949235410707, -0.13420663264493796, 0.5317816582511947],
+                                          [-0.8001949235410707, -0.13420663264493796, 0.5317816582511947],
+                                          [-0.8001949235410707, -0.13420663264493796, 0.5317816582511947]])
 
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram")
 

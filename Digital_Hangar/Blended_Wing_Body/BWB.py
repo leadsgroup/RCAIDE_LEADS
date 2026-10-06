@@ -164,7 +164,7 @@ def vehicle_setup():
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
     segment.tag                                    = 'Fuselage_Section_1'
     segment.taper                                  = 0.8769841298701299
-    segment.twist                                  = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
     segment.percent_span_location                  = 0.0  
     segment.root_chord_percent                     = 1.0 
     segment.dihedral_outboard                      = 0  *  Units.degrees 
@@ -179,7 +179,7 @@ def vehicle_setup():
     segment.tag                                    = 'Fuselage_Section_2'
     segment.taper                                  = 0.32260442862265637  
     segment.percent_span_location                  = 0.020625/  wing.spans.projected*64
-    segment.twist                                  = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
     segment.root_chord_percent                     = 0.9923542105
     segment.dihedral_outboard                      = 0 *  Units.degrees   
     segment.sweeps.quarter_chord                   = 46.9023 *  Units.degrees  
@@ -193,7 +193,7 @@ def vehicle_setup():
     segment.tag                                    = 'Fuselage_Section_3'
     segment.taper                                  = 0.32260442862265637   
     segment.percent_span_location                  = 0.059375/  wing.spans.projected*64
-    segment.twist                                  = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
     segment.root_chord_percent                     = 0.9375928
     segment.dihedral_outboard                      = 2 *  Units.degrees  
     segment.sweeps.quarter_chord                   = 51.027  *  Units.degrees   
@@ -206,7 +206,7 @@ def vehicle_setup():
     segment.tag                                    = 'Cabin_Wall'
     segment.taper                                  = 0.32260442862265637   
     segment.percent_span_location                  = 0.17 /  wing.spans.projected*64
-    segment.twist                                  = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
     segment.root_chord_percent                     = 0.68285715
     segment.dihedral_outboard                      = 12 *  Units.degrees   
     segment.sweeps.quarter_chord                   = 42.5  *  Units.degrees   
@@ -220,7 +220,7 @@ def vehicle_setup():
     segment.tag                                    = 'Fuel_Wall'
     segment.taper                                  = 0.32260442862265637   
     segment.percent_span_location                  = 0.19 /  wing.spans.projected*64
-    segment.twist                                  = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
     segment.root_chord_percent                     = 0.58
     segment.dihedral_outboard                      = 5 *  Units.degrees    
     segment.sweeps.quarter_chord                   = 0.775369385#769415328
@@ -232,7 +232,7 @@ def vehicle_setup():
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                                    = 'Wing_Section_1' 
     segment.percent_span_location                  = 0.3346858066654701/  wing.spans.projected*64
-    segment.twist                                  = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
     segment.root_chord_percent                     = 0.2 
     segment.dihedral_outboard                      = 1 *  Units.degrees 
     segment.sweeps.quarter_chord                   = 0.610554743 #0.557707107
@@ -244,7 +244,7 @@ def vehicle_setup():
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                                    = 'Wing_Section_2' 
     segment.percent_span_location                  = 0.5389354883954404
-    segment.twist                                  = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
     segment.root_chord_percent                     = 0.13 
     segment.dihedral_outboard                      = 1 *  Units.degrees 
     segment.sweeps.quarter_chord                   = 0.557683513
@@ -258,7 +258,7 @@ def vehicle_setup():
     segment.tag                                    = 'Wing_Section_3' 
     segment.percent_span_location                  = 0.98
     segment.root_chord_percent                     = 0.052
-    segment.twist                                  = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
     segment.dihedral_outboard                      = 65 *  Units.degrees  
     segment.sweeps.quarter_chord                   = 55 *  Units.degrees 
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
@@ -270,7 +270,7 @@ def vehicle_setup():
     segment.tag                                    = 'Wing_Section_4' 
     segment.twist                                  = 0.0 
     segment.percent_span_location                  = 1.0 
-    segment.twist                                  = 0.0 * Units.deg
+    segment.twist                                  = wing.twists.outwash
     segment.root_chord_percent                     = 0.02 
     segment.dihedral_outboard                      = 0  
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
