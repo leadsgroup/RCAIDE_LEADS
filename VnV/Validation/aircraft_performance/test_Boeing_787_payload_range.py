@@ -53,7 +53,7 @@ def main():
     # #####################################################################################################
         
     truth_values = {
-        "range":            np.array([       0.        , 10179983.836416038, 17764322.7188835  , 18477138.863957133]),
+        "range":            np.array([       0.        , 10655105.93851858 , 18596469.35167833 , 19338741.1299942  ]),
         "payload":          np.array([44000.        , 44000.        ,  9600.016209543028,     0.        ]),
         "oew_plus_payload": np.array([161006.98379045696, 161006.98379045696, 126607.        , 117006.98379045697]),
         "fuel":             np.array([     0.        ,  66923.01620954304, 101323.        , 101323.        ]),
@@ -477,7 +477,6 @@ def payload_range_mission_setup(analyses):
     segment.tag = "cruise" 
     segment.analyses.extend(analyses.base) 
     segment.altitude                                      = 35000.0 * Units.ft  
-    segment.mach_number                                   = 0.8
     segment.distance                                      = 1000.0 * Units.nmi   
     
     # define flight dynamics to model 

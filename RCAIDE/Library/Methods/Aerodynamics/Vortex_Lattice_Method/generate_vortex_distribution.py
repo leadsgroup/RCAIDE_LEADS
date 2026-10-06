@@ -132,6 +132,7 @@ def generate_vortex_distribution(conditions,settings,geometry):
     VD_seg.spanwise_breaks           = np.atleast_2d(VD_i.spanwise_breaks          )
     VD_seg.symmetric_wings           = np.atleast_2d(VD_i.symmetric_wings          )
     VD_seg.vertical_wing             = np.atleast_2d(VD_i.vertical_wing            )
+    VD_seg.horizontal_tail           = np.atleast_2d(VD_i.horizontal_tail          )
     VD_seg.surface_ID                = np.atleast_2d(VD_i.surface_ID               )
     VD_seg.surface_ID_full           = np.atleast_2d(VD_i.surface_ID_full          )
     VD_seg.leading_edge_indices      = np.atleast_2d(VD_i.leading_edge_indices     )
@@ -279,6 +280,7 @@ def generate_aircraft_vortex_distribution(geometry,settings):
     VD.spanwise_breaks  = np.array([], dtype=np.int32) # indices of the first strip of panels in a wing (given chordwise_breaks)
     VD.symmetric_wings  = np.array([], dtype=np.int32)
     VD.vertical_wing    = np.array([], dtype=np.int32)
+    VD.horizontal_tail  = np.array([], dtype=np.int32) # 1 for each surface side that belongs to a horizontal tail
     VD.leading_edge_sweeps       = np.array([], dtype=bool)      # bool array of leading  edge indices (all false except for panels at leading  edge)
     VD.chord_lengths             = np.array([], dtype=precision) # Chord length, this is assigned for all panels.
     VD.tangent_incidence_angle   = np.array([], dtype=precision) # Tangent Incidence Angles of the chordwise strip. LE to TE, ZETA

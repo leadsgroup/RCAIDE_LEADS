@@ -397,15 +397,16 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
         xc  =  xc_w.flatten()  + wing_origin_x  # x coordinate of control points on panel
         yc  =  yc_w.flatten()  + wing_origin_y  # y coordinate of control points on panel
         zc  =  zc_w.flatten()  + wing_origin_z  # y coordinate of control points on panel
-        x   =   x_w.flatten()   + wing_origin_x  # x coordinate of control points on panel
-        y   =   y_w.flatten()   + wing_origin_y  # y coordinate of control points on panel
-        z   =   z_w.flatten()   + wing_origin_z  # y coordinate of control points on panel
+        x   =   x_w.flatten() * yz_sym_sign + wing_origin_x  # x coordinate of panel nodes (mirrored like the panel corners)
+        y   =   y_w.flatten() * xz_sym_sign + wing_origin_y  # y coordinate of panel nodes
+        z   =   z_w.flatten() * xy_sym_sign + wing_origin_z  # z coordinate of panel nodes
         
         # VD discretization information----------------------------------------------------------------------------
         
         # increment number of wings and panels
         n_panels = len(xch)
         VD.n_w  += 1             
+        VD.horizontal_tail = np.append(VD.horizontal_tail, int(isinstance(wing, RCAIDE.Library.Components.Wings.Horizontal_Tail)))
         VD.n_cp += n_panels 
         
         # store this wing's discretization information
@@ -561,9 +562,10 @@ def apply_control_surface_deflections(airfoil_x_pts, airfoil_z_pts,LE_angle, LE_
     # if hinge distance is all 0, print warning that control surface is not actually deflecting anything. 
     if np.all(TE_hinge_distance == 0) and (TE_angle !=  0):
         print("Warning: Control surface deflection angle is non-zero but control surface is not actually deflecting any points. \n Check control surface chord fraction and airfoil discretization.")
-    LE_x_deflection = LE_chord_loc - np.tan(LE_angle)*LE_hinge_distance
+    # rigid rotation about the hinge: chordwise shift is d*(1 - cos), normal shift d*sin
+    LE_x_deflection = (1 - np.cos(LE_angle))*LE_hinge_distance
     LE_x_deflection[airfoil_x_pts >LE_chord_loc] = 0
-    TE_x_deflection = - np.sin(TE_angle)*TE_hinge_distance 
+    TE_x_deflection = -(1 - np.cos(TE_angle))*TE_hinge_distance 
     TE_x_deflection[airfoil_x_pts <TE_chord_loc] = 0
 
     LE_z_deflection = -np.sin(LE_angle)*LE_hinge_distance

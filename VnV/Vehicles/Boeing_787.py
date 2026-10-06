@@ -83,7 +83,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     main_gear.wheels                         = 8
     main_gear.number_of_gear_types_in_tandem = 2
     main_gear.number_of_wheels_in_gear_type  = 2
-    main_gear.origin                         = [[28, 5.335, -1.5]]
+    main_gear.origin                         = [[27.49, 4.90, -1.5]]  # gear CG at the 28.19 m main axle, 9.80 m track (APM D6-58333 Sec. 2.2.1)
     main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)
 
@@ -95,7 +95,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     nose_gear.wheels                         = 2
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2
-    nose_gear.origin                         = [[7.0, 0, -1.5]]
+    nose_gear.origin                         = [[4.49, 0, -1.5]]  # gear CG at the 5.41 m nose axle (APM D6-58333 Sec. 2.2.1)
     vehicle.append_component(nose_gear)
 
 
@@ -117,7 +117,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     wing.areas.reference                  = 392.27 * Units['meters**2']
     wing.areas.wetted                     = 825.0 * Units['meters**2']
     wing.twists.root                      = 4.0 * Units.degrees 
-    wing.twists.tip                       = -2.0 * Units.degrees 
+    wing.twists.tip                       = -2.15 * Units.degrees 
     wing.origin                           = [[16.59,0,-0.492]]
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
@@ -388,7 +388,6 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     
     # Segment  
@@ -612,35 +611,27 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     # Systems 
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[5.0, 0, 0]]
     net.systems.append(avionics)
 
     flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[36.5, 0, 0]]
     net.systems.append(flight_controls)
 
     auxiliary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxiliary_power_unit.origin       = [[70.9, 0, 0]]
     net.systems.append(auxiliary_power_unit)
 
     electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[18.3, 0, -0.8]]
     net.systems.append(electrical)
 
     hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[36.5, 0, -0.8]]
     net.systems.append(hydraulics)
 
     environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[21.9, 0, -1.0]]
     net.systems.append(environmental_controls)
 
     instruments = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
-    instruments.origin                = [[5.0, 0, 0]]
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[36.5, 0, 0]]
     net.systems.append(furnishings)
 
 

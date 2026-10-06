@@ -66,13 +66,15 @@ def build_VLM_surrogates(aerodynamics, vehicle):
     surrogates.subsonic    =  build_surrogate(aerodynamics, training.subsonic, vehicle)
     
     # only build supersonic surrogates if necessary
-    if len(sup_Mach) > 2: 
+    if len(sup_Mach) > 2 and training.supersonic is not None: 
         surrogates.supersonic  =  build_surrogate(aerodynamics, training.supersonic, vehicle)
         surrogates.transonic   =  build_surrogate(aerodynamics, training.transonic, vehicle)
     else: 
         surrogates.supersonic  =  no_surrogate(aerodynamics, training.supersonic, vehicle)
         surrogates.transonic   =  no_surrogate(aerodynamics, training.transonic, vehicle)        
-        
+
+    # supersonic training deferred until a flight condition needs it (see evaluate_surrogate)
+    surrogates.supersonic_pending = len(sup_Mach) > 2 and training.supersonic is None
     return
 
 def build_surrogate(aerodynamics, training, vehicle):

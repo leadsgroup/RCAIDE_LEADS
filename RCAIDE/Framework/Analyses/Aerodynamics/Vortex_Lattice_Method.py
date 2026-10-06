@@ -73,11 +73,14 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.settings.spanwise_cosine_spacing                       = True
         self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
+        self.settings.horizontal_tail_dynamic_pressure_ratio        = 1.0  # q_h/q at the horizontal tail (Raymer Eq. 16.6)
         self.settings.use_VORLAX_matrix_calculation                 = False
         self.settings.floating_point_precision                      = np.float32     
     
         # conditions table, used for surrogate model training
         self.training                                               = Data() 
+        self.training_vehicle                                       = None  # vehicle the surrogates were trained on
+        self.surrogate_owner                                        = None  # analysis owning shared surrogates, set by the aerodynamics pre-process
         self.training.angle_of_attack                               = np.array([ -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45.]) * Units.deg   
         self.training.Mach                                          = np.array([0.1  , 0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.5 , 2.0  , 2.5  , 3.5])             
                                 
@@ -171,6 +174,7 @@ class Vortex_Lattice_Method(Aerodynamics):
                         pickle.dump(self.training, file) 
 
             build_VLM_surrogates(self, vehicle)        
+            self.training_vehicle = vehicle
     
         # build the evaluation process
         compute   =  self.process.compute                  
@@ -181,6 +185,15 @@ class Vortex_Lattice_Method(Aerodynamics):
         return 
     
          
+    def train_supersonic_surrogates(self):
+        """Trains and builds the supersonic and transonic surrogates on first need (see evaluate_surrogate)."""
+        train_VLM_supersonic_surrogates(self, self.training_vehicle)
+        build_VLM_surrogates(self, self.training_vehicle)
+        if self.settings.store_training_data:
+            with open(self.filename, 'wb') as file:
+                pickle.dump(self.training, file)
+        return
+
     def evaluate(self,state, vehicle):
         """The default evaluate function.
 

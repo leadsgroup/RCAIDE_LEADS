@@ -15,12 +15,13 @@ from .generate_vortex_distribution       import generate_vortex_distribution
 from .compute_RHS_matrix                 import compute_RHS_matrix
 
 from scipy.integrate import trapezoid
+import scipy.linalg
 import numpy as np
 # ----------------------------------------------------------------------
 #  Vortex Lattice
 # ----------------------------------------------------------------------
 
-def VLM(conditions,settings,geometry):
+def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     """Uses the vortex lattice method to compute the lift, induced drag and moment coefficients.
 
     The user should be forwarned that this will cause very slight differences in results for 0 deflection due to
@@ -85,6 +86,7 @@ def VLM(conditions,settings,geometry):
     settings.propeller_wake_model              [Unitless]
     settings.use_VORLAX_matrix_calculation     [boolean]
     settings.floating_point_precision          [float16/32/64]
+    induced_velocity_cache                     [dict], optional; reuses C_mn across calls with the same geometry and Mach
 
     conditions.aerodynamics.angles.alpha       [radians]
     conditions.aerodynamics.angles.beta        [radians]
@@ -211,7 +213,15 @@ def VLM(conditions,settings,geometry):
     ONSET   = rhs.ONSET*1
 
     # Build induced velocity matrix, C_mn
-    C_mn, s, RFLAG, EW = compute_wing_induced_velocity(VD,mach,compute_EW=True)
+    mach_key = mach.tobytes()
+    if induced_velocity_cache is not None and mach_key in induced_velocity_cache:
+        cached = induced_velocity_cache[mach_key]
+        C_mn, s, RFLAG, EW = cached['C_mn'], cached['s'], cached['RFLAG'], cached['EW']
+    else:
+        C_mn, s, RFLAG, EW = compute_wing_induced_velocity(VD,mach,compute_EW=True)
+        if induced_velocity_cache is not None:
+            induced_velocity_cache.clear()  # keep only the latest Mach to bound memory
+            induced_velocity_cache[mach_key] = {'C_mn': C_mn, 's': s, 'RFLAG': RFLAG, 'EW': EW}
 
     # Turn off sonic vortices when Mach>1
     RHS = RHS*RFLAG
@@ -228,8 +238,14 @@ def VLM(conditions,settings,geometry):
     else:
         A = EW
 
-    # Compute vortex strength
-    GAMMA  = np.linalg.solve(A,RHS)
+    # Compute vortex strength; with a cache (one case per call), A's LU factorization is reused across the Mach group
+    if induced_velocity_cache is not None and len(mach) == 1:
+        cached = induced_velocity_cache[mach_key]
+        if 'lu' not in cached:
+            cached['lu'] = scipy.linalg.lu_factor(A[0].astype(np.result_type(A, RHS)))  # same precision as np.linalg.solve
+        GAMMA = scipy.linalg.lu_solve(cached['lu'], RHS[0])[None]
+    else:
+        GAMMA  = np.linalg.solve(A,RHS)
 
     # To ensure compatibility for np.linalg.solve across numpy1.0 and numpy2.0
     RHS    = RHS.squeeze(axis=2)
@@ -418,6 +434,14 @@ def VLM(conditions,settings,geometry):
     FY     = (BFY *COPSI - BFX *SINPSI) *STRIP
     RM     = STRIP *(BMX *COSALF *COPSI + BMY *COSALF *SINPSI + BMZ *SINALF)
     YM     = STRIP *(BMZ *COSALF - (BMX *COPSI + BMY *SINPSI) *SINALF)
+
+    # horizontal tail strips see the tail dynamic pressure ratio, q_h/q (Raymer Eq. 16.6)
+    eta_h  = np.repeat(np.where(VD.horizontal_tail[0] == 1, settings.get('horizontal_tail_dynamic_pressure_ratio', 1.0), 1.0), VD.n_sw[0])
+    LIFT   = LIFT   * eta_h
+    MOMENT = MOMENT * eta_h
+    FY     = FY     * eta_h
+    RM     = RM     * eta_h
+    YM     = YM     * eta_h
 
     # Lift coefficient
     Clift_y   = LIFT/CHORD_strip/ES
@@ -687,8 +711,8 @@ def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dis
             zcp_w  = z_control_points[w]
             cd_w   = cd_induced_flat[offset:offset + n_sw_w]
             ch_w   = chord_split[w]
-            ld_w   = np.cumsum(np.sqrt(np.diff(ycp_w)**2 + np.diff(zcp_w)**2))
-            CDi_w  = trapezoid(cd_w * ch_w, ld_w) / SREF
+            ds_w   = np.sqrt(np.diff(ycp_w)**2 + np.diff(zcp_w)**2)
+            CDi_w  = np.sum(cd_w * ch_w * ds_w) / SREF   # strip sum, consistent with how lift is summed
             CDi_wing[k][w] = CDi_w
             CDi   += CDi_w
             offset += n_sw_w

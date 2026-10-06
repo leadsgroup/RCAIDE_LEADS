@@ -56,6 +56,8 @@ class Nexus(Data):
         self.last_fidelity          = None
         self.evaluation_count       = 0
         self.force_evaluate         = False
+        self.output_cache           = {}    # x -> (objective, inequality, equality); see cached_outputs
+        self.last_requested_x       = None  # last x passed to cached_outputs
         self.hard_bounded_inputs    = False
 
         opt_prob = self.optimization_problem
@@ -149,6 +151,8 @@ class Nexus(Data):
             Properties Used:
             None
         """           
+        if x is not None and not self.force_evaluate:
+            return self.cached_outputs(x)[0]
     
         self.evaluate(x)
         
@@ -178,6 +182,8 @@ class Nexus(Data):
             Properties Used:
             None
             """           
+        if x is not None and not self.force_evaluate:
+            return self.cached_outputs(x)[1]
         
         self.evaluate(x)
         
@@ -230,6 +236,8 @@ class Nexus(Data):
             Properties Used:
             None
         """         
+        if x is not None and not self.force_evaluate:
+            return self.cached_outputs(x)[2]
     
         self.evaluate(x)
 
@@ -253,6 +261,26 @@ class Nexus(Data):
 
         return scaled_constraints   
         
+    def cached_outputs(self,x):
+        """Objective, inequality and equality constraint values at x, evaluating the model once per distinct x.
+        Optimizers finite-difference the objective and the constraints in separate sweeps over the same points;
+        this lets the second sweep reuse the first instead of re-running the model.
+
+            Inputs:
+            x       [vector]
+
+            Outputs:
+            (scaled_objective, inequality constraints, equality constraints)
+        """
+        self.last_requested_x = np.array(x,dtype=float)
+        key = (self.last_requested_x.tobytes(), self.fidelity_level)
+        if key not in self.output_cache:
+            self.evaluate(x)
+            self.output_cache[key] = (self.objective(), self.inequality_constraint(), self.equality_constraint())
+            if len(self.output_cache) > 512:
+                self.output_cache.pop(next(iter(self.output_cache)))
+        return self.output_cache[key]
+
     def all_constraints(self,x = None):
         """Returns both the inequality and equality constraint values for your function
     
