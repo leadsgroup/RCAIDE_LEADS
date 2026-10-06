@@ -267,6 +267,23 @@ def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
             converged = True
             break
 
+    if not collapsed:
+        X  = tau_lambda / (tau_r * tau_f)
+        XR = tau_lambdaR / (tau_rR * tau_fR)
+        shaft_work_specific = P_offtake / mass_flow_rate_estimate
+        phi = shaft_work_specific / (cpt * Tt4)
+        tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
+        pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
+        pi_f = constant_efficiency_pressure_ratio_kernel(tau_f, eta_f, gamma_c)
+        tau_f_alone = 1 + fan_temperature_rise_fraction * (tau_f - 1)
+        pi_f_alone = (1 + eta_f_alone * (tau_f_alone - 1)) ** (gamma_c / (gamma_c - 1))
+        Pt19_P0 = pi_r * pi_d * pi_f_alone * pi_fn
+        P19_P0, M19 = nozzle_state_kernel(Pt19_P0, gamma_c)
+        Pt9_P0 = pi_r * pi_d * pi_f * pi_cH * pi_b * pi_tH * pi_tL * pi_n
+        P9_P0, M9 = nozzle_state_kernel(Pt9_P0, gamma_t)
+        # the final pi_tL update can still collapse a nozzle; the area terms below would divide by mfp(0)
+        collapsed = M9 == 0.0 or M19 == 0.0
+
     out = np.full(38, np.nan)
     out[0], out[1], out[2], out[3] = tau_r, pi_r, pi_d, tau_lambda
     if collapsed:
@@ -277,19 +294,6 @@ def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
         out[35], out[36], out[37] = eta_cH, eta_f, 1.0
         return out
 
-    X  = tau_lambda / (tau_r * tau_f)
-    XR = tau_lambdaR / (tau_rR * tau_fR)
-    shaft_work_specific = P_offtake / mass_flow_rate_estimate
-    phi = shaft_work_specific / (cpt * Tt4)
-    tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
-    pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
-    pi_f = constant_efficiency_pressure_ratio_kernel(tau_f, eta_f, gamma_c)
-    tau_f_alone = 1 + fan_temperature_rise_fraction * (tau_f - 1)
-    pi_f_alone = (1 + eta_f_alone * (tau_f_alone - 1)) ** (gamma_c / (gamma_c - 1))
-    Pt19_P0 = pi_r * pi_d * pi_f_alone * pi_fn
-    P19_P0, M19 = nozzle_state_kernel(Pt19_P0, gamma_c)
-    Pt9_P0 = pi_r * pi_d * pi_f * pi_cH * pi_b * pi_tH * pi_tL * pi_n
-    P9_P0, M9 = nozzle_state_kernel(Pt9_P0, gamma_t)
     mass_flow_rate = m0R * ((1 + alpha) / (1 + alphaR)) * \
         (P0 * pi_r * pi_d * pi_f * pi_cH) / (P0R * pi_rR * pi_dR * pi_fR * pi_cHR) * \
         np.sqrt(Tt4R / max(Tt4, 1e-6))
