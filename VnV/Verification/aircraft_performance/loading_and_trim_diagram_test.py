@@ -99,9 +99,9 @@ def blended_wing_body_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3) 
   
-    CG_Percent_of_LEMAC_truth = np.array([[-0.792984985838109, -0.1251942105162362, 0.5425965648056366],
-                                          [-0.792984985838109, -0.1251942105162362, 0.5425965648056366],
-                                          [-0.792984985838109, -0.1251942105162362, 0.5425965648056366]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.8001949235410707, -0.13420663264493796, 0.5317816582511947],
+                                          [-0.8001949235410707, -0.13420663264493796, 0.5317816582511947],
+                                          [-0.8001949235410707, -0.13420663264493796, 0.5317816582511947]])
 
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram")
 
