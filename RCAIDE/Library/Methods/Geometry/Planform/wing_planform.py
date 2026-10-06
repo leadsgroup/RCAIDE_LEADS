@@ -339,27 +339,27 @@ def wing_planform(wing):
     seg_keys = list(wing.segments.keys())  
     for tag, segment in enumerate(wing.segments): 
         if segment.chords.reference_area_root:                      
-            segment_root_chord       = wing.segments[seg_keys[tag]].root_chord_percent * wing.chords.root 
-            segment_tip_chord        = wing.segments[seg_keys[tag+1]].root_chord_percent * wing.chords.root 
+            segment_root_chord       = wing.segments[seg_keys[tag]].root_chord_percent * wing.chords.root
             segnent_start_span       = wing.segments[seg_keys[tag]].percent_span_location * wing.spans.projected
-            reference_wing_span      = wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected
 
             next_seg = wing.segments[seg_keys[tag+1]]
-            trailing_edge_sweep = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=1.0) 
-            leading_edge_sweep  = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.0) 
+            trailing_edge_sweep = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=1.0)
+            leading_edge_sweep  = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.0)
 
+            # reference trapezoid: this panel's leading and trailing edges extended from the centerline to the tip
+            span                 = wing.spans.projected
             projected_root_chord = segment_root_chord + segnent_start_span/2 * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
-            wing.areas.reference = (projected_root_chord + segment_tip_chord)/2 * reference_wing_span
-            wing.aspect_ratio    = wing.spans.projected**2 / wing.areas.reference
-            wing.chords.mean_aerodynamic =   2./3.*( projected_root_chord+segment_tip_chord - projected_root_chord*segment_tip_chord/(projected_root_chord+segment_tip_chord) )
-            
+            projected_tip_chord  = projected_root_chord + span/2 * (np.tan(trailing_edge_sweep) - np.tan(leading_edge_sweep))
+            wing.areas.reference = (projected_root_chord + projected_tip_chord)/2 * span
+            wing.aspect_ratio    = span**2 / wing.areas.reference
+            wing.chords.mean_aerodynamic =   2./3.*( projected_root_chord+projected_tip_chord - projected_root_chord*projected_tip_chord/(projected_root_chord+projected_tip_chord) )
+
             # estimating aerodynamic center coordinates
             outboard_segment_origin =  wing.segments[seg_keys[tag+1]].origin
-            span = wing.spans.projected
-            taper = segment_tip_chord/projected_root_chord
+            taper = projected_tip_chord/projected_root_chord
             y_coord = span / 6. * (( 1. + 2. * taper ) / (1. + taper))
             x_coord = wing.chords.mean_aerodynamic * 0.25 + y_coord * np.tan(leading_edge_sweep) 
-            LEMAC = outboard_segment_origin[0][0] + np.tan(leading_edge_sweep)*(y_coord - wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected/2)
+            LEMAC = wing.origin[0][0] + outboard_segment_origin[0][0] + np.tan(leading_edge_sweep)*(y_coord - wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected/2)
             # estimate LEMAC
             wing.LEMAC =  LEMAC
 
@@ -461,19 +461,8 @@ def segment_properties(wing):
             inboard_segment.aspect_ratio                   = (span_seg **2) / Sref_seg
             inboard_segment.areas.exposed                  = S_exposed_seg
             inboard_segment.areas.wetted                   = Swet_seg
-            total_wetted_area                              += Swet_seg  
-           
-            # compute wing mean aerodynamic chord  
-            MAC = wing.chords.mean_aerodynamic
-            if (MAC < chord_root) and   (MAC > chord_tip):
-                x_0        = segments[segment_names[seg_idx]].origin[0][0]  +  wing.origin[0][0]
-                dy         = ( MAC -  chord_root) / ( (chord_tip - chord_root) / span_seg)
-                LEMAC      =  x_0 + np.tan(segments[segment_names[seg_idx]].sweeps.leading_edge) *dy
-                wing.LEMAC = LEMAC
-            elif (MAC == chord_root) and   (MAC == chord_tip):
-                x_0        = segments[segment_names[seg_idx]].origin[0][0]  +  wing.origin[0][0]
-                wing.LEMAC = x_0
-                
+            total_wetted_area                              += Swet_seg
+
             if isinstance(outboard_segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
                 
                 # center body 
@@ -493,7 +482,16 @@ def segment_properties(wing):
                 
                 center_body_area += center_body_Sref_seg
                 aft_center_body_area +=  aft_center_body_Sref_seg 
-            total_reference_area += Sref_seg   
+            total_reference_area += Sref_seg
+
+    # LEMAC: chord-weighted mean leading-edge location over the piecewise-linear planform
+    y_seg      = np.array([segments[name].percent_span_location for name in segment_names]) * semispan
+    c_seg      = np.array([segments[name].root_chord_percent for name in segment_names]) * wing_root_chord
+    x_seg      = np.array([segments[name].origin[0][0] for name in segment_names]) + wing.origin[0][0]
+    dy         = np.diff(y_seg)
+    c_0, c_1   = c_seg[:-1], c_seg[1:]
+    x_0, x_1   = x_seg[:-1], x_seg[1:]
+    wing.LEMAC = np.sum(dy*(2*c_0*x_0 + c_0*x_1 + c_1*x_0 + 2*c_1*x_1)/6) / np.sum(dy*(c_0 + c_1)/2)
 
     wing.areas.reference   = total_reference_area
     wing.areas.projected   = total_reference_area

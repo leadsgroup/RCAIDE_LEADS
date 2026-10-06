@@ -435,6 +435,14 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     RM     = STRIP *(BMX *COSALF *COPSI + BMY *COSALF *SINPSI + BMZ *SINALF)
     YM     = STRIP *(BMZ *COSALF - (BMX *COPSI + BMY *SINPSI) *SINALF)
 
+    # horizontal tail strips see the tail dynamic pressure ratio, q_h/q (Raymer Eq. 16.6)
+    eta_h  = np.repeat(np.where(VD.horizontal_tail[0] == 1, settings.get('horizontal_tail_dynamic_pressure_ratio', 1.0), 1.0), VD.n_sw[0])
+    LIFT   = LIFT   * eta_h
+    MOMENT = MOMENT * eta_h
+    FY     = FY     * eta_h
+    RM     = RM     * eta_h
+    YM     = YM     * eta_h
+
     # Lift coefficient
     Clift_y   = LIFT/CHORD_strip/ES
     CL_wing   = np.add.reduceat(LIFT,span_breaks[0],axis=1)/VD.wing_areas
@@ -703,8 +711,8 @@ def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dis
             zcp_w  = z_control_points[w]
             cd_w   = cd_induced_flat[offset:offset + n_sw_w]
             ch_w   = chord_split[w]
-            ld_w   = np.cumsum(np.sqrt(np.diff(ycp_w)**2 + np.diff(zcp_w)**2))
-            CDi_w  = trapezoid(cd_w * ch_w, ld_w) / SREF
+            ds_w   = np.sqrt(np.diff(ycp_w)**2 + np.diff(zcp_w)**2)
+            CDi_w  = np.sum(cd_w * ch_w * ds_w) / SREF   # strip sum, consistent with how lift is summed
             CDi_wing[k][w] = CDi_w
             CDi   += CDi_w
             offset += n_sw_w

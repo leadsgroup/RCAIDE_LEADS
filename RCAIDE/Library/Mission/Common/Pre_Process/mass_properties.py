@@ -218,6 +218,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
                                                 overwrite_center_of_gravity =  weights_analysis.settings.run_center_of_gravity_analysis ,
                                                 segment=segment,
                                                 verbose=verbose_flag)  
+        if i == 0:
+            check_center_of_gravity(analyses.vehicle)
 
         if i==0 and weights_analysis.settings.write_mass_properties:
             # Centre of Gravity sheet
@@ -226,6 +228,10 @@ def mass_properties_preprocess_routine(segment, i = 0):
             print(f"CG breakdown written to Excel:\n  {excel_filename}")
 
         analyses.vehicle.mass_properties.center_of_gravity_breakdown = centre_of_gravity_df  
+    else:
+        # use the vehicle's prescribed center of gravity
+        CG = np.atleast_2d(np.array(analyses.vehicle.mass_properties.center_of_gravity, dtype=float))
+        segment.state.conditions.weights.vehicle.global_center_of_gravity = CG * segment.state.ones_row(1)
 
     # ---------------------------------------------------------------------------------------------------------------------------         
     # STEP 6: Compute Moment of Inertia 
@@ -249,6 +255,14 @@ def mass_properties_preprocess_routine(segment, i = 0):
             with pd.ExcelWriter(excel_filename, engine="openpyxl",mode="a",if_sheet_exists="replace") as writer:
                 moment_of_inertia_df.to_excel(writer,sheet_name="Moment of Inertia",index=False)
             print(f"MOI breakdown written to Excel:\n  {excel_filename}") 
+    else:
+        # use the vehicle's prescribed moment of inertia tensor
+        tensor      = np.array(analyses.vehicle.mass_properties.moments_of_inertia.tensor, dtype=float)
+        ones_row    = segment.state.ones_row
+        vehicle_MOI = segment.state.conditions.weights.vehicle
+        for i_axis, axis_i in enumerate('xyz'):
+            for j_axis, axis_j in enumerate('xyz'):
+                vehicle_MOI['moments_of_inertia_I' + axis_i + axis_j] = tensor[i_axis, j_axis] * ones_row(1)
  
 
 def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
@@ -372,4 +386,19 @@ def solve_for_mtow(analyses, weights_analysis, i, max_bracket_expansions=10):
     _mtow_residual(mtow_converged)
     analyses.vehicle.mass_properties.max_takeoff = mtow_converged
 
+    return
+
+def check_center_of_gravity(vehicle):
+    """Prints a warning when the components miss or double count operating empty mass, or the empty aircraft would tip onto its tail."""
+    mass_properties = vehicle.mass_properties
+    OEW_CG_mass_percentage = mass_properties.get('OEW_CG_mass_percentage')
+    OEW_CG                 = mass_properties.get('operating_empty_center_of_gravity')
+    if OEW_CG_mass_percentage is not None and abs(OEW_CG_mass_percentage - 100) > 2:
+        print(f'Warning: components carry {OEW_CG_mass_percentage:.1f}% of the operating empty weight; the center of gravity omits or double counts mass.')
+    main_gears = [gear for gear in vehicle.landing_gears if isinstance(gear, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear)]
+    if len(main_gears) > 0 and OEW_CG is not None:
+        x_OEW       = np.array(OEW_CG)[0][0]
+        x_main_gear = np.mean([np.array(gear.mass_properties.center_of_gravity)[0][0] + np.array(gear.origin)[0][0] for gear in main_gears])
+        if x_OEW > x_main_gear:
+            print(f'Warning: operating empty center of gravity (x = {x_OEW:.2f} m) is aft of the main landing gear (x = {x_main_gear:.2f} m).')
     return

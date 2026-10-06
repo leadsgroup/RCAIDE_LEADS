@@ -12,6 +12,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components           import Component  
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cylinder_moment_of_inertia 
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_propulsor_center_of_gravity import compute_propulsor_center_of_gravity
 
 import numpy as  np
 
@@ -129,6 +130,13 @@ class Propulsor(Component):
         propulsor_conditions.outputs.power.pneumatic[:,0]  = 0.0
         propulsor_conditions.outputs.power.hydraulic[:,0]  = 0.0
         propulsor_conditions.outputs.power.thermal[:,0]    = 0.0
+
+    def compute_center_of_gravity(self, vehicle):
+        """
+        Places the engine and nacelle CG along the engine when they are not defined.
+        """
+        compute_propulsor_center_of_gravity(self)
+        return
 
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """

@@ -56,7 +56,6 @@ def vehicle_setup():
     vehicle.mass_properties.max_zero_fuel             = 21000
     vehicle.mass_properties.cargo                     = 7400
     vehicle.mass_properties.center_of_gravity         = [[0,0,0]] # Unknown
-    vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]] # Unknown
     vehicle.mass_properties.max_fuel                  = 5000
 
     # envelope properties
@@ -85,6 +84,7 @@ def vehicle_setup():
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2
     main_gear.xz_plane_symmetric             = True
+    main_gear.origin = [[12.025, 2.050, -0.5]]  # gear CG at the 12.5 m axle (APM AC-ATR Fig. 2.2.5)
     vehicle.append_component(main_gear)
 
     nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
@@ -95,6 +95,7 @@ def vehicle_setup():
     nose_gear.wheels                          = 2
     nose_gear.number_of_gear_types_in_tandem  = 1
     nose_gear.number_of_wheels_in_gear_type   = 2
+    nose_gear.origin = [[1.178, 0.000, -0.5]]  # gear CG at the 1.728 m axle (APM AC-ATR Fig. 2.2.5)
     vehicle.append_component(nose_gear)
 
     # ################################################# Wings #############################################################
@@ -116,8 +117,8 @@ def vehicle_setup():
     wing.chords.mean_aerodynamic          = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 )/( 1 + wing.taper ))
     wing.areas.exposed                    = 2 * wing.areas.reference
     wing.areas.wetted                     = 2 * wing.areas.reference
-    wing.origin                           = [[11.52756129,0,2.009316366]]
-    wing.aerodynamic_center               = [11.52756129 + 0.25*wing.chords.root ,0,2.009316366]
+    wing.origin                           = [[11.08,0,2.009316366]]
+    wing.aerodynamic_center               = [11.08 + 0.25*wing.chords.root ,0,2.009316366]
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
     wing.dynamic_pressure_ratio           = 1.0
@@ -162,13 +163,13 @@ def vehicle_setup():
     # ------------------------------------------------------------------
     wing                         = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag                     = 'horizontal_stabilizer'
-    wing.spans.projected         = 3.61*2
-    wing.areas.reference         = 15.2
+    wing.spans.projected         = 7.31  # APM AC-ATR Fig. 2.2.5
+    wing.areas.reference         = 11.73  # APM AC-ATR Fig. 2.2.5
     wing.aspect_ratio            = (wing.spans.projected**2) /  wing.areas.reference
     wing.sweeps.leading_edge     = 11.56*Units.degrees
     wing.thickness_to_chord      = 0.15
-    wing.chords.root             = 2.078645129
-    wing.chords.tip              = 0.953457347
+    wing.chords.root             = 2.200130
+    wing.chords.tip              = 1.009180
     wing.total_length            = wing.chords.root
     wing.taper                   = wing.chords.tip/wing.chords.root
     wing.chords.mean_aerodynamic = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 )/( 1 + wing.taper ))
@@ -504,7 +505,7 @@ def vehicle_setup():
     esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95
-    esc.origin                                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
+    esc.origin                                       = [[ 9.111545 ,4.219315295, 1.616135105]]
     esc.nominal_voltage                              = bus.design_voltage
     starboard_propulsor.electronic_speed_controller  = esc
 
@@ -519,7 +520,7 @@ def vehicle_setup():
     propeller.cruise.design_altitude                 = 25000. * Units.feet
     propeller.cruise.design_thrust                   = 15000 * Units.N
 
-    propeller.origin                                 = [[ 9.559106394 ,4.219315295, 1.616135105]]
+    propeller.origin                                 = [[ 9.111545 ,4.219315295, 1.616135105]]
     ospath                                           = os.path.abspath(__file__)
     separator                                        = os.path.sep
     rel_path                                         = os.path.dirname(ospath)   + separator
@@ -538,7 +539,7 @@ def vehicle_setup():
     # DC_Motor
     motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                                 = 0.98
-    motor.origin                                     = [[ 9.559106394 ,4.219315295, 1.616135105]]
+    motor.origin                                     = [[ 9.111545 ,4.219315295, 1.616135105]]
     motor.nominal_voltage                            = bus.design_voltage * 0.7
     motor.no_load_current                            = 1
     starboard_propulsor.motor                        = motor
@@ -554,7 +555,7 @@ def vehicle_setup():
     nacelle.length                              = 5
     nacelle.diameter                            = 0.85
     nacelle.areas.wetted                        = 1.0
-    nacelle.origin                              = [[ 9.559106394 ,4.219315295, 1.616135105]]
+    nacelle.origin                              = [[ 9.111545 ,4.219315295, 1.616135105]]
     nacelle.flow_through                        = False
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
@@ -630,14 +631,14 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     port_propulsor                                     = deepcopy(starboard_propulsor)
     port_propulsor.tag                                 = "port_propulsor"
-    port_propulsor.electronic_speed_controller.origin  = [[ 9.559106394 ,-4.219315295, 1.616135105]]
+    port_propulsor.electronic_speed_controller.origin  = [[ 9.111545 ,-4.219315295, 1.616135105]]
     port_propulsor.electronic_speed_controller.tag     = 'port_propulsor_esc'
     port_propulsor.rotor.tag                           = 'port_propulsor_propeller'
-    port_propulsor.rotor.origin                        =  [[ 9.559106394 ,-4.219315295, 1.616135105]]
+    port_propulsor.rotor.origin                        =  [[ 9.111545 ,-4.219315295, 1.616135105]]
     port_propulsor.nacelle.tag                         = 'port_propulsor_nacelle'
-    port_propulsor.nacelle.origin                      =  [[ 9.559106394 ,-4.219315295, 1.616135105]]
+    port_propulsor.nacelle.origin                      =  [[ 9.111545 ,-4.219315295, 1.616135105]]
     port_propulsor.motor.tag                           = 'port_propulsor_motor'
-    port_propulsor.motor.origin                        =  [[ 9.559106394 ,-4.219315295, 1.616135105]]
+    port_propulsor.motor.origin                        =  [[ 9.111545 ,-4.219315295, 1.616135105]]
 
     # append propulsor to distribution line
     net.propulsors.append(port_propulsor)

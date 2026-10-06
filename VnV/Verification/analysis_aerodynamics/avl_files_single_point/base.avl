@@ -50,7 +50,7 @@ SECTION
 NACA
 6410
 CONTROL
-aileron    -1.0   0.85   0. 0. 0.  -1
+aileron    -1.0   0.6438999999999999   0. 0. 0.  -1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
@@ -58,7 +58,7 @@ SECTION
 NACA
 6410
 CONTROL
-aileron    -1.0   0.85   0. 0. 0.  -1
+aileron    -1.0   0.6438999999999999   0. 0. 0.  -1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
@@ -85,13 +85,13 @@ SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
 6.5662  0.2    0.2039    1.1581    0.0     
 CONTROL
-elevator    1.0   0.65   0. 0. 0.  +1
+elevator    1.0   0.6044   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
 6.7344  1.8    0.2039    0.8419    0.0     
 CONTROL
-elevator    1.0   0.65   0. 0. 0.  +1
+elevator    1.0   0.6044   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
@@ -112,13 +112,13 @@ SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
 7.1813  0.0    0.4519    1.0045    0.0     
 CONTROL
-rudder    1.0   0.55   0. 0. 0.  +1
+rudder    1.0   0.47829999999999995   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace
 7.6127  0.0    1.6372    0.5655    0.0     
 CONTROL
-rudder    1.0   0.55   0. 0. 0.  +1
+rudder    1.0   0.47829999999999995   0. 0. 0.  +1
 
 SECTION
 #Xle    Yle      Zle      Chord     Ainc  Nspanwise  Sspace

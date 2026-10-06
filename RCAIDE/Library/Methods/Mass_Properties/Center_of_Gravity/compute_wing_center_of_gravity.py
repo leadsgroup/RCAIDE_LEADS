@@ -38,7 +38,7 @@ def compute_wing_center_of_gravity(wing,vehicle,n_points = 101):
     
         # Compute segment span length
         L = (outer_segment.percent_span_location - inner_segment.percent_span_location) * wing.spans.projected/(symm + 1)
-        spanwise_shift = inner_segment.percent_span_location * wing.spans.projected/2 
+        spanwise_shift = inner_segment.percent_span_location * wing.spans.projected/(symm + 1)
     
         airfoil_in = inner_segment.airfoil
         if  airfoil_in !=  None:
@@ -75,6 +75,10 @@ def compute_wing_center_of_gravity(wing,vehicle,n_points = 101):
     
     combinde_mesh = trimesh.util.concatenate(segment_meshes)
 
+    # segment meshes place the span along -y; rotate vertical surfaces so the span points along +z
+    if vertical:
+        combinde_mesh.apply_transform(trimesh.transformations.rotation_matrix(np.deg2rad(-90), [1, 0, 0], [0, 0, 0]))
+
     # Reflect across the YZ plane (mirror X)
     Ry = np.diag([1, -1, 1])    
 
@@ -102,7 +106,7 @@ def compute_wing_center_of_gravity(wing,vehicle,n_points = 101):
     cg_z     = centroid[2]  
         
     wing.volume_properties.gross_volume             = combined_mesh_full.volume  
-    wing.mass_properties.moments_of_inertia.tensor  = combined_mesh_full.moment_inertia
+    wing.mass_properties.moments_of_inertia.tensor  = combined_mesh_full.moment_inertia * mass / combined_mesh_full.volume
     wing.mass_properties.center_of_gravity          = [[cg_x, cg_y, cg_z]]
      
     return wing.mass_properties.center_of_gravity

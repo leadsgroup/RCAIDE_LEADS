@@ -66,8 +66,8 @@ def integral_fuel_tank_volume_test():
 
     print('\n----- Integral Fuel Tank Volume Test -----')
 
-    wing_volume_true  = 21.519610119449926
-    total_volume_true = 79.86653355539846
+    wing_volume_true  = 31.020330704132945
+    total_volume_true = 89.36725414008149
 
     vehicle   = B737_vehicle_setup()
     fuel_line = vehicle.networks.fuel.distributors.fuel_line
@@ -269,7 +269,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
 
     print('\n----- Non-Conformal LH2 Fuel Tank Volume Test -----')
 
-    fuel_volume_true = 711.037900
+    fuel_volume_true = 711.0451804645339
     vehicle          = BWB_vehicle_setup()
     fuel_line        = vehicle.networks.fuel.distributors.fuel_line
     vehicle.networks.fuel.sources.clear()
@@ -450,7 +450,7 @@ def conformal_lh2_fuel_tank_volume_test():
 
     print('\n----- Conformal LH2 Fuel Tank Volume Test -----')
 
-    fuel_volume_true = 204.31467701
+    fuel_volume_true = 262.45785044152575
     vehicle          = BWB_vehicle_setup()
     fuel_line        = vehicle.networks.fuel.distributors.fuel_line
     vehicle.networks.fuel.sources.clear()
@@ -522,7 +522,7 @@ def non_conformal_lng_fuel_tank_volume_test():
 
     print('\n----- Non-Conformal LNG Fuel Tank Volume Test -----')
 
-    fuel_volume_true = 289.5878436558366
+    fuel_volume_true = 289.4758114300668
     vehicle          = BWB_vehicle_setup()
     fuel_line        = vehicle.networks.fuel.distributors.fuel_line
     vehicle.networks.fuel.sources.clear()
