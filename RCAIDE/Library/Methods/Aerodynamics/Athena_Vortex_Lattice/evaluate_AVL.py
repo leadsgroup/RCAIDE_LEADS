@@ -99,6 +99,16 @@ def evaluate_AVL_no_surrogate(state,settings,vehicle):
     # unpack 
     conditions     = state.conditions
     aerodynamics   = state.analyses.aerodynamics   
+    V              = conditions.freestream.velocity
+    b_ref          = vehicle.wings.main_wing.spans.projected
+    c_ref          = vehicle.wings.main_wing.chords.mean_aerodynamic
+
+    # AVL inputs: run at the segment's lift coefficient only when one is prescribed, otherwise at alpha
+    if getattr(state, 'lift_coefficient', None) is None:
+        conditions.aerodynamics.coefficients.lift.inviscid.total = None
+    conditions.static_stability.coefficients.roll  = conditions.static_stability.roll_rate * b_ref / (2 * V)
+    conditions.static_stability.coefficients.pitch = conditions.static_stability.pitch_rate * c_ref / (2 * V)
+    
     run_AVL_analysis(aerodynamics,conditions, vehicle)
                        
     return

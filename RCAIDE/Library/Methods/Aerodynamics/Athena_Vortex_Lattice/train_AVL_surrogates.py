@@ -196,6 +196,8 @@ def train_AVL_surrogates(aerodynamics,vehicle):
         else:
             run_conditions.aerodynamics.coefficients.lift.inviscid.total= np.array([lift_coefficient]).T  
         run_conditions.static_stability.coefficients.pitch = np.ones_like(run_conditions.aerodynamics.angles.alpha)*pitch_rate_coefficient 
+        for cs, deflection in aerodynamics.training_deflections.items():
+            run_conditions.control_surfaces[cs].deflection = np.ones_like(run_conditions.aerodynamics.angles.alpha)*deflection
 
         # Run Analysis at AoA[i] and Mach[i]
         run_AVL_analysis(aerodynamics,run_conditions, vehicle) 
