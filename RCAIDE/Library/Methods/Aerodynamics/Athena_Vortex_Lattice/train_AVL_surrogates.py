@@ -6,6 +6,7 @@
 
 # RCAIDE imports
 import RCAIDE 
+from RCAIDE.Framework.Core                                                       import Data
 from RCAIDE.Framework.Mission.Common                                             import Results  
 from RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.run_AVL_analysis  import run_AVL_analysis  
 from RCAIDE.Library.Components.Wings.Control_Surfaces                            import Aileron , Elevator , Slat , Flap , Rudder 
@@ -49,6 +50,7 @@ def train_AVL_surrogates(aerodynamics,vehicle):
     
     n_wings = 0   
     cs_functions = []  
+    aerodynamics.training_deflections = Data()
          
     for wing in vehicle.wings:         
         n_wings += 1 
@@ -73,6 +75,7 @@ def train_AVL_surrogates(aerodynamics,vehicle):
                     ctrl_surf_function = 'rudder'   
                     aerodynamics.rudder_flag      = True                    
                 cs_functions.append(ctrl_surf_function)  
+                aerodynamics.training_deflections[ctrl_surf_function] = ctrl_surf.deflection
             
     aerodynamics.settings.control_surface_tags =  cs_functions
             
@@ -82,6 +85,7 @@ def train_AVL_surrogates(aerodynamics,vehicle):
     
     training.Clift_alpha          = np.zeros((len_AoA,len_Mach))
     training.Cdrag_induced_alpha  = np.zeros((len_AoA,len_Mach))
+    training.CM_alpha             = np.zeros((len_AoA,len_Mach))
     training.span_efficincy       = np.zeros((len_AoA,len_Mach))
     training.oswald_efficiency    = np.zeros((len_AoA,len_Mach))
     training.Clift_spanwise       =  np.zeros((len_AoA,len_Mach,n_sw*n_wings))
@@ -199,6 +203,7 @@ def train_AVL_surrogates(aerodynamics,vehicle):
         # Pack the outputs
         training.Clift_alpha[:,i]          = run_conditions.aerodynamics.coefficients.lift.inviscid.total[:,0]             
         training.Cdrag_induced_alpha[:,i]  = run_conditions.aerodynamics.coefficients.drag.induced.inviscid[:,0]          
+        training.CM_alpha[:,i]             = run_conditions.static_stability.coefficients.M[:,0]
         training.span_efficincy[:,i]       = run_conditions.aerodynamics.coefficients.drag.induced.efficiency_factor[:,0]      
         training.oswald_efficiency[:,i]    = run_conditions.aerodynamics.oswald_efficiency[:,0]                             
         training.Clift_spanwise[:,i]       = run_conditions.aerodynamics.coefficients.lift.spanwise   
