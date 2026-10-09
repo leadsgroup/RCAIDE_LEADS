@@ -97,7 +97,7 @@ def read_results(avl_object, vehicle):
             case_res.stability.Cl_r                                         = float(lines[46+num_ctrl][65:74].strip())
             case_res.stability.Cm_p                                         = float(lines[47+num_ctrl][24:34].strip())
             case_res.stability.Cm_q                                         = float(lines[47+num_ctrl][43:54].strip())
-            case_res.stability.Cm_r                                         = float(lines[44+num_ctrl][65:74].strip())
+            case_res.stability.Cm_r                                         = float(lines[47+num_ctrl][65:74].strip())
             case_res.stability.Cn_p                                         = float(lines[48+num_ctrl][24:34].strip())
             case_res.stability.Cn_q                                         = float(lines[48+num_ctrl][43:54].strip())
             case_res.stability.Cn_r                                         = float(lines[48+num_ctrl][65:74].strip())
@@ -106,8 +106,8 @@ def read_results(avl_object, vehicle):
             if num_ctrl != 0: 
                 for ctrl_idx in range(num_ctrl):
                     ctrl_surf = Control_Surface_Results()
-                    ctrl_surf.tag                 = str(lines[29+ctrl_idx][2:11].strip())
-                    ctrl_surf.deflection          = float(lines[29+ctrl_idx][21:32].strip())
+                    ctrl_surf.tag                 = lines[29+ctrl_idx].split('=')[0].strip()
+                    ctrl_surf.deflection          = float(lines[29+ctrl_idx].split('=')[1])
                     ctrl_surf.CLift_derivative    = float(lines[52+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
                     ctrl_surf.Cdrag_derivative    = float(lines[57+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
                     ctrl_surf.CY_derivative       = float(lines[53+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
@@ -138,6 +138,7 @@ def read_results(avl_object, vehicle):
         leading_edge_sweeps  = np.zeros((n_wings,n_sw))        
         wing_local_span      = np.zeros((n_wings,n_sw))
         wing_sectional_chord = np.zeros((n_wings,n_sw))
+        wing_strip_width     = np.zeros((n_wings,n_sw))
         wing_cl              = np.zeros((n_wings,n_sw))
         alpha_i              = np.zeros((n_wings,n_sw))
         wing_cd              = np.zeros((n_wings,n_sw))   
@@ -148,9 +149,10 @@ def read_results(avl_object, vehicle):
             line_idx     = 0
             header       = 12 + n_wings + n_fus_sec           
             for i in range(n_wings):
-                wing_area[i] = float(aero_lines[header + line_idx][7:14].strip())
-                wing_CL[i]   = float(aero_lines[header + line_idx][26:32].strip())
-                wing_CD[i]   = float(aero_lines[header + line_idx][35:41].strip())
+                surface_row  = aero_lines[header + line_idx].split()
+                wing_area[i] = float(surface_row[1])
+                wing_CL[i]   = float(surface_row[3])
+                wing_CD[i]   = float(surface_row[4])
                 line_idx += 1                   
             case_res.aerodynamics.wing_areas = wing_area 
             case_res.aerodynamics.wing_CLs   = wing_CL 
@@ -162,20 +164,12 @@ def read_results(avl_object, vehicle):
             line_idx         = 0
             header           = 20
             divider_header   = 15    
-            seg_idx = 0
             for i in range(n_wings): 
                 for j in range(n_sw):
                     wing_local_span[i,j]      = float(aero_lines_2[header + j + line_idx][8:16].strip())
                     wing_sectional_chord[i,j] = float(aero_lines_2[header + j + line_idx][16:24].strip()) 
+                    wing_strip_width[i,j]     = float(aero_lines_2[header + j + line_idx][24:33].strip()) / wing_sectional_chord[i,j]
                     wing_cl[i,j]              = float(aero_lines_2[header + j + line_idx][61:69].strip()) 
-                    
-                    wing =  vehicle.wings[wing_list[i]]
-                    seg_list = list(wing.segments.keys())
-                    if wing_local_span[i,j] < wing.spans.projected * wing.segments[seg_list[seg_idx+1]].percent_span_location:
-                        leading_edge_sweeps[i, j] =  wing.segments[seg_list[seg_idx]].sweeps.leading_edge
-                    else: 
-                        seg_idx += 1
-                        leading_edge_sweeps[i, j] =  wing.segments[seg_list[seg_idx]].sweeps.leading_edge
                         
                     # At high angle of attacks, AVL does not give an answer 
                     try:
@@ -185,8 +179,20 @@ def read_results(avl_object, vehicle):
                         alpha_i[i,j]              = 0.
                         wing_cd[i,j]              = 0.
                 line_idx = divider_header +  n_sw + line_idx            
+
+                # leading edge sweep of the wing segment containing each strip midpoint
+                wing     = vehicle.wings[wing_list[i]]
+                segments = list(wing.segments.values())
+                if len(segments) < 2:
+                    leading_edge_sweeps[i] = wing.sweeps.leading_edge
+                else:
+                    eta     = (np.cumsum(wing_strip_width[i]) - 0.5*wing_strip_width[i]) / np.sum(wing_strip_width[i])
+                    seg_pct = np.array([seg.percent_span_location for seg in segments])
+                    seg_idx = np.clip(np.searchsorted(seg_pct, eta, side='right') - 1, 0, len(segments) - 2)
+                    leading_edge_sweeps[i] = [segments[k].sweeps.leading_edge for k in seg_idx]
             case_res.aerodynamics.wing_local_spans         = wing_local_span
             case_res.aerodynamics.wing_section_chords      = wing_sectional_chord
+            case_res.aerodynamics.wing_strip_widths        = wing_strip_width
             case_res.aerodynamics.leading_edge_sweeps      = leading_edge_sweeps
             case_res.aerodynamics.wing_section_cls         = wing_cl 
             case_res.aerodynamics.wing_section_aoa_i       = alpha_i 
@@ -215,24 +221,13 @@ def read_results(avl_object, vehicle):
             case_res.stability.Cn_v  = float(lines_2[41+num_ctrl][43:54].strip())
             case_res.stability.Cn_w  = float(lines_2[41+num_ctrl][65:74].strip())
             
+            # only CX and CZ rate derivatives; CY, Cl, Cm, Cn rate derivatives come from the stability-axis file
             case_res.stability.CX_p  = float(lines_2[45+num_ctrl][24:34].strip())
             case_res.stability.CX_q  = float(lines_2[45+num_ctrl][43:54].strip())
             case_res.stability.CX_r  = float(lines_2[45+num_ctrl][65:74].strip())
-            case_res.stability.CY_p  = float(lines_2[46+num_ctrl][24:34].strip())
-            case_res.stability.CY_q  = float(lines_2[46+num_ctrl][43:54].strip())
-            case_res.stability.CY_r  = float(lines_2[46+num_ctrl][65:74].strip())
             case_res.stability.CZ_p  = float(lines_2[47+num_ctrl][24:34].strip())
             case_res.stability.CZ_q  = float(lines_2[47+num_ctrl][43:54].strip())
             case_res.stability.CZ_r  = float(lines_2[47+num_ctrl][65:74].strip())
-            case_res.stability.Cl_p  = float(lines_2[48+num_ctrl][24:34].strip())
-            case_res.stability.Cl_q  = float(lines_2[48+num_ctrl][43:54].strip())
-            case_res.stability.Cl_r  = float(lines_2[48+num_ctrl][65:74].strip())
-            case_res.stability.Cm_p  = float(lines_2[49+num_ctrl][24:34].strip())
-            case_res.stability.Cm_q  = float(lines_2[49+num_ctrl][43:54].strip())
-            case_res.stability.Cm_r  = float(lines_2[49+num_ctrl][65:74].strip())
-            case_res.stability.Cn_p  = float(lines_2[50+num_ctrl][24:34].strip())
-            case_res.stability.Cn_q  = float(lines_2[50+num_ctrl][43:54].strip())
-            case_res.stability.Cn_r  = float(lines_2[50+num_ctrl][65:74].strip())
             
                 
         results.append(case_res)
