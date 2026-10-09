@@ -6,6 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
+import RNUMPY as rp
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Unpack Unknowns
@@ -101,36 +102,36 @@ def orientation(segment):
         segment.state.conditions.aerodynamics.coefficients.lift.inviscid.total = segment.lift_coefficient / segment.analyses.aerodynamics.settings.fuselage_lift_correction   * segment.state.ones_row(1)
     else:
         if ctrls.pitch_angle.active:
-            segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.mission.pitch_angle[:,0]
+            segment.state.conditions.frames.body.inertial_rotations = rp.at(segment.state.conditions.frames.body.inertial_rotations)[:,1].set(segment.state.unknowns.mission.pitch_angle[:,0])
         else:
-            segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.angle_of_attack
+            segment.state.conditions.frames.body.inertial_rotations = rp.at(segment.state.conditions.frames.body.inertial_rotations)[:,1].set(segment.angle_of_attack)
 
     # Bank Angle
     if ctrls.bank_angle.active:
-        segment.state.conditions.frames.body.inertial_rotations[:,0] = -segment.state.unknowns.mission.bank_angle[:,0]
+        segment.state.conditions.frames.body.inertial_rotations = rp.at(segment.state.conditions.frames.body.inertial_rotations)[:,0].set(-segment.state.unknowns.mission.bank_angle[:,0])
     else:
-        segment.state.conditions.frames.body.inertial_rotations[:,0] = -segment.bank_angle
-    segment.state.conditions.frames.body.inertial_rotations[:,2] =  segment.state.conditions.frames.planet.true_heading[:,0]
+        segment.state.conditions.frames.body.inertial_rotations = rp.at(segment.state.conditions.frames.body.inertial_rotations)[:,0].set(-segment.bank_angle)
+    segment.state.conditions.frames.body.inertial_rotations = rp.at(segment.state.conditions.frames.body.inertial_rotations)[:,2].set(segment.state.conditions.frames.planet.true_heading[:,0])
 
     # Sideslip Angle
     if ctrls.sideslip_angle.active:
         # beta is a free solver unknown -- solver finds the trimmed sideslip
-        segment.state.conditions.frames.wind.body_rotations[:,2] = segment.state.unknowns.mission.sideslip_angle[:,0]
+        segment.state.conditions.frames.wind.body_rotations = rp.at(segment.state.conditions.frames.wind.body_rotations)[:,2].set(segment.state.unknowns.mission.sideslip_angle[:,0])
     elif segment.crosswind_speed != 0.0:
         # beta computed kinematically from crosswind speed (crab/slip approach)
         beta = np.arcsin(np.clip(segment.crosswind_speed / segment.air_speed, -1.0, 1.0))
-        segment.state.conditions.frames.wind.body_rotations[:,2] = beta
+        segment.state.conditions.frames.wind.body_rotations = rp.at(segment.state.conditions.frames.wind.body_rotations)[:,2].set(beta)
     else:
         # beta prescribed directly on the segment (legacy behaviour)
-        segment.state.conditions.frames.wind.body_rotations[:,2] = segment.sideslip_angle
+        segment.state.conditions.frames.wind.body_rotations = rp.at(segment.state.conditions.frames.wind.body_rotations)[:,2].set(segment.sideslip_angle)
 
     # Velocity Control
     if ctrls.velocity.active:
-        segment.state.conditions.frames.inertial.velocity_vector[:,0] = segment.state.unknowns.mission.velocity[:,0]
+        segment.state.conditions.frames.inertial.velocity_vector = rp.at(segment.state.conditions.frames.inertial.velocity_vector)[:,0].set(segment.state.unknowns.mission.velocity[:,0])
 
     # Altitude Control
     if ctrls.altitude.active:
-        segment.state.conditions.frames.inertial.position_vector[:,2] = -segment.state.unknowns.mission.altitude[:,0]
+        segment.state.conditions.frames.inertial.position_vector = rp.at(segment.state.conditions.frames.inertial.position_vector)[:,2].set(-segment.state.unknowns.mission.altitude[:,0])
         
     return 
             

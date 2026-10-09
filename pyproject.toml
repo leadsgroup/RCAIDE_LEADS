@@ -26,6 +26,7 @@ classifiers = [
 ]
 dependencies = [
     "numpy",
+    "rnp>=0.2.0",
     "numba",
     "scipy",
     "matplotlib",
