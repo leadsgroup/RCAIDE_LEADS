@@ -6,9 +6,6 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports  
-from RCAIDE.Library.Components import Wings 
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.extract_wing_collocation_points import extract_wing_collocation_points
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake  import compute_wake_induced_velocity
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift.BET_calculations import compute_airfoil_aerodynamics,compute_inflow_and_tip_loss
 # Python imports
 import numpy as np 
@@ -122,89 +119,6 @@ def evaluate_wake(rotor,wake_inputs,conditions):
     va, vt = wake_convergence(rotor, wake_inputs)
         
     return va, vt
-
-def evaluate_slipstream(rotor,VD,conditions,settings,geometry,ctrl_pts,wing_instance=None):
-    """
-    Evaluates the velocities induced by the rotor on a specified wing of the vehicle.
-    If no wing instance is specified, uses main wing or last available wing in geometry.
-    
-    Assumptions:
-    None
-
-    Source:
-    N/A
-
-    Inputs:
-       self         - rotor wake
-       rotor        - rotor
-       geometry     - vehicle geometry
-       
-    Outputs:
-       wake_V_ind   - induced velocity from rotor wake at (VD.XC, VD.YC, VD.ZC)
-    
-    Properties Used:
-    None
-    """
-
-    rotor_conditions =  conditions.energy.converters[rotor.tag]
-    
-    # Check for wing if wing instance is unspecified
-    if wing_instance == None:
-        nmw = 0
-        # check for main wing
-        for i,wing in enumerate(geometry.wings):
-            if not (isinstance(wing,Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body)): continue
-            nmw +=1                
-            wing_instance = wing
-            wing_instance_idx = i
-        if nmw == 1:
-            pass
-        elif nmw>1:
-            print("No wing specified for slipstream analysis. Multiple main wings in vehicle, using the last one.")
-        else:
-            print("No wing specified for slipstream analysis. No main wing defined, using the last wing in vehicle.")
-            wing_instance = wing 
-            wing_instance_idx = i
-    
-    # Isolate the VD components corresponding to this wing instance
-    wing_CPs, slipstream_vd_ids = extract_wing_collocation_points(VD,conditions,settings,geometry, wing_instance_idx)
-    
-    # Evaluate rotor slipstream effect on specified wing instance
-    rot_V_wake_ind = evaluate_wake_velocities(rotor,rotor_conditions,wing_CPs,ctrl_pts)
-    
-    # Expand
-    wake_V_ind = np.zeros((ctrl_pts,VD.n_cp[0][0],3))
-    wake_V_ind[:,slipstream_vd_ids,:] = rot_V_wake_ind 
-        
-    return wake_V_ind
-
-def evaluate_wake_velocities(rotor,rotor_conditions,evaluation_points,ctrl_pts):
-    """
-    Links the rotor wake to compute the wake-induced velocities at the specified
-    evaluation points.
-    
-    Assumptions:
-    None
-
-    Source:
-    N/A
-
-    Inputs:
-       self               - rotor wake
-       rotor              - rotor
-       evaluation_points  - points at which to evaluate the rotor wake-induced velocities 
-       
-    Outputs:
-       prop_V_wake_ind  - induced velocity from rotor wake at (VD.XC, VD.YC, VD.ZC)
-    
-    Properties Used:
-    None
-    """  
-     
-    rot_V_wake_ind = compute_wake_induced_velocity(rotor,rotor_conditions,evaluation_points,ctrl_pts)  
-    
-    return rot_V_wake_ind
-
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  wake_convergence
