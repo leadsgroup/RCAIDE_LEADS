@@ -11,6 +11,7 @@ from RCAIDE.Framework.Mission.Common     import Residuals, Conditions
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns 
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import * 
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_wake_interaction import compute_rotor_wake_interaction
 from RCAIDE.Library.Components import Component
 
 # python imports 
@@ -134,6 +135,7 @@ class Network(Component):
         """
         self.tag                                 = 'network'
         self.reverse_thrust                      = False
+        self.rotor_wake_interaction              = False
         self.propulsors                          = Container()
         self.converters                          = Container()
         self.nacelles                            = Container()
@@ -172,13 +174,21 @@ class Network(Component):
         # ----------------------------------------------------------
         # Propulsors
         # ----------------------------------------------------------
+        if network.rotor_wake_interaction:
+            rotors = []
+            for propulsor in propulsors:
+                if propulsor.active:
+                    propulsor.compute_drive(state,network)
+                    rotors.append(propulsor.rotor)
+            compute_rotor_wake_interaction(rotors,conditions)
+            
         stored_results_flag  = False
         stored_propulsor_tag = None
         for propulsor in propulsors:
             if propulsor.active: 
                 same_group = (stored_results_flag == True and
                               propulsor.assigned_distributors == propulsors[stored_propulsor_tag].assigned_distributors)
-                if propulsor.identical_propulsors == False or not same_group:
+                if propulsor.identical_propulsors == False or network.rotor_wake_interaction or not same_group:
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network,center_of_gravity=center_of_gravity)
                 else:
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
@@ -368,7 +378,7 @@ class Network(Component):
             reference_distributors = None
             for p_i, propulsor in enumerate(network.propulsors):
                 if propulsor.active:
-                    if propulsor.identical_propulsors == False or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
+                    if propulsor.identical_propulsors == False or network.rotor_wake_interaction or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
                         propulsor.unpack_unknowns(segment)
                         reference_distributors = propulsor.assigned_distributors
             reference_source_distributors = None
@@ -410,7 +420,7 @@ class Network(Component):
             reference_distributors = None
             for p_i, propulsor in enumerate(network.propulsors):
                 if propulsor.active:
-                    if propulsor.identical_propulsors == False or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
+                    if propulsor.identical_propulsors == False or network.rotor_wake_interaction or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
                         propulsor.pack_residuals(segment)
                         reference_distributors = propulsor.assigned_distributors
             reference_source_distributors = None

@@ -118,7 +118,7 @@ def set_network_residuals_and_unknowns(mission):
             reference_distributors = None
             for p_i,propulsor in  enumerate(network.propulsors):
                 if propulsor.active:
-                    if propulsor.identical_propulsors == False or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
+                    if propulsor.identical_propulsors == False or network.rotor_wake_interaction or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
                         propulsor.append_unknowns_and_residuals(segment)
                         reference_distributors = propulsor.assigned_distributors
                     
