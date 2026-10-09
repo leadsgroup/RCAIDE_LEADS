@@ -107,9 +107,58 @@ def main():
     nacelle.append_segment(segment_5)
     
 
+    # rotor wake interaction (joint rotor solve not yet implemented)
+    rotor_wake_interaction_test()
+
     elapsed_time = time.time() - ti
     elapsed_time_min = elapsed_time / 60
     print('Elapsed time (min): ', elapsed_time_min)
+    return
+
+def rotor_wake_interaction_test():
+    """Runs one solver iteration of a cruise segment with rotor wake interaction enabled."""
+    vehicles_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Vehicles"))
+    if vehicles_path not in sys.path:
+        sys.path.insert(0, vehicles_path)
+    from Electric_Twin_Otter import vehicle_setup
+
+    vehicle = vehicle_setup('lithium_ion_nmc', None)
+    for network in vehicle.networks:
+        network.rotor_wake_interaction = True
+
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
+    weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation()
+    analyses.append(weights)
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.settings.overwrite_reference = False
+    analyses.append(geometry)
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.number_of_spanwise_vortices  = 5
+    aerodynamics.settings.number_of_chordwise_vortices = 2
+    analyses.append(aerodynamics)
+    analyses.append(RCAIDE.Framework.Analyses.Energy.Energy())
+    analyses.append(RCAIDE.Framework.Analyses.Planets.Earth())
+    analyses.append(RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976())
+
+    mission  = RCAIDE.Framework.Mission.Sequential_Segments()
+    segment  = RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude()
+    segment.tag = 'cruise'
+    segment.analyses.extend(analyses)
+    segment.altitude                                                 = 5000 * Units.feet
+    segment.air_speed                                                = 130 * Units.kts
+    segment.distance                                                 = 10 * Units.nmi
+    segment.initial_battery_conditions.state_of_charge               = 1.0
+    segment.state.numerics.number_of_control_points                  = 2
+    segment.state.numerics.mission_solver.max_evaluations            = 1
+    segment.state.numerics.mission_solver.print_output               = False
+    segment.flight_dynamics.force_x                                  = True
+    segment.flight_dynamics.force_z                                  = True
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
+    segment.assigned_control_variables.pitch_angle.active            = True
+    mission.append_segment(segment)
+    mission.evaluate()
     return
     
     
