@@ -4,6 +4,12 @@
 # Created:  Jul 2023, M. Clarke
  
 # ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+# package imports
+import RNUMPY as rp
+
+# ----------------------------------------------------------------------------------------------------------------------
 #  Unpack Unknowns
 # ---------------------------------------------------------------------------------------------------------------------- 
 def ground(segment):
@@ -73,6 +79,6 @@ def ground(segment):
 
     # apply unknowns
     conditions = segment.state.conditions
-    conditions.frames.inertial.velocity_vector[1:,0] = ground_velocity[:,0]
-    conditions.frames.inertial.velocity_vector[0,0]  = v0
+    conditions.frames.inertial.velocity_vector = rp.at(conditions.frames.inertial.velocity_vector)[1:,0].set(ground_velocity[:,0])
+    conditions.frames.inertial.velocity_vector = rp.at(conditions.frames.inertial.velocity_vector)[0,0].set(v0)
     conditions.frames.inertial.time                  = times
