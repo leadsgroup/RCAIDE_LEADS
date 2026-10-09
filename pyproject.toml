@@ -67,4 +67,4 @@ version = {file = "RCAIDE/VERSION"}
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["RCAIDE*"]
+include = ["RCAIDE*", "RNUMPY*"]
