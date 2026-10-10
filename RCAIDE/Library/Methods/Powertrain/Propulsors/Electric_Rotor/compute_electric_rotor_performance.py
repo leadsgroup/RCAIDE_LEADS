@@ -104,27 +104,13 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
     rotor                      = propulsor.rotor 
     esc                        = propulsor.electronic_speed_controller   
     electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag]
-    eta                        = electric_rotor_conditions.throttle
     
-    # Determine what electrical distributor is connected to the electric powertrain 
-    for d_tag in propulsor.assigned_distributors[0]:
-        if type(network.distributors[d_tag]) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
-            distributor = network.distributors[d_tag] 
+    # Compute electronic speed controller and motor performance  
+    compute_electric_rotor_drive(propulsor,state,network)
     
-    # Compute electronic speed controller performance 
-    conditions.energy.modulators[esc.tag].outputs.voltage   = conditions.energy.distributors[distributor.tag].voltage 
-    conditions.energy.modulators[esc.tag].throttle          = eta 
-    compute_voltage_out_from_throttle(esc,conditions)
-
-    # Assign conditions to the motor and compute performance 
-    conditions.energy.converters[motor.tag].inputs.voltage = conditions.energy.modulators[esc.tag].outputs.voltage  
-    compute_motor_performance(motor,conditions) 
-    
-    #  Assign conditions to the rotor and compute performance 
-    conditions.energy.converters[rotor.tag].omega                         = conditions.energy.converters[motor.tag].outputs.omega
-    conditions.energy.converters[rotor.tag].throttle                      = conditions.energy.modulators[esc.tag].throttle      
-    conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle = conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
-    compute_rotor_performance(rotor,conditions)
+    # Compute rotor performance (rotors with wake interaction are solved together by the network)
+    if not network.rotor_wake_interaction:
+        compute_rotor_performance(rotor,conditions)
  
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)
@@ -149,6 +135,34 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
     electric_rotor_conditions.fuel_mass_flow_rate = 0*state.ones_row(1)
     
     return electric_rotor_conditions.inputs ,electric_rotor_conditions.outputs, stored_results_flag,stored_propulsor_tag  
+
+def compute_electric_rotor_drive(propulsor,state,network):
+    """Computes the electronic speed controller and motor performance and sets the rotor operating point."""
+    conditions                 = state.conditions    
+    motor                      = propulsor.motor 
+    rotor                      = propulsor.rotor 
+    esc                        = propulsor.electronic_speed_controller   
+    eta                        = conditions.energy.propulsors[propulsor.tag].throttle
+    
+    # Determine what electrical distributor is connected to the electric powertrain 
+    for d_tag in propulsor.assigned_distributors[0]:
+        if type(network.distributors[d_tag]) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
+            distributor = network.distributors[d_tag] 
+    
+    # Compute electronic speed controller performance 
+    conditions.energy.modulators[esc.tag].outputs.voltage   = conditions.energy.distributors[distributor.tag].voltage 
+    conditions.energy.modulators[esc.tag].throttle          = eta 
+    compute_voltage_out_from_throttle(esc,conditions)
+
+    # Assign conditions to the motor and compute performance 
+    conditions.energy.converters[motor.tag].inputs.voltage = conditions.energy.modulators[esc.tag].outputs.voltage  
+    compute_motor_performance(motor,conditions) 
+    
+    #  Assign conditions to the rotor 
+    conditions.energy.converters[rotor.tag].omega                         = conditions.energy.converters[motor.tag].outputs.omega
+    conditions.energy.converters[rotor.tag].throttle                      = conditions.energy.modulators[esc.tag].throttle      
+    conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle = conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
+    return
                 
 def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors

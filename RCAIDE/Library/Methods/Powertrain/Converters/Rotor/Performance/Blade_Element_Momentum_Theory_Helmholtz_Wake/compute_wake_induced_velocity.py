@@ -136,28 +136,32 @@ def compute_wake_induced_velocity(rotor, rotor_conditions, evaluation_points, ct
     kd = 1 + s/(np.sqrt(s**2 + R**2))    
 
     # extract radial and azimuthal velocities at blade
-    va = rotor_conditions.blade_axial_induced_velocity[0]
-    vt = rotor_conditions.blade_tangential_induced_velocity[0]
+    va = rotor_conditions.blade_axial_induced_velocity
+    vt = rotor_conditions.blade_tangential_induced_velocity
     
     if rotor.clockwise_rotation:
         rotation = 1
     else:
         rotation =  -1
 
-    va_y_range  = np.append(np.flipud(va), va)
-    vt_y_range  = np.append(np.flipud(vt), vt)*rotation
-    va_interp   = interp1d(rotor_y_range, va_y_range)
-    vt_interp   = interp1d(rotor_y_range, vt_y_range)
+    # interpolate each control point's blade induced velocities across the span of the disc
+    va_y_range  = np.concatenate((np.flip(va, axis=1), va), axis=1)
+    vt_y_range  = np.concatenate((np.flip(vt, axis=1), vt), axis=1)*rotation
+    va_y        = np.zeros((ctrl_pts,new_dim))
+    vt_y        = np.zeros((ctrl_pts,new_dim))
+    for i in range(ctrl_pts):
+        va_y[i] = interp1d(rotor_y_range, va_y_range[i])(y_vals[i])
+        vt_y[i] = interp1d(rotor_y_range, vt_y_range[i])(y_vals[i])
     
     # preallocate va_new and vt_new
-    va_new = kd*va_interp((y_vals))
+    va_new = kd*va_y
     vt_new = np.zeros((ctrl_pts,new_dim))
 
     # invert inboard vt values
     inboard_bools                = (y_vals < hub_y_center)
-    vt_new[inboard_bools]        = -kd[inboard_bools]*vt_interp((y_vals[inboard_bools]))
-    vt_new[inboard_bools==False] = kd[inboard_bools==False]*vt_interp((y_vals[inboard_bools==False]))
- 
+    vt_new[inboard_bools]        = -kd[inboard_bools]*vt_y[inboard_bools]
+    vt_new[inboard_bools==False] = kd[inboard_bools==False]*vt_y[inboard_bools==False]
+
     val_ids_x = val_ids + ([0] *ctrl_pts*new_dim,)
     val_ids_y = val_ids + ([1] *ctrl_pts*new_dim,)
     val_ids_z = val_ids + ([2] *ctrl_pts*new_dim,) 
