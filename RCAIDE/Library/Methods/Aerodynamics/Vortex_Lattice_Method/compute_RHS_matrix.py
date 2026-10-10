@@ -8,6 +8,9 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 import RCAIDE
 from RCAIDE.Framework.Core import Data 
+from RCAIDE.Library.Components import Wings
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.extract_wing_collocation_points        import extract_wing_collocation_points
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_wake_induced_velocity import compute_rotor_wake_induced_velocity
 
 # package imports 
 import numpy as np
@@ -72,30 +75,30 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,propeller_wake_
     num_ctrl_pts     = len(aoa)  
 
     rot_V_wake_ind   = np.zeros((num_ctrl_pts,num_eval_pts,3))
-    Vx_ind_total     = np.zeros_like(V_distribution)
-    Vy_ind_total     = np.zeros_like(V_distribution)
-    Vz_ind_total     = np.zeros_like(V_distribution) 
     dt               = 0
-    for network in geometry.networks:
-        if propeller_wake_model:
-            rot_V_wake_ind = np.zeros((num_ctrl_pts,num_eval_pts,3))
+    if propeller_wake_model:
+        # rotor slipstream acts on the main wing, or the last wing when there is no main wing 
+        wing_idx = len(geometry.wings) - 1
+        for i, wing in enumerate(geometry.wings):
+            if isinstance(wing,Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body):
+                wing_idx = i
+        wing_CPs, slipstream_vd_ids = extract_wing_collocation_points(VD,conditions,settings,geometry,wing_idx)
+        
+        for network in geometry.networks:
             for propulsor in network.propulsors: 
                 if 'rotor' in  propulsor:
                     rotor =  propulsor.rotor
                 elif 'propeller' in  propulsor :
                     rotor =  propulsor.propeller
-                if rotor.fidelity == "Blade_Element_Momentum_Theory_Helmholtz_Wake":                 
-                    rot_V_wake_ind += RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.evaluate_slipstream(rotor,VD,conditions,settings,geometry,num_ctrl_pts) 
+                else:
+                    continue
+                # rotor performance is not computed during surrogate training
+                if rotor.tag in conditions.energy.converters:
+                    rot_V_wake_ind[:,slipstream_vd_ids,:] += compute_rotor_wake_induced_velocity(rotor,conditions,wing_CPs)
                     
-            # update the total induced velocity distribution
-            Vx_ind_total = Vx_ind_total  + rot_V_wake_ind[:,:,0]
-            Vy_ind_total = Vy_ind_total  + rot_V_wake_ind[:,:,1]
-            Vz_ind_total = Vz_ind_total  + rot_V_wake_ind[:,:,2]
-
-            rhs = build_RHS(VD, conditions, settings, aoa, delta, phi, PSI_distribution,
-                            Vx_ind_total, Vy_ind_total, Vz_ind_total, V_distribution, dt)           
-            
-            return  rhs
+    Vx_ind_total = rot_V_wake_ind[:,:,0]
+    Vy_ind_total = rot_V_wake_ind[:,:,1]
+    Vz_ind_total = rot_V_wake_ind[:,:,2]
 
     rhs = build_RHS(VD, conditions, settings, aoa, delta, phi, PSI_distribution,
                     Vx_ind_total, Vy_ind_total, Vz_ind_total, V_distribution, dt)
