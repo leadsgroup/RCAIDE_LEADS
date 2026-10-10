@@ -53,7 +53,7 @@ def compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_
     VD    = conditions.aerodynamics.VD
     mach  = conditions.freestream.mach_number
     key   = wing_influence_key(rotor, VD, mach, T_body2thrust, r_dim_2d, psi_2d)
-    cache = rotor.wing_influence_cache
+    cache = rotor.get('wing_influence_cache')   # runtime cache, not a rotor parameter, so saved rotors stay loadable
     if cache is None or cache.key != key:
         cache     = compute_wing_influence(rotor, VD, mach, T_body2thrust, r_dim_2d, psi_2d)
         cache.key = key

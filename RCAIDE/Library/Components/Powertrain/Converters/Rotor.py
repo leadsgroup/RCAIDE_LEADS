@@ -106,9 +106,6 @@ class Rotor(Converter):
     nonuniform_freestream : bool
         Flag for nonuniform inflow conditions. Default is False.
 
-    wing_influence_cache : Data
-        Cached unit-strength wing influence on the rotor disc. Default is None.
-
     Notes
     -----
     The Rotor class provides a comprehensive framework for modeling rotary
@@ -220,7 +217,6 @@ class Rotor(Converter):
         self.sol_tolerance                     = 1e-8 
         self.use_2d_analysis                   = False       # True if rotor is at an angle relative to freestream or nonuniform freestream
         self.nonuniform_freestream             = False   
-        self.wing_influence_cache              = None        # cached unit-strength wing influence on the rotor disc
         self.axial_velocities_2d               = None        # user input for additional velocity influences at the rotor
         self.tangential_velocities_2d          = None        # user input for additional velocity influences at the rotor
         self.radial_velocities_2d              = None        # user input for additional velocity influences at the rotor 
