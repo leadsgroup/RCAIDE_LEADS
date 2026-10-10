@@ -27,7 +27,7 @@ from RCAIDE.Framework.Core import interp2d
 # ----------------------------------------------------------------------------------------------------------------------    
 #  Rotor Noise 
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index = 0, previous_rotor_tag = None, identical_propulsors=True):
+def compute_rotor_noise(microphone_locations,rotor,segment,settings, reference_rotor_tag = None):
     ''' This is a collection medium-fidelity frequency domain methods for rotor acoustic noise prediction which 
     computes the acoustic signature (sound pressure level, weighted sound pressure levels,
     and frequency spectrums of a system of rotating blades           
@@ -43,6 +43,7 @@ def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index
         segment                 - flight segment data structure                       [None] 
         results                 - data structure containing of acoustic data          [None]
         settings                - accoustic settings                                  [None]
+        reference_rotor_tag     - tag of an identical rotor whose blade loading is reused [None]
                                
     Outputs:
         Results.    
@@ -107,15 +108,14 @@ def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index
                 airfoil_points      = airfoil.number_of_points 
             chord_coord             = int(np.floor(airfoil_points/2))       
                 
-            if (identical_propulsors == False) and rotor_index !=0: 
-                prev_aeroacoustic_data                   = segment.state.conditions.energy.converters[previous_rotor_tag]                 
-                prev_aeroacoustic_data                   = segment.state.conditions.energy.converters[rotor.tag]  
-                aeroacoustic_data.disc_lift_distribution = prev_aeroacoustic_data.disc_lift_distribution
-                aeroacoustic_data.disc_drag_distribution = prev_aeroacoustic_data.disc_lift_distribution
-                aeroacoustic_data.disc_lift_coefficient  = prev_aeroacoustic_data.disc_lift_coefficient 
-                aeroacoustic_data.disc_drag_coefficient  = prev_aeroacoustic_data.disc_drag_coefficient  
-                aeroacoustic_data.blade_upper_surface    = prev_aeroacoustic_data.blade_upper_surface
-                aeroacoustic_data.blade_lower_surface    = prev_aeroacoustic_data.blade_lower_surface
+            if reference_rotor_tag is not None: 
+                reference_data                           = segment.state.conditions.energy.converters[reference_rotor_tag]  
+                aeroacoustic_data.disc_lift_distribution = reference_data.disc_lift_distribution
+                aeroacoustic_data.disc_drag_distribution = reference_data.disc_drag_distribution
+                aeroacoustic_data.disc_lift_coefficient  = reference_data.disc_lift_coefficient 
+                aeroacoustic_data.disc_drag_coefficient  = reference_data.disc_drag_coefficient  
+                aeroacoustic_data.blade_upper_surface    = reference_data.blade_upper_surface
+                aeroacoustic_data.blade_lower_surface    = reference_data.blade_lower_surface
             else: 
                 # Lift and Drag - coefficients and distributions 
                 fL      = np.tile(np.zeros_like(Re)[:,:,:,None],(1,1,1,chord_coord))
@@ -201,4 +201,4 @@ def compute_rotor_noise(microphone_locations,rotor,segment,settings, rotor_index
     
     # A-weighted
     conditions.aeroacoustics.converters[rotor.tag] = Results 
-    return rotor.tag 
+    return 
