@@ -80,6 +80,15 @@ def evaluate_surrogate(state,settings,vehicle):
     
     conditions.static_stability.coefficients.M_0 = compute_stability_derivative(sub_sur.CM_0    ,trans_sur.CM_0    ,sup_sur.CM_0    ,h_sub,h_sup,Mach) 
     conditions.aerodynamics.coefficients.lift.spanwise =  results_alpha.Clift_spanwise     
+
+    # vortex strengths and geometry used by the wing-to-rotor interaction
+    if sub_sur.gamma_alpha is not None:
+        if trans_sur.gamma_alpha is None or sup_sur.gamma_alpha is None:
+            gamma = h_sub(Mach)*sub_sur.gamma_alpha(pts_alpha)
+        else:
+            gamma = h_sub(Mach)*sub_sur.gamma_alpha(pts_alpha) + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_sur.gamma_alpha(pts_alpha) + h_sup(Mach)*sup_sur.gamma_alpha(pts_alpha)
+        conditions.aerodynamics.gamma = gamma
+        conditions.aerodynamics.VD    = sub_sur.VD
     
     # -----------------------------------------------------------------------------------------------------------------------
     # Query control surface surrogates if derivatives are not user defined
@@ -198,6 +207,8 @@ def evaluate_no_surrogate(state,settings,vehicle):
     conditions.aerodynamics.coefficients.differential_surface_pressure= VLM_results.CP
     conditions.aerodynamics.angles.induced                            = VLM_results.alpha_induced    
     conditions.aerodynamics.spanwise_stations                         = VLM_results.spanwise_stations
+    conditions.aerodynamics.gamma                                     = VLM_results.gamma
+    conditions.aerodynamics.VD                                        = VLM_results.VD
 
     # corrections 
     RCAIDE.Library.Methods.Aerodynamics.Common.Lift.fuselage_correction(state,settings,vehicle)     

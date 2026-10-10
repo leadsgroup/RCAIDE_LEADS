@@ -148,6 +148,8 @@ def train_model(aerodynamics,Mach, vehicle):
     CN_res           = VLM_results.CN   
 
     training.Clift_spanwise  = VLM_results.sectional_CLift.reshape(len_Mach, len_AoA, np.shape(VLM_results.sectional_CLift)[1]).transpose(1, 0, 2)
+    training.gamma_alpha     = VLM_results.gamma.reshape(len_Mach, len_AoA, np.shape(VLM_results.gamma)[1]).transpose(1, 0, 2)
+    training.VD              = VLM_results.VD
     Clift_alpha              = np.reshape(Clift_res,(len_Mach,len_AoA)).T 
     Cdrag_induced_alpha      = np.reshape(Cdrag_res,(len_Mach,len_AoA)).T 
     CX_alpha                 = np.reshape(CX_res,(len_Mach,len_AoA)).T 
@@ -409,6 +411,9 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     # --------------------------------------------------------------------------------------------------------------  
     Clift_alpha           =  np.concatenate((training_subsonic.Clift_alpha[:,-1][:,None] , training_supersonic.Clift_alpha[:,0][:,None] ), axis = 1)
     Clift_spanwise        =np.concatenate((training_subsonic.Clift_spanwise[:,-1][:,None] , training_supersonic.Clift_spanwise[:,0][:,None] ), axis = 1)
+    if 'gamma_alpha' in training_subsonic and 'gamma_alpha' in training_supersonic:
+        training.gamma_alpha = np.concatenate((training_subsonic.gamma_alpha[:,-1][:,None], training_supersonic.gamma_alpha[:,0][:,None]), axis = 1)
+        training.VD          = training_subsonic.VD
     Cdrag_induced_alpha   =  np.concatenate((training_subsonic.Cdrag_induced_alpha[:,-1][:,None]  , training_supersonic.Cdrag_induced_alpha[:,0][:,None] ), axis = 1) 
     CX_alpha              =  np.concatenate((training_subsonic.CX_alpha[:,-1][:,None]    , training_supersonic.CX_alpha[:,0][:,None] ), axis = 1)   
     CY_alpha              =  np.concatenate((training_subsonic.CY_alpha[:,-1][:,None]    , training_supersonic.CY_alpha[:,0][:,None] ), axis = 1)   
@@ -581,6 +586,8 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CM              = VLM_results.CM
             RES.CN              = VLM_results.CN
             RES.sectional_CLift = VLM_results.sectional_CLift         
+            RES.gamma           = VLM_results.gamma
+            RES.VD              = VLM_results.VD  # full vortex distribution; geometry is the same for every case
             settings.vortex_distribution  = settings.vortex_distribution  
         else: 
             RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift)) 
@@ -592,5 +599,6 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CM              = np.vstack((RES.CM             ,VLM_results.CM))
             RES.CN              = np.vstack((RES.CN             ,VLM_results.CN))
             RES.sectional_CLift = np.vstack((RES.sectional_CLift,VLM_results.sectional_CLift))   
+            RES.gamma           = np.vstack((RES.gamma          ,VLM_results.gamma))
     
     return RES

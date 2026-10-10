@@ -107,16 +107,16 @@ def main():
     nacelle.append_segment(segment_5)
     
 
-    # rotor wake interaction (joint rotor solve not yet implemented)
-    rotor_wake_interaction_test()
+    # aerodynamics-propulsion coupling (joint rotor solve not yet implemented)
+    aero_propulsion_coupling_test()
 
     elapsed_time = time.time() - ti
     elapsed_time_min = elapsed_time / 60
     print('Elapsed time (min): ', elapsed_time_min)
     return
 
-def rotor_wake_interaction_test():
-    """Runs one solver iteration of a cruise segment with rotor wake interaction enabled."""
+def aero_propulsion_coupling_test():
+    """Runs one solver iteration of a cruise segment with aerodynamics-propulsion coupling enabled."""
     vehicles_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Vehicles"))
     if vehicles_path not in sys.path:
         sys.path.insert(0, vehicles_path)
@@ -124,7 +124,7 @@ def rotor_wake_interaction_test():
 
     vehicle = vehicle_setup('lithium_ion_nmc', None)
     for network in vehicle.networks:
-        network.rotor_wake_interaction = True
+        network.aero_propulsion_coupling = True
 
     analyses = RCAIDE.Framework.Analyses.Vehicle()
     analyses.vehicle = vehicle

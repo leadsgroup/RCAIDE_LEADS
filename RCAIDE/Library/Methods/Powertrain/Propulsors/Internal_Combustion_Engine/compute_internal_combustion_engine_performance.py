@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_internal_combustion_engine_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_internal_combustion_engine_performance(propulsor, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_internal_combustion_engine_performance(propulsor, state, network=None, center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of an internal combustion engine propulsion system.
     
@@ -101,7 +101,7 @@ def compute_internal_combustion_engine_performance(propulsor, state, center_of_g
     conditions.energy.converters[propeller.tag].omega                         = conditions.energy.converters[engine.tag].omega 
     conditions.energy.converters[propeller.tag].throttle                      = conditions.energy.converters[engine.tag].throttle 
     conditions.energy.converters[propeller.tag].commanded_thrust_vector_angle = conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
-    compute_rotor_performance(propeller,conditions)
+    compute_rotor_performance(propeller,conditions,network is not None and network.aero_propulsion_coupling)
 
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)

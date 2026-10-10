@@ -83,7 +83,7 @@ class Rotor(Converter):
         Mean blade profile drag coefficient. Default is 0.03.
         
     clockwise_rotation : bool
-        Direction of rotation. Default is True.
+        Direction of rotation, viewed from behind the rotor looking along the thrust direction. Default is True.
         
     phase_offset_angle : float
         Initial blade phase angle [rad]. Default is 0.0.

@@ -79,6 +79,7 @@ class Constant_Throttle_Constant_Speed(Evaluate):
         iterate.conditions.network                    = Common.Update.network
         iterate.conditions.thrust                     = Common.Update.thrust
         iterate.conditions.aerodynamics               = Common.Update.aerodynamics
+        iterate.conditions.aero_propulsion_coupling   = Common.Update.aero_propulsion_coupling
         iterate.conditions.stability                  = Common.Update.stability
         iterate.conditions.weights                    = Common.Update.weights
         iterate.conditions.forces                     = Common.Update.forces

@@ -50,6 +50,7 @@ def Propeller_Slipstream(wake_fidelity,identical_props):
  
     vehicle.networks.electric.propulsors.starboard_propulsor.rotor.clockwise_rotation = True
     vehicle.networks.electric.propulsors.port_propulsor.rotor.clockwise_rotation = False
+    vehicle.networks.electric.aero_propulsion_coupling = True
      
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
@@ -62,16 +63,15 @@ def Propeller_Slipstream(wake_fidelity,identical_props):
     sectional_lift_coeff        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.spanwise[0,0:40]
     
     # lift coefficient and sectional lift coefficient check
-    lift_coefficient_true       = 0.8115851854067225
-    sectional_lift_coeff_true   = np.array([0.73045872, 0.68891668, 0.5292829 , 0.85630916, 0.6980919 ,
-                                            0.65026321, 0.60074471, 0.53510156, 0.36833662, 0.10604061,
-                                            0.73045876, 0.68891679, 0.52928306, 0.8563089 , 0.69809093,
-                                            0.65026196, 0.60074484, 0.53510402, 0.36833951, 0.10604136,
-                                            0.03356973, 0.03446451, 0.03634429, 0.03879915, 0.04068253,
-                                            0.0408635 , 0.03855032, 0.03317196, 0.02476276, 0.01478905,
-                                            0.03356974, 0.03446452, 0.03634429, 0.03879913, 0.04068251,
-                                            0.0408635 , 0.03855033, 0.0331719 , 0.02476258, 0.01478883])
-
+    lift_coefficient_true       = 0.8113784555968844
+    sectional_lift_coeff_true   = np.array([0.73014259, 0.6883883 , 0.52755106, 0.85751195, 0.69837543,
+                                            0.6503875 , 0.60081153, 0.53514278, 0.36836062, 0.10604818,
+                                            0.73014264, 0.68838841, 0.52755123, 0.85751168, 0.69837444,
+                                            0.65038625, 0.60081166, 0.53514524, 0.3683635 , 0.10604893,
+                                            0.03364275, 0.03454798, 0.03644873, 0.0389322 , 0.04084449,
+                                            0.04104641, 0.03873864, 0.03334398, 0.0248957 , 0.01486945,
+                                            0.03364276, 0.03454798, 0.03644873, 0.03893218, 0.04084448,
+                                            0.04104641, 0.03873865, 0.03334392, 0.02489552, 0.01486922])
     diff_CL = np.abs(lift_coefficient  - lift_coefficient_true) / lift_coefficient_true
     print('CL difference')
     print(diff_CL)
@@ -134,7 +134,6 @@ def base_analysis(vehicle):
     aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
     aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     aerodynamics.settings.use_surrogate        = False 
-    aerodynamics.settings.propeller_wake_model = True
     analyses.append(aerodynamics)   
   
 

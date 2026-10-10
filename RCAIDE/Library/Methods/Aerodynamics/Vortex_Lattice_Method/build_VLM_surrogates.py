@@ -95,6 +95,12 @@ def build_surrogate(aerodynamics, training, vehicle):
     surrogates.CL_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CL_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)
     surrogates.CN_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CN_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)  
     surrogates.Clift_spanwise     = RegularGridInterpolator((AoA_data, mach_data),training.Clift_spanwise      ,method='linear',    bounds_error=False, fill_value=None)      
+    if 'gamma_alpha' in training: # training data stored before vortex strengths were added has no gamma_alpha
+        surrogates.gamma_alpha    = RegularGridInterpolator((AoA_data, mach_data),training.gamma_alpha         ,method='linear',    bounds_error=False, fill_value=None)      
+        surrogates.VD             = training.VD
+    else:
+        surrogates.gamma_alpha    = None
+        surrogates.VD             = None
 
     surrogates.Clift_beta         = RegularGridInterpolator((Beta_data ,mach_data),training.Clift_beta        ,method = 'linear',   bounds_error=False, fill_value=None)   
     surrogates.Cdrag_induced_beta = RegularGridInterpolator((Beta_data ,mach_data),training.Cdrag_induced_beta,method = 'linear',   bounds_error=False, fill_value=None)    
@@ -151,6 +157,8 @@ def no_surrogate(aerodynamics, training, vehicle):
     surrogates.Clift_alpha            = None     
     surrogates.Clift_beta             = None
     surrogates.Clift_spanwise         = None
+    surrogates.gamma_alpha            = None
+    surrogates.VD                     = None
     surrogates.Cdrag_induced_alpha    = None     
     surrogates.Cdrag_induced_beta     = None 
     surrogates.CX_alpha               = None    

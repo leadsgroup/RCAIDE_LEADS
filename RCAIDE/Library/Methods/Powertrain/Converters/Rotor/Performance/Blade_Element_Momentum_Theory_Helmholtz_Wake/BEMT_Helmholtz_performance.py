@@ -9,13 +9,14 @@
 import RCAIDE
 from RCAIDE.Framework.Core                              import Data , Units, orientation_product, orientation_transpose  
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift    import compute_airfoil_aerodynamics,compute_inflow_and_tip_loss 
+from .compute_wing_induced_rotor_velocity               import compute_wing_induced_rotor_velocity
 
 # package imports
 import  numpy as  np 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  BEMT_Helmholtz_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def BEMT_Helmholtz_performance(rotor, conditions):
+def BEMT_Helmholtz_performance(rotor, conditions, aero_propulsion_coupling=False):
     """
     Analyzes a general rotor given geometry and operating conditions using
     Blade Element Momentum Theory with a Helmholtz Vortex Wake Prescription.
@@ -239,8 +240,11 @@ def BEMT_Helmholtz_performance(rotor, conditions):
     # Include velocities introduced by rotor incidence angles
     if (np.any(abs(V_thrust[:,1]) >1e-3) or np.any(abs(V_thrust[:,2]) >1e-3)) and use_2d_analysis:
 
+        # azimuth runs clockwise viewed from behind, so a counter-clockwise rotor is its mirror image in y
+        rotation = 1 if rotor.clockwise_rotation else -1
+
         # y-component of freestream in the propeller cartesian plane
-        Vy  = V_thrust[:,1,None,None]
+        Vy  = rotation*V_thrust[:,1,None,None]
         Vy  = np.repeat(Vy, Nr,axis=1)
         Vy  = np.repeat(Vy, Na,axis=2)
 
@@ -253,7 +257,7 @@ def BEMT_Helmholtz_performance(rotor, conditions):
         utz =  -Vz*np.sin(psi_2d)
         urz =   Vz*np.cos(psi_2d)
         uty =  -Vy*np.cos(psi_2d)
-        ury =   Vy*np.sin(psi_2d)
+        ury =  -Vy*np.sin(psi_2d)
 
         ut +=  (utz + uty)  # tangential velocity in direction of rotor rotation
         ur +=  (urz + ury)  # radial velocity (positive toward tip)
@@ -267,6 +271,15 @@ def BEMT_Helmholtz_performance(rotor, conditions):
         ua += rotor.axial_velocities_2d
         ut += rotor.tangential_velocities_2d
         ur += rotor.radial_velocities_2d
+
+    # Include velocities induced by the wing at the rotor disc
+    if aero_propulsion_coupling and 'VD' in conditions.aerodynamics:
+        use_2d_analysis           = True
+        ua_wing, ut_wing, ur_wing = compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_2d, psi_2d)
+
+        ua += ua_wing
+        ut += ut_wing
+        ur += ur_wing
 
     if use_2d_analysis:
         # make everything 2D with shape (ctrl_pts,Nr,Na)
