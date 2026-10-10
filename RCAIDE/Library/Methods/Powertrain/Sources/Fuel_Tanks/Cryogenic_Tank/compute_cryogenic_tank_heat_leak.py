@@ -10,7 +10,7 @@ from RCAIDE.Framework.Core.Physical_Constants import STEFAN_BOLTZMANN
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
 try:
     from numba import njit
-except ImportError:  # numba is optional: without it the kernels below run as plain Python
+except ImportError:  # pragma: no cover -- numba is optional: without it the kernels below run as plain Python
     def njit(*args, **kwargs):
         if len(args) == 1 and callable(args[0]):
             return args[0]
