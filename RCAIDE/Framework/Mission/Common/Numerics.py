@@ -69,6 +69,10 @@ class Numerics(Conditions):
         self.network_solver.max_evaluations     = 200
         self.network_solver.step_size           = 1E-8   
         self.network_solver.verbose             = False 
+
+        # aerodynamics-propulsion coupling, used only by networks with aero_propulsion_coupling enabled
+        self.aero_propulsion_coupling                  = Conditions()
+        self.aero_propulsion_coupling.number_of_passes = 1    # fixed, so the residuals stay smooth for the mission solver
         
         self.hp_decomposition                    = Conditions() 
         self.hp_decomposition.max_dimension      = 64

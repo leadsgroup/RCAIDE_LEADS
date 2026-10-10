@@ -83,7 +83,7 @@ class Rotor(Converter):
         Mean blade profile drag coefficient. Default is 0.03.
         
     clockwise_rotation : bool
-        Direction of rotation. Default is True.
+        Direction of rotation, viewed from behind the rotor looking along the thrust direction. Default is True.
         
     phase_offset_angle : float
         Initial blade phase angle [rad]. Default is 0.0.
@@ -105,6 +105,9 @@ class Rotor(Converter):
         
     nonuniform_freestream : bool
         Flag for nonuniform inflow conditions. Default is False.
+
+    wing_influence_cache : Data
+        Cached unit-strength wing influence on the rotor disc. Default is None.
 
     Notes
     -----
@@ -217,6 +220,7 @@ class Rotor(Converter):
         self.sol_tolerance                     = 1e-8 
         self.use_2d_analysis                   = False       # True if rotor is at an angle relative to freestream or nonuniform freestream
         self.nonuniform_freestream             = False   
+        self.wing_influence_cache              = None        # cached unit-strength wing influence on the rotor disc
         self.axial_velocities_2d               = None        # user input for additional velocity influences at the rotor
         self.tangential_velocities_2d          = None        # user input for additional velocity influences at the rotor
         self.radial_velocities_2d              = None        # user input for additional velocity influences at the rotor 

@@ -95,8 +95,11 @@ def plot_electric_propulsor_efficiencies(results,
 
 
     for network in results.segments[0].analyses.vehicle.networks:  
+        reference = None
         for p_i, propulsor in enumerate(network.propulsors):
-            if (p_i == 0) or (propulsor.identical_propulsors == False): 
+            # plot only propulsors solved on their own; the others share their results
+            if not network.reuses_results(propulsor, reference):
+                reference = propulsor
                 for i in range(len(results.segments)):  
                     if 'rotor' in propulsor: 
                         thrustor =  propulsor.rotor

@@ -108,8 +108,8 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
     # Compute electronic speed controller and motor performance  
     compute_electric_rotor_drive(propulsor,state,network)
     
-    # Compute rotor performance (rotors with wake interaction are solved together by the network)
-    if not network.rotor_wake_interaction:
+    # Compute rotor performance (coupled rotors are solved together by the network)
+    if not network.aero_propulsion_coupling:
         compute_rotor_performance(rotor,conditions)
  
     # Compute moment 

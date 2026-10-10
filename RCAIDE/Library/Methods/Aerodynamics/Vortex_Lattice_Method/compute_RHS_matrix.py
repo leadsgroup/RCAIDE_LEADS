@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Compute RHS matrix 
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,propeller_wake_model):
+def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry):
 
     """ This computes the right hand side matrix for the VLM. In this
     function, induced velocites from propeller wake are also included
@@ -43,7 +43,6 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,propeller_wake_
     conditions.static_stability.yaw_rate         [radians/s]
 
     sur_flag    - use_surrogate flag             [Unitless]
-    slipstream  - propeller_wake_model flag      [Unitless]
     delta, phi  - flow tangency angles           [radians]
 
     Outputs:
@@ -76,8 +75,8 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,propeller_wake_
 
     rot_V_wake_ind   = np.zeros((num_ctrl_pts,num_eval_pts,3))
     dt               = 0
-    if propeller_wake_model:
-        # rotor slipstream acts on the main wing, or the last wing when there is no main wing 
+    if any(network.aero_propulsion_coupling for network in geometry.networks):
+        # rotor slipstream of coupled networks acts on the main wing, or the last wing when there is no main wing 
         wing_idx = len(geometry.wings) - 1
         for i, wing in enumerate(geometry.wings):
             if isinstance(wing,Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body):
@@ -85,6 +84,8 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,propeller_wake_
         wing_CPs, slipstream_vd_ids = extract_wing_collocation_points(VD,conditions,settings,geometry,wing_idx)
         
         for network in geometry.networks:
+            if not network.aero_propulsion_coupling:
+                continue
             for propulsor in network.propulsors: 
                 if 'rotor' in  propulsor:
                     rotor =  propulsor.rotor
