@@ -479,7 +479,7 @@ def design_turbofan(turbofan, build_idle_fallback=True):
 
     # Step 26: Sea-level static thrust at the takeoff rating
     outputs                                = sea_level_static_performance(1.0)
-    turbofan.sealevel_static_thrust        = outputs.thrust[0][0]
+    turbofan.sealevel_static_thrust         = outputs.thrust[0][0]
     turbofan.sealevel_static_chemical_power = operating_state.conditions.energy.propulsors[turbofan.tag].inputs.power.chemical[0][0]
 
     # Fan design-point speed from its rated (100% N1, sea-level static takeoff) speed, using the
