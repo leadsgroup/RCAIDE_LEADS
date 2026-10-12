@@ -18,26 +18,14 @@ def compute_heater_performance(heater, state, network):
     already-computed demand (there, the fuel line's hydraulic power) rather than
     deriving it independently.
 
-    Ordering / staleness note
-    --------------------------
-    ``RCAIDE.Framework.Networks.Network.evaluate`` runs converters *before*
-    sources within a single call (propulsors -> converters -> sources ->
-    distributors), so the ``heater_power`` read here is whatever the tank's
-    source computed on the *previous* call to ``evaluate`` (mutated in place on
-    the same persistent ``state``, not the value about to be computed this call.
-    Pump has an analogous ordering dependency in the other direction (it needs
-    propulsors, which run first, to have already populated the fuel line's
-    hydraulic power -- satisfied within the same call). This heater's dependency
-    is not satisfiable within a single call given the current evaluation order,
-    so it is instead a one-call-lagged (Gauss-Seidel-style) coupling: as the
-    outer network solver (``RCAIDE.Library.Mission.Common.Update.network``,
-    fsolve/least_squares) converges, successive ``evaluate()`` calls stop
-    changing state, and the lag vanishes at convergence. It is not exact within
-    a single call and should not be relied on for anything requiring intra-call
-    consistency. On the very first call of a segment, ``heater_power`` reads at
-    its initialized value of 0 (from ``append_fuel_tank_conditions``/
-    ``append_cryogenic_tank_conditions``), so the electrical bus sees no heater
-    load until the tank source has evaluated at least once.
+    Ordering note
+    -------------
+    ``RCAIDE.Framework.Networks.Network.evaluate`` runs converters before
+    sources, so the assigned tank's solve is triggered here first (it is cached
+    on its inputs, so the later call in the sources loop costs nothing). The
+    heater therefore reads this call's ``heater_power``, not the previous
+    call's, which keeps the electrical-power residual consistent for the
+    mission solver.
 
     Parameters
     ----------
@@ -47,8 +35,7 @@ def compute_heater_performance(heater, state, network):
     state : RCAIDE.Framework.Mission.Common.State
         Mission segment state.
     network : RCAIDE.Framework.Networks.Network
-        The network this heater belongs to (unused directly here, kept for
-        signature parity with other converters' ``compute_performance``).
+        The network this heater belongs to (holds its assigned tank).
 
     Returns
     -------
@@ -68,8 +55,12 @@ def compute_heater_performance(heater, state, network):
         thermal_power    = 0.0 * heater_conditions.outputs.power.thermal
         electrical_power = 0.0 * heater_conditions.inputs.power.electrical
     else:
+        if network is not None and heater.assigned_tank in network.sources:
+            network.sources[heater.assigned_tank].compute_performance(state, network)
         tank_conditions  = state.conditions.energy.sources[heater.assigned_tank]
-        thermal_power    = tank_conditions.heater_power
+        # Copied, not aliased: append_segment_conditions zeroes converter outputs in place, which would
+        # otherwise also zero the tank's heater_power (and a cached tank solve never rewrites it).
+        thermal_power    = tank_conditions.heater_power.copy()
         electrical_power = thermal_power / heater.efficiency
 
     heater_conditions.outputs.power.thermal   = thermal_power
