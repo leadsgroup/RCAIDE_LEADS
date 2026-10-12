@@ -203,6 +203,22 @@ class Liquid_Hydrogen(Propellant):
         """
         return _saturation_temperature_interpolator()(P)
 
+    def saturation_table(self, phase='liquid'):
+        """
+            Raw saturated-property table rows for one phase, as the interpolators use them.
+            Parameters
+            ----------
+            phase : str
+                Saturation branch, 'liquid' or 'vapor' (default 'liquid').
+            Returns
+            -------
+            table : dict
+                Property name -> ndarray over the phase's rows, temperature increasing.
+        """
+        data = load_hydrogen_properties()
+        phase_mask = np.array(data["Phase"]) == phase
+        return {name: np.array(data[name], dtype=float)[phase_mask] for name in data.keys() if name != "Phase"}
+
     def property_table_range(self, phase='liquid'):
         """
             Valid (min, max) temperature [K] and pressure [MPa] range of the

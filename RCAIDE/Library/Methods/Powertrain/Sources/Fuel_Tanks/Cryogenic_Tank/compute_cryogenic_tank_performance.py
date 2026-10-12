@@ -12,6 +12,7 @@ from scipy.integrate import solve_ivp
 import RCAIDE
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak, compute_cryogenic_tank_heat_leak_cuboid
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heater_design_power import compute_cryogenic_tank_heater_design_power
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.cryogenic_tank_rates_kernel import cryogenic_tank_rates, cryogenic_tank_rates_tables, cryogenic_tank_node_diagnostics
 from RCAIDE.Framework.Core.Physical_Constants import UNIVERSAL_GAS_CONSTANT
 from RCAIDE.Framework.Core import Units
 
@@ -153,8 +154,17 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     state_floors = np.array([1e-3, 1e-3, 1.0, 1.0])
     atol_vec = atol * np.maximum(np.abs(y0), state_floors)
 
+    # Compiled right-hand side (cryogenic_tank_rates_kernel); the Python one below only runs when the kernel
+    # flags a heat-leak solve that needs its fallback path.
+    rate_tables = cryogenic_tank_rates_tables(tank, R_specific, T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power)
+    t_nodes     = np.ascontiguousarray(t, dtype=float)
+
     def _build_rhs(refuel_pts_local):
+        inputs = np.ascontiguousarray(np.vstack([chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts_local]), dtype=float)
         def rhs(t_i, y):
+            rates, _, status = cryogenic_tank_rates(t_i, np.asarray(y, dtype=float), t_nodes, inputs, *rate_tables)
+            if status == 0:
+                return rates
             m_g, m_l, T_g, T_l = y
             chemical_power = np.interp(t_i, t, chemical_power_pts)
             T_env          = np.interp(t_i, t, T_env_pts)
@@ -259,10 +269,13 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
 
     # Recover diagnostic outputs (pressure, vent/boil-off split, heater power) at
     # the collocation points, using their own real (not re-interpolated) inputs.
-    _, diag = _tank_state_rates(
-        tank, fuel, R_specific, m_g, m_l, T_g, T_l,
-        chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts_eff,
-        T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power)
+    inputs_eff = np.ascontiguousarray(np.vstack([chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts_eff]), dtype=float)
+    diag       = cryogenic_tank_node_diagnostics(t_nodes, m_g, m_l, T_g, T_l, inputs_eff, rate_tables)
+    if diag is None:
+        _, diag = _tank_state_rates(
+            tank, fuel, R_specific, m_g, m_l, T_g, T_l,
+            chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts_eff,
+            T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power)
 
     # ------------------------------------------------------------------
     #  Store outputs
