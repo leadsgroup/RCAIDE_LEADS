@@ -267,6 +267,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         tol     = 1.    # fuel convergency tolerance
         err     = 9999. # error to be minimized
         iter    = 0     # iteration count
+        previous_dist, previous_missing = None, None
 
         while abs(err) > tol and iter < maxIter:
             iter = iter + 1
@@ -283,11 +284,17 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             CruiseDist = np.diff( segment.conditions.frames.inertial.position_vector[[0,-1],0] )[0]        # Distance [m]
             CruiseFuel = segment.conditions.weights.vehicle.mass[0,0] - segment.conditions.weights.vehicle.mass[-1,0]    # [kg]
             
-            # Current specific range (m/kg)
-            CruiseSR    = CruiseDist / CruiseFuel        # [m/kg]
-
-            # Estimated distance that will result in total fuel burn = target fuel
-            DeltaDist  =  CruiseSR *  missingFuel
+            # Distance step that zeroes the missing fuel: from the cruise's specific range on the first iteration,
+            # then a secant update on the last two (distance, missing fuel) pairs
+            slope = None
+            if previous_dist is not None and CruiseDist != previous_dist:
+                slope = (missingFuel - previous_missing) / (CruiseDist - previous_dist)   # [kg/m], negative
+            if slope is not None and slope < 0:
+                DeltaDist = -missingFuel / slope
+            else:
+                CruiseSR  = CruiseDist / CruiseFuel        # [m/kg]
+                DeltaDist = CruiseSR * missingFuel
+            previous_dist, previous_missing = CruiseDist, missingFuel
             mission.segments[cruise_segment_tag].distance = (CruiseDist + DeltaDist)
 
             # running mission with new distance
