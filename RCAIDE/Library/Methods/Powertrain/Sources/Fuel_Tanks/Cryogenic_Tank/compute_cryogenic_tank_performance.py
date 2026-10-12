@@ -518,6 +518,33 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
 
     dT_g = (-Q_g_i + Q_e_g - P * dV_g + dm_g * (h_g - u_g)) / (m_g_c * cv_g)
 
+    # Bulk boiling and cloud condensation, Adler & Martins (2025) Eqs. 36-59: mass flows that cancel the
+    # pressure falling below the liquid's vapor pressure (bulk boiling) and the ullage temperature falling below
+    # its saturation temperature (cloud condensation), each switched on smoothly by a sigmoid (w_s = 100).
+    W_S        = 100.0
+    P_dot      = P * (dm_g / m_g_c + dT_g / T_g_c - dV_g / V_g_c)
+    P_sat_l    = fuel.cryogen_properties(T_l_c, "Pressure (MPa)", phase='liquid') * Units.MPa
+    dPsat_dT_l = (fuel.cryogen_properties(T_plus,  "Pressure (MPa)", phase='liquid') -
+                  fuel.cryogen_properties(T_minus, "Pressure (MPa)", phase='liquid')) * Units.MPa / np.clip(T_plus - T_minus, 1e-6, None)
+    dP_fd      = 1e-3 * P_clamped
+    dTsat_dP   = (fuel.saturation_temperature(np.clip(P_clamped + dP_fd, P_lo, P_hi)) -
+                  fuel.saturation_temperature(np.clip(P_clamped - dP_fd, P_lo, P_hi))) / (2 * dP_fd * Units.MPa)
+    m_dot_bb   = np.abs(V_g_c / (Z * R_specific * T_g_c) * (dPsat_dT_l * dT_l - P_dot))
+    m_dot_cc   = np.abs(P * V_g_c / (Z * R_specific * T_g_c**2) * (dTsat_dP * P_dot - dT_g))
+    s_bb       = 1.0 / (1.0 + np.exp(np.clip(W_S * (P - P_sat_l) / P_sat_l, -50, 50)))
+    s_cc       = 1.0 / (1.0 + np.exp(np.clip(W_S * (T_g_c - T_int) / T_int, -50, 50)))
+    m_dot_bb   = s_bb * m_dot_bb * m_dot_avail
+    m_dot_cc   = s_cc * m_dot_cc
+    m_dot_bbcc = m_dot_bb - m_dot_cc
+
+    dm_g = dm_g + m_dot_bbcc
+    dm_l = dm_l - m_dot_bbcc
+    dT_l = dT_l + (-m_dot_bb * (h_g - h_l) + P * m_dot_bbcc / rho_l - m_dot_bbcc * (h_l - u_l)) / (A_thermal - B_coupling)
+    dT_g = dT_g + (m_dot_cc * (h_g - h_l) - P * m_dot_bbcc / rho_l + m_dot_bbcc * (h_g - u_g)) / (m_g_c * cv_g)
+    dV_l = dm_l / rho_l - (m_l_c / rho_l**2) * drho_l_dT_l * dT_l
+    dV_g = -dV_l
+    m_dot_bo_final = m_dot_bo_final + m_dot_bbcc
+
     # Soft restoring term outside the property table's range. The table's edges
     # aren't arbitrary cutoffs (e.g. hydrogen's upper bound is its critical
     # temperature, above which there's no distinct liquid/vapor), so clamping
