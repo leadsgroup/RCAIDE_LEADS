@@ -354,8 +354,11 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     P_clamped = np.clip(P / Units.MPa, P_lo, P_hi)          # table pressure column is in MPa
     T_int     = fuel.saturation_temperature(P_clamped)
 
-    # Interface geometry from the current liquid volume
-    L_int, A_int, A_wet_frac = compute_interface_geometric_properties(tank, V_l_c)
+    # Interface geometry from the current liquid volume. A symmetric pair's stored geometry is one side of it,
+    # so each side holds half the liquid and the pair has twice the interface and shell area.
+    n_sides = 2 if tank.xz_plane_symmetric else 1
+    L_int, A_int, A_wet_frac = compute_interface_geometric_properties(tank, V_l_c / n_sides)
+    A_int = A_int * n_sides
 
     # Bulk vapor properties at the current bulk temperature (liquid ones are computed with rho_l above)
     rho_g, cp_g, cv_g, mu_g, k_g, h_g, u_g = fuel.cryogen_property_set(
@@ -419,8 +422,8 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak_cuboid(
                 t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], l_o, w_o, h_o, th)
 
-    Q_e_l = Q_env_liq * A_wet_frac
-    Q_e_g = Q_env_gas * (1 - A_wet_frac)
+    Q_e_l = n_sides * Q_env_liq * A_wet_frac
+    Q_e_g = n_sides * Q_env_gas * (1 - A_wet_frac)
 
     # Natural boil-off from interfacial heat transfer
     m_dot_bo = (Q_l_i + Q_g_i) / (h_g - h_l)
