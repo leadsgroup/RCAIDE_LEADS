@@ -62,7 +62,6 @@ def compute_ecs_power_draw(environmental_controls, state, vehicle):
     fan_pressure_ratio = 1.1  # p2/p1 across the recirculation fan
     R_air         = 287.05    # J/(kg*K), specific gas constant for air
 
-    altitude = state.conditions.freestream.altitude
     Mach     = state.conditions.freestream.mach_number
     Cp       = state.conditions.freestream.constant_pressure_specific_heat
     T1       = state.conditions.freestream.temperature
@@ -98,7 +97,9 @@ def compute_ecs_power_draw(environmental_controls, state, vehicle):
 
     T_ram   = T1 * (1 + ((gamma - 1) / 2) * Mach**2)
     P_ram   = P1 * (1 + ((gamma - 1) / 2) * Mach**2)
-    P_cabin = np.where(altitude < 2438.4, P_ram + 20000, 78000)
+    # Delivery pressure: at least the 78 kPa cabin floor and at least 20 kPa above ram. Continuous in altitude,
+    # unlike a switch at 8,000 ft, which steps the compressor power between collocation points.
+    P_cabin = np.maximum(78000, P_ram + 20000)
     # Compression starts from the ram-recovered state (T_ram, P_ram), not raw
     # freestream (T1, P1) -- the ram effect already does part of the
     # compression "for free" using the aircraft's own kinetic energy; only the
