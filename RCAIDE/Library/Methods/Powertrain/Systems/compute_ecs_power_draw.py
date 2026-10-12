@@ -97,8 +97,6 @@ def compute_ecs_power_draw(environmental_controls, state, vehicle):
 
     T_ram   = T1 * (1 + ((gamma - 1) / 2) * Mach**2)
     P_ram   = P1 * (1 + ((gamma - 1) / 2) * Mach**2)
-    # Delivery pressure: at least the 78 kPa cabin floor and at least 20 kPa above ram. Continuous in altitude,
-    # unlike a switch at 8,000 ft, which steps the compressor power between collocation points.
     P_cabin = np.maximum(78000, P_ram + 20000)
     # Compression starts from the ram-recovered state (T_ram, P_ram), not raw
     # freestream (T1, P1) -- the ram effect already does part of the
