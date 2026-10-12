@@ -139,10 +139,9 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     r_outer = ro_ri * r_inner
     t_ins   = _solve_insulation(_insulation_residual, therm, fuel_tank, r_outer, r_inner, L_inner)
 
-    # compute design total heat transfer if not already set (used for boil-off model)
-    if fuel_tank.design_total_heat_transfer is None:
-        _, Qc_total = compute_cryogenic_tank_heat_leak(t_ins, Ta, T_inlet, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, r_outer, r_inner, L_inner)
-        fuel_tank.design_total_heat_transfer = Qc_total
+    # Design-point heat leak of the sized tank (both sides of a symmetric pair)
+    _, Qc_total = compute_cryogenic_tank_heat_leak(t_ins, Ta, T_inlet, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, r_outer, r_inner, L_inner)
+    fuel_tank.design_total_heat_transfer = Qc_total * (2 if fuel_tank.xz_plane_symmetric else 1)
 
     fuel_tank.volume_properties.net_volume   = V_guess
     fuel_tank.volume_properties.gross_volume = V_total
