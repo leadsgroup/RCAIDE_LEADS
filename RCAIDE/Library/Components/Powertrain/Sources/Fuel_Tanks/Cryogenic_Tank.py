@@ -73,6 +73,10 @@ class Cryogenic_Tank(Non_Integral_Tank):
         thermodynamic model of the underlying report's Section V.B, rather
         than as a bare "detailed/not detailed" toggle, so that a future
         additional model doesn't have to be shoehorned into a boolean.
+    heater_power_margin : float
+        Multiple of the takeoff pressurant demand the pressure-builder heater is
+        sized to when its ``Heater.design_power`` is not set (default: 1.5). See
+        ``compute_cryogenic_tank_heater_design_power``.
     heater_direct_boiloff_fraction : float
         Fraction of the pressure-builder heater's power that goes directly to
         flash-boiling liquid at the interface, with the remainder instead
@@ -123,6 +127,7 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.safety_factor                  = 1.6
         self.boil_off_model                 = 'quasi_steady'
         self.heater_direct_boiloff_fraction = 0.1
+        self.heater_power_margin            = 1.5   # heater sized to this multiple of the takeoff pressurant demand
         self.pressure_margin                = 2 * Units.bar
         self.design_pressure                = None  # set from pressure_margin during design-time sizing
         self.pressure_regulation_time_constant = 400.0

@@ -11,6 +11,7 @@ from scipy.integrate import solve_ivp
 
 import RCAIDE
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak, compute_cryogenic_tank_heat_leak_cuboid
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heater_design_power import compute_cryogenic_tank_heater_design_power
 from RCAIDE.Framework.Core.Physical_Constants import UNIVERSAL_GAS_CONSTANT
 from RCAIDE.Framework.Core import Units
 
@@ -106,7 +107,10 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     if cached is not None and _cache_key_matches(cached[0], cache_key):
         return cached[1]
 
-    max_heater_power = 10.0 * tank.design_total_heat_transfer
+    # Heater cap: Heater.design_power when set, else sized to the takeoff pressurant demand, else 10x design heat leak
+    max_heater_power = compute_cryogenic_tank_heater_design_power(tank, network) if network is not None else None
+    if max_heater_power is None:
+        max_heater_power = 10.0 * tank.design_total_heat_transfer
     if network is not None:
         for converter in getattr(network, 'converters', []):
             if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) and \
