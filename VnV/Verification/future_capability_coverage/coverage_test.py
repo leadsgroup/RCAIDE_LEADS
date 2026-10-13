@@ -124,7 +124,8 @@ def aero_propulsion_coupling_test():
 
     vehicle = vehicle_setup('lithium_ion_nmc', None)
     for network in vehicle.networks:
-        network.aero_propulsion_coupling = True
+        network.wing_on_rotor_coupling  = True
+        network.rotor_on_rotor_coupling = True
 
     analyses = RCAIDE.Framework.Analyses.Vehicle()
     analyses.vehicle = vehicle

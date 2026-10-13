@@ -1,6 +1,6 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Performance/Blade_Element_Momentum_Theory_Helmholtz_Wake/compute_wing_induced_rotor_velocity.py
 #
-# Created:  Oct 2026, M. Clarke
+# Created:  Oct 2026, M. Clarke, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -71,8 +71,8 @@ def compute_wing_influence(rotor, VD, mach, T_body2thrust, r_dim_2d, psi_2d):
     """ Unit-strength velocity induced by each wing panel at the rotor disc stations, in the rotor polar frame """
     ctrl_pts, Nr, Na = np.shape(r_dim_2d)
 
-    # disc stations in the rotor velocity frame; BEMT tangential direction is (cos(psi), sin(psi)) in y-z,
-    # and a counter-clockwise rotor is its mirror image in y
+    # disc stations in the rotor velocity frame (z toward the ground, so psi = 0 is the top of the disc);
+    # BEMT tangential direction is (cos(psi), sin(psi)) in y-z, and a counter-clockwise rotor is its mirror image in y
     rotation = 1 if rotor.clockwise_rotation else -1
     y_disc =  rotation*r_dim_2d*np.sin(psi_2d)
     z_disc = -r_dim_2d*np.cos(psi_2d)

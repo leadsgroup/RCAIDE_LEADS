@@ -50,7 +50,7 @@ def Propeller_Slipstream(wake_fidelity,identical_props):
  
     vehicle.networks.electric.propulsors.starboard_propulsor.rotor.clockwise_rotation = True
     vehicle.networks.electric.propulsors.port_propulsor.rotor.clockwise_rotation = False
-    vehicle.networks.electric.aero_propulsion_coupling = True
+    vehicle.networks.electric.wing_on_rotor_coupling = True
      
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  

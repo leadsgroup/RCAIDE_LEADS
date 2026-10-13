@@ -63,7 +63,7 @@ def main():
 
 def evaluate_cruise(coupled):
     vehicle                                            = vehicle_setup('lithium_ion_nmc', None)
-    vehicle.networks.electric.aero_propulsion_coupling = coupled
+    vehicle.networks.electric.wing_on_rotor_coupling = coupled
 
     propulsors                                              = vehicle.networks.electric.propulsors
     propulsors.starboard_propulsor.rotor.clockwise_rotation = True

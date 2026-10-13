@@ -1,6 +1,7 @@
 # RCAIDE/Framework/Networks/Network.py 
 #
 # Created:  Mar 2025, M.Clarke
+# Modified: Sep 2026, M.Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Imports
@@ -44,6 +45,13 @@ class Network(Component):
 
     reverse_thrust : bool
         Flag to enable reverse thrust computation. Default is False.
+
+    wing_on_rotor_coupling : bool
+        Couples the rotors and the wings in both directions: the rotor slipstream acts on the wing
+        vortex lattice and the wing-induced velocity acts at the rotor disc. Default is False.
+
+    rotor_on_rotor_coupling : bool
+        Solves the electric rotors together with their mutual wake interaction. Default is False.
 
     propulsors : Container
         Collection of propulsor components (turbofans, rotors, etc.).
@@ -135,7 +143,8 @@ class Network(Component):
         """
         self.tag                                 = 'network'
         self.reverse_thrust                      = False
-        self.aero_propulsion_coupling            = False   # couples the rotors with each other and with the wings
+        self.wing_on_rotor_coupling              = False
+        self.rotor_on_rotor_coupling             = False
         self.propulsors                          = Container()
         self.converters                          = Container()
         self.nacelles                            = Container()
@@ -146,7 +155,8 @@ class Network(Component):
          
     def reuses_results(self, propulsor, reference):
         """ True when propulsor can reuse the results, unknowns and residuals of reference, the last propulsor solved on its own """
-        return (reference is not None and propulsor.identical_propulsors and not self.aero_propulsion_coupling
+        return (reference is not None and propulsor.identical_propulsors
+                and not (self.wing_on_rotor_coupling or self.rotor_on_rotor_coupling)
                 and propulsor.assigned_distributors == reference.assigned_distributors)
 
     def evaluate(network,state,vehicle,ground_operations=False):
@@ -178,14 +188,14 @@ class Network(Component):
         # ----------------------------------------------------------
         # Propulsors
         # ----------------------------------------------------------
-        if network.aero_propulsion_coupling:
+        if network.rotor_on_rotor_coupling:
             # electric rotors are solved together; other propulsors solve their own rotor with the coupling
             rotors = []
             for propulsor in propulsors:
                 if propulsor.active and isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
                     propulsor.compute_drive(state,network)
                     rotors.append(propulsor.rotor)
-            compute_rotor_to_rotor_interaction(rotors,conditions)
+            compute_rotor_to_rotor_interaction(rotors,conditions,network.wing_on_rotor_coupling)
             
         stored_results_flag  = False
         stored_propulsor_tag = None

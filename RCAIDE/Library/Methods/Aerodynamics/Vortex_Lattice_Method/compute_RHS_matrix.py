@@ -2,6 +2,7 @@
 # 
 # 
 # Created: Aug 2025, M. Clarke
+# Modified: Oct 2026, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -75,7 +76,7 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry):
 
     rot_V_wake_ind   = np.zeros((num_ctrl_pts,num_eval_pts,3))
     dt               = 0
-    if any(network.aero_propulsion_coupling for network in geometry.networks):
+    if any(network.wing_on_rotor_coupling for network in geometry.networks):
         # rotor slipstream of coupled networks acts on the main wing, or the last wing when there is no main wing 
         wing_idx = len(geometry.wings) - 1
         for i, wing in enumerate(geometry.wings):
@@ -84,7 +85,7 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry):
         wing_CPs, slipstream_vd_ids = extract_wing_collocation_points(VD,conditions,settings,geometry,wing_idx)
         
         for network in geometry.networks:
-            if not network.aero_propulsion_coupling:
+            if not network.wing_on_rotor_coupling:
                 continue
             for propulsor in network.propulsors: 
                 if 'rotor' in  propulsor:

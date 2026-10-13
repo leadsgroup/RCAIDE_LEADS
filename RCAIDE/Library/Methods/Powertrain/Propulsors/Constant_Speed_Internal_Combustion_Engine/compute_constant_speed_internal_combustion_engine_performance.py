@@ -103,7 +103,7 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor, sta
     conditions.energy.converters[propeller.tag].omega                = conditions.energy.converters[engine.tag].omega  
     conditions.energy.converters[propeller.tag].blade_pitch_command  = ice_cs_conditions.throttle - 0.5
     conditions.energy.converters[propeller.tag].throttle             = ice_cs_conditions.throttle
-    compute_rotor_performance(propeller,conditions,network is not None and network.aero_propulsion_coupling)
+    compute_rotor_performance(propeller,conditions,network is not None and network.wing_on_rotor_coupling)
 
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)

@@ -1,6 +1,7 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Performance/BEMT_Hemholtz_Vortex_Theory/BEMT_Helmholtz_performance.py
 # 
 # Created:  Jul 2024, RCAIDE Team 
+# Modified: Oct 2026, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -16,7 +17,7 @@ import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  BEMT_Helmholtz_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def BEMT_Helmholtz_performance(rotor, conditions, aero_propulsion_coupling=False):
+def BEMT_Helmholtz_performance(rotor, conditions, wing_on_rotor_coupling=False):
     """
     Analyzes a general rotor given geometry and operating conditions using
     Blade Element Momentum Theory with a Helmholtz Vortex Wake Prescription.
@@ -273,7 +274,7 @@ def BEMT_Helmholtz_performance(rotor, conditions, aero_propulsion_coupling=False
         ur += rotor.radial_velocities_2d
 
     # Include velocities induced by the wing at the rotor disc
-    if aero_propulsion_coupling and 'VD' in conditions.aerodynamics:
+    if wing_on_rotor_coupling and 'VD' in conditions.aerodynamics:
         use_2d_analysis           = True
         ua_wing, ut_wing, ur_wing = compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_2d, psi_2d)
 

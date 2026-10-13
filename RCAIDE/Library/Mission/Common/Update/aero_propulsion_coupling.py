@@ -1,7 +1,7 @@
 # RCAIDE/Library/Missions/Common/Update/aero_propulsion_coupling.py
 # 
 # 
-# Created:  Oct 2026, M. Clarke
+# Created:  Oct 2026, M. Clarke, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Aero Propulsion Coupling
@@ -11,7 +11,7 @@ def aero_propulsion_coupling(segment):
         
         Assumptions:
         Runs after the first network, thrust and aerodynamics pass of the iteration, and only for vehicles
-        with a network whose aero_propulsion_coupling is enabled. The number of passes is fixed rather than
+        with a network whose wing_on_rotor_coupling is enabled. The number of passes is fixed rather than
         set by a convergence check, so the residuals stay a smooth function of the unknowns; the mission
         solver iterates the coupling to convergence.
         
@@ -25,7 +25,7 @@ def aero_propulsion_coupling(segment):
         N/A
                     
     """ 
-    coupled = any(network.aero_propulsion_coupling for network in segment.analyses.vehicle.networks)
+    coupled = any(network.wing_on_rotor_coupling for network in segment.analyses.vehicle.networks)
     if not coupled:
         return
 
