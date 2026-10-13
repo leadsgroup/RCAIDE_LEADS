@@ -1,5 +1,6 @@
 # RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/evaluate_VLM.py
 #
+# Created: Aug 2025, M. Clarke
 # Modified: Oct 2026, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------

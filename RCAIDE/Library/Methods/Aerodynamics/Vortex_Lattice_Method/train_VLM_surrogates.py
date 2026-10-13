@@ -1,5 +1,6 @@
 # RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/train_VLM_surrogates.py
 #
+# Created: Aug 2025, M. Clarke
 # Modified: Oct 2026, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------
