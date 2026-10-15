@@ -142,10 +142,10 @@ class Liquid_Natural_Gas(Propellant):
         self.cryogenic       = True
         self.reactant        = 'O2'
         self.density         = 414.2       # [kg/m^3]  saturated liquid at ~111 K
-        self.specific_energy = 48.632e6    # [J/kg]    lower heating value (LHV) 
-        self.energy_density  = 22200.0e6   # [J/m^3]
+        self.specific_energy = 48.632e6    # [J/kg]    lower heating value (LHV), ORNL/GREET table [1]
+        self.energy_density  = self.density * self.specific_energy  # [J/m^3]
         self.gravimetric_efficiency = 0.7
-        self.lower_heating_value    = 45e6
+        self.lower_heating_value    = 48.632e6  # [J/kg] ORNL/GREET table [1]: 20,908 Btu/lb
         self.molecular_weight       = 16.04   # [g/mol] pure methane (CH4) approximation
         self.hydrogen_mass_fraction = 0.251   # [-]    mass fraction of hydrogen content (CH4)
         self.carbon_mass_fraction   = 0.749   # [-]    mass fraction of carbon content (CH4)
