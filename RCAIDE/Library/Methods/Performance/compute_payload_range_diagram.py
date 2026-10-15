@@ -124,9 +124,10 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         else:
             payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag)
     
-    # delete aerodynamic surrogates 
-    file_name = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), segment.analyses.vehicle.tag + "_" + segment.analyses.aerodynamics.tag + "_aero_training_data.pkl")
-    os.remove(file_name) 
+    # delete the aerodynamic surrogates written by the segments that trained them
+    for file_name in {getattr(segment.analyses.aerodynamics, 'filename', None) for segment in mission.segments if segment.analyses.aerodynamics is not None}:
+        if file_name and os.path.exists(file_name):
+            os.remove(file_name)
 
     print("\n============== Payload Range Report ==============\n")            
     try:
