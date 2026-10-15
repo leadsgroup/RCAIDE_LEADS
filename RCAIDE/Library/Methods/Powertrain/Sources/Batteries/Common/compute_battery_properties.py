@@ -127,6 +127,8 @@ def compute_battery_properties(battery,network):
 
             battery_module.maximum_voltage = module_voltage
             size_module_from_energy_and_power(battery_module, module_capacity, module_power)
+            # cell mass from the energy/power sizing plus BMS overhead, which size_module_from_mass removes again
+            battery_module.mass_properties.mass = battery_module.mass_properties.mass * battery_module.BMS_additional_weight_factor
             size_module_from_mass(battery_module)
 
         series_e           = battery_module.electrical_configuration.series
@@ -175,7 +177,7 @@ def compute_battery_properties(battery,network):
         amp_hour_rating                               = battery_module.cell.nominal_capacity   
         total_battery_assemply_mass                   = battery_module.cell.mass * series_e * parallel_e  
         battery_module.mass_properties.mass           = total_battery_assemply_mass*weight_factor  
-        battery_module.specific_energy                = (amp_hour_rating*battery_module.cell.maximum_voltage)/battery_module.cell.mass  * Units.Wh/Units.kg
+        battery_module.specific_energy                = (amp_hour_rating*battery_module.cell.nominal_voltage)/battery_module.cell.mass  * Units.Wh/Units.kg # rated energy = capacity x nominal voltage
         battery_module.maximum_energy                 = total_battery_assemply_mass*battery_module.specific_energy    
         battery_module.specific_power                 = battery_module.cell.specific_power
         battery_module.maximum_power                  = battery_module.specific_power*battery_module.mass_properties.mass  
