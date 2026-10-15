@@ -6,7 +6,8 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
   
-from RCAIDE.Framework.Core                    import Data  
+import RCAIDE
+from RCAIDE.Framework.Core                    import Data, Units
 
 # package imports
 import numpy as np
@@ -34,18 +35,14 @@ def miscellaneous_drag(state,settings,geometry):
                 List of landing gear objects containing:
                     - gear_extended : bool
                         Flag indicating if landing gear is deployed
-                    - fairing : bool
-                        Flag indicating if landing gear has fairings
-                    - wheels : int
-                        Number of wheels on the landing gear
-                    - tire_diameter : float
-                        Diameter of landing gear tires [m]
-                    - tire_width : float
-                        Width of landing gear tires [m]
+            - mass_properties.max_takeoff : float
+                Maximum takeoff mass, the gross weight of the gear drag correlation [kg]
             - wings : list
                 List of wing objects containing:
                     - areas.wetted : float
                         Wetted area of the wing [m²]
+                    - control_surfaces : list
+                        Flap deflection [rad], which reduces the gear drag increment
             - fuselages : list
                 List of fuselage objects containing:
                     - areas.wetted : float
@@ -78,24 +75,22 @@ def miscellaneous_drag(state,settings,geometry):
     flight regimes.
     
     **Major Assumptions**
-        * Landing gear drag is proportional to tire frontal area
+        * Landing gear drag scales with gross weight (GASP correlation)
         * Subsonic miscellaneous drag correlates with total wetted area
         * Supersonic drag includes nacelle base drag and fuselage upsweep effects
-        * Landing gear fairings reduce drag by approximately 50%
         * Basic empirical correlations are valid for typical transport aircraft
     
     **Theory**
 
     Landing Gear Drag:
-    The landing gear drag coefficient is calculated as:
+    With the gear extended, the NASA GASP correlation (as implemented in NASA Aviary 0.10,
+    subsystems/aerodynamics/gasp_based/table_based.py, GearDragIncrement) gives the gear equivalent
+    flat-plate area from the gross weight and reduces it with flap deflection:
 
-    :math:`C_{D,LG} = \\sum_{i=1}^{n} N_{wheels,i} \\cdot C_{D,i} \\cdot \\frac{D_i \\cdot W_i}{S_{ref}}`
+    :math:`f_{LG} = 0.0033 W^{0.785}` [ft², W in lb],  :math:`C_{D,LG} = \\frac{f_{LG}}{S_{ref}} (1 - 0.4545 \\delta_f / 50)`
 
-    where:
-        - :math:`N_{wheels,i}` is the number of wheels on landing gear :math:`i`
-        - :math:`C_{D,i}` is 0.15 for faired landing gear or 0.30 for unfaired
-        - :math:`D_i` and :math:`W_i` are the tire diameter and width [m]
-        - :math:`S_{ref}` is the reference area [m²]
+    where :math:`\\delta_f` is the main-wing flap deflection [deg]. It sits between Raymer's 0.02 gear-down
+    increment (Aircraft Design, 1992, Sec. 5.3) and Roskam Part VI Fig. 4.60 for an E175-sized aircraft.
 
     Subsonic Miscellaneous Drag:
     For Mach ≤ 1.0, the miscellaneous drag is:
@@ -133,15 +128,17 @@ def miscellaneous_drag(state,settings,geometry):
     S_ref          = geometry.reference_area
     Mach           = conditions.freestream.mach_number 
    
-    # landing gear drag  
+    # landing gear drag, GASP correlation (see Notes)
     landing_gear_drag  =  np.zeros_like(Mach)
-    for landing_gear in  geometry.landing_gears:
-        if landing_gear.gear_extended == True:
-            if landing_gear.fairing:
-                cd_lg = 0.15
-            else:
-                cd_lg = 0.30
-            landing_gear_drag[:,0] +=  landing_gear.wheels *  cd_lg * (landing_gear.tire_diameter * landing_gear.tire_width) /S_ref 
+    if any(landing_gear.gear_extended for landing_gear in geometry.landing_gears):
+        gross_weight   = geometry.mass_properties.max_takeoff / Units.lb
+        flat_plate     = 0.0033 * gross_weight**0.785 * Units.ft**2
+        flap_deg       = 0.0
+        for wing in geometry.wings:
+            for control_surface in wing.control_surfaces:
+                if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
+                    flap_deg = max(flap_deg, abs(control_surface.deflection) / Units.degrees)
+        landing_gear_drag[:,0] = flat_plate / S_ref * max(0.0, 1 - 0.454545 * flap_deg / 50)
          
     # subsonic 
     miscellaneous_drag =  np.zeros_like(Mach) 
