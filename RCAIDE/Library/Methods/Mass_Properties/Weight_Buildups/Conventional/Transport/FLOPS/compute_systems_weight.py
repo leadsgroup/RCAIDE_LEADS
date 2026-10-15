@@ -170,7 +170,7 @@ def compute_systems_weight(vehicle):
             (1. + 0.044 * NFLCR + 0.0015 * NPASS)  # electrical system weight
     DESRNG  = vehicle.flight_envelope.design_range / Units.nmi
     WAVONC  = 15.8 * DESRNG ** 0.1 * NFLCR ** 0.7 * FPAREA ** 0.43  # avionics weight
-    XLP     = 0.8 * XL
+    XLP     = 0.6085 * XL * np.arctan(XL / 59.0) ** 1.1  # FLOPS passenger compartment length [ft] (NASA Aviary flops_based geometry)
     DF      = ref_fuselage.heights.maximum / Units.ft # D stands for depth
     WFURN   = 127 * NFLCR + 112 * NPF + 78 * NPB + 44 * NPE \
                 + 2.6 * XLP * (WF + DF) * NFUSE  # furnishing weight
