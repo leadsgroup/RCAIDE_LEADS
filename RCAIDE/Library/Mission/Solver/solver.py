@@ -139,12 +139,13 @@ def converge(segment):
                                                  maxfev = numerics.mission_solver.max_evaluations,
                                                  epsfcn = numerics.mission_solver.step_size,
                                                  full_output = 1) 
-            scaled_iterate(x_scaled)
+            final_residual = scaled_iterate(x_scaled)
 
-        if ier !=1:
-            mission_converge = False
-        else:
+        # fsolve stops on step size; a step-size stall with all scaled residuals within tolerance is converged
+        if ier == 1 or np.max(np.abs(final_residual)) <= numerics.mission_solver.residual_tolerance:
             mission_converge = True
+        else:
+            mission_converge = False
             
     else: 
         raise Exception('undefined mission solver type')        
