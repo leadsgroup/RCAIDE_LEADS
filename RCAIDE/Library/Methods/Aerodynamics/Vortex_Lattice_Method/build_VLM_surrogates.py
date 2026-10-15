@@ -6,7 +6,7 @@
 
 # RCAIDE imports
 from RCAIDE.Framework.Core import  Data
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
 
 # package imports
 from scipy.interpolate   import RegularGridInterpolator
@@ -137,6 +137,11 @@ def build_surrogate(aerodynamics, training, vehicle):
         if getattr(aerodynamics, flag):
             for coeff in ('Clift', 'Cdrag', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN'):
                 key = 'd' + coeff + '_ddelta_' + letter
+                surrogates[key] = interpolate.interp1d(mach_data, training[key], kind='linear', bounds_error=False, fill_value='extrapolate')
+    for letter in HIGH_LIFT_LETTERS:
+        for term in HIGH_LIFT_DRAG_TERMS:
+            key = 'high_lift_Cdrag_' + term + '_' + letter
+            if key in training:
                 surrogates[key] = interpolate.interp1d(mach_data, training[key], kind='linear', bounds_error=False, fill_value='extrapolate')
 
     return surrogates
