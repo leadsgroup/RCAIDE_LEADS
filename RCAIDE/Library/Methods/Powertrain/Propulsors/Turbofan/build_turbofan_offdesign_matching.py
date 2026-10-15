@@ -10,6 +10,7 @@
 from RCAIDE.Framework.Core                                                              import Data, Units
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan_offdesign_matching import design_turbofan_offdesign_matching
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.generate_turbofan_deck          import generate_turbofan_deck
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_matching_floor import compute_turbofan_matching_floor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate              import Turbofan_Surrogate
 
 # Python package imports
@@ -43,7 +44,7 @@ def build_turbofan_offdesign_matching(turbofan, combustor_exit_temperature_fract
     Returns
     -------
     offdesign_matching : Data
-        design_constants, reference_point and idle_fallback, as consumed by
+        design_constants, reference_point, matching_floor and idle_fallback, as consumed by
         compute_turbofan_performance_offdesign.
 
     Notes
@@ -80,7 +81,13 @@ def build_turbofan_offdesign_matching(turbofan, combustor_exit_temperature_fract
         deck[field] = np.concatenate([deck_fraction[field] for deck_fraction in decks])
     idle_fallback = Turbofan_Surrogate().build(deck=deck)
 
+    # matching floor over the same envelope; below it compute_turbofan_performance_offdesign extends thrust linearly
+    matching_floor = compute_turbofan_matching_floor(design_constants, reference_point,
+                                                     np.linspace(0.0, maximum_altitude, 8),
+                                                     np.linspace(0.0, maximum_mach_number, 8))
+
     offdesign_matching = Data(design_constants = design_constants,
                               reference_point  = reference_point,
+                              matching_floor   = matching_floor,
                               idle_fallback    = idle_fallback)
     return offdesign_matching

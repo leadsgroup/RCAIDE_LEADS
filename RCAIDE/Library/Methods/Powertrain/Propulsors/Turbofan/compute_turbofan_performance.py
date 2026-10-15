@@ -25,6 +25,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Ma
 
 import  numpy as  np
 from copy import  deepcopy
+from scipy.interpolate import RegularGridInterpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_performance
@@ -648,6 +649,18 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     design_constants = turbofan.offdesign_matching.design_constants
     reference_point  = turbofan.offdesign_matching.reference_point
     idle_fallback    = getattr(turbofan.offdesign_matching, 'idle_fallback', None)
+    matching_floor   = getattr(turbofan.offdesign_matching, 'matching_floor', None)
+
+    # lowest Tt4 fraction the matching solver represents; below it thrust continues linearly from the floor
+    if matching_floor is not None:
+        floor_interpolator = RegularGridInterpolator((matching_floor.altitude, matching_floor.mach_number),
+                                                     matching_floor.combustor_exit_temperature_fraction,
+                                                     bounds_error=False, fill_value=None)
+        floor_fraction     = floor_interpolator(np.column_stack([altitude, mach_number]))
+    else:
+        floor_fraction     = np.full(n, -np.inf)
+    below_floor = throttle < floor_fraction
+    floor_step  = 0.02  # Tt4 fraction step for the floor thrust slope
 
     thrust_N             = np.zeros(n)
     fuel_mass_flow_rate   = np.zeros(n)
@@ -683,12 +696,20 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbofan, state, lpc_conditions.omega)
     shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
     for i in range(n):
-        combustor_exit_temperature = reference_point.Tt4 * throttle[i]
+        combustor_exit_temperature = reference_point.Tt4 * max(throttle[i], floor_fraction[i])
+        thrust_extension           = 0.0
         try:
             result = solve_turbofan_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
                 combustor_exit_temperature, packed_design_constants=packed_design_constants,
                 packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
+            if below_floor[i]:
+                # station data and fuel flow stay at the floor; thrust continues with the floor slope
+                above_floor = solve_turbofan_offdesign_robust(
+                    design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
+                    reference_point.Tt4 * (floor_fraction[i] + floor_step), packed_design_constants=packed_design_constants,
+                    packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
+                thrust_extension = (above_floor.thrust - result.thrust) / floor_step * (throttle[i] - floor_fraction[i])
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise
@@ -718,7 +739,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
             thrust_N[i]             = F[0]
             fuel_mass_flow_rate[i]  = FF[0]
             continue
-        thrust_N[i]                                = result.thrust
+        thrust_N[i]                                = result.thrust + thrust_extension
         fuel_mass_flow_rate[i]                      = result.fuel_mass_flow_rate
         core_nozzle_exit_velocity[i]                = result.core_nozzle_exit_velocity
         fan_nozzle_exit_velocity[i]                 = result.fan_nozzle_exit_velocity
@@ -765,6 +786,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     turbofan_conditions.outputs.thrust                     = thrust_vector
     turbofan_conditions.outputs.moment                     = moment
     turbofan_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
+    turbofan_conditions.below_matching_floor               = below_floor.astype(float).reshape(-1,1)
 
     # same fields the analytical path sets (~lines 441-448, 476-477); NaN at idle_fallback points
     turbofan_conditions.bypass_ratio                       = alpha_out.reshape(-1,1)
