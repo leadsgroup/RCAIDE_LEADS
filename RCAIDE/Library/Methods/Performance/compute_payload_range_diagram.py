@@ -10,7 +10,7 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry 
+from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry,energy 
  
 # Pacakge imports 
 import numpy as np  
@@ -112,6 +112,9 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         # if stability analysis is defined and neutral point already computed
         if segment.analyses.stability != None: 
             segment.analyses.stability.settings.compute_neutral_point = False
+
+    # size powertrain components (e.g. batteries) first, as the mission does, so their mass is in the OEW
+    energy(mission)
 
     # run preliminary mass properties analyss 
     mass_properties(mission) 
