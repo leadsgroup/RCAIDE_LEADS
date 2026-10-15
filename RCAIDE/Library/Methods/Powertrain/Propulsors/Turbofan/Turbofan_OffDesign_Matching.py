@@ -211,7 +211,8 @@ def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
     else:
         tau_f, tau_tL, pi_tL = guess_tau_f, guess_tau_tL, guess_pi_tL
 
-    P_offtake = shaft_work_specific_design * m0R if np.isnan(shaft_power_offtake) else shaft_power_offtake
+    # specific work is per unit core flow; m0 is total (core + bypass) flow
+    P_offtake = shaft_work_specific_design * m0R / (1 + alphaR) if np.isnan(shaft_power_offtake) else shaft_power_offtake
     phiR = shaft_work_specific_design / (cpt * Tt4R)
     alpha = alphaR
     mass_flow_rate_estimate = m0R
@@ -237,7 +238,7 @@ def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
         tau_f_prev = tau_f
         X  = tau_lambda / (tau_r * tau_f)
         XR = tau_lambdaR / (tau_rR * tau_fR)
-        shaft_work_specific = P_offtake / mass_flow_rate_estimate
+        shaft_work_specific = P_offtake * (1 + alpha) / mass_flow_rate_estimate
         phi = shaft_work_specific / (cpt * Tt4)
         tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
         pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
@@ -270,7 +271,7 @@ def solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, toleranc
     if not collapsed:
         X  = tau_lambda / (tau_r * tau_f)
         XR = tau_lambdaR / (tau_rR * tau_fR)
-        shaft_work_specific = P_offtake / mass_flow_rate_estimate
+        shaft_work_specific = P_offtake * (1 + alpha) / mass_flow_rate_estimate
         phi = shaft_work_specific / (cpt * Tt4)
         tau_cH = 1 + (X / XR) * (tau_cHR - 1) + X * (phiR - phi)
         pi_cH = constant_efficiency_pressure_ratio_kernel(tau_cH, eta_cH, gamma_c)
@@ -386,8 +387,9 @@ def result_from_kernel_output(output, max_iterations):
 #                             becomes a *larger* specific-work fraction at part-power as
 #                             mass flow drops -- solve_turbofan_offdesign re-derives the
 #                             equivalent absolute power once (design_constants.
-#                             shaft_work_specific_design * reference_point.m0) and reapplies
-#                             it against each iteration's own (evolving) mass flow estimate,
+#                             shaft_work_specific_design times the reference core flow,
+#                             reference_point.m0 / (1 + reference_point.alpha)) and reapplies
+#                             it against each iteration's own (evolving) core flow estimate,
 #                             rather than assuming the offtake scales proportionally with
 #                             throttle the way the rest of the HP-spool equation does.
 #   eta_f_alone, fan_temperature_rise_fraction   fan ALONE (not combined with LPC) design
@@ -623,7 +625,8 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
     # this field (e.g. RESEARCH/22_ATI/Engine_Validation/validate_rcaide_offdesign_si.py's
     # standalone SI cross-check, which predates this addition).
     shaft_work_specific_design = getattr(dc, 'shaft_work_specific_design', 0.0)
-    P_offtake = shaft_work_specific_design * ref.m0 if shaft_power_offtake is None else shaft_power_offtake
+    # specific work is per unit core flow; m0 is total (core + bypass) flow
+    P_offtake = shaft_work_specific_design * ref.m0 / (1 + ref.alpha) if shaft_power_offtake is None else shaft_power_offtake
     phiR = shaft_work_specific_design / (dc.cpt * ref.Tt4)
 
     alpha = ref.alpha
@@ -645,7 +648,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         # already uses, e.g. tau_tL's pre-update pi_tL).
         X  = tau_lambda / (tau_r * tau_f)
         XR = tau_lambdaR / (tau_rR * ref.tau_f)
-        shaft_work_specific = P_offtake / mass_flow_rate_estimate
+        shaft_work_specific = P_offtake * (1 + alpha) / mass_flow_rate_estimate
         phi = shaft_work_specific / (dc.cpt * Tt4)
         tau_cH = 1 + (X / XR) * (ref.tau_cH - 1) + X * (phiR - phi)
         # HP compressor pressure ratio/efficiency -- map-consistent if high_pressure_compressor_map given,
@@ -745,7 +748,7 @@ def solve_turbofan_offdesign(design_constants, reference_point, mach_number, sta
         # so recomputed fresh here rather than reused.
         X  = tau_lambda / (tau_r * tau_f)
         XR = tau_lambdaR / (tau_rR * ref.tau_f)
-        shaft_work_specific = P_offtake / mass_flow_rate_estimate
+        shaft_work_specific = P_offtake * (1 + alpha) / mass_flow_rate_estimate
         phi = shaft_work_specific / (dc.cpt * Tt4)
         tau_cH = 1 + (X / XR) * (ref.tau_cH - 1) + X * (phiR - phi)
         pi_cH, eta_cH_used = compressor_pressure_ratio(tau_cH, dc.eta_cH, gamma_c, high_pressure_compressor_map)
@@ -899,7 +902,7 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
         design    = pack_design_constants(design_constants) if packed_design_constants is None else packed_design_constants
         reference = pack_reference_point(reference_point)  if packed_reference_point  is None else packed_reference_point
         M0, T0, P0, Tt4 = float(mach_number), float(static_temperature), float(static_pressure), float(combustor_exit_temperature)
-        offtake_design  = getattr(design_constants, 'shaft_work_specific_design', 0.0) * reference_point.m0
+        offtake_design  = getattr(design_constants, 'shaft_work_specific_design', 0.0) * reference_point.m0 / (1 + reference_point.alpha)
         offtake         = offtake_design if shaft_power_offtake is None else float(shaft_power_offtake)
         output = solve_turbofan_offdesign_kernel(design, reference, M0, T0, P0, Tt4, tolerance, max_iterations,
                                                  relaxation_factor, np.nan, np.nan, np.nan, offtake)
@@ -974,7 +977,7 @@ def solve_turbofan_offdesign_robust(design_constants, reference_point, mach_numb
             n_steps *= 2
         return None
 
-    offtake_design = getattr(design_constants, 'shaft_work_specific_design', 0.0) * reference_point.m0
+    offtake_design = getattr(design_constants, 'shaft_work_specific_design', 0.0) * reference_point.m0 / (1 + reference_point.alpha)
     direct = solve_turbofan_offdesign(design_constants, reference_point, mach_number, static_temperature,
                                        static_pressure, combustor_exit_temperature, tolerance=tolerance,
                                        max_iterations=max_iterations, relaxation_factor=relaxation_factor,
