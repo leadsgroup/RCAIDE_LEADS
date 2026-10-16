@@ -170,7 +170,7 @@ def nacelle_drag(state,settings, nacelle):
     form_factor      = settings.nacelle_parasite_drag_form_factor
     low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number
     high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number 
-    Sref             = np.pi * nacelle.diameter * nacelle.length 
+    Sref             = np.pi * nacelle.diameter**2 / 4 
     Swet             = nacelle.areas.wetted
     
     # Reynolds number
