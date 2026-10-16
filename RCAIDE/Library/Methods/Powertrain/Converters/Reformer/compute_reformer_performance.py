@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # package imports
 from RCAIDE.Framework.Core import Units
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_reformer_performance
@@ -57,16 +58,12 @@ def compute_reformer_performance(reformer,reformer_conditions, state):
     contribution to the network's power balance reflects reformer_efficiency
     rather than being reported as zero.
 
-    LHV_fuel is formed from working_fluid.lower_heating_value (mass-basis,
-    J/kg, per the RCAIDE.Library.Attributes.Propellants.Propellant convention)
-    scaled to MJ/kg, and is combined directly with the fuel's molar flow rate
-    (F_F) in the efficiency and input-power formulas below -- this specific
-    combination (mass-basis heating value against a molar flow rate) is the
-    convention this reformer model was originally fit against, not a
-    dimensionally pure molar heating value. LHV_H2 and LHV_CO, by contrast,
-    are genuinely molar (kJ/g-mol) and are combined with the molar reformate
-    flow rate (F_R). Chemical powers are converted from kJ/hr to W
-    (kJ/hr / 3.6 = W).
+    The hydrogen produced is the fuel's chemical power (mass flow x lower heating
+    value) times the thermal reformer efficiency, reformer.efficiency, divided by
+    the molar heating value of hydrogen. This holds for any hydrocarbon feed and
+    cannot exceed the fuel energy supplied (Halabi et al., Chem. Eng. J. 137 (2008)
+    568: 78% for methane autothermal reforming). Chemical powers are converted from
+    kJ/hr to W (kJ/hr / 3.6 = W).
 
     hydrogen_mass_flow_rate is the mass flow rate of hydrogen leaving in the
     reformate stream -- this is what a downstream fuel cell (e.g. within a
@@ -90,17 +87,14 @@ def compute_reformer_performance(reformer,reformer_conditions, state):
     MW_F   = fuel.molecular_weight                   # [g/g-mol]
     x_H    = fuel.hydrogen_mass_fraction              # [-]
     x_C    = fuel.carbon_mass_fraction                # [-]
-    LHV_F  = fuel.lower_heating_value / 1e6           # [J/kg] -> numeric convention this model was fit against (see Notes)
+    LHV_F  = fuel.lower_heating_value / 1e6           # [J/kg] -> [kJ/g]
     A_F_st = 1. / fuel.stoichiometric_fuel_air_ratio  # [lb_Air/lb_fuel] stoichiometric air-to-fuel mass ratio
-    y_H2   = reformer.reformate_hydrogen_mole_fraction         # [mol] mole fraction of hydrogen content in reformate
-    y_CO   = reformer.reformate_carbon_monoxide_mole_fraction  # [mol] mole fraction of carbon monoxide content in reformate
     rho_S  = reformer.steam_density              # [g/cm**3]
     rho_A  = reformer.air_density                # [g/cm**3]
     MW_S   = reformer.steam_molecular_weight      # [g/g-mol]
     MW_C   = reformer.carbon_molecular_weight     # [g/g-mol]
     MW_H2  = reformer.hydrogen_molecular_weight   # [g/g-mol]
     LHV_H2 = reformer.hydrogen_lower_heating_value             # [kJ/g-mol]
-    LHV_CO = reformer.carbon_monoxide_lower_heating_value      # [kJ/g-mol]
 
     Q_F = reformer_conditions.fuel_volume_flow_rate/(Units.cm**3/Units.hr)   # [cm**3/hr] fuel feed rate
     Q_S = reformer_conditions.steam_volume_flow_rate/(Units.cm**3/Units.hr)  # [cm**3/hr] Deionized water feed rate
@@ -125,22 +119,15 @@ def compute_reformer_performance(reformer,reformer_conditions, state):
     O_C = 2 * 0.21 * F_A / F_C                         # [mol_O/mol_C] Oxygen-to-Carbon feed ratio
     phi = A_F_st * (Q_F * rho_F) / ((Q_A * 60) * rho_A) # [-] Fuel to Air ratio
 
-    # Reformer efficiency
-    eta_ref = ((y_H2 * LHV_H2 + y_CO * LHV_CO) * F_R / (Q_F * rho_F * LHV_F)) * 100 # [-] Reformer efficiency
+    # Chemical power in as fuel and out as hydrogen (see Notes)
+    input_chemical_power  = (Q_F * rho_F * LHV_F) / 3.6                # [W]
+    output_chemical_power = reformer.efficiency * input_chemical_power  # [W]
+    eta_ref               = reformer.efficiency * 100 * np.ones_like(Q_F)  # [%] reformer efficiency
 
-    # Hydrogen conversion efficiency
-    X_H2 = ((y_H2 * F_R)/ (((Q_F * rho_F * x_H)/MW_H2) + F_S)) * 100 # [-] Hydrogen conversion efficiency
-
-    # Hydrogen mass flow rate produced in the reformate stream
-    H2_molar_flow_rate = y_H2 * F_R                                # [g-mol/hr]
-    hydrogen_mass_flow_rate = (H2_molar_flow_rate * MW_H2) / 3.6e6 # [g/hr] -> [kg/s]
-
-    # Chemical power drawn in as fuel and produced as hydrogen-rich reformate (see Notes).
-    # input_chemical_power uses the fuel's mass flow rate (Q_F * rho_F), matching the
-    # same LHV_F pairing eta_ref uses -- not F_F (molar flow rate), which would silently
-    # scale this to the wrong magnitude despite LHV_F/rho_F/MW_F all having sane values.
-    input_chemical_power  = (Q_F * rho_F * LHV_F) / 3.6              # [W]
-    output_chemical_power = ((y_H2 * LHV_H2 + y_CO * LHV_CO) * F_R) / 3.6 # [W]
+    # Hydrogen produced, and its share of the hydrogen fed in the fuel and steam
+    H2_molar_flow_rate      = output_chemical_power * 3.6 / LHV_H2                     # [g-mol/hr]
+    hydrogen_mass_flow_rate = (H2_molar_flow_rate * MW_H2) / 3.6e6                     # [g/hr] -> [kg/s]
+    X_H2                    = (H2_molar_flow_rate / (((Q_F * rho_F * x_H)/MW_H2) + F_S)) * 100  # [%] hydrogen conversion efficiency
 
     reformer_conditions.effluent_gas_flow_rate         = Q_R
     reformer_conditions.reformer_efficiency            = eta_ref

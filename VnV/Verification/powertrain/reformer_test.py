@@ -32,14 +32,14 @@ def main():
     # and stoichiometric_fuel_air_ratio, rather than the reformer's own former
     # hardcoded rho_F/MW_F/x_H/x_C/LHV_F/A_F_st_Jet_A approximations of them.
     Q_R_truth           = [541.143018]
-    eta_ref_truth       = [84.3746645912059]
-    X_H2_truth          = [34.32840562934173]
+    eta_ref_truth       = [78.0]
+    X_H2_truth          = [44.20239924306165]
     GHSV_truth          = [7190.350093085278]
     LHSV_truth          = [1.5104112711074276]
     S_C_truth           = [3.4873653186988016]
     O_C_truth           = [0.01176880573377266]
     phi_truth           = [4.196806332741913]
-    H2_mass_flow_truth  = [7.30086770068707e-07]
+    H2_mass_flow_truth  = [9.400840586977521e-07]
 
     reformer = RCAIDE.Library.Components.Powertrain.Converters.Reformer()
     reformer.working_fluid = RCAIDE.Library.Attributes.Propellants.Jet_A()
