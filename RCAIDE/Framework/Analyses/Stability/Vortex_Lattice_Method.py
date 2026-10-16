@@ -68,6 +68,7 @@ class Vortex_Lattice_Method(Stability):
         self.settings.number_of_fuselage_spanwise_vortices          = 4
         self.settings.number_of_fuselage_chordwise_vortices         = 10 
         self.settings.model_fuselage                                = True 
+        self.settings.fuselage_correction                           = True   # neutral point: wings and tails without fuselage panels plus the fuselage moment of Gilruth and White, NACA Report 711 (1941); False keeps the fuselage panels
         self.settings.spanwise_cosine_spacing                       = True
         self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
