@@ -49,52 +49,27 @@ def restore_tank_solve(tank_conditions, solved):
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-10, method='LSODA'):
     """
-    Two-phase lumped-parameter in-flight boil-off model for a cryogenic fuel tank.
+    Two-phase lumped-parameter boil-off model of a cryogenic tank, after Adler & Martins (2025).
 
-    Solved as its own decoupled initial-value-problem integration (adaptive stiff-ODE
-    solver via scipy), not as mission-level Newton unknowns/residuals -- this avoids
-    coupling each tank's 4 states (ullage/liquid mass, ullage/liquid temperature) into
-    the mission solver's own unknown vector. Each call integrates forward from the
-    known node-0 initial condition across the segment's full time span, using the
-    mission's own driving-input trajectory (engine fuel demand, freestream conditions)
-    interpolated between its sparse collocation nodes, then samples the result back at
-    exactly those nodes via ``t_eval``.
+    The four states (ullage and liquid mass and temperature) are integrated across the segment with
+    scipy's solve_ivp, driven by the engine fuel demand and freestream conditions interpolated between the
+    segment's control points, and sampled back at those points. They are not mission solver unknowns. Fluid
+    properties come from the propellant's saturated-property tables, with a compressibility factor for the
+    ullage.
 
-    Fluid properties come from the saturated-property tables bundled with the
-    propellant classes (``tank.fuel.cryogen_properties`` /
-    ``tank.fuel.saturation_temperature``); the ullage is treated as an ideal gas off
-    the saturation dome.
+    The heater adds boil-off below minimum_operating_pressure and the tank vents above design_pressure.
+    Bulk boiling and cloud condensation keep the liquid and ullage at or on the correct side of saturation.
+    Liquid outflows stop at empty, and demand the tank cannot meet is reported as fuel_deficit_rate.
 
-    The instantaneous boil-off/vent split uses a smoothed complementarity relaxation
-    (rather than a hard threshold) so the ODE right-hand side stays differentiable:
-    when more boil-off is needed than passive heat leak alone provides, the excess is
-    treated as active-heater duty (drawn from the electrical bus by the tank's Heater
-    converter); when less is needed, the excess ullage vapor is vented.
-
-    ``method``/``rtol``/``atol`` default to LSODA/1e-8/1e-10. The mission solver builds
-    its Jacobian by finite differences through this solve, so integration error must
-    stay well below the effect of those perturbations; at 1e-4 the heater's electrical
-    load was noise to the solver and segments failed to converge.
+    method, rtol and atol default to LSODA, 1e-8 and 1e-10. The mission solver differentiates through this
+    solve by finite differences, so integration error must stay well below those perturbations.
 
     Notes
     -----
-    Not modeled here (out of scope for this port): active-heater dynamics (treated as
-    quasi-steady, no lag), bulk boiling / cloud condensation corrections, and pump
-    power for active re-liquefaction. Refueling (``refuel_mass_flow_rate``) assumes
-    incoming fuel enters already at the tank's own bulk liquid temperature -- no
-    chill-down transient.
-
-    When ``tank_conditions.refuel_target_mass`` is set (a Ground.Refuel segment),
-    ``refuel_mass_flow_rate`` isn't just applied blindly for the whole segment: a
-    terminal IVP event detects fuel_mass crossing that target and cuts the fill to
-    zero from that point on, mirroring Battery_Recharge's cutoff_SOC -- without this, a
-    constant rate sized to reach the target by segment end (ignoring the boil-off that
-    keeps draining liquid mass over the same window) systematically undershoots. A
-    second terminal event watches V_l against tank.volume_properties.net_volume and
-    can cut the fill off first (flagged in ``refuel_volume_capped``): refuel_target_mass
-    is a fixed mass computed at design temperature, but a tank that has warmed during
-    the day holds more volume per kg of liquid, so the mass target alone can let V_l
-    run past net_volume and collapse the ullage.
+    A Ground.Refuel segment fills at refuel_mass_flow_rate until the liquid reaches refuel_target_mass or
+    the volume cutoff, then holds. The cutoff is lowered until the liquid stays within net_volume for the
+    whole segment. Incoming fuel is at the bulk liquid temperature. The heater responds with time constant
+    pressure_regulation_time_constant; its thermal inertia is not modeled.
     """
     tag             = tank.tag
     tank_conditions = state.conditions.energy.sources[tag]
@@ -362,10 +337,8 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # Engine fuel offtake demand: distributor's chemical power demand, split by power_split_ratio.
     m_dot_l_engine = chemical_power / fuel.lower_heating_value
 
-    # Ullage pressure: ideal gas corrected by a real-gas compressibility factor
-    # Z(T_g) = P_sat_table(T_g)/(rho_sat_table(T_g)*R*T_g) from the saturation
-    # table's own vapor density/pressure pair -- a bare ideal-gas EOS (Z=1)
-    # underpredicts pressure near saturation, driving unphysical boil-off.
+    # Ullage pressure with compressibility factor Z(T_g) = P_sat / (rho_sat R T_g) from the saturation table;
+    # an ideal gas (Z = 1) underpredicts pressure near saturation
     Z         = fuel.compressibility_factor(T_g_c, phase='vapor')
     P         = Z * (m_g_c / V_g_c) * R_specific * T_g_c   # Pa
     P_clamped = np.clip(P / Units.MPa, P_lo, P_hi)          # table pressure column is in MPa
@@ -465,19 +438,12 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
     m_dot_vent       = 0.5 * (m_dot_relief + np.sqrt(m_dot_relief**2 + eps**2))
 
-    # Heater power split, per Adler & Martins (2025) Eq. 13/17/24: only a fraction
-    # eta_h of the heater's power goes directly to flash-boiling liquid at the
-    # interface (m_dot_heater_boi above); the rest raises bulk liquid temperature
-    # instead. eta_h=0.0 (heater only warms the bulk liquid) is valid, guarded
-    # against 0/0 since m_dot_heater_boi is itself 0 with no regulation demand.
+    # Heater power split, Adler & Martins (2025) Eqs. 13, 17 and 24: a fraction eta_h of heater power boils
+    # liquid at the interface and the rest warms the liquid. eta_h = 0 is guarded against division by zero.
     eta_h                 = tank.heater_direct_boiloff_fraction
     heater_power_uncapped = m_dot_heater_boi * (h_g - h_l) / np.maximum(eta_h, 1e-9)
 
-    # Cap at the real heater's rated power -- m_dot_reg has no actuator limit of
-    # its own. Rescale m_dot_heater_boi/m_dot_bo_final consistently so capped
-    # heater_power stays the number actually driving the mass/energy balances.
-    # heater_saturated is exported so a run spending real time saturated is
-    # visible, rather than silently clamped.
+    # Cap at the heater's rated power and rescale the heater boil-off to match; heater_saturated reports the cap
     heater_power      = np.minimum(heater_power_uncapped, max_heater_power)
     heater_saturated  = heater_power_uncapped > max_heater_power
     m_dot_heater_boi  = heater_power * eta_h / (h_g - h_l)
@@ -492,12 +458,8 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     m_dot_l_engine = m_dot_l_engine * m_dot_avail
     dm_l = -m_dot_bo_final - m_dot_l_engine + m_dot_refuel
 
-    # V_l = m_l/rho_l(T_l) is algebraic, so dV_l is its total derivative by the
-    # chain rule: dV_l = dm_l/rho_l - (m_l/rho_l^2)*drho_l_dT_l*dT_l. This term
-    # appears in dT_l's own energy balance via -P*dV_l, making dT_l a linear
-    # equation in itself rather than directly evaluable -- solved in closed form:
-    #   dT_l = RHS0 / (m_l_thermal*cp_liq - P*(m_l_c/rho_l^2)*drho_l_dT_l)
-    # m_l_thermal (not m_l_c) floors the denominator's mass near empty.
+    # dV_l = dm_l/rho_l - (m_l/rho_l^2) drho_l/dT_l dT_l enters the liquid energy balance through -P dV_l, so
+    # dT_l = RHS0 / (m_l_thermal cp_liq - P (m_l_c/rho_l^2) drho_l/dT_l); m_l_thermal floors the mass near empty
     m_l_thermal = np.maximum(m_l_c, m_l_floor)
     A_thermal   = m_l_thermal * cp_liq
     B_coupling  = P * m_l_c / rho_l**2 * drho_l_dT_l
@@ -536,12 +498,8 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     dV_g = -dV_l
     m_dot_bo_final = m_dot_bo_final + m_dot_bbcc
 
-    # Soft restoring term outside the property table's range. The table's edges
-    # aren't arbitrary cutoffs (e.g. hydrogen's upper bound is its critical
-    # temperature, above which there's no distinct liquid/vapor), so clamping
-    # only the lookups leaves the dynamics flat past the table and lets an
-    # integrator wander onto an unphysical runaway branch. This adds a real
-    # restoring force, smoothed the same way as the boil-off/vent split above.
+    # Smooth restoring term outside the property table's range (for hydrogen the upper edge is the critical
+    # temperature), so the integrator cannot drift beyond the tabulated states
     T_barrier_rate = 0.05  # 1/s, restoring-rate strength per K of excess
     T_eps          = 0.1   # K, smoothing width
     dT_g = dT_g + T_barrier_rate * soft_temperature_barrier(np.atleast_1d(T_g), T_g_lo, T_g_hi, T_eps)

@@ -114,7 +114,7 @@ def miscellaneous_drag(state,settings,geometry):
         Drag component not accounted for by other drag categories, including landing gear, nacelle base, and fuselage upsweep effects.
     
     'Landing Gear Drag'
-        Additional drag caused by deployed landing gear, proportional to tire frontal area.
+        Additional drag of the extended landing gear, scaled from the gross weight (GASP correlation).
     
     'Nacelle Base Drag'
         Drag caused by the base area of nacelles in supersonic flow.

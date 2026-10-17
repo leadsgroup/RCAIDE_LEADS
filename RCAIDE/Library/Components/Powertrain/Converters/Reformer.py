@@ -20,11 +20,7 @@ import scipy as sp
 # ----------------------------------------------------------------------------------------------------------------------  
 class Reformer(Converter):
     """
-    Reformer Component Class
-
-    This class models an autothermal reformer that converts a hydrocarbon fuel (working_fluid)
-    into hydrogen-rich reformate gas. It inherits from the base Converter class and implements
-    reformer-specific attributes and methods.
+    Autothermal reformer that converts a hydrocarbon fuel (working_fluid) into hydrogen-rich reformate.
 
     Attributes
     ----------
@@ -32,16 +28,13 @@ class Reformer(Converter):
         Identifier for the reformer component, defaults to 'reformer'
 
     working_fluid : RCAIDE.Library.Attributes.Propellants.Propellant
-        Hydrocarbon fuel being reformed. Its density, molecular_weight,
-        hydrogen_mass_fraction, carbon_mass_fraction, lower_heating_value, and
-        stoichiometric_fuel_air_ratio are read directly from this object, so any
-        propellant with those properties defined (e.g. Jet_A, Jet_A1,
-        Liquid_Natural_Gas, Liquid_Petroleum_Gas) can be reformed. Defaults to None
-        and must be set explicitly before use.
+        Hydrocarbon fuel being reformed, for example Jet_A, Liquid_Natural_Gas or Liquid_Petroleum_Gas. It must
+        define density, molecular_weight, hydrogen_mass_fraction, carbon_mass_fraction, lower_heating_value
+        and stoichiometric_fuel_air_ratio. Must be set before use.
     efficiency : float
         Thermal reformer efficiency, LHV of hydrogen produced over LHV of fuel fed [-].
-        Default 0.78, methane autothermal reforming [1]; the DOE fuel
-        processor targets are 0.69 (2005) to 0.80 (2010)
+        Default 0.78, methane autothermal reforming [1]; the DOE fuel processor targets are 0.69 (2005) to
+        0.80 (2010) [3]
     steam_density : float
         Density of water [g/cm^3]
     air_density : float
@@ -71,16 +64,8 @@ class Reformer(Converter):
 
     Notes
     -----
-    The reformer model includes parameters for:
-        * Fuel composition and properties
-        * Reformer efficiency, geometry and performance characteristics
-        * Thermodynamic properties of reactants/products
-
-    A real autothermal reformer meters its steam and air feed proportionally to
-    the fuel feed rate to hold a fixed operating point (design_steam_to_fuel_volumetric_ratio,
-    design_air_to_fuel_volumetric_ratio), so the fuel feed rate is the one free
-    variable a solve (e.g. Reformer_Fuel_Cell, working backward from a target
-    hydrogen production rate) needs to determine.
+    Steam and air are metered in proportion to the fuel feed (design_steam_to_fuel_volumetric_ratio and
+    design_air_to_fuel_volumetric_ratio), so the fuel feed rate is the only free variable.
 
     References
     ----------

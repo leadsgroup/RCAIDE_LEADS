@@ -14,60 +14,35 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_reformer_performance(reformer,reformer_conditions, state):
     """
-    Computes performance characteristics of an autothermal reformer converting a
-    hydrocarbon fuel (reformer.working_fluid) to hydrogen-rich reformate.
+    Computes the performance of an autothermal reformer converting a hydrocarbon fuel
+    (reformer.working_fluid) into hydrogen-rich reformate.
 
     Parameters
     ----------
     reformer : Reformer
-        Reformer component containing physical and operational parameters, including
-        working_fluid (the fuel being reformed -- any Propellant with density,
-        molecular_weight, hydrogen_mass_fraction, carbon_mass_fraction,
-        lower_heating_value, and stoichiometric_fuel_air_ratio defined, e.g. Jet_A,
-        Jet_A1, Liquid_Natural_Gas, Liquid_Petroleum_Gas)
+        Reformer component; its working_fluid is the fuel being reformed.
     reformer_conditions : Conditions
-        Container for reformer operating conditions including feed rates
-        (fuel_volume_flow_rate, steam_volume_flow_rate, air_volume_flow_rate)
+        Reformer operating conditions, including the fuel, steam and air volume flow rates.
 
     Returns
     -------
     inputs : Conditions
-        Reformer input power (chemical power drawn in as fuel)
+        Chemical power of the fuel fed to the reformer.
     outputs : Conditions
-        Reformer output power (chemical power produced as hydrogen-rich reformate)
+        Chemical power of the hydrogen in the reformate.
     stored_results_flag : bool
-        Flag indicating if results are stored
+        Flag indicating that results are stored.
     stored_converter_tag : str
-        Tag of the reformer with stored results
+        Tag of the reformer with stored results.
 
     Notes
     -----
-    In addition to updating reformer_conditions in-place with performance parameters
-    (effluent_gas_flow_rate, reformer_efficiency, hydrogen_conversion_efficiency,
-    space_velocity, liquid_space_velocity, steam_to_carbon_feed_ratio,
-    oxygen_to_carbon_feed_ratio, fuel_to_air_ratio, hydrogen_mass_flow_rate), this
-    function calculates key performance metrics for an autothermal reformer including:
-        - Molar flow rates of reactants and products
-        - Space velocities
-        - Feed ratios
-        - Conversion efficiencies
-
-    reformer_conditions.inputs.power.chemical and .outputs.power.chemical are set
-    from the fuel feed's chemical power and the reformate's chemical power
-    respectively; they differ by the reformer's conversion losses, so the net
-    contribution to the network's power balance reflects reformer_efficiency
-    rather than being reported as zero.
-
-    The hydrogen produced is the fuel's chemical power (mass flow x lower heating
-    value) times the thermal reformer efficiency, reformer.efficiency, divided by
-    the molar heating value of hydrogen. This holds for any hydrocarbon feed and
-    cannot exceed the fuel energy supplied (Halabi et al., Chem. Eng. J. 137 (2008)
-    568: 78% for methane autothermal reforming). Chemical powers are converted from
-    kJ/hr to W (kJ/hr / 3.6 = W).
-
-    hydrogen_mass_flow_rate is the mass flow rate of hydrogen leaving in the
-    reformate stream -- this is what a downstream fuel cell (e.g. within a
-    Reformer_Fuel_Cell composite) consumes as its own fuel input.
+    The hydrogen produced is the fuel's chemical power (mass flow times lower heating value) times
+    reformer.efficiency, divided by the molar heating value of hydrogen; 78% for methane autothermal
+    reforming (Halabi et al., Chem. Eng. J. 137, 2008). Chemical powers are converted from kJ/hr to W.
+    The input and output chemical powers differ by the conversion loss. reformer_conditions is also
+    updated with the effluent flow, efficiencies, space velocities, feed ratios and
+    hydrogen_mass_flow_rate, the hydrogen a downstream fuel cell consumes.
 
     **Major Assumptions**
         * Steady state operation

@@ -47,12 +47,12 @@ def compute_neutral_point(stability, vehicle):
 
     Notes
     -----
-    With settings.fuselage_correction (default True), the wings and tails are modeled with the Vortex Lattice
-    Method without fuselage panels: with fuselage panels, the neutral point jumps by tens of percent MAC for small
-    tail moves where tail and fuselage panels nearly coincide. With fuselage_correction False, the VLM keeps the
-    fuselage panels (settings.model_fuselage) and no fuselage moment is added. dCM/dalpha is linear in the moment reference location, so the wing-and-tail neutral point is the root
-    of that line, from two VLM evaluations. Each fuselage then moves the neutral point forward by its destabilizing
-    moment, K_f w_f^2 L_f (NACA Report 711, Eq. 1), divided by S_ref CL_alpha.
+    With settings.fuselage_correction (default True) the wings and tails are panelled without the fuselage, because
+    fuselage panels close to the tail panels move the neutral point by tens of percent MAC for small tail changes.
+    With it False the fuselage panels are kept (settings.model_fuselage) and no fuselage moment is added.
+    dCM/dalpha is linear in the moment reference location, so the wing-and-tail neutral point is the root of that
+    line, found from two VLM evaluations. Each fuselage then moves the neutral point forward by its destabilizing
+    moment K_f w_f^2 L_f (NACA Report 711, Eq. 1) divided by S_ref CL_alpha.
 
     **Major Assumptions**
         * Linear aerodynamics within the analysis range

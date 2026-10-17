@@ -16,14 +16,9 @@ class Heater(Converter):
     """
     Electric pressure-builder heater for a cryogenic fuel tank.
 
-    Draws electrical power from its assigned bus (typically an
-    ``Electrical_Bus`` fed by an engine's ``integrated_drive_generator``,
-    the same architecture ``Pump`` draws from) to supply the thermal power
-    an in-flight cryogenic tank's boil-off model (``Cryogenic_Tank`` with
-    ``boil_off_model = 'quasi_steady'``) has already determined it needs
-    to keep ullage pressure at or above ``minimum_operating_pressure``. See
-    ``compute_heater_performance`` for the read-source and ordering/
-    staleness details.
+    Draws electrical power from its assigned bus to supply the thermal power its tank's boil-off model
+    (``boil_off_model = 'quasi_steady'``) needs to keep ullage pressure at or above
+    ``minimum_operating_pressure``. See compute_heater_performance.
     """
 
     def __defaults__(self):
