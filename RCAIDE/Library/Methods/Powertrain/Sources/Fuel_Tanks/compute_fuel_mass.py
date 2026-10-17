@@ -4,6 +4,7 @@
 # Created:  Jun 2026, M. Clarke
 
 import RCAIDE
+from .set_vehicle_fuel_mass import set_vehicle_fuel_mass
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_mass
@@ -66,17 +67,22 @@ def compute_fuel_mass(vehicle, update_fuel_mass = True, update_max_fuel_mass=Tru
     Vehicle : RCAIDE.Vehicle
     """
     
-    max_fuel_tank_mass = 0
-    fuel_mass          = 0
-    for network in vehicle.networks:
-        for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                max_fuel_tank_mass += source.volume_properties.net_volume * source.fuel.density
-                # Skip if already explicitly set (partial load) -- same "!= 0" convention as
-                # append_cryogenic_tank_conditions.py.
-                if update_fuel_mass and source.fuel.mass_properties.mass == 0:
-                    source.fuel.mass_properties.mass = source.volume_properties.net_volume * source.fuel.density
-                fuel_mass += source.fuel.mass_properties.mass
+    tanks = [source for network in vehicle.networks for source in network.sources
+             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
+    max_fuel_tank_mass = sum(tank.volume_properties.net_volume * tank.fuel.density for tank in tanks)
+
+    # Fuel load precedence: tank masses set by the user, then a vehicle-level fuel mass set by the user, then full tanks
+    tanks_empty = all(tank.fuel.mass_properties.mass == 0 for tank in tanks)
+    if update_fuel_mass and tanks_empty and vehicle.mass_properties.fuel:
+        set_vehicle_fuel_mass(vehicle, vehicle.mass_properties.fuel)
+
+    fuel_mass = 0
+    for tank in tanks:
+        # Skip if already explicitly set (partial load) -- same "!= 0" convention as
+        # append_cryogenic_tank_conditions.py.
+        if update_fuel_mass and tank.fuel.mass_properties.mass == 0:
+            tank.fuel.mass_properties.mass = tank.volume_properties.net_volume * tank.fuel.density
+        fuel_mass += tank.fuel.mass_properties.mass
                 
     # Assign Total Fuel Volume and to Vehicle 
     if update_max_fuel_mass:

@@ -10,7 +10,8 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry,energy 
+from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry,energy
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.set_vehicle_fuel_mass import set_vehicle_fuel_mass
  
 # Pacakge imports 
 import numpy as np  
@@ -249,7 +250,10 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         # Define takeoff weight
         mission.segments[0].analyses.vehicle.mass_properties.takeoff  = TOW[i]
         mission.segments[0].analyses.vehicle.mass_properties.payload  = PLD[i]
-        mission.segments[0].analyses.vehicle.mass_properties.fuel     = FUEL[i]
+
+        # Load each configuration's tanks with this point's fuel so tank conditions match the takeoff weight
+        for mission_segment in mission.segments:
+            set_vehicle_fuel_mass(mission_segment.analyses.vehicle, FUEL[i])
 
 
         # Evaluate mission with current TOW

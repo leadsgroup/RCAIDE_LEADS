@@ -28,8 +28,10 @@ def initialize_conditions(segment):
         The mission segment being analyzed
             - time : float
                 Duration of the ground hold [s]
-            - refuel_target_fill_fraction : float
-                Target liquid fill level, as a fraction of design_full_liquid_mass [-]
+            - refuel_target_fill_fraction : float or None
+                Target liquid fill level, as a fraction of design_full_liquid_mass [-].
+                None targets the tank's mission fuel load (``tank.fuel.mass_properties.mass``),
+                which the mass_properties Pre_Process limits to MTOW.
             - nominal_fill_rate : float or None
                 Constant physical fill rate to run at [kg/s]. None sizes it
                 automatically as 1.2x the rate that would exactly hit the
@@ -79,7 +81,12 @@ def initialize_conditions(segment):
                 else:
                     m_l_current = tank_conditions.fuel_mass[0,0]
 
-                target_mass = segment.refuel_target_fill_fraction * source.design_full_liquid_mass
+                if segment.refuel_target_fill_fraction is not None:
+                    target_mass = segment.refuel_target_fill_fraction * source.design_full_liquid_mass
+                elif source.fuel.mass_properties.mass > 0:
+                    target_mass = min(source.fuel.mass_properties.mass, source.design_full_liquid_mass)
+                else:
+                    target_mass = source.design_full_liquid_mass
 
                 if segment.nominal_fill_rate is not None:
                     fill_rate = segment.nominal_fill_rate
