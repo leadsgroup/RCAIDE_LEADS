@@ -252,8 +252,16 @@ def near_empty_dormancy_test():
                               n_nodes=16, diameter=2.6, length=4.5, duration_hr=5.0)
     tank_conditions = state.conditions.energy.sources[tank.tag]
 
-    almost_empty = 0.10 * tank.design_full_liquid_mass
-    tank_conditions.fuel_mass[:, 0]   = almost_empty
+    # Start inside the liquid floor band with the ullage at saturation pressure, as a drained tank would be
+    almost_empty = 0.001 * tank.design_full_liquid_mass
+    tank_conditions.fuel_mass[:, 0] = almost_empty
+    T_g0       = tank_conditions.ullage_temperature[0, 0]
+    rho_l0     = tank.fuel.cryogen_properties(tank_conditions.fuel_temperature[0, 0], "Density (kg/m3)", phase='liquid')
+    V_g0       = tank.volume_properties.gross_volume - almost_empty / rho_l0
+    P_sat0     = tank.fuel.cryogen_properties(T_g0, "Pressure (MPa)", phase='vapor') * 1e6
+    R_specific = 8314.462618 / tank.fuel.molecular_weight
+    tank_conditions.ullage_mass[:, 0] = P_sat0 * V_g0 / (R_specific * T_g0)
+    total_mass_0 = tank_conditions.fuel_mass[0, 0] + tank_conditions.ullage_mass[0, 0]
 
     compute_cryogenic_tank_performance(tank, state, network=None)
 
@@ -270,6 +278,10 @@ def near_empty_dormancy_test():
     assert pressure.max() < 5 * tank.design_pressure, (
         f"pressure ran away: max = {pressure.max():.3e} Pa vs design {tank.design_pressure:.3e} Pa"
     )
+    vented     = float((state.numerics.time.integrate @ tank_conditions.vent_rate)[-1, 0])
+    mass_error = abs(total_mass_0 - vented - (m_l[-1] + tank_conditions.ullage_mass[-1, 0]))
+    print(f"  tank mass balance error: {mass_error:.3e} kg")
+    assert mass_error < 1e-3 * total_mass_0, f"tank mass not conserved near empty, error = {mass_error:.3e} kg"
     assert np.any(floor_active) or gate.min() < 0.999, (
         "Expected the near-empty floor/gate mechanisms to engage at some point "
         "in this near-empty dormancy test -- if they never activate, this test "
