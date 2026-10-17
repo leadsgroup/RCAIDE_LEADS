@@ -10,8 +10,8 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units
 
 import numpy as np
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.solve_insulation import _solve_insulation
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import find_root
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.solve_insulation import solve_insulation
 from .compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak_cuboid
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -109,13 +109,13 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
                   therm, fuel_tank, V_cuboid)
     V_lo    = 1e-3
     V_hi    = V_cuboid
-    V_guess = _find_root(_volume_residual, V_lo, V_hi, args=outer_args, xtol=1e-2)
+    V_guess = find_root(volume_residual, V_lo, V_hi, args=outer_args, xtol=1e-2)
 
     # ------------------------------------------------------------------
     #  Recompute converged geometry
     # ------------------------------------------------------------------
     V_total, h_i, w_i, l_i, th, h_o, w_o, l_o, t_ins, mass_ins, h_o_o, w_o_o, l_o_o = \
-        _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
+        sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
                       therm, fuel_tank)
 
     mass_struct = ((l_o * w_o * h_o) - (h_i * l_i * w_i)) * fuel_tank.inner_structure.material.density
@@ -168,7 +168,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Sizing chain: V_guess → all intermediate geometry → total outer volume
 # ----------------------------------------------------------------------------------------------------------------------
-def _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
+def sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
                   therm, fuel_tank):
     # Internal volume = fuel + ullage
     V_total = V_guess / (1 - ullage_frac)
@@ -190,7 +190,7 @@ def _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_all
     # Insulation thickness: outer convection/radiation balanced against
     # wall+insulation conduction, solved via the shared cuboid heat-leak model
     # (also used at runtime by compute_cryogenic_tank_performance.py)
-    t_ins = _solve_insulation(_insulation_residual, therm, fuel_tank, l_o, w_o, h_o, th)
+    t_ins = solve_insulation(insulation_residual, therm, fuel_tank, l_o, w_o, h_o, th)
 
     # Total outer dimensions (structure + insulation)
     h_o_o = h_o + 2 * t_ins
@@ -209,7 +209,7 @@ def _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_all
 # ----------------------------------------------------------------------------------------------------------------------
 #  Insulation residual: (heat flux through insulation) - (allowable heat flux), per unit inner surface area
 # ----------------------------------------------------------------------------------------------------------------------
-def _insulation_residual(t_ins, therm, fuel_tank, l_o, w_o, h_o, th):
+def insulation_residual(t_ins, therm, fuel_tank, l_o, w_o, h_o, th):
     Ta, Ti, Qo, PI_Q, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr = therm
 
     _, Qc = compute_cryogenic_tank_heat_leak_cuboid(
@@ -223,9 +223,9 @@ def _insulation_residual(t_ins, therm, fuel_tank, l_o, w_o, h_o, th):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Outer volume residual: V_cuboid - V_calculated(V_guess)
 # ----------------------------------------------------------------------------------------------------------------------
-def _volume_residual(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
+def volume_residual(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
                      therm, fuel_tank, V_cuboid):
-    results = _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
+    results = sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
                             therm, fuel_tank)
     h_o_o, w_o_o, l_o_o = results[10], results[11], results[12]
     return V_cuboid - (h_o_o * l_o_o * w_o_o)

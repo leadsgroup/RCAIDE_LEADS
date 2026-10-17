@@ -336,7 +336,7 @@ def solve_for_mtow(analyses, weights_analysis, i, max_bracket_expansions=10):
     if max_zero_fuel_flag and i == 0:
         print('\n Warning: Max Fuel or Max Zero Fuel not defined. Iterating to find these values.')
 
-    def _mtow_residual(mtow):
+    def mtow_residual(mtow):
         analyses.vehicle.mass_properties.max_takeoff = mtow
         if max_zero_fuel_flag:
             analyses.vehicle.mass_properties.max_zero_fuel = None
@@ -353,7 +353,7 @@ def solve_for_mtow(analyses, weights_analysis, i, max_bracket_expansions=10):
 
     mtow_0  = analyses.vehicle.mass_properties.max_takeoff
     lo, hi  = 0.5 * mtow_0, 1.5 * mtow_0
-    r_lo, r_hi = _mtow_residual(lo), _mtow_residual(hi)
+    r_lo, r_hi = mtow_residual(lo), mtow_residual(hi)
 
     expansions = 0
     while r_lo * r_hi > 0 and expansions < max_bracket_expansions:
@@ -361,12 +361,12 @@ def solve_for_mtow(analyses, weights_analysis, i, max_bracket_expansions=10):
             # target fraction not yet reached even at the top of the bracket: MTOW/capacity
             # is still below target, so the root (if any) lies above hi
             hi   *= 1.5
-            r_hi  = _mtow_residual(hi)
+            r_hi  = mtow_residual(hi)
         else:
             # MTOW/capacity already exceeds target at the bottom of the bracket: the root
             # (if any) lies below lo
             lo   *= 0.5
-            r_lo  = _mtow_residual(lo)
+            r_lo  = mtow_residual(lo)
         expansions += 1
 
     if r_lo * r_hi > 0:
@@ -380,10 +380,10 @@ def solve_for_mtow(analyses, weights_analysis, i, max_bracket_expansions=10):
             f"(e.g. tank-derived) max_fuel rather than copied from another vehicle."
         )
 
-    mtow_converged = brentq(_mtow_residual, lo, hi, xtol=1.0)
+    mtow_converged = brentq(mtow_residual, lo, hi, xtol=1.0)
 
     # Final evaluation to leave vehicle in correct state
-    _mtow_residual(mtow_converged)
+    mtow_residual(mtow_converged)
     analyses.vehicle.mass_properties.max_takeoff = mtow_converged
 
     return

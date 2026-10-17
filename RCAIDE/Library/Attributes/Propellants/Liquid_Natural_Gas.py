@@ -225,7 +225,7 @@ class Liquid_Natural_Gas(Propellant):
         --------
         load_lng_properties
         """
-        return _property_interpolator(prop_name, phase)(T)
+        return property_interpolator(prop_name, phase)(T)
 
     def cryogen_property_set(self, T, prop_names, phase='liquid'):
         """
@@ -263,7 +263,7 @@ class Liquid_Natural_Gas(Propellant):
         T_sat : float or ndarray
             Saturation temperature(s) [K].
         """
-        return _saturation_temperature_interpolator()(P)
+        return saturation_temperature_interpolator()(P)
 
     def saturation_table(self, phase='liquid'):
         """
@@ -353,7 +353,7 @@ def load_lng_properties():
 
 # Cached: cryogen_properties calls this many times per boil-off RHS evaluation.
 @lru_cache(maxsize=None)
-def _property_interpolator(prop_name, phase):
+def property_interpolator(prop_name, phase):
     data = load_lng_properties()
     phase_mask = np.array(data["Phase"]) == phase
     temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
@@ -369,7 +369,7 @@ def property_set_interpolator(prop_names, phase):
     return linear_table_set_interpolator(temps, props)
 
 @lru_cache(maxsize=None)
-def _saturation_temperature_interpolator():
+def saturation_temperature_interpolator():
     data = load_lng_properties()
     phase_mask = np.array(data["Phase"]) == 'liquid'
     temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]

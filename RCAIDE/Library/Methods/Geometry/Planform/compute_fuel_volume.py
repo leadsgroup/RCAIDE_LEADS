@@ -10,39 +10,6 @@ import RCAIDE
 import warnings
 
 # ----------------------------------------------------------------------------------------------------------------------
-# _tanks_in_pack_order
-# ----------------------------------------------------------------------------------------------------------------------
-def _tanks_in_pack_order(fuel_tanks):
-    """Reorders fuel tanks so a packs_after_tank dependency is always computed
-    before its dependent, regardless of container insertion order (see
-    compute_wing_non_integral_tank_volume, which reads the dependency's
-    already-computed tank_percent_span_location)."""
-    by_tag   = {t.tag: t for t in fuel_tanks}
-    ordered  = []
-    placed   = set()
-    visiting = set()
-
-    def place(tank):
-        if tank.tag in placed:
-            return
-        if tank.tag in visiting:
-            warnings.warn(f"Fuel tank '{tank.tag}' has a circular packs_after_tank "
-                           f"chain; processing in container order instead.", stacklevel=2)
-            return
-        visiting.add(tank.tag)
-        dep_tag = tank.packs_after_tank
-        if dep_tag is not None and dep_tag in by_tag:
-            place(by_tag[dep_tag])
-        visiting.discard(tank.tag)
-        if tank.tag not in placed:
-            placed.add(tank.tag)
-            ordered.append(tank)
-
-    for tank in fuel_tanks:
-        place(tank)
-    return ordered
-
-# ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_volume
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = False):
@@ -108,7 +75,7 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = F
          distributor_tanks = {}  # distributor tag -> list of fuel tanks assigned to it, this network only
          fuel_tanks_in_network = [source for source in network.sources
                                    if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
-         for fuel_tank in _tanks_in_pack_order(fuel_tanks_in_network):
+         for fuel_tank in tanks_in_pack_order(fuel_tanks_in_network):
                 fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
                 if compute_fuel_volume:
                     fuel_tank.compute_volume(wings, fuselages,  network.sources)
@@ -136,3 +103,36 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = F
         vehicle.mass_properties.max_fuel = total_fuel_mass
 
     return
+
+# ----------------------------------------------------------------------------------------------------------------------
+# tanks_in_pack_order
+# ----------------------------------------------------------------------------------------------------------------------
+def tanks_in_pack_order(fuel_tanks):
+    """Reorders fuel tanks so a packs_after_tank dependency is always computed
+    before its dependent, regardless of container insertion order (see
+    compute_wing_non_integral_tank_volume, which reads the dependency's
+    already-computed tank_percent_span_location)."""
+    by_tag   = {t.tag: t for t in fuel_tanks}
+    ordered  = []
+    placed   = set()
+    visiting = set()
+
+    def place(tank):
+        if tank.tag in placed:
+            return
+        if tank.tag in visiting:
+            warnings.warn(f"Fuel tank '{tank.tag}' has a circular packs_after_tank "
+                           f"chain; processing in container order instead.", stacklevel=2)
+            return
+        visiting.add(tank.tag)
+        dep_tag = tank.packs_after_tank
+        if dep_tag is not None and dep_tag in by_tag:
+            place(by_tag[dep_tag])
+        visiting.discard(tank.tag)
+        if tank.tag not in placed:
+            placed.add(tank.tag)
+            ordered.append(tank)
+
+    for tank in fuel_tanks:
+        place(tank)
+    return ordered

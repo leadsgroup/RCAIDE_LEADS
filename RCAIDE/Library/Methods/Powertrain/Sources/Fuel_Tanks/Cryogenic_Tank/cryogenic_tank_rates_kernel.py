@@ -22,7 +22,7 @@ LIQUID_COLUMNS = ("Density (kg/m3)", "Cp (J/g*K)", "Viscosity (Pa*s)", "Therm. C
                   "Internal Energy (kJ/kg)", "Pressure (MPa)")
 VAPOR_COLUMNS  = ("Density (kg/m3)", "Cp (J/g*K)", "Cv (J/g*K)", "Viscosity (Pa*s)", "Therm. Cond. (W/m*K)",
                   "Enthalpy (kJ/kg)", "Internal Energy (kJ/kg)", "Pressure (MPa)")
-# Order of the diagnostics returned by cryogenic_tank_rates (as _tank_state_rates' diagnostics dict)
+# Order of the diagnostics returned by cryogenic_tank_rates (as tank_state_rates' diagnostics dict)
 DIAGNOSTICS    = ("P", "m_dot_vent", "m_dot_bo_final", "heater_power", "m_dot_l_engine", "Q_e_l", "Q_e_g", "V_l", "V_g",
                   "T_out_of_range", "m_l_thermal_floored", "m_barrier_blend", "m_dot_avail", "heater_saturated")
 MPA            = 1e6
@@ -174,7 +174,7 @@ def soft_temperature_barrier(T, T_lo, T_hi, eps):
 def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geometry):
     """
     Integrator right-hand side of compute_cryogenic_tank_performance's 4-state tank model (the same
-    equations as _tank_state_rates, scalar and compiled). inputs rows: chemical power, T_env, nu_air,
+    equations as tank_state_rates, scalar and compiled). inputs rows: chemical power, T_env, nu_air,
     Pr_air, k_air, refuel rate, at the segment's control points t.
 
     Returns
@@ -340,7 +340,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
 
 def cryogenic_tank_node_diagnostics(t, m_g, m_l, T_g, T_l, inputs, tables):
     """
-    Diagnostics at each control point (the states and inputs there), as _tank_state_rates' dict:
+    Diagnostics at each control point (the states and inputs there), as tank_state_rates' dict:
     name -> array over nodes. Returns None if any node needs the Python heat-leak path.
     """
     values = np.zeros((len(DIAGNOSTICS), len(t)))

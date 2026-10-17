@@ -12,12 +12,12 @@ from scipy.integrate import solve_ivp
 import RCAIDE
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak, compute_cryogenic_tank_heat_leak_cuboid
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heater_design_power import compute_cryogenic_tank_heater_design_power
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.cryogenic_tank_rates_kernel import cryogenic_tank_rates, cryogenic_tank_rates_tables, cryogenic_tank_node_diagnostics
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.cryogenic_tank_rates_kernel import cryogenic_tank_rates, cryogenic_tank_rates_tables, cryogenic_tank_node_diagnostics, soft_temperature_barrier, liquid_height_residual
 from RCAIDE.Framework.Core.Physical_Constants import UNIVERSAL_GAS_CONSTANT
 from RCAIDE.Framework.Core import Units
 
 # Skips re-solving when a fsolve probe couldn't have changed this tank's inputs.
-def _cache_key_matches(cached, current):
+def cache_key_matches(cached, current):
     if cached is None or len(cached) != len(current):
         return False
     # equal_nan=True since refuel_target_mass is NaN outside Refuel segments.
@@ -105,7 +105,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     refuel_target_arr = tank_conditions.refuel_target_mass[:,0]
     cache_key = (t, chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts, refuel_target_arr, y0)
     cached    = getattr(tank_conditions, '_boil_off_solve_cache', None)
-    if cached is not None and _cache_key_matches(cached[0], cache_key):
+    if cached is not None and cache_key_matches(cached[0], cache_key):
         return cached[1]
 
     # Heater cap: Heater.design_power when set, else sized to the takeoff pressurant demand, else 10x design heat leak
@@ -122,7 +122,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     if t.size < 2:
         m_g0, m_l0, T_g0, T_l0 = (np.array([v]) for v in y0)
 
-        _, diag = _tank_state_rates(
+        _, diag = tank_state_rates(
             tank, fuel, R_specific, m_g0, m_l0, T_g0, T_l0,
             chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts,
             T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power)
@@ -159,7 +159,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     rate_tables = cryogenic_tank_rates_tables(tank, R_specific, T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power)
     t_nodes     = np.ascontiguousarray(t, dtype=float)
 
-    def _build_rhs(refuel_pts_local):
+    def build_rhs(refuel_pts_local):
         inputs = np.ascontiguousarray(np.vstack([chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts_local]), dtype=float)
         def rhs(t_i, y):
             rates, _, status = cryogenic_tank_rates(t_i, np.asarray(y, dtype=float), t_nodes, inputs, *rate_tables)
@@ -172,7 +172,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
             Pr_air         = np.interp(t_i, t, Pr_air_pts)
             k_air          = np.interp(t_i, t, k_air_pts)
             refuel         = np.interp(t_i, t, refuel_pts_local)
-            (dm_g, dm_l, dT_g, dT_l), _ = _tank_state_rates(
+            (dm_g, dm_l, dT_g, dT_l), _ = tank_state_rates(
                 tank, fuel, R_specific,
                 np.array([m_g]), np.array([m_l]), np.array([T_g]), np.array([T_l]),
                 np.array([chemical_power]), np.array([T_env]), np.array([nu_air]), np.array([Pr_air]), np.array([k_air]), np.array([refuel]),
@@ -189,26 +189,26 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         # Terminal event 1: stop filling once fuel_mass reaches the target
         # (mirrors Battery_Recharge's cutoff_SOC). direction=1 requires an
         # upward crossing so an already-above-target tank can't retrigger it.
-        def _tank_full(t_i, y):
+        def tank_full(t_i, y):
             return y[1] - refuel_target
-        _tank_full.terminal  = True
-        _tank_full.direction = 1
+        tank_full.terminal  = True
+        tank_full.direction = 1
 
         # Terminal event 2: stop early if V_l reaches net_volume regardless of
         # mass -- a tank that has warmed (liquid less dense) can hit its volume
         # limit before the fixed mass target, which would otherwise collapse
         # the ullage and blow up P = m_g*R*T_g/V_g as V_g -> 0.
-        def _tank_volume_full(t_i, y):
+        def tank_volume_full(t_i, y):
             m_l, T_l = y[1], y[3]
             T_l_c = np.clip(T_l, T_l_lo, T_l_hi)
             rho_l = fuel.cryogen_properties(np.array([T_l_c]), "Density (kg/m3)", phase='liquid')[0]
             return m_l / rho_l - net_volume
-        _tank_volume_full.terminal  = True
-        _tank_volume_full.direction = 1
+        tank_volume_full.terminal  = True
+        tank_volume_full.direction = 1
 
-        rhs_fill = _build_rhs(refuel_pts)
+        rhs_fill = build_rhs(refuel_pts)
         sol      = solve_ivp(rhs_fill, (t[0], t[-1]), y0, method=method, t_eval=t,
-                              rtol=rtol, atol=atol_vec, events=[_tank_full, _tank_volume_full])
+                              rtol=rtol, atol=atol_vec, events=[tank_full, tank_volume_full])
         if not sol.success:
             raise RuntimeError(
                 f"Cryogenic tank '{tag}' internal boil-off IVP failed to integrate: {sol.message}")
@@ -230,7 +230,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
                     f"Cryogenic tank '{tag}' internal boil-off IVP failed to integrate (fill phase): {sol_before.message}")
 
             if t_after.size:
-                rhs_hold   = _build_rhs(np.zeros_like(refuel_pts))
+                rhs_hold   = build_rhs(np.zeros_like(refuel_pts))
                 sol_after  = solve_ivp(rhs_hold, (t_event, t[-1]), y_event, method=method,
                                         t_eval=t_after, rtol=rtol, atol=atol_vec)
                 if not sol_after.success:
@@ -246,7 +246,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
             m_g, m_l, T_g, T_l = sol.y
 
         if not volume_capped:
-            # _tank_volume_full's root-finder only fires on a clean upward crossing;
+            # tank_volume_full's root-finder only fires on a clean upward crossing;
             # a fill approaching the wall asymptotically can end noticeably below
             # net_volume (observed ~1.2%) without ever crossing it, so a tight 1e-3
             # tolerance misses fills that are genuinely wall-limited in substance.
@@ -259,7 +259,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         if np.isfinite(refuel_target):
             # Already at/above target (e.g. topping off a nearly-full tank) -- don't add fuel.
             refuel_pts = np.zeros_like(refuel_pts)
-        rhs = _build_rhs(refuel_pts)
+        rhs = build_rhs(refuel_pts)
         sol = solve_ivp(rhs, (t[0], t[-1]), y0, method=method, t_eval=t, rtol=rtol, atol=atol_vec)
         if not sol.success:
             raise RuntimeError(
@@ -272,7 +272,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     inputs_eff = np.ascontiguousarray(np.vstack([chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts_eff]), dtype=float)
     diag       = cryogenic_tank_node_diagnostics(t_nodes, m_g, m_l, T_g, T_l, inputs_eff, rate_tables)
     if diag is None:
-        _, diag = _tank_state_rates(
+        _, diag = tank_state_rates(
             tank, fuel, R_specific, m_g, m_l, T_g, T_l,
             chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts_eff,
             T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power)
@@ -314,7 +314,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     return result
 
 
-def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
+def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
                        chemical_power, T_env, nu_air, Pr_air, k_air, m_dot_refuel,
                        T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power):
     """Evaluates the tank's 4-state ODE right-hand side plus diagnostic outputs
@@ -570,8 +570,8 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # restoring force, smoothed the same way as the boil-off/vent split above.
     T_barrier_rate = 0.05  # 1/s, restoring-rate strength per K of excess
     T_eps          = 0.1   # K, smoothing width
-    dT_g = dT_g + T_barrier_rate * _soft_temperature_barrier(np.atleast_1d(T_g), T_g_lo, T_g_hi, T_eps)
-    dT_l = dT_l + T_barrier_rate * _soft_temperature_barrier(np.atleast_1d(T_l), T_l_lo, T_l_hi, T_eps)
+    dT_g = dT_g + T_barrier_rate * soft_temperature_barrier(np.atleast_1d(T_g), T_g_lo, T_g_hi, T_eps)
+    dT_l = dT_l + T_barrier_rate * soft_temperature_barrier(np.atleast_1d(T_l), T_l_lo, T_l_hi, T_eps)
 
     # Observability, not correction: exported as-is so a run relying on the
     # floors/barriers above to stay numerically alive is visible in the output.
@@ -595,29 +595,6 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     return derivatives, diagnostics
 
 
-def _soft_temperature_barrier(T, T_lo, T_hi, eps):
-    """Smoothed restoring direction, 0 inside [T_lo, T_hi], -1 above T_hi, +1 below
-    T_lo (scaled by T_barrier_rate at the call site to a rate)."""
-    above = -0.5 * ((T - T_hi) + np.sqrt((T - T_hi)**2 + eps**2))
-    below = 0.5 * ((T_lo - T) + np.sqrt((T_lo - T)**2 + eps**2))
-    return above + below
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  Interface heat transfer: bulk liquid / bulk gas -> liquid-vapor interface
-#
-#  Natural convection via a Grashof-Prandtl correlation (Ring); generic across any
-#  cryogen -- no fluid-specific constants.
-#
-#  |T_bulk - T_int| is smoothed as sqrt(dT**2 + DELTA_T**2) rather than np.abs(dT):
-#  the fractional exponent n=0.25 on GrPr gives alpha (and Q) an infinite derivative
-#  exactly at dT=0 (an ordinary boiling<->condensing direction change) even though
-#  the value stays finite there, which stalls any integrator needing Jacobian
-#  information. The smoothing keeps the derivative bounded everywhere while matching
-#  the unsmoothed value to within DELTA_T away from dT=0.
-# ----------------------------------------------------------------------------------------------------------------------
-DELTA_T = 0.1  # K, smoothing width for the interface temperature-difference singularity
-
 def Q_liq_to_int(T_liq, T_int, A_int, L_int, rho_l, cp_l, mu_l, k_l, C=0.27, n=0.25):
     beta_l = 1.0 / T_liq
     dT = T_liq - T_int
@@ -640,18 +617,13 @@ def Q_gas_to_int(T_g, T_int, A_int, L_int, rho_g, cp_g, mu_g, k_g, C=0.27, n=0.2
 #  Liquid height and interface geometry for a rounded-end cylindrical tank
 #  (cylinder + hemispherical caps), from the current liquid volume
 # ----------------------------------------------------------------------------------------------------------------------
-def _liquid_height_residual(h, r, l, v):
-    return l * (r**2 * np.arccos((r - h) / r) - (r - h) * np.sqrt(2 * r * h - h**2)) + \
-        (np.pi / 3) * h**2 * (3 * r - h) - v
-
-
 def compute_liquid_height(r, l, v_array):
     """Vectorized: solves for liquid height given an array of liquid volumes."""
     v_array  = np.clip(np.atleast_1d(np.asarray(v_array, dtype=float)), 0.0, None)
     v_full   = np.pi * r**2 * l + (4 / 3) * np.pi * r**3
     v_clipped = np.clip(v_array, 1e-9, v_full - 1e-9)
     h_array = np.fromiter(
-        (brentq(_liquid_height_residual, 1e-9, 2 * r - 1e-9, args=(r, l, vv)) for vv in v_clipped),
+        (brentq(liquid_height_residual, 1e-9, 2 * r - 1e-9, args=(r, l, vv)) for vv in v_clipped),
         dtype=float
     )
     return h_array

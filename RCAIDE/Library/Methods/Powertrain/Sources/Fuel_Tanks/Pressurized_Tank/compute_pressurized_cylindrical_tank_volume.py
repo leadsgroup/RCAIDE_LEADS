@@ -6,7 +6,7 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import find_root
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Pressurized Cylindrical Tank Volume
@@ -67,7 +67,7 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     #  equals sigma_allow.  Here ro = R_o (the external radius IS the
     #  pressure-vessel outer radius — no insulation on top).
     # ------------------------------------------------------------------
-    ro_ri  = _find_root(_tank_stress, 1 + 1e-5, 2.0,
+    ro_ri  = find_root(tank_stress, 1 + 1e-5, 2.0,
                         args=(P_internal, P_external, sigma_allow), xtol=1e-8)
     r_inner = R_o / ro_ri
     t_wall  = R_o - r_inner
@@ -128,7 +128,7 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Wall thickness: von Mises stress residual for a thick-walled cylinder (Lamé)
 # ----------------------------------------------------------------------------------------------------------------------
-def _tank_stress(ro_ri, P_internal, P_external, sigma_allow):
+def tank_stress(ro_ri, P_internal, P_external, sigma_allow):
     A = (P_internal - P_external * ro_ri**2) / (ro_ri**2 - 1)
     B = (P_internal - P_external) * ro_ri**2 / (ro_ri**2 - 1)
 
