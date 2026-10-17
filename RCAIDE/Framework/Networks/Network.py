@@ -172,9 +172,9 @@ class Network(Component):
         net_hydraulic_power     = 0. * state.ones_row(1)
  
         # ----------------------------------------------------------
-        # Propulsors
+        # Propulsors (off during stationary ground operations, e.g. dormancy and refuel, which run on ground power)
         # ----------------------------------------------------------
-        if network.rotor_wake_interaction:
+        if network.rotor_wake_interaction and not ground_operations:
             rotors = []
             for propulsor in propulsors:
                 if propulsor.active:
@@ -185,7 +185,7 @@ class Network(Component):
         stored_results_flag  = False
         stored_propulsor_tag = None
         for propulsor in propulsors:
-            if propulsor.active: 
+            if propulsor.active and not ground_operations:
                 same_group = (stored_results_flag == True and
                               propulsor.assigned_distributors == propulsors[stored_propulsor_tag].assigned_distributors)
                 if propulsor.identical_propulsors == False or network.rotor_wake_interaction or not same_group:
