@@ -60,6 +60,7 @@ def append_fuel_tank_conditions(tank, segment):
     segment.state.conditions.energy.sources[tank.tag].refuel_target_mass         = np.nan * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].surface_temperature        = 0 * ones_row(1)  
     segment.state.conditions.energy.sources[tank.tag].boil_off_flow_rate         = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].fuel_deficit_rate          = 0 * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].ullage                     = 0 * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].heater_power               = 0 * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].secondary_mass_flow_rate   = tank.secondary_mass_flow_rate * ones_row(1) 
@@ -88,6 +89,9 @@ def append_fuel_tank_conditions(tank, segment):
 
 def append_fuel_tank_segment_conditions(tank, segment):  
     energy_conditions  = segment.state.conditions.energy     
+    # fuel mass carries over from the previous segment's end state
+    if segment.state.initials.keys():
+        energy_conditions.sources[tank.tag].fuel_mass[:,0] = segment.state.initials.conditions.energy.sources[tank.tag].fuel_mass[-1,0]
     energy_conditions.sources[tank.tag].inputs.power.propulsive[:,0]    = 0.0
     energy_conditions.sources[tank.tag].inputs.power.mechanical[:,0]    = 0.0 
     energy_conditions.sources[tank.tag].inputs.power.electrical[:,0]    = 0.0 
