@@ -46,21 +46,9 @@ def append_cryogenic_tank_conditions(tank, segment):
     step reaches ``compute_fuel_mass``. That value is validated against this
     tank's own capacity and used directly instead of the full-tank default.
 
-    Initial ullage mass is set from the saturation pressure at
-    ``design_inlet_temperature`` (``P_sat(T)``, via the same real-gas EOS used by
-    ``compute_cryogenic_tank_performance``), NOT from ``tank.design_pressure``
-    (``= P_sat(T) + pressure_margin``). Liquid and ullage both start at the same
-    temperature, and a liquid/vapor pair at a single temperature has exactly one
-    physically achievable equilibrium pressure -- P_sat(T). Seeding at
-    design_pressure instead (strictly above P_sat) would describe vapor that's
-    already over-pressurized relative to its own liquid at that same T, which
-    isn't a state the two phases could actually be found in at rest: real vapor
-    that supersaturated in contact with its liquid condenses immediately, driving
-    P back toward P_sat(T). design_pressure remains the runtime target
-    m_dot_reg regulates the ullage toward once the mission starts (matching a
-    real tank being pressurized up after fill) -- it's a regulation setpoint,
-    not an achievable instantaneous phase-equilibrium state, so it has no
-    business seeding node 0.
+    Initial ullage mass is set from P_sat(design_inlet_temperature). Liquid and ullage start at the
+    same temperature, so the only equilibrium pressure is P_sat(T); this is also the tank's
+    minimum_operating_pressure.
 
     This runs once, mission-wide, before any segment has actually converged, so it
     sets the design-basis full tank unless a partial fuel mass was requested (see
@@ -121,7 +109,7 @@ def append_cryogenic_tank_conditions(tank, segment):
     tank_conditions.environmental_heat_leak_ullage = 0 * ones_row(1)
     tank_conditions.temperature_out_of_range    = 0 * ones_row(1)
     tank_conditions.liquid_thermal_floor_active = 0 * ones_row(1)
-    tank_conditions.liquid_mass_floor_blend     = 0 * ones_row(1)
+    tank_conditions.fuel_deficit_rate           = 0 * ones_row(1)
     tank_conditions.liquid_availability_gate    = 1 * ones_row(1)
     tank_conditions.heater_saturated            = 0 * ones_row(1)
     tank_conditions.refuel_volume_capped        = 0 * ones_row(1)

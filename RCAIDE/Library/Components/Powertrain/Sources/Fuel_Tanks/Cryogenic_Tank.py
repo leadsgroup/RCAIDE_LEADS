@@ -87,28 +87,16 @@ class Cryogenic_Tank(Non_Integral_Tank):
         LH2 only; unvalidated for LNG, used here as the best available
         anchor.
     pressure_margin : float
-        Operating ullage pressure margin above the saturation pressure at
-        ``design_inlet_temperature`` [Pa] (default: 2 bar = 2e5 Pa). Sets
-        ``design_pressure = P_rated = P_sat(design_inlet_temperature) +
-        pressure_margin``, matching the AST paper's Eq. 4 (sampled 2-6 bar in
-        their Table 5). This is both the in-flight runtime target the
-        detailed boil-off model regulates the ullage to, AND the internal
-        design pressure (``P_internal = P_rated``) fed directly into the
-        structural wall-thickness sizing -- the only additional structural
-        margin beyond the physical rated pressure is ``safety_factor``.
+        Pressure above P_sat(design_inlet_temperature) [Pa] that sets ``design_pressure``,
+        the maximum operating pressure used for wall sizing and as the vent pressure (default: 2 bar).
+    minimum_operating_pressure : float
+        Pressure [Pa] below which the heater adds boil-off to keep tank pressure from falling.
+        Set to P_sat(design_inlet_temperature) during sizing when not given. Between this pressure
+        and ``design_pressure`` the tank self-pressurizes from heat leak, following Adler & Martins
+        (2025), Sec. I: the heater prevents pressure from decreasing and the tank vents at its limit.
     pressure_regulation_time_constant : float
-        Characteristic response time [s] of the tank's heater/vent regulation
-        system correcting a ullage pressure deviation from ``design_pressure``
-        (default: 400 s). Drives the regulation flow explicitly, m_dot_reg =
-        V_g/(R_specific*T_g*tau) * (design_pressure - P) -- a finite-gain
-        feedback law, not an exact/instantaneous constraint. Adler & Martins
-        (2025) tuned their analogous heater thermal-inertia constant C_h to
-        5e-3 /s (~200 s response) against real extraction-test data (their
-        Sec. IV.B); their open-source reference implementation's own example/
-        default is slower still (500-1000 s). 400 s is chosen in that range;
-        the previous 60 s default was untuned and, combined with heater_power
-        having no cap of its own, could demand unphysically large heater
-        power for an ordinary pressure deficit (see Heater.design_power).
+        Response time [s] of the heater and vent regulation (default: 400 s). Within the range of
+        the heater response constant C_h tuned by Adler & Martins (2025), Sec. IV.B.
     """
 
     def __defaults__(self):
@@ -130,6 +118,7 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.heater_power_margin            = 1.5   # heater sized to this multiple of the takeoff pressurant demand
         self.pressure_margin                = 2 * Units.bar
         self.design_pressure                = None  # set from pressure_margin during design-time sizing
+        self.minimum_operating_pressure     = None  # set to the fill pressure during design-time sizing
         self.pressure_regulation_time_constant = 400.0
 
     def compute_volume(self, wings, fuselages, fuel_tanks):

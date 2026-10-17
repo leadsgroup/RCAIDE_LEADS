@@ -21,7 +21,7 @@ class Heater(Converter):
     the same architecture ``Pump`` draws from) to supply the thermal power
     an in-flight cryogenic tank's boil-off model (``Cryogenic_Tank`` with
     ``boil_off_model = 'quasi_steady'``) has already determined it needs
-    to hold ullage pressure near ``design_pressure``. See
+    to keep ullage pressure at or above ``minimum_operating_pressure``. See
     ``compute_heater_performance`` for the read-source and ordering/
     staleness details.
     """

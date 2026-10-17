@@ -82,9 +82,10 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     P_internal = P_rated
     P_external = fuel_tank.design_external_pressure
 
-    # Operating (rated) pressure target for the in-flight boil-off model --
-    # the same P_rated used as the structural design pressure above.
+    # Vent pressure for the boil-off model is the structural design pressure; the heater holds the fill pressure
     fuel_tank.design_pressure = P_rated
+    if fuel_tank.minimum_operating_pressure is None:
+        fuel_tank.minimum_operating_pressure = P_sat
 
     # Atmospheric conditions at design altitude (computed once, passed to inner solvers)
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()

@@ -23,10 +23,31 @@ def cache_key_matches(cached, current):
     # equal_nan=True since refuel_target_mass is NaN outside Refuel segments.
     return all(np.array_equal(a, b, equal_nan=True) for a, b in zip(cached, current))
 
+# Tank condition fields written by a solve; a cache hit restores them since segment initialization resets them in place
+SOLVED_FIELDS = ('ullage_mass', 'fuel_mass', 'ullage_volume', 'fuel_volume', 'ullage_temperature', 'fuel_temperature',
+                 'pressure', 'vent_rate', 'boil_off_flow_rate', 'heater_power', 'refuel_mass_flow_rate',
+                 'environmental_heat_leak_liquid', 'environmental_heat_leak_ullage', 'temperature_out_of_range',
+                 'liquid_thermal_floor_active', 'fuel_deficit_rate', 'liquid_availability_gate',
+                 'heater_saturated', 'refuel_volume_capped', 'mass_flow_rate')
+
+def store_tank_solve(tank_conditions, cache_key, result):
+    """Caches a tank solve together with every condition array it wrote."""
+    solved = {field: np.array(tank_conditions[field], copy=True) for field in SOLVED_FIELDS}
+    solved['chemical_power'] = np.array(tank_conditions.outputs.power.chemical, copy=True)
+    tank_conditions._boil_off_solve_cache = (tuple(np.array(k, copy=True) for k in cache_key), result, solved)
+    return result
+
+def restore_tank_solve(tank_conditions, solved):
+    """Writes a cached solve's condition arrays back into the tank conditions."""
+    for field in SOLVED_FIELDS:
+        tank_conditions[field][:,:] = solved[field]
+    tank_conditions.outputs.power.chemical[:,:] = solved['chemical_power']
+    return
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Tank In-Flight Boil-Off Performance
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-7, method='LSODA'):
+def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-10, method='LSODA'):
     """
     Two-phase lumped-parameter in-flight boil-off model for a cryogenic fuel tank.
 
@@ -47,13 +68,13 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     The instantaneous boil-off/vent split uses a smoothed complementarity relaxation
     (rather than a hard threshold) so the ODE right-hand side stays differentiable:
     when more boil-off is needed than passive heat leak alone provides, the excess is
-    treated as active-heater duty (reported as an output, not fed back into the
-    aircraft's electrical bus); when less is needed, the excess ullage vapor is vented.
+    treated as active-heater duty (drawn from the electrical bus by the tank's Heater
+    converter); when less is needed, the excess ullage vapor is vented.
 
-    ``method``/``rtol``/``atol`` default to LSODA/1e-4/1e-7, chosen for a good
-    speed/accuracy tradeoff since every call here is a fresh solve run on every outer
-    network iterate. All three are exposed as kwargs so a caller can re-solve at a
-    tighter tolerance/different method as an independent cross-check.
+    ``method``/``rtol``/``atol`` default to LSODA/1e-8/1e-10. The mission solver builds
+    its Jacobian by finite differences through this solve, so integration error must
+    stay well below the effect of those perturbations; at 1e-4 the heater's electrical
+    load was noise to the solver and segments failed to converge.
 
     Notes
     -----
@@ -106,6 +127,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     cache_key = (t, chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts, refuel_pts, refuel_target_arr, y0)
     cached    = getattr(tank_conditions, '_boil_off_solve_cache', None)
     if cached is not None and cache_key_matches(cached[0], cache_key):
+        restore_tank_solve(tank_conditions, cached[2])
         return cached[1]
 
     # Heater cap: Heater.design_power when set, else sized to the takeoff pressurant demand, else 10x design heat leak
@@ -139,14 +161,13 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
         tank_conditions.environmental_heat_leak_ullage[:,0] = diag['Q_e_g']
         tank_conditions.temperature_out_of_range[:,0]  = diag['T_out_of_range']
         tank_conditions.liquid_thermal_floor_active[:,0] = diag['m_l_thermal_floored']
-        tank_conditions.liquid_mass_floor_blend[:,0]   = diag['m_barrier_blend']
+        tank_conditions.fuel_deficit_rate[:,0]         = diag['m_dot_deficit']
         tank_conditions.liquid_availability_gate[:,0]  = diag['m_dot_avail']
         tank_conditions.heater_saturated[:,0]          = diag['heater_saturated']
         tank_conditions.refuel_volume_capped[:,0]      = 0.0
 
         result = tank_conditions.inputs, tank_conditions.outputs, True, tank.tag
-        tank_conditions._boil_off_solve_cache = (tuple(np.array(k, copy=True) for k in cache_key), result)
-        return result
+        return store_tank_solve(tank_conditions, cache_key, result)
 
     duration = t[-1] - t[0]
 
@@ -186,75 +207,66 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     volume_capped = False
 
     if filling:
-        # Terminal event 1: stop filling once fuel_mass reaches the target
-        # (mirrors Battery_Recharge's cutoff_SOC). direction=1 requires an
-        # upward crossing so an already-above-target tank can't retrigger it.
-        def tank_full(t_i, y):
-            return y[1] - refuel_target
-        tank_full.terminal  = True
-        tank_full.direction = 1
+        def liquid_volume(m_l, T_l):
+            rho_l = fuel.cryogen_properties(np.atleast_1d(np.clip(T_l, T_l_lo, T_l_hi)), "Density (kg/m3)", phase='liquid')
+            return m_l / rho_l
 
-        # Terminal event 2: stop early if V_l reaches net_volume regardless of
-        # mass -- a tank that has warmed (liquid less dense) can hit its volume
-        # limit before the fixed mass target, which would otherwise collapse
-        # the ullage and blow up P = m_g*R*T_g/V_g as V_g -> 0.
-        def tank_volume_full(t_i, y):
-            m_l, T_l = y[1], y[3]
-            T_l_c = np.clip(T_l, T_l_lo, T_l_hi)
-            rho_l = fuel.cryogen_properties(np.array([T_l_c]), "Density (kg/m3)", phase='liquid')[0]
-            return m_l / rho_l - net_volume
-        tank_volume_full.terminal  = True
-        tank_volume_full.direction = 1
+        def solve_refuel(volume_limit):
+            """Fills until the mass target or volume_limit is reached, then holds with no fill."""
+            def tank_full(t_i, y):
+                return y[1] - refuel_target
+            tank_full.terminal  = True
+            tank_full.direction = 1
 
-        rhs_fill = build_rhs(refuel_pts)
-        sol      = solve_ivp(rhs_fill, (t[0], t[-1]), y0, method=method, t_eval=t,
-                              rtol=rtol, atol=atol_vec, events=[tank_full, tank_volume_full])
-        if not sol.success:
-            raise RuntimeError(
-                f"Cryogenic tank '{tag}' internal boil-off IVP failed to integrate: {sol.message}")
+            def tank_volume_full(t_i, y):
+                return liquid_volume(y[1], y[3])[0] - volume_limit
+            tank_volume_full.terminal  = True
+            tank_volume_full.direction = 1
 
-        refuel_pts_eff = refuel_pts
-        fired_events = [i for i, te in enumerate(sol.t_events) if te.size]
-        if fired_events:  # reached target or volume limit before segment end -> splice in a zero-fill hold
+            rhs_hold = build_rhs(np.zeros_like(refuel_pts))
+            if liquid_volume(y0[1], y0[3])[0] >= volume_limit:
+                sol = solve_ivp(rhs_hold, (t[0], t[-1]), y0, method=method, t_eval=t, rtol=rtol, atol=atol_vec)
+                if not sol.success:
+                    raise RuntimeError(f"Cryogenic tank '{tag}' boil-off IVP failed to integrate: {sol.message}")
+                return sol.y, np.zeros_like(refuel_pts), True
+
+            rhs_fill = build_rhs(refuel_pts)
+            sol      = solve_ivp(rhs_fill, (t[0], t[-1]), y0, method=method, t_eval=t,
+                                 rtol=rtol, atol=atol_vec, events=[tank_full, tank_volume_full])
+            if not sol.success:
+                raise RuntimeError(f"Cryogenic tank '{tag}' boil-off IVP failed to integrate: {sol.message}")
+            fired_events = [i for i, te in enumerate(sol.t_events) if te.size]
+            if not fired_events:
+                return sol.y, refuel_pts, False
+
+            # Fill reached the target or the volume limit: splice in a zero-fill hold
             event_idx        = fired_events[0]
-            volume_capped    = (event_idx == 1)
             t_event, y_event = sol.t_events[event_idx][0], sol.y_events[event_idx][0]
-
-            t_before = t[t <= t_event]
-            t_after  = t[t >  t_event]
-
-            sol_before = solve_ivp(rhs_fill, (t[0], t_event), y0, method=method,
-                                    t_eval=t_before, rtol=rtol, atol=atol_vec)
+            t_before, t_after = t[t <= t_event], t[t > t_event]
+            sol_before = solve_ivp(rhs_fill, (t[0], t_event), y0, method=method, t_eval=t_before, rtol=rtol, atol=atol_vec)
             if not sol_before.success:
-                raise RuntimeError(
-                    f"Cryogenic tank '{tag}' internal boil-off IVP failed to integrate (fill phase): {sol_before.message}")
-
+                raise RuntimeError(f"Cryogenic tank '{tag}' boil-off IVP failed to integrate (fill): {sol_before.message}")
+            y_all = sol_before.y
             if t_after.size:
-                rhs_hold   = build_rhs(np.zeros_like(refuel_pts))
-                sol_after  = solve_ivp(rhs_hold, (t_event, t[-1]), y_event, method=method,
-                                        t_eval=t_after, rtol=rtol, atol=atol_vec)
+                sol_after = solve_ivp(rhs_hold, (t_event, t[-1]), y_event, method=method, t_eval=t_after, rtol=rtol, atol=atol_vec)
                 if not sol_after.success:
-                    raise RuntimeError(
-                        f"Cryogenic tank '{tag}' internal boil-off IVP failed to integrate (post-full hold): {sol_after.message}")
-                y_all = np.concatenate([sol_before.y, sol_after.y], axis=1)
-            else:
-                y_all = sol_before.y
+                    raise RuntimeError(f"Cryogenic tank '{tag}' boil-off IVP failed to integrate (hold): {sol_after.message}")
+                y_all = np.concatenate([y_all, sol_after.y], axis=1)
+            return y_all, np.where(t <= t_event, refuel_pts, 0.0), event_idx == 1
 
-            m_g, m_l, T_g, T_l = y_all
-            refuel_pts_eff = np.where(t <= t_event, refuel_pts, 0.0)
-        else:
-            m_g, m_l, T_g, T_l = sol.y
+        # Condensation and warming after the fill stops keep expanding the liquid, so the volume cutoff is
+        # lowered by the overshoot until the liquid stays within net_volume for the whole segment
+        volume_limit = net_volume
+        for iteration in range(4):
+            y_all, refuel_pts_eff, volume_capped = solve_refuel(volume_limit)
+            overshoot = np.max(liquid_volume(y_all[1], y_all[3])) - net_volume
+            if overshoot <= 1e-6 * net_volume:
+                break
+            volume_limit -= overshoot
+        m_g, m_l, T_g, T_l = y_all
 
-        if not volume_capped:
-            # tank_volume_full's root-finder only fires on a clean upward crossing;
-            # a fill approaching the wall asymptotically can end noticeably below
-            # net_volume (observed ~1.2%) without ever crossing it, so a tight 1e-3
-            # tolerance misses fills that are genuinely wall-limited in substance.
-            # Re-check the final state directly so volume_capped doesn't depend on
-            # the event having caught the crossing.
-            T_l_final_c = np.clip(T_l[-1], T_l_lo, T_l_hi)
-            rho_l_final = fuel.cryogen_properties(np.array([T_l_final_c]), "Density (kg/m3)", phase='liquid')[0]
-            volume_capped = bool(m_l[-1] / rho_l_final >= net_volume * (1 - 2e-2))
+        # A fill that approaches net_volume without crossing it is still volume limited
+        volume_capped = volume_capped or bool(liquid_volume(m_l[-1], T_l[-1])[0] >= net_volume * (1 - 2e-2))
     else:
         if np.isfinite(refuel_target):
             # Already at/above target (e.g. topping off a nearly-full tank) -- don't add fuel.
@@ -298,7 +310,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     tank_conditions.environmental_heat_leak_ullage[:,0] = diag['Q_e_g']
     tank_conditions.temperature_out_of_range[:,0]       = diag['T_out_of_range']
     tank_conditions.liquid_thermal_floor_active[:,0]    = diag['m_l_thermal_floored']
-    tank_conditions.liquid_mass_floor_blend[:,0]        = diag['m_barrier_blend']
+    tank_conditions.fuel_deficit_rate[:,0]              = diag['m_dot_deficit']
     tank_conditions.liquid_availability_gate[:,0]       = diag['m_dot_avail']
     tank_conditions.heater_saturated[:,0]               = diag['heater_saturated']
     tank_conditions.refuel_volume_capped[:,0]           = float(volume_capped)
@@ -310,8 +322,7 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-
     stored_results_flag = True
     stored_source_tag    = tank.tag
     result = tank_conditions.inputs, tank_conditions.outputs, stored_results_flag, stored_source_tag
-    tank_conditions._boil_off_solve_cache = (tuple(np.array(k, copy=True) for k in cache_key), result)
-    return result
+    return store_tank_solve(tank_conditions, cache_key, result)
 
 
 def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
@@ -445,39 +456,25 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # Natural boil-off from interfacial heat transfer
     m_dot_bo = (Q_l_i + Q_g_i) / (h_g - h_l)
 
-    # Liquid-availability gate: near empty, the root-solved interface geometry
-    # (compute_interface_geometric_properties) still returns a small nonzero
-    # interface area/heat-transfer coefficient even as m_l_c bottoms out at its
-    # 1e-6 floor, so m_dot_bo doesn't fall to zero on its own -- left unchecked
-    # this drives growing pressure/vent oscillations and a negative fuel_mass on
-    # long near-empty dormancy segments. Smoothed for the same differentiability
-    # reason as the complementarity relaxation below.
-    #
-    # Gated on the raw m_l, not the clipped m_l_c: m_l_c is floored at a fixed
-    # 1e-6 kg for property lookups, so it no longer tracks how empty the tank
-    # actually is once the raw state drifts past empty.
+    # Liquid availability: 1 above the unusable liquid (m_l_floor) plus a smoothing band, exactly 0 at or below it.
+    # Every liquid outflow is gated, so an undersized tank stops at empty, conserves mass, and stays within the
+    # model's 0-100% fill validity (Adler & Martins 2025, Sec. III); demand it cannot meet is reported as a deficit.
     m_l_floor   = 1e-3 * tank.design_full_liquid_mass
     m_avail_eps = 5e-4 * tank.design_full_liquid_mass
-    m_dot_avail = 0.5 * (1.0 + (m_l - m_l_floor) / np.sqrt((m_l - m_l_floor)**2 + m_avail_eps**2))
+    s_avail     = np.clip((m_l - m_l_floor) / m_avail_eps, 0.0, 1.0)
+    m_dot_avail = s_avail**2 * (3 - 2 * s_avail)
     m_dot_bo    = m_dot_bo * m_dot_avail
 
-    # Net ullage regulation flow (heater-driven boil-off if positive, vent if
-    # negative) from a finite-gain feedback law on the pressure error, not an
-    # exact constraint: tau (tank.pressure_regulation_time_constant) is the real
-    # heater/vent system's characteristic response time; V_g/(R_specific*T_g)
-    # converts the pressure error into the ullage mass needed to correct it, and
-    # dividing by tau turns that into a rate.
-    tau         = tank.pressure_regulation_time_constant
-    m_dot_reg   = (V_g_c / (R_specific * T_g_c * tau)) * (tank.design_pressure - P)
-
-    # Smoothed complementarity relaxation (replaces a hard np.where threshold):
-    # m_dot_reg > 0 -> active-heater boil-off duty; m_dot_reg < 0 -> venting.
-    # m_dot_vent is its own smoothed max(-m_dot_reg, 0) rather than
-    # m_dot_reg - m_dot_heater_boi, so gating heater duty by liquid availability
-    # below doesn't also suppress ordinary venting of already-present ullage gas.
-    eps               = 1e-6  # kg/s, smoothing width
-    m_dot_heater_boi  = 0.5 * ( m_dot_reg + np.sqrt(m_dot_reg**2 + eps**2)) * m_dot_avail
-    m_dot_vent        = 0.5 * (-m_dot_reg + np.sqrt(m_dot_reg**2 + eps**2))
+    # Pressure regulation with a deadband (Adler & Martins 2025, Sec. I): the heater adds boil-off below
+    # minimum_operating_pressure, the tank vents above design_pressure, and in between it self-pressurizes.
+    # Each flow is a finite-gain law with response time tau, smoothed so the mission Jacobian stays continuous.
+    tau              = tank.pressure_regulation_time_constant
+    gain             = V_g_c / (R_specific * T_g_c * tau)
+    m_dot_heat       = gain * (tank.minimum_operating_pressure - P)
+    m_dot_relief     = gain * (P - tank.design_pressure)
+    eps              = 1e-6  # kg/s, smoothing width
+    m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
+    m_dot_vent       = 0.5 * (m_dot_relief + np.sqrt(m_dot_relief**2 + eps**2))
 
     # Heater power split, per Adler & Martins (2025) Eq. 13/17/24: only a fraction
     # eta_h of the heater's power goes directly to flash-boiling liquid at the
@@ -502,21 +499,9 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     dm_g = m_dot_bo_final - m_dot_vent
     # Incoming fuel assumed thermally equilibrated with the tank's own bulk
     # liquid, so no separate enthalpy term is needed here.
+    m_dot_deficit  = m_dot_l_engine * (1 - m_dot_avail)
+    m_dot_l_engine = m_dot_l_engine * m_dot_avail
     dm_l = -m_dot_bo_final - m_dot_l_engine + m_dot_refuel
-
-    # Liquid-mass floor: m_dot_avail above only throttles boil-off, so residual
-    # net outflow could still walk m_l slightly negative over a long segment.
-    # Adds a restoring inflow once m_l dips below its floor, reusing tau (the
-    # tank's own pressure-regulation response time).
-    #
-    # A clipped smoothstep, not the sqrt-relaxation used elsewhere (e.g. the
-    # temperature barrier below): that form is never exactly zero and leaks a
-    # tiny continuous mass source into every ordinary tank, enough to trip
-    # run_case's mass-conservation check. Fine for temperature (no conservation
-    # law checked against it); not fine here.
-    m_barrier_blend = np.clip((m_l_floor + m_avail_eps - m_l) / (2 * m_avail_eps), 0.0, 1.0)
-    m_barrier_blend = m_barrier_blend**2 * (3 - 2 * m_barrier_blend)  # smoothstep
-    dm_l = dm_l + m_barrier_blend * (m_l_floor - m_l) / tau
 
     # V_l = m_l/rho_l(T_l) is algebraic, so dV_l is its total derivative by the
     # chain rule: dV_l = dm_l/rho_l - (m_l/rho_l^2)*drho_l_dT_l*dT_l. This term
@@ -590,7 +575,7 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
                         Q_h_to_liquid=Q_h_to_liquid, dT_l=dT_l, rho_l=rho_l, m_l_thermal=m_l_thermal,
                         # Observability of where a run is leaning on a floor/cap/barrier:
                         T_out_of_range=T_out_of_range, m_l_thermal_floored=m_l_thermal_floored,
-                        m_barrier_blend=m_barrier_blend, m_dot_avail=m_dot_avail,
+                        m_dot_deficit=m_dot_deficit, m_dot_avail=m_dot_avail,
                         heater_saturated=heater_saturated)
     return derivatives, diagnostics
 

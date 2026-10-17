@@ -24,7 +24,7 @@ VAPOR_COLUMNS  = ("Density (kg/m3)", "Cp (J/g*K)", "Cv (J/g*K)", "Viscosity (Pa*
                   "Enthalpy (kJ/kg)", "Internal Energy (kJ/kg)", "Pressure (MPa)")
 # Order of the diagnostics returned by cryogenic_tank_rates (as tank_state_rates' diagnostics dict)
 DIAGNOSTICS    = ("P", "m_dot_vent", "m_dot_bo_final", "heater_power", "m_dot_l_engine", "Q_e_l", "Q_e_g", "V_l", "V_g",
-                  "T_out_of_range", "m_l_thermal_floored", "m_barrier_blend", "m_dot_avail", "heater_saturated")
+                  "T_out_of_range", "m_l_thermal_floored", "m_dot_deficit", "m_dot_avail", "heater_saturated")
 MPA            = 1e6
 EPS4           = 4 * np.finfo(float).eps
 DELTA_T        = 0.1  # K, interface temperature-difference smoothing (as Q_liq_to_int/Q_gas_to_int)
@@ -65,7 +65,7 @@ def cryogenic_tank_rates_tables(tank, R_specific, T_g_lo, T_g_hi, T_l_lo, T_l_hi
                        tank.insulation.thickness, tank.inner_structure.material.thermal_conductivity,
                        tank.insulation.material.thermal_conductivity, tank.design_full_liquid_mass,
                        tank.pressure_regulation_time_constant, tank.design_pressure,
-                       tank.heater_direct_boiloff_fraction], dtype=float)
+                       tank.heater_direct_boiloff_fraction, tank.minimum_operating_pressure], dtype=float)
     return TL, LQ, TV, VQ, PS, liquid["Temperature (K)"], params, geometry
 
 
@@ -196,6 +196,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi   = params[5], params[6], params[7], params[8], params[9], params[10]
     max_heater_power, t_ins, k_mat, k_ins        = params[11], params[12], params[13], params[14]
     m_full, tau, design_pressure, eta_h          = params[15], params[16], params[17], params[18]
+    minimum_pressure                             = params[19]
 
     m_g_c = max(m_g, 1e-6)
     m_l_c = max(m_l, 1e-6)
@@ -266,13 +267,16 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     m_dot_bo    = (Q_l_i + Q_g_i) / (h_g - h_l)
     m_l_floor   = 1e-3 * m_full
     m_avail_eps = 5e-4 * m_full
-    m_dot_avail = 0.5 * (1.0 + (m_l - m_l_floor) / np.sqrt((m_l - m_l_floor)**2 + m_avail_eps**2))
+    s_avail     = min(max((m_l - m_l_floor) / m_avail_eps, 0.0), 1.0)
+    m_dot_avail = s_avail**2 * (3 - 2 * s_avail)
     m_dot_bo    = m_dot_bo * m_dot_avail
 
-    m_dot_reg        = (V_g_c / (R_specific * T_g_c * tau)) * (design_pressure - P)
+    gain             = V_g_c / (R_specific * T_g_c * tau)
+    m_dot_heat       = gain * (minimum_pressure - P)
+    m_dot_relief     = gain * (P - design_pressure)
     eps              = 1e-6
-    m_dot_heater_boi = 0.5 * ( m_dot_reg + np.sqrt(m_dot_reg**2 + eps**2)) * m_dot_avail
-    m_dot_vent       = 0.5 * (-m_dot_reg + np.sqrt(m_dot_reg**2 + eps**2))
+    m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
+    m_dot_vent       = 0.5 * (m_dot_relief + np.sqrt(m_dot_relief**2 + eps**2))
 
     heater_power_uncapped = m_dot_heater_boi * (h_g - h_l) / max(eta_h, 1e-9)
     heater_power          = min(heater_power_uncapped, max_heater_power)
@@ -281,11 +285,9 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     Q_h_to_liquid         = heater_power * (1 - eta_h)
 
     dm_g = m_dot_bo_final - m_dot_vent
+    m_dot_deficit  = m_dot_l_engine * (1 - m_dot_avail)
+    m_dot_l_engine = m_dot_l_engine * m_dot_avail
     dm_l = -m_dot_bo_final - m_dot_l_engine + m_dot_refuel
-
-    m_barrier_blend = min(max((m_l_floor + m_avail_eps - m_l) / (2 * m_avail_eps), 0.0), 1.0)
-    m_barrier_blend = m_barrier_blend**2 * (3 - 2 * m_barrier_blend)
-    dm_l = dm_l + m_barrier_blend * (m_l_floor - m_l) / tau
 
     m_l_thermal = max(m_l_c, m_l_floor)
     A_thermal   = m_l_thermal * cp_liq
@@ -332,7 +334,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     diagnostics[8]  = V_g_c
     diagnostics[9]  = 1.0 if (T_g < T_g_lo or T_g > T_g_hi or T_l < T_l_lo or T_l > T_l_hi) else 0.0
     diagnostics[10] = 1.0 if m_l_c < m_l_floor else 0.0
-    diagnostics[11] = m_barrier_blend
+    diagnostics[11] = m_dot_deficit
     diagnostics[12] = m_dot_avail
     diagnostics[13] = 1.0 if heater_power_uncapped > max_heater_power else 0.0
     return rates, diagnostics, 0
