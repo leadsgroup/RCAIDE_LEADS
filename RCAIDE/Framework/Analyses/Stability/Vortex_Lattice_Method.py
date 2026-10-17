@@ -25,16 +25,11 @@ class Vortex_Lattice_Method(Stability):
      Stall effects are negligible 
  
      Source:
-     N/A
+     Gilruth and White, NACA Report 711 (1941), for the fuselage pitching moment
  
-     Inputs:
-     None
- 
-     Outputs:
-     None
- 
-     Properties Used:
-     N/A 
+     Settings:
+     fuselage_correction: True computes the neutral point from the wings and tails without
+     fuselage panels plus the fuselage moment of NACA Report 711; False keeps the fuselage panels
     """      
     
     def __defaults__(self):
@@ -68,7 +63,7 @@ class Vortex_Lattice_Method(Stability):
         self.settings.number_of_fuselage_spanwise_vortices          = 4
         self.settings.number_of_fuselage_chordwise_vortices         = 10 
         self.settings.model_fuselage                                = True 
-        self.settings.fuselage_correction                           = True   # neutral point: wings and tails without fuselage panels plus the fuselage moment of Gilruth and White, NACA Report 711 (1941); False keeps the fuselage panels
+        self.settings.fuselage_correction                           = True
         self.settings.spanwise_cosine_spacing                       = True
         self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  

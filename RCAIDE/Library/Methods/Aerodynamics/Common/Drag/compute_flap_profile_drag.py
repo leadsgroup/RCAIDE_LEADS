@@ -16,10 +16,8 @@ import warnings
 # ----------------------------------------------------------------------------------------------------------------------
 #  Roskam two-dimensional flap profile drag increments
 # ----------------------------------------------------------------------------------------------------------------------
-# Roskam, Airplane Design Part VI (DARcorporation, 2004 printing), Figs. 4.46-4.48, valid for zero quarter-chord
-# sweep. Digitized from the scanned figures by gridline-calibrated pixel tracking of each curve and local linear
-# regression at the listed deflections (fit residual below 0.002 in delta c_dp). Each entry is
-# flap chord ratio : (deflections [deg], delta c_dp [-]).
+# Roskam, Airplane Design Part VI (DARcorporation, 2004), Figs. 4.46-4.48, for zero quarter-chord sweep, digitized
+# with a fit residual below 0.002 in delta c_dp. Each entry is flap chord ratio : (deflections [deg], delta c_dp [-]).
 FLAP_PROFILE_DRAG_DATA = {
     'single_slotted': {  # Fig. 4.46
         0.10: ([11.5, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 58.5],
@@ -49,10 +47,9 @@ FLAP_PROFILE_DRAG_DATA = {
     },
 }
 
-# Roskam Part VI Figs. 4.44 (plain) and 4.45 (split) give the increment against flap chord ratio at the takeoff
-# (15 deg) and landing (60 deg) deflections only. Plain: the two drawn straight lines, fit to the digitized curve
-# with outlier rejection (within 3% of FAST-GA's independent digitization of the same figure). Split: the plotted
-# points, per airfoil thickness ratio. Each entry is deflection [deg] : (flap chord ratios, delta c_dp).
+# Roskam Part VI Figs. 4.44 (plain) and 4.45 (split) give the increment against flap chord ratio at 15 and 60 deg
+# only. Plain flaps use the two drawn lines (within 3% of FAST-GA's digitization of the same figure); split flaps use
+# the plotted points per thickness ratio. Each entry is deflection [deg] : (flap chord ratios, delta c_dp).
 PLAIN_FLAP_PROFILE_DRAG_DATA = {    # Fig. 4.44, drawn for c_f/c 0.07-0.29
     15.0: ([0.075, 0.10, 0.15, 0.20, 0.25, 0.30], [0.0064, 0.0086, 0.0130, 0.0173, 0.0217, 0.0261]),
     60.0: ([0.075, 0.10, 0.15, 0.20, 0.25, 0.30], [0.0433, 0.0624, 0.1006, 0.1388, 0.1771, 0.2153]),

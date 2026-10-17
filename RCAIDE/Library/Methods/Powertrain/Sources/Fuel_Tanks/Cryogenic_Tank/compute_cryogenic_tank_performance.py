@@ -326,26 +326,15 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-
 
 
 def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
-                       chemical_power, T_env, nu_air, Pr_air, k_air, m_dot_refuel,
-                       T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power):
-    """Evaluates the tank's 4-state ODE right-hand side plus diagnostic outputs
-    (pressure, volume, boil-off/vent split, heater power) at one or more
-    instants. State/input arguments are 1-D arrays of the same length -- length 1
-    for a single integrator evaluation (``rhs`` above), or length n_nodes for the
-    final diagnostic pass at the mission's collocation points.
+                     chemical_power, T_env, nu_air, Pr_air, k_air, m_dot_refuel,
+                     T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi, max_heater_power):
+    """Tank ODE right-hand side and diagnostics (pressure, volumes, boil-off and vent flows, heater power).
+    State and input arguments are 1-D arrays of equal length: one value for an integrator call, one per node
+    for the diagnostic pass.
 
-    fuel_volume/ullage_volume (V_l/V_g) are NOT states here -- V_l = m_l/rho_l(T_l)
-    is computed fresh each call, and V_g = gross_volume - V_l, rather than being
-    integrated independently (an earlier version integrated volume directly and
-    let it drift out of consistency with mass). Because -P*dV_l appears in the
-    liquid energy balance and dV_l is itself a function of dT_l via the chain rule
-    on V_l(m_l, T_l), dT_l is solved in closed form as a linear equation.
-
-    Clamps m to a small positive floor and T to the property table's valid range
-    before any lookup: the integrator's trial/Jacobian steps can transiently query
-    states outside the physical domain, and the property tables raise rather than
-    extrapolate. Only the lookups are clamped -- the temperature barrier term below
-    still sees the raw T so the dynamics themselves resist leaving the valid domain.
+    Liquid and ullage volumes are algebraic, V_l = m_l / rho_l(T_l) and V_g = gross_volume - V_l. Because
+    -P dV_l enters the liquid energy balance and dV_l depends on dT_l, dT_l is solved in closed form. Masses
+    and temperatures are clamped before property lookups; the temperature barrier still sees the raw value.
     """
     m_g_c = np.clip(m_g, 1e-6, None)
     m_l_c = np.clip(m_l, 1e-6, None)

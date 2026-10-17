@@ -17,6 +17,9 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 class Numerics(Conditions):
     """ Creates the data structure for the numerical solving of a mission.
+
+        mission_solver.residual_tolerance is the largest scaled residual the root finder accepts
+        when it stalls on step size.
     
         Assumptions:
         None
@@ -54,7 +57,7 @@ class Numerics(Conditions):
         self.mission_solver.method              = "SLSQP"
         self.mission_solver.objective           = "energy"
         self.mission_solver.tolerance           = 1E-6
-        self.mission_solver.residual_tolerance  = 1E-3   # root_finder: max scaled residual accepted when fsolve stalls on step size
+        self.mission_solver.residual_tolerance  = 1E-3
         self.mission_solver.converged           = None
         self.mission_solver.print_output        = True
         self.mission_solver.max_evaluations     = 200

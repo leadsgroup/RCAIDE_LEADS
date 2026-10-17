@@ -77,8 +77,8 @@ class Reformer_Fuel_Cell(Converter):
         self.power_split_ratio         = 1.0    # fraction of the electrical demand this unit supplies, for multiple identical units sharing a bus
         self.design_voltage            = None
         self.design_power              = None
-        self.system_efficiency         = 0.46                          # [-] fuel LHV to net electricity at cruise, [1] Table 27
-        self.system_specific_power     = 185E3 / (805.4 * Units.lb)    # [W/kg] about 506 W/kg, [1] Tables 27 and 28, Case 2
+        self.system_efficiency         = 0.46
+        self.system_specific_power     = 185E3 / (805.4 * Units.lb)
 
     def append_operating_conditions(self,segment):
         """

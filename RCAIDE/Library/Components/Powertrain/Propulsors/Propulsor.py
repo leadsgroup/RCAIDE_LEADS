@@ -35,11 +35,11 @@ class Propulsor(Component):
         Flag indicating if the propulsor is mounted on a wing, defaults to True
 
     domain : str
-        Primary propulsive energy domain this propulsor draws from
-        (``'chemical'`` or ``'electrical'``), self-declared by each concrete
-        subclass so topology analysis (``RCAIDE.Library.Mission.Common.
-        Pre_Process.energy.analyze_topology``) can classify propulsors
-        without a hardcoded isinstance list.
+        Energy domain the propulsor draws from, 'chemical' or 'electrical'. Set by each subclass
+        for network topology analysis.
+
+    sealevel_static_chemical_power : float
+        Fuel chemical power at the sea-level static takeoff rating [W]
 
     Notes
     -----
@@ -99,7 +99,7 @@ class Propulsor(Component):
         self.identical_propulsors           = True
         self.reverse_thrust                 = False
         self.sealevel_static_thrust         = 0.0
-        self.sealevel_static_chemical_power = 0.0  # fuel chemical power at the sea-level static takeoff rating [W]
+        self.sealevel_static_chemical_power = 0.0
         self.working_fluid                  = RCAIDE.Library.Attributes.Gases.Air()
         self.assigned_converters            = None 
         self.assigned_modulators            = None 

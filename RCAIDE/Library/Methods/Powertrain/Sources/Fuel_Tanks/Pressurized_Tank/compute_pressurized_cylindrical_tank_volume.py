@@ -68,7 +68,7 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     #  pressure-vessel outer radius — no insulation on top).
     # ------------------------------------------------------------------
     ro_ri  = find_root(tank_stress, 1 + 1e-5, 2.0,
-                        args=(P_internal, P_external, sigma_allow), xtol=1e-8)
+                       args=(P_internal, P_external, sigma_allow), xtol=1e-8)
     r_inner = R_o / ro_ri
     t_wall  = R_o - r_inner
 

@@ -165,18 +165,9 @@ def converge(segment):
 # scaling helper
 # ----------------------------------------------------------------------------------------------------------------------
 def magnitude_scale(values, floor_exponent=-6):
-    """Power-of-10 scale so values/scale lands near O(1) (e.g. 1e5 -> scale=1e5).
-    Unscaled, unknowns/residuals of very different physical magnitude sharing
-    one solver tolerance/step size leave the small ones effectively degenerate,
-    and a Newton step can overshoot by orders of magnitude. Zero entries fall
-    back to scale=1. Mirrors the unknown scaling in add_mission_variables.
-
-    floor_exponent bounds how small a scale can get (default 1e-6, matching the
-    typical solver tolerance): a value that's already near machine noise (e.g.
-    ~1e-12, from a residual whose initial guess happens to be almost exact)
-    would otherwise get an equally tiny scale, making that noise look like an
-    O(1) constraint the solver must chase to the same relative precision as
-    everything else -- preventing real convergence indefinitely.
+    """Power-of-10 scale that brings values near O(1), so unknowns and residuals of very different magnitude
+    share one solver tolerance. Zero entries use a scale of 1. floor_exponent bounds the smallest scale (1e-6,
+    the typical solver tolerance), so a near-zero residual is not scaled up into noise the solver has to chase.
     """
     factor = np.ceil(np.log10(np.abs(values)))
     factor[~np.isfinite(factor)] = 0
@@ -187,21 +178,10 @@ def magnitude_scale(values, floor_exponent=-6):
 #  Helper Functions
 # ----------------------------------------------------------------------------------------------------------------------
 def segment_soft_max_power(segment, sharpness=30.0):
-    """Smooth (log-sum-exp) stand-in for max(power). A hard max is non-differentiable
-    at whichever control point currently holds the peak, so its finite-difference
-    gradient can jump discontinuously when that point changes between SLSQP's
-    perturbed evaluations; this blends nearby points in instead, and is always >=
-    the true max (standard log-sum-exp upper bound), overshooting by at most
-    log(n_points)/p -- i.e. it never understates the peak.
-
-    `sharpness` is in e-foldings across the segment's own power spread (max-min):
-    e.g. sharpness=30 means a point at the very bottom of the segment's power
-    range contributes negligible weight (~1e-13) while points within a few percent
-    of peak blend in smoothly. Falls back to scaling by |peak| when the segment's
-    power is ~constant (spread ~ 0), so it doesn't blow up to infinite sharpness
-    there. Exponents are always <= 0 (peak subtracted first), so this can only
-    underflow toward 0, never overflow -- regardless of the sign or magnitude of
-    power.
+    """Smooth upper bound on the segment's peak propulsive power by log-sum-exp. A hard max makes the
+    finite-difference gradient jump when the peak moves between control points. The bound never understates
+    the peak and exceeds it by at most log(n_points)/p. sharpness is in e-foldings across the segment's power
+    spread; a segment at constant power is scaled by its peak instead.
     """
     power  = np.ravel(segment.state.conditions.energy.outputs.power.propulsive)
     peak   = np.max(power)
@@ -213,7 +193,7 @@ def segment_soft_max_power(segment, sharpness=30.0):
 
 def iterate_root_finder(unknowns, segment):
     
-    """Runs one iteration of of all analyses for the mission.
+    """Runs one iteration of all analyses for the mission.
 
     Assumptions:
     fsolve has no native bounds support, unlike the "optimize"/SLSQP

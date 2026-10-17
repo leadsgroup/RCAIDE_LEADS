@@ -56,12 +56,12 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     aspect_ratio  = fuel_tank.lengths.external / fuel_tank.heights.external
     ullage_frac   = fuel_tank.ullage_volume_fraction
     T_inlet       = fuel_tank.design_inlet_temperature
-    Qo            = fuel_tank.design_heat_flux    # max allowable heat leak [W/m²]
+    Qo            = fuel_tank.design_heat_flux    # [W/m^2]
     k_mat         = fuel_tank.inner_structure.material.thermal_conductivity
     k_ins_mat     = fuel_tank.insulation.material.thermal_conductivity
     sigma_allow   = fuel_tank.inner_structure.material.yield_tensile_strength / safety_factor
     hw_ratio      = fuel_tank.heights.external / fuel_tank.widths.external
-    PI_Q          = 1.5  # heat-flow multiplier for thermal sizing margin (same as the cylindrical sizing)
+    PI_Q          = 1.5  # heat-flow sizing margin, as in the cylindrical tank
 
     # Net pressure differential for structural sizing. P_internal is the
     # physical rated pressure itself -- no separate burst/proof multiplier is
@@ -117,7 +117,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     # ------------------------------------------------------------------
     V_total, h_i, w_i, l_i, th, h_o, w_o, l_o, t_ins, mass_ins, h_o_o, w_o_o, l_o_o = \
         sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
-                      therm, fuel_tank)
+                     therm, fuel_tank)
 
     mass_struct = ((l_o * w_o * h_o) - (h_i * l_i * w_i)) * fuel_tank.inner_structure.material.density
 
@@ -170,7 +170,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
 #  Sizing chain: V_guess → all intermediate geometry → total outer volume
 # ----------------------------------------------------------------------------------------------------------------------
 def sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
-                  therm, fuel_tank):
+                 therm, fuel_tank):
     # Internal volume = fuel + ullage
     V_total = V_guess / (1 - ullage_frac)
 
@@ -225,8 +225,8 @@ def insulation_residual(t_ins, therm, fuel_tank, l_o, w_o, h_o, th):
 #  Outer volume residual: V_cuboid - V_calculated(V_guess)
 # ----------------------------------------------------------------------------------------------------------------------
 def volume_residual(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
-                     therm, fuel_tank, V_cuboid):
+                    therm, fuel_tank, V_cuboid):
     results = sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
-                            therm, fuel_tank)
+                           therm, fuel_tank)
     h_o_o, w_o_o, l_o_o = results[10], results[11], results[12]
     return V_cuboid - (h_o_o * l_o_o * w_o_o)

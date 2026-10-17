@@ -40,7 +40,7 @@ class Reformer(Converter):
         and must be set explicitly before use.
     efficiency : float
         Thermal reformer efficiency, LHV of hydrogen produced over LHV of fuel fed [-].
-        Default 0.78, methane autothermal reforming (Halabi et al., 2008); the DOE fuel
+        Default 0.78, methane autothermal reforming [1]; the DOE fuel
         processor targets are 0.69 (2005) to 0.80 (2010)
     steam_density : float
         Density of water [g/cm^3]
@@ -97,7 +97,7 @@ class Reformer(Converter):
     def __defaults__(self): 
         self.tag                                      = 'reformer'
         self.working_fluid                            = None
-        self.efficiency                               = 0.78     # [-] LHV H2 out / LHV fuel in [1]
+        self.efficiency                               = 0.78
         self.steam_density                            = 1        # [g/cm**3]  Density of water
         self.air_density                              = 0.001293 # [g/cm**3]  Density of air
         self.steam_molecular_weight                   = 18.01    # [g/g-mol]  Average molecular weight of steam
@@ -109,7 +109,7 @@ class Reformer(Converter):
         self.design_steam_to_fuel_volumetric_ratio    = 3.7037  # [-] design Q_S / Q_F
         self.design_air_to_fuel_volumetric_ratio      = 2222.2  # [-] design Q_A / Q_F
         self.design_power                             = None
-        self.specific_power                           = 1000. / 0.0343  # [W/kg] 0.0343 kg per kW of fuel cell output, [2] Table 8
+        self.specific_power                           = 1000. / 0.0343
 
     def append_operating_conditions(self, segment):
         """Attach reformer operating conditions to the segment's energy conditions."""

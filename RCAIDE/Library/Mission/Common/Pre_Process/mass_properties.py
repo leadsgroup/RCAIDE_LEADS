@@ -162,7 +162,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
         # ---------------------------------------------------------------------------------------------------------------------------
         # STEP 3: Run weights analysis 
         # ---------------------------------------------------------------------------------------------------------------------------         
-        prescribed_takeoff = analyses.vehicle.mass_properties.takeoff  # weight buildups below may overwrite it with full tanks
+        # Read before the weight buildups, which may overwrite it with full tanks
+        prescribed_takeoff = analyses.vehicle.mass_properties.takeoff
         if i == 0 and analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
             print('Warning: Prescribed payload weight is greater than maximum payload weight')
         if weights_analysis.settings.iterate_mtow:
