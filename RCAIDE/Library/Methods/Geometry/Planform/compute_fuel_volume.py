@@ -76,7 +76,8 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = F
          fuel_tanks_in_network = [source for source in network.sources
                                    if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
          for fuel_tank in tanks_in_pack_order(fuel_tanks_in_network):
-                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
+                if not fuel_tank.fuel.tag.startswith(fuel_tank.tag + '_'):
+                    fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
                 if compute_fuel_volume:
                     fuel_tank.compute_volume(wings, fuselages,  network.sources)
                 total_fuel_volume += fuel_tank.volume_properties.net_volume
