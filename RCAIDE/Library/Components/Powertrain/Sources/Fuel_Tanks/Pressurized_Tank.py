@@ -92,7 +92,7 @@ class Pressurized_Tank(Non_Integral_Tank):
             else:
                 compute_rounded_end_cylindrical_tank_volume(self)
             if hasattr(fuel_tanks, self.tag):
-                compute_pressurized_cylindrical_tank_volume(self, fuel_tanks)
+                compute_pressurized_cylindrical_tank_volume(self)
         elif self.geometry_type == 'prismatic':
             compute_prismatic_tank_volume(self)
         else:

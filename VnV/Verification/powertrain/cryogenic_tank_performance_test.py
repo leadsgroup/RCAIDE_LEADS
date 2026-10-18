@@ -42,7 +42,7 @@ def build_tank(fuel, design_inlet_temperature, diameter, length):
     tank.power_split_ratio          = 1.0
 
     compute_rounded_end_cylindrical_tank_volume(tank)
-    compute_cryogenic_cylindrical_tank_volume(tank, Data(cryo_tank=tank))
+    compute_cryogenic_cylindrical_tank_volume(tank)
     tank.fuel.mass_properties.mass = tank.volume_properties.net_volume * tank.fuel.density
 
     return tank
