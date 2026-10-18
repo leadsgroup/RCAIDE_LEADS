@@ -6,6 +6,7 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_tank_capacity  import compute_fuel_tank_capacity
 from RCAIDE.Framework.Core.Physical_Constants import UNIVERSAL_GAS_CONSTANT
 from RCAIDE.Framework.Core import Units
 import numpy as np
@@ -34,12 +35,7 @@ def append_cryogenic_tank_conditions(tank, segment):
     T_g_0 = tank.design_inlet_temperature
 
     rho_l_0         = tank.fuel.cryogen_properties(T_l_0, "Density (kg/m3)", phase='liquid')
-    max_liquid_mass = tank.volume_properties.net_volume * rho_l_0
-
-    # Fixed design-basis full-tank mass (at design_inlet_temperature), independent of
-    # whatever temperature the tank is actually at later -- e.g. Ground.Refuel targets
-    # a fraction of this, not a fraction recomputed from a drifted current temperature.
-    tank.design_full_liquid_mass = max_liquid_mass
+    max_liquid_mass = tank.design_full_liquid_mass
 
     # Only the first segment can honor a partial-fill request -- later segments get
     # overwritten by append_cryogenic_tank_segment_conditions's continuity shift anyway.

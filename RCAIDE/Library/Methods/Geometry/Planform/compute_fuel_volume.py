@@ -95,7 +95,7 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = F
 
     if update_max_fuel:
         total_fuel_mass = sum(
-            source.volume_properties.net_volume * source.fuel.density
+            RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_tank_capacity(source)
             for network in vehicle.networks
             for source in network.sources
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)

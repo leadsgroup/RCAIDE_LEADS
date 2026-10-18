@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from .distribute_fuel_across_tanks import distribute_fuel_across_tanks
+from .compute_fuel_tank_capacity   import compute_fuel_tank_capacity
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
@@ -30,7 +31,7 @@ def set_vehicle_fuel_mass(vehicle, fuel_mass):
     """
     tanks = [source for network in vehicle.networks for source in network.sources
              if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)
-             and source.volume_properties.net_volume * source.fuel.density > 0]
+             and compute_fuel_tank_capacity(source) > 0]
     if len(tanks) > 0:
         distribute_fuel_across_tanks(tanks, fuel_mass)
     vehicle.mass_properties.fuel = fuel_mass

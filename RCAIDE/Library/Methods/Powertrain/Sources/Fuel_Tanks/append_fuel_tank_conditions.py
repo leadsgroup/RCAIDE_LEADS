@@ -9,6 +9,7 @@
 # RCAIDE imports
 import  RCAIDE
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from .compute_fuel_tank_capacity         import compute_fuel_tank_capacity
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ def append_fuel_tank_conditions(tank, segment):
     """ 
     ones_row    = segment.state.ones_row
 
-    tank.design_full_liquid_mass = tank.volume_properties.net_volume * tank.fuel.density
+    tank.design_full_liquid_mass = compute_fuel_tank_capacity(tank)
 
     segment.state.conditions.energy.sources[tank.tag]                            = Conditions()
     segment.state.conditions.energy.sources[tank.tag].fuel_mass                  = tank.fuel.mass_properties.mass * ones_row(1)

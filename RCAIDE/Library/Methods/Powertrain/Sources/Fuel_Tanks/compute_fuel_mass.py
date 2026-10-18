@@ -5,6 +5,7 @@
 
 import RCAIDE
 from .set_vehicle_fuel_mass import set_vehicle_fuel_mass
+from .compute_fuel_tank_capacity import compute_fuel_tank_capacity
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_mass
@@ -69,7 +70,7 @@ def compute_fuel_mass(vehicle, update_fuel_mass = True, update_max_fuel_mass=Tru
     
     tanks = [source for network in vehicle.networks for source in network.sources
              if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
-    max_fuel_tank_mass = sum(tank.volume_properties.net_volume * tank.fuel.density for tank in tanks)
+    max_fuel_tank_mass = sum(compute_fuel_tank_capacity(tank) for tank in tanks)
 
     # Fuel load precedence: tank masses set by the user, then a vehicle-level fuel mass set by the user, then full tanks
     tanks_empty = all(tank.fuel.mass_properties.mass == 0 for tank in tanks)
@@ -81,7 +82,7 @@ def compute_fuel_mass(vehicle, update_fuel_mass = True, update_max_fuel_mass=Tru
         # Skip if already explicitly set (partial load) -- same "!= 0" convention as
         # append_cryogenic_tank_conditions.py.
         if update_fuel_mass and tank.fuel.mass_properties.mass == 0:
-            tank.fuel.mass_properties.mass = tank.volume_properties.net_volume * tank.fuel.density
+            tank.fuel.mass_properties.mass = compute_fuel_tank_capacity(tank)
         fuel_mass += tank.fuel.mass_properties.mass
                 
     # Assign Total Fuel Volume and to Vehicle 
