@@ -13,6 +13,7 @@ from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_ve
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_mass import compute_fuel_mass
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.set_vehicle_fuel_mass import set_vehicle_fuel_mass
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_tank_capacity import compute_fuel_tank_capacity
 from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_correction_factors   import apply_correction_factors, apply_component_weights
 from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_report import print_mass_report, write_mass_report   
 from scipy.optimize import brentq
@@ -323,6 +324,13 @@ def limit_fuel_to_max_takeoff(vehicle, i = 0, prescribed_takeoff = None):
             mp.fuel = prescribed_takeoff - mp.operating_empty - mp.payload
             if mp.fuel < 0:
                 raise ValueError(f"OEW ({mp.operating_empty:.1f} kg) + payload ({mp.payload:.1f} kg) exceeds prescribed takeoff mass ({prescribed_takeoff:.1f} kg)")
+            capacity = sum(compute_fuel_tank_capacity(tank) for tank in tanks)
+            if mp.fuel > capacity:
+                if i == 0:
+                    print(f'Warning: Prescribed takeoff mass needs {mp.fuel:.1f} kg of fuel, above tank capacity; takeoff reduced to {mp.operating_empty + mp.payload + capacity:.1f} kg')
+                mp.fuel             = capacity
+                mp.takeoff          = mp.operating_empty + mp.payload + capacity
+                mp.computed_takeoff = mp.takeoff
     if mp.fuel is None:
         return
     fuel       = mp.fuel
