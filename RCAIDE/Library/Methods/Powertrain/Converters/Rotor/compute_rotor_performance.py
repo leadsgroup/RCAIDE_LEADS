@@ -8,6 +8,7 @@
  # RCAIDE imports
 import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance as Actuator_Disk_performance
 import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance as BEMT_Helmholtz_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.lifting_line_performance import lifting_line_performance
  
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
@@ -21,7 +22,8 @@ def compute_rotor_performance(rotor, conditions, wing_on_rotor_coupling=False):
     rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
         Rotor component with the following attributes:
             - fidelity : str
-                Analysis fidelity level ('Actuator_Disk_Theory' or 'Blade_Element_Momentum_Theory_Helmholtz_Wake')
+                Analysis fidelity level ('Actuator_Disk_Theory', 'Blade_Element_Momentum_Theory_Helmholtz_Wake',
+                or 'Lifting_Line_Theory')
             - tag : str
                 Identifier for the rotor
             - number_of_blades : int
@@ -75,12 +77,15 @@ def compute_rotor_performance(rotor, conditions, wing_on_rotor_coupling=False):
     Notes
     -----
     This function serves as a dispatcher that calls the appropriate rotor analysis method
-    based on the specified fidelity level. It supports two fidelity levels:
+    based on the specified fidelity level. It supports three fidelity levels:
         1. Actuator_Disk_Theory: A simplified model that treats the rotor as an actuator
            disk, suitable for preliminary design and analysis.
         2. Blade_Element_Momentum_Theory_Helmholtz_Wake: A higher-fidelity model that
            combines blade element theory with a Helmholtz wake model, providing more
            accurate predictions of rotor performance.
+        3. Lifting_Line_Theory: A higher-fidelity model resolving the blade as bound
+           vortex segments with Biot-Savart induction and an optional free-wake
+           relaxation, for inter-blade/wake induction effects BEMT does not capture.
     
     The function simply checks the fidelity level and calls the corresponding analysis
     function, passing the rotor and conditions as arguments.
@@ -99,14 +104,21 @@ def compute_rotor_performance(rotor, conditions, wing_on_rotor_coupling=False):
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.lifting_line_performance
     """
     
     if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
 
         BEMT_Helmholtz_performance(rotor,conditions,wing_on_rotor_coupling)
                       
-    elif rotor.fidelity == 'Actuator_Disk_Theory': 
+    elif rotor.fidelity == 'Actuator_Disk_Theory':
 
         Actuator_Disk_performance(rotor,conditions)
-     
+
+    elif rotor.fidelity == 'Lifting_Line_Theory':
+
+        # lifting_line_performance doesn't yet accept wing_on_rotor_coupling -- ported
+        # verbatim from feature-lifting_line, which predates that parameter.
+        lifting_line_performance(rotor,conditions)
+
     return
