@@ -94,9 +94,13 @@ def compute_neutral_point(stability, vehicle):
     neutral_point     = x_1 - slope_1 * (x_2 - x_1) / (slope_2 - slope_1)
 
     # fuselage destabilizing moments [1], unless the fuselage panels are kept in the VLM
-    main_wing   = vehicle.wings.main_wing
-    x_wing_c4   = main_wing.origin[0][0] + 0.25 * main_wing.chords.root
-    for fuselage in (vehicle.fuselages if settings.fuselage_correction else []):
+    fuselages = vehicle.fuselages if settings.fuselage_correction else []
+    if len(fuselages) > 0:
+        # main wing: the largest Main_Wing, else the largest wing
+        main_wings = [wing for wing in vehicle.wings if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing)]
+        main_wing  = max(main_wings if len(main_wings) > 0 else list(vehicle.wings), key=lambda wing: wing.areas.reference)
+        x_wing_c4  = main_wing.origin[0][0] + 0.25 * main_wing.chords.root
+    for fuselage in fuselages:
         L_f      = fuselage.lengths.total
         w_f      = fuselage.width
         position = 100. * (x_wing_c4 - fuselage.origin[0][0]) / L_f
