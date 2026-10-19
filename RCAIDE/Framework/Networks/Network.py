@@ -253,7 +253,10 @@ class Network(Component):
         # ----------------------------------------------------------                
         stored_results_flag   = False
         stored_converter_tag  = None
-        for converter in converters:
+        # heaters last, so their tank solve sees the fuel drawn by every other converter
+        is_heater = [isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) for converter in converters]
+        ordered   = [c for c, h in zip(converters, is_heater) if not h] + [c for c, h in zip(converters, is_heater) if h]
+        for converter in ordered:
             if converter.active:
                 same_group = (stored_results_flag == True and
                               converter.assigned_distributors == converters[stored_converter_tag].assigned_distributors)
