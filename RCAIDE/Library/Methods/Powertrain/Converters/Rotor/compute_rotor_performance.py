@@ -107,7 +107,13 @@ def compute_rotor_performance(rotor, conditions, wing_on_rotor_coupling=False):
     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.lifting_line_performance
     """
     
-    if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
+    # Already solved by a prior compute_rotor_to_rotor_interaction() call this same evaluate()
+    # pass (Network.evaluate()'s rotor_on_rotor_coupling branch runs that before the main
+    # per-propulsor loop reaches this rotor again) -- skip to avoid solving it twice.
+    if conditions.energy.converters[rotor.tag].get('rotor_interaction_solved', False):
+        return
+
+    if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
 
         BEMT_Helmholtz_performance(rotor,conditions,wing_on_rotor_coupling)
                       
