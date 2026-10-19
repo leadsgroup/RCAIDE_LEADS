@@ -80,6 +80,8 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = F
                     fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
                 if compute_fuel_volume:
                     fuel_tank.compute_volume(wings, fuselages,  network.sources)
+                if not hasattr(network.sources, fuel_tank.tag):
+                    continue  # removed during sizing: it does not fit
                 total_fuel_volume += fuel_tank.volume_properties.net_volume
                 if fuel_tank.assigned_distributors:
                     distributor_tag = fuel_tank.assigned_distributors[0][0]

@@ -11,7 +11,7 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root impor
 # ----------------------------------------------------------------------------------------------------------------------
 #  Pressurized Cylindrical Tank Volume
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_pressurized_cylindrical_tank_volume(fuel_tank):
+def compute_pressurized_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     """
     Sizes a pressurized rounded-end cylindrical tank (cylinder + hemispherical caps).
 
@@ -30,11 +30,9 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank):
     fuel_tank : Pressurized_Tank
         Tank object.  ``diameters.external`` and ``lengths.external`` must
         already be set by the upstream geometry function.
-
-    Raises
-    ------
-    ValueError
-        If the tank is shorter than its diameter or its walls leave no cylindrical section.
+    fuel_tanks : Container, optional
+        Parent container. The tank is removed from it, with a warning, if it is shorter than its diameter or
+        its walls leave no cylindrical section.
 
     Updates (in-place)
     ------------------
@@ -59,8 +57,11 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank):
     sigma_allow    = fuel_tank.inner_structure.material.yield_tensile_strength / safety_factor
     ullage_frac    = fuel_tank.ullage_volume_fraction
     if fuel_tank.lengths.external < fuel_tank.diameters.external:
-        raise ValueError(f"Tank '{fuel_tank.tag}' is {fuel_tank.lengths.external:.2f} m long, shorter than its "
-                         f"{fuel_tank.diameters.external:.2f} m diameter; a rounded-end cylindrical tank needs length >= diameter.")
+        print(f"[WARNING] Tank '{fuel_tank.tag}' is {fuel_tank.lengths.external:.2f} m long, shorter than its "
+              f"{fuel_tank.diameters.external:.2f} m diameter. Removing from list.")
+        if fuel_tanks is not None:
+            fuel_tanks.pop(fuel_tank.tag)
+        return
 
     R_o   = fuel_tank.diameters.external / 2
     L_o   = fuel_tank.lengths.external
@@ -82,8 +83,10 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank):
     L_cyl_i = L_cyl - 2 * t_wall  # inner cylindrical section length
 
     if L_cyl_i < 0:
-        raise ValueError(f"Tank '{fuel_tank.tag}': the {t_wall:.3f} m walls leave no cylindrical section "
-                         f"({fuel_tank.lengths.external:.2f} m long, {fuel_tank.diameters.external:.2f} m diameter).")
+        print(f"[WARNING] Tank '{fuel_tank.tag}': wall thickness exceeds cylinder half-length. Removing from list.")
+        if fuel_tanks is not None:
+            fuel_tanks.pop(fuel_tank.tag)
+        return
 
     # ------------------------------------------------------------------
     #  Volumes

@@ -17,7 +17,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Cylindrical Tank Volume
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_cryogenic_cylindrical_tank_volume(fuel_tank):
+def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     """
     Sizes a cryogenic rounded-end cylindrical tank (cylinder + hemispherical caps)
     to fit within the outer mold line set by the upstream non-integral tank function.
@@ -45,11 +45,9 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank):
     fuel_tank : Fuel_Tank
         Fuel tank object. Must have external dimensions already set by the upstream
         non-integral tank function.
-
-    Raises
-    ------
-    ValueError
-        If the tank is shorter than its diameter or the insulation cannot be sized.
+    fuel_tanks : Container, optional
+        Parent container. The tank is removed from it, with a warning, if it is shorter than its diameter or
+        the insulation cannot be sized.
 
     Updates (in-place)
     ------------------
@@ -63,8 +61,11 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank):
     """
     fuel_tank.wall_thickness = None
     if fuel_tank.lengths.external < fuel_tank.diameters.external:
-        raise ValueError(f"Tank '{fuel_tank.tag}' is {fuel_tank.lengths.external:.2f} m long, shorter than its "
-                         f"{fuel_tank.diameters.external:.2f} m diameter; a rounded-end cylindrical tank needs length >= diameter.")
+        print(f"[WARNING] Tank '{fuel_tank.tag}' is {fuel_tank.lengths.external:.2f} m long, shorter than its "
+              f"{fuel_tank.diameters.external:.2f} m diameter. Removing from list.")
+        if fuel_tanks is not None:
+            fuel_tanks.pop(fuel_tank.tag)
+        return
 
     # ------------------------------------------------------------------
     #  Unpack constants that do not change during iteration
@@ -196,7 +197,10 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank):
         mass_ins   *= 2
 
     if np.isnan(mass_ins):
-        raise ValueError(f"Tank '{fuel_tank.tag}': insulation sizing failed (insulation mass is NaN).")
+        print(f"[WARNING] Tank '{fuel_tank.tag}' is too small for its insulation. Removing from list.")
+        if fuel_tanks is not None:
+            fuel_tanks.pop(fuel_tank.tag)
+        return
 
     fuel_tank.insulation.mass_properties.mass = mass_ins
     fuel_tank.inner_structure.mass_properties.mass = V_material * fuel_tank.inner_structure.material.density
