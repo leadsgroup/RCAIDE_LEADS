@@ -66,6 +66,12 @@ class Turbofan(Propulsor):
         
     length : float
         Length of the engine [m]. Default is 0.0.
+
+    core_diameter_ratio : float
+        Core inlet diameter divided by fan diameter, used only for plotting geometry. Default is 0.5.
+
+    fan_casing_length_ratio : float
+        Length of the full-diameter fan casing divided by engine length, used only for plotting geometry. Default is 0.348.
         
     height : float
         Engine centerline height above the ground plane [m]. Default is 0.5.
@@ -220,6 +226,8 @@ class Turbofan(Propulsor):
         self.integrated_drive_generator                 = None 
         self.integrated_drive_motor                     = None 
         self.plug_diameter                              = 0.1     # diameter of the engine plug
+        self.core_diameter_ratio                        = 0.5     # plotting geometry only
+        self.fan_casing_length_ratio                    = 0.35    # plotting geometry only
         self.geometry_xe                                = 1.      # Geometry information for the installation effects function
         self.geometry_ye                                = 1.      # Geometry information for the installation effects function
         self.geometry_Ce                                = 2.      # Geometry information for the installation effects function
