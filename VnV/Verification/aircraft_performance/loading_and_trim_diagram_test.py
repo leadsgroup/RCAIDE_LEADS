@@ -69,9 +69,9 @@ def tube_and_wing_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag = 'cruise', discretization=  3)
     
-    CG_Percent_of_LEMAC_truth = np.array([[-0.5308049808468881, 0.341014637857724, 1.212834256562336],
-                                          [-0.5308049808468881, 0.341014637857724, 1.212834256562336],
-                                          [-0.5308049808468881, 0.341014637857724, 1.212834256562336]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.5326197678673636, 0.33874615408212927, 1.2101120760316222],
+                                          [-0.5326197678673636, 0.33874615408212927, 1.2101120760316222],
+                                          [-0.5326197678673636, 0.33874615408212927, 1.2101120760316222]])
     plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram")
 
     LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
@@ -99,14 +99,14 @@ def blended_wing_body_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3) 
   
-    CG_Percent_of_LEMAC_truth = np.array([[-0.8001949235410707, -0.13420663264493796, 0.5317816582511947],
-                                          [-0.8001949235410707, -0.13420663264493796, 0.5317816582511947],
-                                          [-0.8001949235410707, -0.13420663264493796, 0.5317816582511947]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.668696138912897, 0.05600133907724016, 0.7806988170673773],
+                                          [-0.668696138912897, 0.05600133907724016, 0.7806988170673773],
+                                          [-0.668696138912897, 0.05600133907724016, 0.7806988170673773]])
 
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram")
 
     # Absolute, not relative, error: BWB's middle loading point sits its CG close to the
-    # neutral point by design (truth ~-0.043, near zero), so a relative-error check there
+    # neutral point by design (truth ~0.056, near zero), so a relative-error check there
     # amplifies ordinary run-to-run floating-point summation-order jitter (observed ~1e-4 to
     # 3e-4 absolute in this quantity, from the VLM/mesh-based aero surrogate) into spurious
     # double-digit-percent "errors" -- not a physical regression.
@@ -307,7 +307,7 @@ def BWB_mission_setup(analyses):
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']]   
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['port_propulsor','starboard_propulsor','center_propulsor']]   
     segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment) 

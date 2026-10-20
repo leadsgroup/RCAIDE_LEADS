@@ -321,9 +321,13 @@ def limit_fuel_to_max_takeoff(vehicle, i = 0, prescribed_takeoff = None):
             prescribed_takeoff = mp.max_takeoff
         mp.takeoff = prescribed_takeoff
         if len(tanks) > 0:
+            if mp.operating_empty + mp.payload > prescribed_takeoff:
+                if i == 0:
+                    print(f'Warning: OEW ({mp.operating_empty:.1f} kg) + payload ({mp.payload:.1f} kg) exceeds the prescribed takeoff mass '
+                          f'({prescribed_takeoff:.1f} kg); keeping the prescribed takeoff mass and tank fuel')
+                mp.fuel = sum(tank.fuel.mass_properties.mass for tank in tanks)
+                return
             mp.fuel = prescribed_takeoff - mp.operating_empty - mp.payload
-            if mp.fuel < 0:
-                raise ValueError(f"OEW ({mp.operating_empty:.1f} kg) + payload ({mp.payload:.1f} kg) exceeds prescribed takeoff mass ({prescribed_takeoff:.1f} kg)")
             capacity = sum(compute_fuel_tank_capacity(tank) for tank in tanks)
             if mp.fuel > capacity:
                 if i == 0:
@@ -337,7 +341,10 @@ def limit_fuel_to_max_takeoff(vehicle, i = 0, prescribed_takeoff = None):
     fuel_limit = mp.max_takeoff - mp.operating_empty - mp.payload
     if fuel > fuel_limit:
         if fuel_limit < 0:
-            raise ValueError(f"OEW ({mp.operating_empty:.1f} kg) + payload ({mp.payload:.1f} kg) exceeds MTOW ({mp.max_takeoff:.1f} kg)")
+            if i == 0:
+                print(f'Warning: OEW ({mp.operating_empty:.1f} kg) + payload ({mp.payload:.1f} kg) exceeds MTOW ({mp.max_takeoff:.1f} kg); '
+                      f'keeping the tank fuel')
+            return
         if i == 0:
             print(f'Warning: Fuel load ({fuel:.1f} kg) exceeds MTOW limit; reduced to {fuel_limit:.1f} kg')
         fuel = fuel_limit

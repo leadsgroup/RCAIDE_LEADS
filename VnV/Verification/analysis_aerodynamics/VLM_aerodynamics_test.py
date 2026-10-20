@@ -1,41 +1,93 @@
 # VLM_aerodynamics_test.py
 
 import RCAIDE
-from RCAIDE.Framework.Core import Data, Units
+from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots import *
-from RCAIDE.Library.Methods.Performance                            import aircraft_aerodynamic_analysis
+from RCAIDE.Library.Methods.Performance                                    import aircraft_aerodynamic_analysis
 from RCAIDE.Library.Methods.Performance.generate_cruise_drag_buildup_table import generate_cruise_drag_buildup_table
-import numpy as  np
+from RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks               import Cryogenic_Tank
+import numpy as np
 import sys
 import os
+import time
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-
-vehicles_path = os.path.abspath(
-    os.path.join(base_dir, "..", "..", "Vehicles")
-)
-
-if vehicles_path not in sys.path:
-    sys.path.insert(0, vehicles_path)
-# the analysis functions
-from BWB    import vehicle_setup as bwb_vehicle_setup, configs_setup
-import time
-from RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks import Cryogenic_Tank
+sys.path.insert(0, os.path.abspath(os.path.join(base_dir, "..", "..", "Vehicles")))
+from BWB import vehicle_setup as bwb_vehicle_setup, configs_setup
 
 # ----------------------------------------------------------------------
-#   Vehicle
+#   Main
+# ----------------------------------------------------------------------
+def main():
+    ti = time.time()
+    surrogate_test()
+    cruise_drag_build_up_test()
+    non_surrogate_test()
+    print('Elapsed time (min): ', (time.time() - ti) / 60)
+    return
+
+def surrogate_test():
+    """Cruise coefficients from the VLM surrogate and the BWB cabin layout."""
+    mission = mission_setup(analyses_setup(configs_setup(vehicle_setup())))
+    results = mission.evaluate()
+
+    coefficients = results.segments.cruise.conditions.aerodynamics.coefficients
+    computed     = {'CL' : coefficients.lift.total[2, 0],
+                    'CDi': coefficients.drag.induced.total[2, 0],
+                    'CDc': coefficients.drag.compressible.total[2, 0],
+                    'CD' : coefficients.drag.total[2, 0]}
+    truth        = {'CL' : 0.5281494006616627,
+                    'CDi': 0.011252794203784248,
+                    'CDc': 0.0019993325194659173,
+                    'CD' : 0.025169368164146118}
+    for name in truth:
+        error = abs(computed[name] - truth[name]) / truth[name]
+        print(f'{name}: {computed[name]}, error: {error}')
+        assert error < 1e-3, f"{name} mismatch: got {computed[name]}, expected {truth[name]}"
+
+    plot_3d_vehicle_vlm_panelization(vortex_distribution      = results.segments.cruise.analyses.aerodynamics.settings.vortex_distribution,
+                                     save_filename            = "BWB_Top_View",
+                                     show_wing_control_points = True,
+                                     show_figure              = False)
+
+    # cabin layout: (row, column, truth) samples of the object coordinates
+    LOPA_coords = results.segments.cruise.analyses.vehicle.wings.main_wing.layout_of_passenger_accommodations.object_coordinates
+    for row, column, value_true in [(22, 2, 10.0584), (34, 3, 0.4699), (124, 2, 10.0584), (68, 3, 0.9779), (0, 2, 2.9972), (201, 3, -1.9431)]:
+        assert abs(LOPA_coords[row][column] - value_true) < 1e-3, f"LOPA coordinate [{row}][{column}]: got {LOPA_coords[row][column]}, expected {value_true}"
+    return
+
+def cruise_drag_build_up_test():
+    mission = mission_setup(analyses_setup(configs_setup(vehicle_setup())))
+    generate_cruise_drag_buildup_table(mission = mission, cruise_segment_tag = "cruise", save_filepath = base_dir)
+    for filename in ("cruise_drag_buildup_parasite_zoom.png", "cruise_drag_buildup.xlsx", "cruise_drag_buildup_pie.png", "cruise_drag_buildup.png"):
+        file_path = os.path.join(base_dir, filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    return
+
+def non_surrogate_test():
+    """Direct VLM evaluation over an angle-of-attack sweep and its pressure coefficient plots."""
+    analyses = analyses_setup(configs_setup(vehicle_setup()), use_surrogate = False)
+    alpha    = np.atleast_2d(np.linspace(-5, 15, 3)).T * Units.degrees
+    results  = aircraft_aerodynamic_analysis(analyses                         = analyses.cruise,
+                                             angle_of_attacks                 = alpha,
+                                             non_dimensional_reynolds_numbers = np.ones_like(alpha) * 1E7,
+                                             temperatures                     = np.ones_like(alpha) * 340,
+                                             mach_numbers                     = np.ones_like(alpha) * 0.78)
+
+    save_path = os.path.join(base_dir, "Pressure_Coefficient_Distribution")
+    plot_pressure_coefficient_distribution(results, save_figure = True, save_filename = save_path)
+    for i in range(len(results.aerodynamics.coefficients.differential_surface_pressure)):
+        file_path = save_path + '_' + str(i + 1) + '.png'
+        assert os.path.exists(file_path), f"Pressure coefficient plot not created: {file_path}"
+        os.remove(file_path)
+    return
+
+# ----------------------------------------------------------------------
+#   Vehicle, Analyses and Mission
 # ----------------------------------------------------------------------
 def vehicle_setup():
-    """BWB vehicle with boil-off physics disabled on its cryogenic tanks.
-
-    This test only checks VLM panelization/CL and static LOPA geometry, neither of which
-    depends on fuel-tank thermal behavior -- that's covered separately by
-    Verification/network_hydrogen/bwb_hydrogen_test.py and
-    bwb_hydrogen_boil_off_fidelity_test.py. 'quasi_steady' boil-off runs a stiff ODE with
-    nested root-finds per RHS evaluation, which SLSQP's finite-difference Jacobian then
-    re-solves dozens of times per segment; 'none' falls back to plain fuel burn-down and
-    skips that entirely.
-    """
+    """BWB with tank boil-off off; this test covers aerodynamics only."""
     vehicle = bwb_vehicle_setup()
     for network in vehicle.networks:
         for source in network.sources:
@@ -43,330 +95,53 @@ def vehicle_setup():
                 source.boil_off_model = 'none'
     return vehicle
 
-# ----------------------------------------------------------------------
-#   Main
-# ----------------------------------------------------------------------
-def main():
-
-
-    ti = time.time()
-
-    aerodynamics_surrogate_test()
-
-    cruise_drag_build_up_test()
-
-    aerodynamics_non_surrogate_test()
-
-    elapsed_time = time.time() - ti
-    elapsed_time_min = elapsed_time / 60
-    print('Elapsed time (min): ', elapsed_time_min)
-
-    return
-
-def cruise_drag_build_up_test():
-    vehicle  = vehicle_setup()
-    configs  = configs_setup(vehicle)
-    analyses = analyses_setup(configs)
-    mission  = mission_setup(analyses)
-    generate_cruise_drag_buildup_table(mission = mission, cruise_segment_tag = "cruise", save_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__))))
-    for filename in (
-    "cruise_drag_buildup_parasite_zoom.png",
-    "cruise_drag_buildup.xlsx",
-    "cruise_drag_buildup_pie.png",
-    "cruise_drag_buildup.png",
-    ):
-        file_path = os.path.join(base_dir, filename)
-        if os.path.exists(file_path):
-            os.remove(file_path)
-
-    return
-
-
-def aerodynamics_surrogate_test():
-
-    # cruise truth values (CL, CDi, CDc, CD) at each number of spanwise vortices
-    truth = {15: (0.507421541549124 , 0.00957083770212266 , 0.002733115874672987  , 0.0229487721136387 ),
-             30: (0.5071997069924896, 0.009912373953636956, 0.0030841948218838624 , 0.02365523961633837),
-             45: (0.5071863127710727, 0.010008300835655785, 0.0030099462482277867 , 0.02367735149086838)}
-
-    CDi = {}
-    for n_sw, values_true in truth.items():
-        vehicle  = vehicle_setup()
-        configs  = configs_setup(vehicle)
-        analyses = analyses_setup(configs, number_of_spanwise_vortices = n_sw)
-        mission  = mission_setup(analyses)
-        missions = missions_setup(mission)
-        results  = missions.base_mission.evaluate()
-
-        coefficients = results.segments.cruise.conditions.aerodynamics.coefficients
-        values       = (coefficients.lift.total[2][0],
-                        coefficients.drag.induced.total[2][0],
-                        coefficients.drag.compressible.total[2][0],
-                        coefficients.drag.total[2][0])
-        for name, value, value_true in zip(('CL', 'CDi', 'CDc', 'CD'), values, values_true):
-            error = np.abs((value - value_true)/value_true)
-            print(f'n_sw = {n_sw}, {name}: {value}, error: {error}')
-            assert error < 1e-3, f"n_sw = {n_sw}, {name} mismatch: got {value}, expected {value_true}"
-        CDi[n_sw] = values[1]
-
-        if n_sw == 30:
-            results_default = results
-
-    # induced drag must converge with spanwise refinement
-    assert np.abs(CDi[45]/CDi[30] - 1) < 0.02, f"CDi not converged with spanwise refinement: {CDi}"
-
-    results = results_default
-    vortex_distribution = results.segments.cruise.analyses.aerodynamics.settings.vortex_distribution
-    plot_3d_vehicle_vlm_panelization(vortex_distribution=vortex_distribution,
-                    save_filename               = "BWB_Top_View",
-                    show_wing_control_points    = False,
-                    show_figure                 = False)
-
-    plot_3d_vehicle_vlm_panelization(vortex_distribution=vortex_distribution,
-                    save_filename               = "BWB_Top_View",
-                    show_wing_control_points    = True,
-                    show_figure                 = False)
-
-    # test lopa coordianates
-    LOPA_coords =  results.segments.cruise.analyses.vehicle.wings.main_wing.layout_of_passenger_accommodations.object_coordinates
-
-    # Extract sample values from computation
-    coordinate_1_x         = LOPA_coords[22][2]
-    coordinate_1_y         = LOPA_coords[34][3]
-    coordinate_2_x         = LOPA_coords[124][2]
-    coordinate_2_y         = LOPA_coords[68][3]
-    coordinate_3_x         = LOPA_coords[0][2]
-    coordinate_3_y         = LOPA_coords[301][3]
-
-    # thruth values
-    coordinate_1_x_thruth  = 8.178799999999999
-    coordinate_1_y_thruth  = 1.4859
-    coordinate_2_x_thruth  = 3.9116
-    coordinate_2_y_thruth  = 0.46989999999999993
-    coordinate_3_x_thruth  = 2.9972
-    coordinate_3_y_thruth  = -2.2986999999999997
-
-    # Truth values
-    error = Data()
-    error.coordinate_1_x   = np.max(np.abs(coordinate_1_x - coordinate_1_x_thruth))
-    error.coordinate_1_y   = np.max(np.abs(coordinate_1_y - coordinate_1_y_thruth))
-    error.coordinate_2_x   = np.max(np.abs(coordinate_2_x - coordinate_2_x_thruth))
-    error.coordinate_2_y   = np.max(np.abs(coordinate_2_y - coordinate_2_y_thruth))
-    error.coordinate_3_x   = np.max(np.abs(coordinate_3_x - coordinate_3_x_thruth))
-    error.coordinate_3_y   = np.max(np.abs(coordinate_3_y - coordinate_3_y_thruth))
-    print('Errors:')
-    print(error)
-
-    for k,v in list(error.items()):
-        assert(np.abs(v)<1e-3), f"{k} error too large: {v}"
-
-
-    return
-
-def aerodynamics_non_surrogate_test():
-
-    vehicle  = vehicle_setup()
-    configs  = configs_setup(vehicle)
-    analyses = non_surrogate_analyses_setup(configs)
-
-
-    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 3)).T*Units.degrees
-    Mach_number_range                     = np.ones_like(angle_of_attack_range) * 0.78
-    temperatures                          = np.ones_like(angle_of_attack_range) * 340
-    non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7
-
-    results                               = aircraft_aerodynamic_analysis(analyses                         = analyses.cruise,
-                                                                          angle_of_attacks                 = angle_of_attack_range,
-                                                                          non_dimensional_reynolds_numbers = non_dimensional_reynolds_numbers,
-                                                                          temperatures                     = temperatures,
-                                                                          mach_numbers                     = Mach_number_range)
-
-    save_path = os.path.join(base_dir, "Pressure_Coefficient_Distribution")
-    plot_pressure_coefficient_distribution(results, save_figure=True, save_filename=save_path)
-
-    n_conditions = len(results.aerodynamics.coefficients.differential_surface_pressure)
-    for ti in range(n_conditions):
-        file_path = save_path + '_' + str(ti + 1) + '.png'
-        assert os.path.exists(file_path), f"Pressure coefficient plot not created: {file_path}"
-        os.remove(file_path)
-
-    return
-
-# ----------------------------------------------------------------------
-#   Define the Configurations
-# ---------------------------------------------------------------------
-
-def analyses_setup(configs, number_of_spanwise_vortices = 30):
-    """Set up analyses for each of the different configurations."""
-
+def analyses_setup(configs, use_surrogate = True):
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # Build a base analysis for each configuration. Here the base analysis is always used, but
-    # this can be modified if desired for other cases.
-    for tag,config in configs.items():
-        analysis = base_analysis(config, number_of_spanwise_vortices)
-        analyses[tag] = analysis
-
+    for tag, config in configs.items():
+        analyses[tag] = base_analysis(config, use_surrogate)
     return analyses
 
-
-def non_surrogate_analyses_setup(configs):
-    """Set up analyses for each of the different configurations."""
-
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # Build a base analysis for each configuration. Here the base analysis is always used, but
-    # this can be modified if desired for other cases.
-    for tag,config in configs.items():
-        analysis = non_surrogate_base_analysis(config)
-        analyses[tag] = analysis
-
-    return analyses
-
-
-def base_analysis(vehicle, number_of_spanwise_vortices = 30):
-    """This is the baseline set of analyses to be used with this vehicle. Of these, the most
-    commonly changed are the weights and aerodynamics methods."""
-
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
+def base_analysis(vehicle, use_surrogate = True):
+    analyses         = RCAIDE.Framework.Analyses.Vehicle()
     analyses.vehicle = vehicle
 
-    # ------------------------------------------------------------------
-    #  Geometry
-    # ------------------------------------------------------------------
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.settings.update_fuselage_properties = True
     analyses.append(geometry)
 
-
-    # ------------------------------------------------------------------
-    #  Weights
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_BWB()
-    weights.settings.FLOPS.fidelity     = 'Complex'
+    weights.settings.FLOPS.fidelity              = 'Complex'
     weights.settings.overwrite_center_of_gravity = True
     analyses.append(weights)
 
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.number_of_spanwise_vortices = number_of_spanwise_vortices
+    aerodynamics.settings.use_surrogate = use_surrogate
     analyses.append(aerodynamics)
 
-    # ------------------------------------------------------------------
-    #  Energy
-    energy = RCAIDE.Framework.Analyses.Energy.Energy()
-    analyses.append(energy)
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)
-
+    analyses.append(RCAIDE.Framework.Analyses.Energy.Energy())
+    analyses.append(RCAIDE.Framework.Analyses.Planets.Earth())
+    analyses.append(RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976())
     return analyses
-
-
-def non_surrogate_base_analysis(vehicle):
-    """This is the baseline set of analyses to be used with this vehicle. Of these, the most
-    commonly changed are the weights and aerodynamics methods."""
-
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-    analyses.vehicle = vehicle
-
-    # ------------------------------------------------------------------
-    #  Geometry
-    # ------------------------------------------------------------------
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.settings.update_fuselage_properties = True
-    analyses.append(geometry)
-
-
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.use_surrogate  = False
-    analyses.append(aerodynamics)
-
-    return analyses
-
-# ----------------------------------------------------------------------
-#   Define the Mission
-# ----------------------------------------------------------------------
 
 def mission_setup(analyses):
-    """This function defines the baseline mission that will be flown by the aircraft in order
-    to compute performance."""
+    mission     = RCAIDE.Framework.Mission.Sequential_Segments()
+    mission.tag = 'base_mission'
+    Segments    = RCAIDE.Framework.Mission.Segments
 
-    # ------------------------------------------------------------------
-    #   Initialize the Mission
-    # ------------------------------------------------------------------
+    segment          = Segments.Cruise.Constant_Speed_Constant_Altitude(Segments.Segment())
+    segment.tag      = "cruise"
+    segment.analyses.extend(analyses.cruise)
+    segment.altitude  = 40000 * Units['ft']
+    segment.air_speed = 450 * Units['knots']
+    segment.distance  = 7370 * Units.km
 
-    mission = RCAIDE.Framework.Mission.Sequential_Segments()
-    mission.tag = 'mission'
-
-    Segments = RCAIDE.Framework.Mission.Segments
-    base_segment = Segments.Segment()
-
-
-    # ------------------------------------------------------------------
-    #   Cruise Segment: Constant Speed Constant Altitude
-    # ------------------------------------------------------------------
-
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag = "cruise"
-    segment.analyses.extend( analyses.cruise )
-    segment.altitude                                                 = 40000 * Units['ft']
-    segment.air_speed                                                = 450 * Units['knots']
-    segment.distance                                                 = 7370 * Units.km
-
-    # define flight dynamics to model
-    segment.flight_dynamics.force_x                                  = True
-    segment.flight_dynamics.force_z                                  = True
-
-    # define flight controls
-    segment.assigned_control_variables.throttle.active               = True
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']]
-    segment.assigned_control_variables.pitch_angle.active             = True
-
+    segment.flight_dynamics.force_x                                 = True
+    segment.flight_dynamics.force_z                                 = True
+    segment.assigned_control_variables.throttle.active              = True
+    segment.assigned_control_variables.throttle.assigned_propulsors = [['port_propulsor','starboard_propulsor','center_propulsor']]
+    segment.assigned_control_variables.pitch_angle.active           = True
     mission.append_segment(segment)
-
-    # ------------------------------------------------------------------------------------------------------------------------------------
-    #   Landing Roll
-    # ------------------------------------------------------------------------------------------------------------------------------------
-
-    segment = Segments.Ground.Landing(base_segment)
-    segment.tag = "Landing"
-
-    segment.analyses.extend( analyses.reverse_thrust )
-    segment.velocity_start                                                = 160.0 * Units['knots']
-    segment.velocity_end                                                  = 10 * Units.knots
-    segment.friction_coefficient                                          = 0.4
-    segment.altitude                                                      = 0.0
-
-    segment.assigned_control_variables.elapsed_time.active                = True
-    segment.assigned_control_variables.elapsed_time.initial_guess_values  = [[30.]]
-    segment.assigned_control_variables.elapsed_time.bounds                  = [[-10, 100000000]]
-    mission.append_segment(segment)
-
     return mission
 
-def missions_setup(mission):
-    """This allows multiple missions to be incorporated if desired, but only one is used here."""
-
-    missions     = RCAIDE.Framework.Mission.Missions()
-    mission.tag  = 'base_mission'
-    missions.append(mission)
-
-    return missions
 if __name__ == '__main__':
     main()

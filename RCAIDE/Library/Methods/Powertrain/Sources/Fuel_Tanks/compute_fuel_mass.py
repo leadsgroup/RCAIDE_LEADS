@@ -75,7 +75,11 @@ def compute_fuel_mass(vehicle, update_fuel_mass = True, update_max_fuel_mass=Tru
     # Fuel load precedence: tank masses set by the user, then a vehicle-level fuel mass set by the user, then full tanks
     tanks_empty = all(tank.fuel.mass_properties.mass == 0 for tank in tanks)
     if update_fuel_mass and tanks_empty and vehicle.mass_properties.fuel:
-        set_vehicle_fuel_mass(vehicle, vehicle.mass_properties.fuel)
+        fuel = vehicle.mass_properties.fuel
+        if fuel > max_fuel_tank_mass:
+            print(f'Warning: Fuel mass ({fuel:.1f} kg) exceeds the tank capacity ({max_fuel_tank_mass:.1f} kg); filling the tanks')
+            fuel = max_fuel_tank_mass
+        set_vehicle_fuel_mass(vehicle, fuel)
 
     fuel_mass = 0
     for tank in tanks:
