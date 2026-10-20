@@ -21,10 +21,14 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.evaluate_bound_vortex_circulation import evaluate_bound_vortex_circulation
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.compute_lifting_line_loads        import compute_lifting_line_loads
 
-def lifting_line_performance(rotor, conditions):
-    """
-    Computes rotor performance using the lifting-line method with prescribed tip vortex wake.
-    Drop-in replacement for BEMT_Helmholtz_performance with higher-fidelity inter-blade induction.
+def prepare_wake_inputs(rotor, conditions):
+    """Everything lifting_line_performance() used to do before calling
+    evaluate_bound_vortex_circulation(): builds the full wake_inputs Data object (defaults,
+    velocity/geometry arrays, mu-based iteration scaling, warm-start) and initializes this
+    rotor's blade + wake geometry. Factored out of lifting_line_performance() (pure code
+    motion, no logic change) so compute_rotor_to_rotor_interaction's coupled multi-rotor path
+    can call prepare_wake_inputs() for this exact same per-rotor setup before the joint
+    Gamma_b solve, instead of duplicating it and risking the two paths silently drifting apart.
 
     Parameters
     ----------
@@ -37,17 +41,11 @@ def lifting_line_performance(rotor, conditions):
         Must have: freestream (density, dynamic_viscosity, speed_of_sound, temperature),
                    frames (body, inertial), energy.converters[rotor.tag]
                    (omega, blade_pitch_command, commanded_thrust_vector_angle, throttle, design_flag)
-    wake_inputs : Data, optional
-        If None, default validated hover parameters are used (Combination #22).
-        Fields: wake_model, vc_correction, dpsi, n_turns, CT, lamb_oseen_rc_0,
-                lamb_oseen_alpha, lamb_oseen_delta, lamb_oseen_sigma,
-                lamb_oseen_core_growth_delay, r_R_shed
 
     Returns
     -------
-    None
-        Populates conditions.energy.converters[rotor.tag] with all standard RCAIDE
-        rotor performance outputs (same interface as BEMT_Helmholtz_performance).
+    wake_inputs : Data
+        Fully populated, ready for evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions).
     """
     # ------------------------------------------------------------------------------------------------------------------
     #  Unpack rotor and conditions
@@ -216,6 +214,34 @@ def lifting_line_performance(rotor, conditions):
         hub_origin    = np.array(rotor.origin[0]).reshape(1, 1, 1, 3)
         rotor.blades.wake.nodes_body = np.einsum('cij,cwbj->cwbi', T_thrust2body, wake_nodes_hub_relaxed) + hub_origin
 
+    return wake_inputs
+
+
+def lifting_line_performance(rotor, conditions):
+    """
+    Computes rotor performance using the lifting-line method with prescribed tip vortex wake.
+    Drop-in replacement for BEMT_Helmholtz_performance with higher-fidelity inter-blade induction.
+
+    Parameters
+    ----------
+    rotor : RCAIDE Rotor object
+        Must have: number_of_blades, tip_radius, hub_radius, radius_distribution,
+                   chord_distribution, twist_distribution, sweep_distribution,
+                   thickness_to_chord, airfoil_polar_stations, airfoils, origin,
+                   body_to_prop_vel, rc
+    conditions : RCAIDE Conditions object
+        Must have: freestream (density, dynamic_viscosity, speed_of_sound, temperature),
+                   frames (body, inertial), energy.converters[rotor.tag]
+                   (omega, blade_pitch_command, commanded_thrust_vector_angle, throttle, design_flag)
+
+    Returns
+    -------
+    None
+        Populates conditions.energy.converters[rotor.tag] with all standard RCAIDE
+        rotor performance outputs (same interface as BEMT_Helmholtz_performance).
+    """
+    wake_inputs = prepare_wake_inputs(rotor, conditions)
+
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 3: Bound vortex circulation iteration
     # ------------------------------------------------------------------------------------------------------------------
@@ -231,7 +257,9 @@ def lifting_line_performance(rotor, conditions):
         # Importing plotting libs
         import matplotlib.pyplot as plt
         from mpl_toolkits.mplot3d import Axes3D
-        
+
+        B = rotor.number_of_blades
+
         # ----------------------------------------------------------------------------------------------------------------------
         #  Plot 1: Blade and wake geometry -- 3D, rotor plane, side view
         # ----------------------------------------------------------------------------------------------------------------------
