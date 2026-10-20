@@ -19,7 +19,6 @@ from .initialize_lifting_line             import initialize_lifting_line
 from .initialize_wake_geometry            import initialize_wake_geometry
 from .biot_savart_velocity_induction      import biot_savart_velocity_induction, biot_savart_induced_velocity, biot_savart_induced_velocity_soa
 from .free_wake                           import free_wake
-from .lifting_line_performance            import lifting_line_performance, prepare_wake_inputs
+from .lifting_line_performance            import lifting_line_performance
 from .evaluate_bound_vortex_circulation   import evaluate_bound_vortex_circulation
 from .compute_lifting_line_loads          import compute_lifting_line_loads
-from .evaluate_coupled_bound_vortex_circulation import evaluate_coupled_bound_vortex_circulation
