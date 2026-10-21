@@ -292,6 +292,25 @@ def near_empty_dormancy_test():
     return
 
 
+def test_unmet_demand_keeps_physical_mass_bounded_and_reports_deficit():
+    lh2 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    tank, state = build_case(
+        lh2,
+        design_inlet_temperature=20.0,
+        chemical_power_demand=1.0e8,
+        n_nodes=8,
+        diameter=2.0,
+        length=6.0,
+        duration_hr=2.0,
+    )
+
+    compute_cryogenic_tank_performance(tank, state, network=None)
+
+    tank_conditions = state.conditions.energy.sources[tank.tag]
+    assert np.min(tank_conditions.fuel_mass[:, 0]) >= 0.0
+    assert np.max(tank_conditions.fuel_deficit_rate[:, 0]) > 0.0
+
+
 def main():
     lh2 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     run_case(lh2, design_inlet_temperature=20.0, chemical_power_demand=2.0e5, label="LH2 cryogenic tank")

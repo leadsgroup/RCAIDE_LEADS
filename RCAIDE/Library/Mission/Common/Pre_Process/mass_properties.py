@@ -123,7 +123,7 @@ def mass_properties(mission):
                 weights_analysis.settings.iterate_mtow = False
                 mass_properties_preprocess_routine(segment, i) 
                 
-    return 
+    return
 
 def mass_properties_preprocess_routine(segment, i = 0):
     analyses         = segment.analyses
@@ -288,7 +288,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
             for j_axis, axis_j in enumerate('xyz'):
                 vehicle_MOI['moments_of_inertia_I' + axis_i + axis_j] = tensor[i_axis, j_axis] * ones_row(1)
 
-    return 
+    return
 
 
 def clear_computed_fuel_and_takeoff(vehicle):
@@ -319,14 +319,14 @@ def limit_fuel_to_max_takeoff(vehicle, i = 0, prescribed_takeoff = None):
             if i == 0:
                 print(f'Warning: Prescribed takeoff mass ({prescribed_takeoff:.1f} kg) exceeds MTOW; reduced to {mp.max_takeoff:.1f} kg')
             prescribed_takeoff = mp.max_takeoff
+        minimum_takeoff = mp.operating_empty + mp.payload
+        if prescribed_takeoff < minimum_takeoff:
+            raise ValueError(
+                f'Prescribed takeoff mass ({prescribed_takeoff:.1f} kg) is below '
+                f'operating empty weight plus payload ({minimum_takeoff:.1f} kg).'
+            )
         mp.takeoff = prescribed_takeoff
         if len(tanks) > 0:
-            if mp.operating_empty + mp.payload > prescribed_takeoff:
-                if i == 0:
-                    print(f'Warning: OEW ({mp.operating_empty:.1f} kg) + payload ({mp.payload:.1f} kg) exceeds the prescribed takeoff mass '
-                          f'({prescribed_takeoff:.1f} kg); keeping the prescribed takeoff mass and tank fuel')
-                mp.fuel = sum(tank.fuel.mass_properties.mass for tank in tanks)
-                return
             mp.fuel = prescribed_takeoff - mp.operating_empty - mp.payload
             capacity = sum(compute_fuel_tank_capacity(tank) for tank in tanks)
             if mp.fuel > capacity:
@@ -341,10 +341,11 @@ def limit_fuel_to_max_takeoff(vehicle, i = 0, prescribed_takeoff = None):
     fuel_limit = mp.max_takeoff - mp.operating_empty - mp.payload
     if fuel > fuel_limit:
         if fuel_limit < 0:
-            if i == 0:
-                print(f'Warning: OEW ({mp.operating_empty:.1f} kg) + payload ({mp.payload:.1f} kg) exceeds MTOW ({mp.max_takeoff:.1f} kg); '
-                      f'keeping the tank fuel')
-            return
+            raise ValueError(
+                f'Operating empty weight plus payload '
+                f'({mp.operating_empty + mp.payload:.1f} kg) exceeds MTOW '
+                f'({mp.max_takeoff:.1f} kg).'
+            )
         if i == 0:
             print(f'Warning: Fuel load ({fuel:.1f} kg) exceeds MTOW limit; reduced to {fuel_limit:.1f} kg')
         fuel = fuel_limit
@@ -392,10 +393,10 @@ def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
         residual_max_fuel = 0
         if compute_max_fuel:
             new_max_fuel       = analyses.vehicle.mass_properties.max_takeoff - analyses.vehicle.mass_properties.operating_empty - analyses.vehicle.mass_properties.min_payload
-            fuel_density       = next((ft.fuel.density for network in analyses.vehicle.networks for ft in network.sources
-                                        if isinstance(ft, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)), None)
-            if fuel_density is not None:
-                max_fuel_by_volume = analyses.vehicle.volume_properties.max_fuel * fuel_density
+            fuel_tanks = [source for network in analyses.vehicle.networks for source in network.sources
+                          if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
+            if fuel_tanks:
+                max_fuel_by_volume = sum(compute_fuel_tank_capacity(tank) for tank in fuel_tanks)
                 new_max_fuel       = min(new_max_fuel, max_fuel_by_volume)
             residual_max_fuel  = abs(new_max_fuel - analyses.vehicle.mass_properties.max_fuel)
             analyses.vehicle.mass_properties.max_fuel = new_max_fuel

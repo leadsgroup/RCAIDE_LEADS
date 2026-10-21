@@ -46,8 +46,11 @@ def compute_fuel_tank_performance(tank,state,distributor):
     The fuel mass flow rate is found from the tank's assigned distributor's chemical
     power demand (already computed, since distributors run after sources in
     ``Network.evaluate()``) divided by the fuel's lower heating value, split between
-    multiple tanks on the same distributor by ``power_split_ratio``. Remaining fuel
-    mass is then integrated over the mission using ``state.numerics.time.integrate``.
+    multiple tanks on the same distributor by ``power_split_ratio``. This is a fixed
+    per-tank share for the segment: if a tank empties, its unmet demand is recorded in
+    ``fuel_deficit_rate`` and is not reassigned to other tanks on that distributor.
+    Remaining fuel mass is then integrated over the mission using
+    ``state.numerics.time.integrate``.
 
     Cryogenic_Tank overrides ``compute_performance`` entirely (see
     ``compute_cryogenic_tank_performance``) rather than going through this function,

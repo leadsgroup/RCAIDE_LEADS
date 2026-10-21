@@ -58,7 +58,7 @@ def weights(segment):
     else:
     
         # --------------------------------------------------------------------------  
-        # update fuel mass and center of gravity  
+        # update fuel mass and center of gravity
         # --------------------------------------------------------------------------  
         settings = segment.analyses.weights.settings
         if settings.run_center_of_gravity_analysis or settings.run_moments_of_inertia_analysis:

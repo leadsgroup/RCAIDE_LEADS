@@ -34,11 +34,11 @@ def main():
     return 
 
 
-def vehicle_setup(vehicle_name = 'BWB', passengers = 248) : 
+def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
 
     ospath                                = os.path.abspath(__file__)
     separator                             = os.path.sep
-    airfoil_file_path                     = os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
+    airfoil_file_path                     = os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep
    # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------      
@@ -76,7 +76,7 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     center_cargo_bay.width                       = 96   *  Units.inches
     center_cargo_bay.height                      = 45   *  Units.inches 
     vehicle.cargo_bays.append(center_cargo_bay) 
- 
+
     left_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
     left_cargo_bay.mass_properties.mass        = 0  
     left_cargo_bay.origin                      = [[10, 100   *  Units.inches, -22.5* Units.inches]] 
@@ -455,7 +455,7 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     #-------------------------------------------------------------------------------------------------------------------------
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     fuel_line.working_fluid                     = RCAIDE.Library.Attributes.Propellants.Jet_A1()
-    #------------------------------------------------------------------------------------------------------------------------------------ 
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan1                                      = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()  
@@ -613,7 +613,7 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)  
- 
+
     return vehicle
 
 if __name__ == '__main__': 

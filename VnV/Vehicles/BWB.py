@@ -21,11 +21,11 @@ import os
 # ----------------------------------------------------------------------
 
 
-def vehicle_setup(vehicle_name = 'BWB', passengers = 248) : 
+def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
 
     ospath                                = os.path.abspath(__file__)
     separator                             = os.path.sep
-    airfoil_file_path                     = os.path.dirname(ospath) + separator + 'Airfoils' + separator 
+    airfoil_file_path                     = os.path.dirname(ospath) + separator + 'Airfoils' + separator
    # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------      
@@ -34,25 +34,25 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     vehicle.mass_properties.max_takeoff               = 90535.0202
     vehicle.mass_properties.takeoff                   = 90535.0202
     vehicle.mass_properties.landing                   = 77000.0
-    vehicle.mass_properties.moments_of_inertia.tensor = np.array([[1e6, 100, 100], [100, 1e6, 100], [100, 100, 1e7]]) 
-    vehicle.mass_properties.max_payload               = 52920.  * Units.lb    
-    vehicle.mass_properties.min_payload               = 33880.  * Units.lb     
+    vehicle.mass_properties.moments_of_inertia.tensor = np.array([[1e6, 100, 100], [100, 1e6, 100], [100, 100, 1e7]])
+    vehicle.mass_properties.max_payload               = 52920.  * Units.lb
+    vehicle.mass_properties.min_payload               = 33880.  * Units.lb
     vehicle.mass_properties.center_of_gravity         = [[27.0, 0, 0]]
     vehicle.flight_envelope.ultimate_load             = 3.75 
     vehicle.flight_envelope.positive_limit_load       = 2.5  
     vehicle.flight_envelope.design_mach_number        = 0.85  
-    vehicle.flight_envelope.design_cruise_altitude    = 40000.0*Units.feet 
+    vehicle.flight_envelope.design_cruise_altitude    = 40000.0*Units.feet
     vehicle.flight_envelope.design_range              = 2500.0 * Units.nmi
     vehicle.flight_envelope.FAR_part_number           = '25'
     vehicle.flight_envelope.negative_limit_load       = -1.0
     vehicle.flight_envelope.category                  = 'transport'
     vehicle.flight_envelope.minimum_lift_coefficient  = -1.0
     vehicle.flight_envelope.maximum_lift_coefficient  = 1.5
-    vehicle.reference_area                            = 296  
-    vehicle.number_of_passengers                      = 150 
+    vehicle.reference_area                            = 296
+    vehicle.number_of_passengers                      = 150
     vehicle.systems.control                           = "fully powered" 
-    vehicle.systems.accessories                       = "long range"    
-    
+    vehicle.systems.accessories                       = "long range"
+
     # ------------------------------------------------------------------
     # Carbo Bays 
     # ------------------------------------------------------------------ 
@@ -79,25 +79,25 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     right_cargo_bay.width                       = 96   *  Units.inches
     right_cargo_bay.height                      = 45   *  Units.inches
     vehicle.cargo_bays.append(right_cargo_bay)        
-    
-    
+
+
     # ------------------------------------------------------------------
     #  Main Wing 
     # ------------------------------------------------------------------ 
-    
+
     wing = RCAIDE.Library.Components.Wings.Blended_Wing_Body()
     wing.tag = 'main_wing' 
     wing.aspect_ratio            = 5.32528141979797 
     wing.sweeps.quarter_chord    = 0.6859590736162121 
     wing.thickness_to_chord      = 0.1351757396035437 
     wing.taper                   = 0.05215045887445882  
-    wing.spans.projected         = 48.37 
+    wing.spans.projected         = 48.37
     wing.areas.reference         = 592.6575476422672 
     wing.areas.wetted            = 1282.0437685524962 
     wing.chords.mean_aerodynamic = 20.059555133618403 
     wing.chords.root             = 30
-    wing.chords.tip              = 1.8359256146144747 
-    wing.aft_center_body.length  = 9.021    
+    wing.chords.tip              = 1.8359256146144747
+    wing.aft_center_body.length  = 9.021
     wing.aft_center_body.taper   = 0.85
     wing.total_length            = 32.4
     wing.twists.outwash          = -3*Units.degrees
@@ -109,24 +109,24 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     wing.t_tail                  = False 
     wing.dynamic_pressure_ratio  = 1.0
      
-    cabin                                                  = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
-    cabin.origin                                           = [[2.54, 0, 0]] 
+    cabin                                                  = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                           = [[2.54, 0, 0]]
     cabin.segments_bounding_cabin                          = ['Fuselage_Section_1','Cabin_Wall']
-    
-    business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
+
+    business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business()
     business_class.number_of_seats_abrest                  = 2
     business_class.number_of_rows                          = 3
-    business_class.galley_lavatory_percent_x_locations     = [0] 
-    business_class.seat_arm_rest_width                     = 4 *  Units.inches 
+    business_class.galley_lavatory_percent_x_locations     = [0]
+    business_class.seat_arm_rest_width                     = 4 *  Units.inches
     business_class.seat_width                              = 25 *  Units.inches
-    business_class.aisle_width                              = 15  *  Units.inches 
+    business_class.aisle_width                              = 15  *  Units.inches
     business_class.type_A_exit_percent_x_locations         = [0,0]
     cabin.append_cabin_class(business_class)  
 
-    economy_class                                          = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class                                          = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy()
     economy_class.number_of_seats_abrest                   = 6
     economy_class.number_of_rows                           = 11
-    economy_class.galley_lavatory_percent_x_locations      = [0,1.0]       
+    economy_class.galley_lavatory_percent_x_locations      = [0,1.0]
     economy_class.type_A_exit_percent_x_locations          = [0, 1.0]
     cabin.append_cabin_class(economy_class)
     wing.append_cabin(cabin)  
@@ -134,14 +134,14 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     side_cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin()
     side_cabin.origin                                      = [[2.54, 0, 0]]
     side_cabin.nose.fineness_ratio                         = 1.75
-   
-    business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
+
+    business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business()
     business_class.number_of_seats_abrest                  = 2
     business_class.number_of_rows                          = 3
-    business_class.galley_lavatory_percent_x_locations     = [0] 
-    business_class.seat_arm_rest_width                     = 4 *  Units.inches 
+    business_class.galley_lavatory_percent_x_locations     = [0]
+    business_class.seat_arm_rest_width                     = 4 *  Units.inches
     business_class.seat_width                              = 30 *  Units.inches
-    business_class.aisle_width                              = 15  *  Units.inches  
+    business_class.aisle_width                              = 15  *  Units.inches
     business_class.type_A_exit_percent_x_locations         = [0,0]
     side_cabin.append_cabin_class(business_class)
     
@@ -152,83 +152,83 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     side_economy_class.type_A_exit_percent_x_locations     = [0, 1.0]
     side_economy_class.offset_y                            = 1
     side_cabin.append_cabin_class(side_economy_class) 
-    wing.append_cabin(side_cabin) 
+    wing.append_cabin(side_cabin)
 
     # Wing Segments
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
     segment.tag                                    = 'Fuselage_Section_1'
     segment.taper                                  = 0.8769841298701299
-    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
-    segment.percent_span_location                  = 0.0  
-    segment.root_chord_percent                     = 1.0 
-    segment.dihedral_outboard                      = 0  *  Units.degrees 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash
+    segment.percent_span_location                  = 0.0
+    segment.root_chord_percent                     = 1.0
+    segment.dihedral_outboard                      = 0  *  Units.degrees
     segment.sweeps.quarter_chord                   = 10.037 *  Units.degrees
-    airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = airfoil_file_path + 'NACA_24112.txt'
-    segment.append_airfoil(airfoil )         
-    wing.append_segment(segment)         
-         
-         
-    segment                                        = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
-    segment.tag                                    = 'Fuselage_Section_2'
-    segment.taper                                  = 0.32260442862265637  
-    segment.percent_span_location                  = 0.020625/  wing.spans.projected*64
-    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
-    segment.root_chord_percent                     = 0.9923542105
-    segment.dihedral_outboard                      = 0 *  Units.degrees   
-    segment.sweeps.quarter_chord                   = 46.9023 *  Units.degrees  
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        = airfoil_file_path + 'NACA_24112.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
-    
+
+
+    segment                                        = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
+    segment.tag                                    = 'Fuselage_Section_2'
+    segment.taper                                  = 0.32260442862265637
+    segment.percent_span_location                  = 0.020625/  wing.spans.projected*64
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash
+    segment.root_chord_percent                     = 0.9923542105
+    segment.dihedral_outboard                      = 0 *  Units.degrees
+    segment.sweeps.quarter_chord                   = 46.9023 *  Units.degrees
+    airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file                        = airfoil_file_path + 'NACA_24112.txt'
+    segment.append_airfoil(airfoil )
+    wing.append_segment(segment)
+
     
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
     segment.tag                                    = 'Fuselage_Section_3'
-    segment.taper                                  = 0.32260442862265637   
+    segment.taper                                  = 0.32260442862265637
     segment.percent_span_location                  = 0.059375/  wing.spans.projected*64
-    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash
     segment.root_chord_percent                     = 0.9375928
-    segment.dihedral_outboard                      = 2 *  Units.degrees  
-    segment.sweeps.quarter_chord                   = 51.027  *  Units.degrees   
+    segment.dihedral_outboard                      = 2 *  Units.degrees
+    segment.sweeps.quarter_chord                   = 51.027  *  Units.degrees
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        = airfoil_file_path + 'NACA_24112.txt'
-    segment.append_airfoil(airfoil )         
-    wing.append_segment(segment)         
-         
+    segment.append_airfoil(airfoil )
+    wing.append_segment(segment)
+
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
     segment.tag                                    = 'Cabin_Wall'
-    segment.taper                                  = 0.32260442862265637   
+    segment.taper                                  = 0.32260442862265637
     segment.percent_span_location                  = 0.17 /  wing.spans.projected*64
-    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash
     segment.root_chord_percent                     = 0.68285715
-    segment.dihedral_outboard                      = 12 *  Units.degrees   
-    segment.sweeps.quarter_chord                   = 42.5  *  Units.degrees   
+    segment.dihedral_outboard                      = 12 *  Units.degrees
+    segment.sweeps.quarter_chord                   = 42.5  *  Units.degrees
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        = airfoil_file_path +'NACA_24112.txt'
     segment.append_airfoil(airfoil )
-    wing.append_segment(segment) 
+    wing.append_segment(segment)
 
 
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                                    = 'Fuel_Wall'
-    segment.taper                                  = 0.32260442862265637   
+    segment.taper                                  = 0.32260442862265637
     segment.percent_span_location                  = 0.19 /  wing.spans.projected*64
-    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash
     segment.root_chord_percent                     = 0.58
-    segment.dihedral_outboard                      = 5 *  Units.degrees    
+    segment.dihedral_outboard                      = 5 *  Units.degrees
     segment.sweeps.quarter_chord                   = 0.775369385#769415328
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        = airfoil_file_path + 'NACA_24112.txt'
     segment.append_airfoil(airfoil )
-    wing.append_segment(segment)     
-    
+    wing.append_segment(segment)
+
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                                    = 'Wing_Section_1' 
+    segment.tag                                    = 'Wing_Section_1'
     segment.percent_span_location                  = 0.3346858066654701/  wing.spans.projected*64
-    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
-    segment.root_chord_percent                     = 0.2 
-    segment.dihedral_outboard                      = 1 *  Units.degrees 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash
+    segment.root_chord_percent                     = 0.2
+    segment.dihedral_outboard                      = 1 *  Units.degrees
     segment.sweeps.quarter_chord                   = 0.610554743 #0.557707107
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        = airfoil_file_path +  'transonic_wing_inboard_section_airfoil.txt'
@@ -236,42 +236,42 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     wing.append_segment(segment)
 
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                                    = 'Wing_Section_2' 
+    segment.tag                                    = 'Wing_Section_2'
     segment.percent_span_location                  = 0.5389354883954404
-    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
-    segment.root_chord_percent                     = 0.13 
-    segment.dihedral_outboard                      = 1 *  Units.degrees 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash
+    segment.root_chord_percent                     = 0.13
+    segment.dihedral_outboard                      = 1 *  Units.degrees
     segment.sweeps.quarter_chord                   = 0.557683513
     segment.chords.reference_area_root             = True
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        = airfoil_file_path +  'transonic_wing_inboard_section_airfoil.txt'
     segment.append_airfoil(airfoil )
-    wing.append_segment(segment)  
+    wing.append_segment(segment)
 
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                                    = 'Wing_Section_3' 
+    segment.tag                                    = 'Wing_Section_3'
     segment.percent_span_location                  = 0.98
     segment.root_chord_percent                     = 0.052
-    segment.twist                                  = segment.percent_span_location * wing.twists.outwash 
-    segment.dihedral_outboard                      = 65 *  Units.degrees  
-    segment.sweeps.quarter_chord                   = 55 *  Units.degrees 
+    segment.twist                                  = segment.percent_span_location * wing.twists.outwash
+    segment.dihedral_outboard                      = 65 *  Units.degrees
+    segment.sweeps.quarter_chord                   = 55 *  Units.degrees
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        = airfoil_file_path +  'transonic_wing_outboard_section_airfoil.txt'
     segment.append_airfoil(airfoil )
-    wing.append_segment(segment)  
+    wing.append_segment(segment)
 
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                                    = 'Wing_Section_4' 
-    segment.twist                                  = 0.0 
-    segment.percent_span_location                  = 1.0 
+    segment.tag                                    = 'Wing_Section_4'
+    segment.twist                                  = 0.0
+    segment.percent_span_location                  = 1.0
     segment.twist                                  = wing.twists.outwash
-    segment.root_chord_percent                     = 0.02 
-    segment.dihedral_outboard                      = 0  
+    segment.root_chord_percent                     = 0.02
+    segment.dihedral_outboard                      = 0
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        = airfoil_file_path + 'transonic_wing_tip_section_airfoil.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
-    
+
     # control surfaces -------------------------------------------
     slat                                           = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
     slat.tag                                       = 'slat'
@@ -279,7 +279,7 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     slat.span_fraction_end                         = 0.95
     slat.deflection                                = 0.0 * Units.degrees
     slat.chord_fraction                            = 0.075
-    wing.append_control_surface(slat) 
+    wing.append_control_surface(slat)
 
     flap                                           = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
     flap.tag                                       = 'flap'
@@ -297,14 +297,14 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     aileron.deflection                             = 0.0 * Units.degrees
     aileron.chord_fraction                         = 0.25
     wing.append_control_surface(aileron)
-        
+
     spoiler                                        = RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler()
     spoiler.tag                                    = 'spoiler'
     spoiler.span_fraction_start                    = 0.3
     spoiler.span_fraction_end                      = 0.7
     spoiler.deflection                             = 0.0 * Units.degrees
     spoiler.chord_fraction                         = 0.05
-    wing.append_control_surface(spoiler)  
+    wing.append_control_surface(spoiler)
 
     elevator                                        = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
     elevator.tag                                    = 'elevator'
@@ -312,7 +312,7 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     elevator.span_fraction_end                      = 0.2
     elevator.deflection                             = 0.0 * Units.degrees
     elevator.chord_fraction                         = 0.1
-    wing.append_control_surface(elevator)  
+    wing.append_control_surface(elevator)
     # add to vehicle
     vehicle.append_component(wing)
     
@@ -325,38 +325,38 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     wing.thickness_to_chord                       = .08
     wing.areas.reference                          = 48.79*2
     wing.spans.projected                          = 9
-    wing.sweeps.quarter_chord                     = 35 * Units.degrees   
+    wing.sweeps.quarter_chord                     = 35 * Units.degrees
     wing.areas.wetted                             = 48.79*4.2
     wing.taper                                    = 0.375
     wing.chords.root                              = 5
-    wing.chords.tip                               = wing.chords.root * wing.taper                  
-    wing.chords.mean_aerodynamic                  = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 ) / ( 1 + wing.taper )) 
-    wing.total_length                             = wing.chords.root 
-    wing.twists.root                              = 0.0 
-    wing.twists.tip                               = 0.0 
-    wing.origin                                   = [[23.5,  5.5 , -0.5]]  
+    wing.chords.tip                               = wing.chords.root * wing.taper
+    wing.chords.mean_aerodynamic                  = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 ) / ( 1 + wing.taper ))
+    wing.total_length                             = wing.chords.root
+    wing.twists.root                              = 0.0
+    wing.twists.tip                               = 0.0
+    wing.origin                                   = [[23.5,  5.5 , -0.5]]
     wing.xz_plane_symmetric                       = True
-    wing.dynamic_pressure_ratio                   = 1.0  
+    wing.dynamic_pressure_ratio                   = 1.0
 
     segment                                       = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                                   = 'Root_Section'
-    segment.twist                                 = 0.0 * Units.degrees 
+    segment.twist                                 = 0.0 * Units.degrees
     segment.percent_span_location                 = 0
-    segment.root_chord_percent                    = 1.0 
-    segment.dihedral_outboard                     = 25 * Units.degrees 
+    segment.root_chord_percent                    = 1.0
+    segment.dihedral_outboard                     = 25 * Units.degrees
     segment.thickness_to_chord                    = 0.08
-    segment.sweeps.quarter_chord                  = 40 * Units.degrees 
-    wing.append_segment(segment) 
-        
+    segment.sweeps.quarter_chord                  = 40 * Units.degrees
+    wing.append_segment(segment)
+
     segment                                       = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                                   = 'Tip_Section'
-    segment.twist                                 = 0.0 * Units.degrees 
-    segment.percent_span_location                 = 1.0 
+    segment.twist                                 = 0.0 * Units.degrees
+    segment.percent_span_location                 = 1.0
     segment.root_chord_percent                    = wing.taper
-    segment.sweeps.quarter_chord                  = 0.0 
-    segment.dihedral_outboard                     = 0 
+    segment.sweeps.quarter_chord                  = 0.0
+    segment.dihedral_outboard                     = 0
     segment.thickness_to_chord                    = 0.08
-    wing.append_segment(segment) 
+    wing.append_segment(segment)
 
     # control surfaces -------------------------------------------
     rudder                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder()
@@ -368,7 +368,7 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     wing.append_control_surface(rudder)
 
     # add to vehicle
-    vehicle.append_component(wing)     
+    vehicle.append_component(wing)
 
 
     # ################################################# Landing Gear #############################################################   
@@ -445,50 +445,50 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     #------------------------------------------------------------------------------------------------------------------------------------ 
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
-    turbofan1                                      = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()  
-    turbofan1.tag                                  = 'port_propulsor' 
-    turbofan1.length                               = 141.4 * Units.inches                 
-    turbofan1.diameter                             = 78.5 * Units.inches                     
-    turbofan1.bypass_ratio                         = 8.         
-    turbofan1.design_altitude                      = 40000*Units.ft             
-    turbofan1.design_mach_number                   = 0.78                      
+    turbofan1                                      = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
+    turbofan1.tag                                  = 'port_propulsor'
+    turbofan1.length                               = 141.4 * Units.inches
+    turbofan1.diameter                             = 78.5 * Units.inches
+    turbofan1.bypass_ratio                         = 8.
+    turbofan1.design_altitude                      = 40000*Units.ft
+    turbofan1.design_mach_number                   = 0.78
     turbofan1.rated_takeoff_thrust                 = 87960. * Units.N # representative engine: PW1519G takeoff rating, 8796 daN (EASA TCDS IM.E.090, Issue 11)
     turbofan1.wing_mounted                         = False
 
     # working fluid                   
-    turbofan1.working_fluid                        = RCAIDE.Library.Attributes.Gases.Air() 
-        
-    # Ram inlet   
+    turbofan1.working_fluid                        = RCAIDE.Library.Attributes.Gases.Air()
+
+    # Ram inlet
     ram                                            = RCAIDE.Library.Components.Powertrain.Converters.Ram()
-    ram.tag                                        = 'ram' 
-    turbofan1.ram                                  = ram 
+    ram.tag                                        = 'ram'
+    turbofan1.ram                                  = ram
             
     # inlet nozzle          
     inlet_nozzle                                   = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
     inlet_nozzle.tag                               = 'inlet nozzle'
-    inlet_nozzle.polytropic_efficiency             = 0.97                                       
+    inlet_nozzle.polytropic_efficiency             = 0.97
     inlet_nozzle.pressure_ratio                    = 1
     inlet_nozzle.compressibility_effects           = False
     turbofan1.inlet_nozzle                         = inlet_nozzle
-        
-    # fan                   
-    fan                                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
+
+    # fan
+    fan                                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()
     fan.tag                                        = 'fan'
-    fan.polytropic_efficiency                      = 0.95                   
-    fan.pressure_ratio                             = 1.4     
-    turbofan1.fan                                  = fan        
+    fan.polytropic_efficiency                      = 0.95
+    fan.pressure_ratio                             = 1.4
+    turbofan1.fan                                  = fan
     
-    # low pressure compressor     
-    low_pressure_compressor                        = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
+    # low pressure compressor
+    low_pressure_compressor                        = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
     low_pressure_compressor.tag                    = 'lpc'
-    low_pressure_compressor.polytropic_efficiency  = 0.95                
-    low_pressure_compressor.pressure_ratio         = 2.5                  
+    low_pressure_compressor.polytropic_efficiency  = 0.95
+    low_pressure_compressor.pressure_ratio         = 2.5
     turbofan1.low_pressure_compressor              = low_pressure_compressor
 
     # high pressure compressor  
     high_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     high_pressure_compressor.tag                   = 'hpc'
-    high_pressure_compressor.polytropic_efficiency = 0.98                       
+    high_pressure_compressor.polytropic_efficiency = 0.98
     high_pressure_compressor.pressure_ratio        = 16
     turbofan1.high_pressure_compressor             = high_pressure_compressor
 
@@ -496,21 +496,21 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     low_pressure_turbine                           = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     low_pressure_turbine.tag                       ='lpt'
     low_pressure_turbine.mechanical_efficiency     = 0.99                     
-    low_pressure_turbine.polytropic_efficiency     = 0.94                     
+    low_pressure_turbine.polytropic_efficiency     = 0.94
     turbofan1.low_pressure_turbine                 = low_pressure_turbine
     
     # high pressure turbine     
     high_pressure_turbine                          = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     high_pressure_turbine.tag                      ='hpt'
     high_pressure_turbine.mechanical_efficiency    = 0.99                     
-    high_pressure_turbine.polytropic_efficiency    = 0.94                     
-    turbofan1.high_pressure_turbine                = high_pressure_turbine 
+    high_pressure_turbine.polytropic_efficiency    = 0.94
+    turbofan1.high_pressure_turbine                = high_pressure_turbine
 
     # combustor  
     combustor                                      = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.997                    
-    combustor.turbine_inlet_temperature            = 1450               
+    combustor.turbine_inlet_temperature            = 1450
     combustor.pressure_ratio                       = 0.94                     
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan1.combustor                            = combustor
@@ -519,15 +519,15 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     core_nozzle                                    = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
     core_nozzle.tag                                = 'core nozzle'
     core_nozzle.polytropic_efficiency              = 0.98                     
-    core_nozzle.pressure_ratio                     = 0.995 
+    core_nozzle.pressure_ratio                     = 0.995
     turbofan1.core_nozzle                          = core_nozzle
         
     # fan nozzle             
     fan_nozzle                                     = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
     fan_nozzle.tag                                 = 'fan nozzle'
-    fan_nozzle.polytropic_efficiency               = 0.98                   
-    fan_nozzle.pressure_ratio                      = 0.995  
-    turbofan1.fan_nozzle                           = fan_nozzle     
+    fan_nozzle.polytropic_efficiency               = 0.98
+    fan_nozzle.pressure_ratio                      = 0.995
+    turbofan1.fan_nozzle                           = fan_nozzle
 
     # design turbofan
     design_turbofan(turbofan1)
@@ -540,10 +540,10 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
 
     # Nacelle 
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
-    nacelle.diameter                            = 85 * Units.inches    
-    nacelle.length                              = 160 * Units.inches  
+    nacelle.diameter                            = 85 * Units.inches
+    nacelle.length                              = 160 * Units.inches
     nacelle.tag                                 = 'nacelle_1'
-    nacelle.inlet_diameter                      = 80 * Units.inches    
+    nacelle.inlet_diameter                      = 80 * Units.inches
     nacelle.origin                              = [[0.85 * vehicle.wings.main_wing.chords.root, 3.5, 1.75]]
     nacelle.orientation_euler_angles            = [0, -7 * Units.degree, 0]
     nacelle.areas.wetted                        = np.pi*nacelle.diameter*nacelle.length
@@ -578,7 +578,7 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     turbofan3.nacelle.origin                   = [[0.85 * vehicle.wings.main_wing.chords.root + 1, 0, 1.5]]
         
     # append propulsor to distribution line 
-    net.propulsors.append(turbofan3)  
+    net.propulsors.append(turbofan3)
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
@@ -599,7 +599,7 @@ def vehicle_setup(vehicle_name = 'BWB', passengers = 248) :
     net.distributors.append(fuel_line)
 
     # Append energy network to aircraft 
-    vehicle.append_energy_network(net)  
+    vehicle.append_energy_network(net)
  
     return vehicle
 

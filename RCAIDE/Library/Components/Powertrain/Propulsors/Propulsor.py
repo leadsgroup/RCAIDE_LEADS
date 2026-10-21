@@ -95,21 +95,21 @@ class Propulsor(Component):
         self.active                         = True
         self.wing_mounted                   = True
         self.domain                         = None
-        self.nacelle                        = None 
+        self.nacelle                        = None
         self.identical_propulsors           = True
         self.reverse_thrust                 = False
         self.sealevel_static_thrust         = 0.0
         self.sealevel_static_chemical_power = 0.0
         self.working_fluid                  = RCAIDE.Library.Attributes.Gases.Air()
-        self.assigned_converters            = None 
-        self.assigned_modulators            = None 
+        self.assigned_converters            = None
+        self.assigned_modulators            = None
         self.assigned_distributors          = None
-        self.nacelle                        = None 
+        self.nacelle                        = None
         self.efficiency                     = 1.0
-        self.sealevel_static_thrust         = 0.0  
-        self.diameter                       = 0.0      
+        self.sealevel_static_thrust         = 0.0
+        self.diameter                       = 0.0
         self.length                         = 0.0
-        self.height                         = 0.0    
+        self.height                         = 0.0
         self.working_fluid                  = RCAIDE.Library.Attributes.Gases.Air()
 
     def initialize(self, network):

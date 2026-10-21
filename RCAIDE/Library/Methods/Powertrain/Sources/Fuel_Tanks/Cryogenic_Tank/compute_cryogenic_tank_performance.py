@@ -59,7 +59,9 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-
 
     The heater adds boil-off below minimum_operating_pressure and the tank vents above design_pressure.
     Bulk boiling and cloud condensation keep the liquid and ullage at or on the correct side of saturation.
-    Liquid outflows stop at empty, and demand the tank cannot meet is reported as fuel_deficit_rate.
+    Liquid outflows stop at empty, and demand the tank cannot meet is reported as fuel_deficit_rate. Each tank
+    uses its fixed power_split_ratio share for the segment; an empty tank's unmet demand is not reassigned to
+    other tanks on the same distributor.
 
     method, rtol and atol default to LSODA, 1e-8 and 1e-10. The mission solver differentiates through this
     solve by finite differences, so integration error must stay well below those perturbations.
