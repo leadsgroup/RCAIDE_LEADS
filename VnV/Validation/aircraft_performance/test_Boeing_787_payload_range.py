@@ -53,11 +53,11 @@ def main():
     # #####################################################################################################
         
     truth_values = {
-        "range":            np.array([       0.        , 10655105.93851858 , 18596469.35167833 , 19338741.1299942  ]),
-        "payload":          np.array([44000.        , 44000.        ,  9600.016209543028,     0.        ]),
-        "oew_plus_payload": np.array([161006.98379045696, 161006.98379045696, 126607.        , 117006.98379045697]),
-        "fuel":             np.array([     0.        ,  66923.01620954304, 101323.        , 101323.        ]),
-        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 218329.98379045696]),
+        "range":            np.array([       0.        , 10169667.17673946  , 17626279.016304806, 18284591.481137786]),
+        "payload":          np.array([44000.        , 44000.        ,  9709.163991776586,     0.        ]),
+        "oew_plus_payload": np.array([160897.8360082234 , 160897.8360082234 , 126607.        , 116897.83600822341]),
+        "fuel":             np.array([     0.        ,  67032.16399177659, 101323.        , 101323.        ]),
+        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 218220.8360082234 ]),
     }
     # ########################################### WARNING #################################################
     ###### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ################
@@ -491,71 +491,129 @@ def payload_range_mission_setup(analyses):
     mission.append_segment(segment)
     
     # ------------------------------------------------------------------
-    #   First Descent Segment: cruise Mach to the 300 KCAS crossover altitude
+    #   Idle Descent: 35000 ft to 29700 ft, Mach 0.8 (466.7 KTAS at 32350 ft)
     # ------------------------------------------------------------------
 
-    segment = Segments.Descent.Linear_Mach_Constant_Rate(base_segment)
-    segment.tag = "descent_1" 
-    segment.analyses.extend( analyses.cruise ) 
-    segment.altitude_start                                = 35000.0  * Units.ft
-    segment.altitude_end                                  = 29700.0  * Units.ft
-    segment.mach_number_start                             = 0.8
-    segment.mach_number_end                               = 0.8
-    segment.descent_rate                                  = 2000.0 * Units['ft/min']
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                       = True  
-    segment.flight_dynamics.force_z                       = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.pitch_angle.active             = True     
-    
+    segment = Segments.Descent.Constant_Throttle_Constant_Speed(base_segment)
+    segment.tag = "descent_1"
+    segment.analyses.extend( analyses.cruise )
+    segment.altitude_start                                = 35000.0 * Units.ft
+    segment.air_speed                                     = 466.738 * Units.kts
+    segment.altitude_end                                  = 29700.0 * Units.ft
+    segment.throttle                                      = 0.40  # flight idle (assumed): Tt4 fraction below the matching floor
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    # define flight controls
+    segment.assigned_control_variables.angle_of_attack.active                 = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess          = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess_values   = [[ 1.0 * Units.deg]]
+    segment.assigned_control_variables.pitch_angle.active                     = True
+    segment.assigned_control_variables.pitch_angle.initial_guess              = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values       = [[ -2.0 * Units.deg]]
+
     mission.append_segment(segment)
 
     # ------------------------------------------------------------------
-    #   Second Descent Segment: 300 KCAS to 10000 ft
+    #   Idle Descent: 29700 ft to 22500 ft, 300 KCAS (438.6 KTAS at 26100 ft)
     # ------------------------------------------------------------------
 
-    segment = Segments.Descent.Constant_CAS_Constant_Rate(base_segment)
-    segment.tag = "descent_2" 
-    segment.analyses.extend( analyses.cruise ) 
-    segment.altitude_end                                  = 10000.0  * Units.ft
-    segment.calibrated_air_speed                          = 300.0 * Units.kts
-    segment.descent_rate                                  = 2000.0 * Units['ft/min']
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                       = True  
-    segment.flight_dynamics.force_z                       = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.pitch_angle.active             = True     
-    
+    segment = Segments.Descent.Constant_Throttle_Constant_Speed(base_segment)
+    segment.tag = "descent_2"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed                                     = 438.612 * Units.kts
+    segment.altitude_end                                  = 22500.0 * Units.ft
+    segment.throttle                                      = 0.40  # flight idle (assumed): Tt4 fraction below the matching floor
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    # define flight controls
+    segment.assigned_control_variables.angle_of_attack.active                 = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess          = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess_values   = [[ 1.0 * Units.deg]]
+    segment.assigned_control_variables.pitch_angle.active                     = True
+    segment.assigned_control_variables.pitch_angle.initial_guess              = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values       = [[ -2.0 * Units.deg]]
+
     mission.append_segment(segment)
 
     # ------------------------------------------------------------------
-    #   Third Descent Segment: 250 KCAS to 5000 ft
+    #   Idle Descent: 22500 ft to 15000 ft, 300 KCAS (392.6 KTAS at 18750 ft)
     # ------------------------------------------------------------------
 
-    segment = Segments.Descent.Constant_CAS_Constant_Rate(base_segment)
-    segment.tag = "descent_3" 
-    segment.analyses.extend( analyses.cruise ) 
-    segment.altitude_end                                  = 5000.0   * Units.ft
-    segment.calibrated_air_speed                          = 250.0 * Units.kts
-    segment.descent_rate                                  = 1500.0 * Units['ft/min']
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                       = True  
-    segment.flight_dynamics.force_z                       = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.pitch_angle.active             = True     
-    
+    segment = Segments.Descent.Constant_Throttle_Constant_Speed(base_segment)
+    segment.tag = "descent_3"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed                                     = 392.586 * Units.kts
+    segment.altitude_end                                  = 15000.0 * Units.ft
+    segment.throttle                                      = 0.40  # flight idle (assumed): Tt4 fraction below the matching floor
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    # define flight controls
+    segment.assigned_control_variables.angle_of_attack.active                 = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess          = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess_values   = [[ 1.0 * Units.deg]]
+    segment.assigned_control_variables.pitch_angle.active                     = True
+    segment.assigned_control_variables.pitch_angle.initial_guess              = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values       = [[ -2.0 * Units.deg]]
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Idle Descent: 15000 ft to 10000 ft, 300 KCAS (358.1 KTAS at 12500 ft)
+    # ------------------------------------------------------------------
+
+    segment = Segments.Descent.Constant_Throttle_Constant_Speed(base_segment)
+    segment.tag = "descent_4"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed                                     = 358.068 * Units.kts
+    segment.altitude_end                                  = 10000.0 * Units.ft
+    segment.throttle                                      = 0.40  # flight idle (assumed): Tt4 fraction below the matching floor
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    # define flight controls
+    segment.assigned_control_variables.angle_of_attack.active                 = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess          = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess_values   = [[ 1.0 * Units.deg]]
+    segment.assigned_control_variables.pitch_angle.active                     = True
+    segment.assigned_control_variables.pitch_angle.initial_guess              = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values       = [[ -2.0 * Units.deg]]
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Idle Descent: 10000 ft to 5000 ft, 250 KCAS (278.3 KTAS at 7500 ft)
+    # ------------------------------------------------------------------
+
+    segment = Segments.Descent.Constant_Throttle_Constant_Speed(base_segment)
+    segment.tag = "descent_5"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed                                     = 278.288 * Units.kts
+    segment.altitude_end                                  = 5000.0 * Units.ft
+    segment.throttle                                      = 0.40  # flight idle (assumed): Tt4 fraction below the matching floor
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    # define flight controls
+    segment.assigned_control_variables.angle_of_attack.active                 = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess          = True
+    segment.assigned_control_variables.angle_of_attack.initial_guess_values   = [[ 1.0 * Units.deg]]
+    segment.assigned_control_variables.pitch_angle.active                     = True
+    segment.assigned_control_variables.pitch_angle.initial_guess              = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values       = [[ -2.0 * Units.deg]]
+
     mission.append_segment(segment)
 
     # ------------------------------------------------------------------
