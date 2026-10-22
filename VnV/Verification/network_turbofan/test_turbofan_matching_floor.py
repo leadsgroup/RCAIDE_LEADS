@@ -41,7 +41,7 @@ def throttle_sweep(turbofan, throttle, altitude, mach_number):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_matching_succeeds_at_floor():
+def check_matching_succeeds_at_floor():
     turbofan = build_turbofan()
     matching = turbofan.offdesign_matching
     floor    = matching.matching_floor
@@ -55,7 +55,7 @@ def test_matching_succeeds_at_floor():
                                             floor.combustor_exit_temperature_fraction[i, j] * matching.reference_point.Tt4)
 
 
-def test_thrust_continuous_and_monotone_through_floor():
+def check_thrust_continuous_and_monotone_through_floor():
     turbofan = build_turbofan()
     throttle = np.linspace(0.0, 0.8, 81)
     thrust, fuel_flow, below_floor = throttle_sweep(turbofan, throttle, 2000 * Units.ft, 0.2)
@@ -72,8 +72,8 @@ def test_thrust_continuous_and_monotone_through_floor():
 
 
 def main():
-    test_matching_succeeds_at_floor()
-    test_thrust_continuous_and_monotone_through_floor()
+    check_matching_succeeds_at_floor()
+    check_thrust_continuous_and_monotone_through_floor()
     return
 
 

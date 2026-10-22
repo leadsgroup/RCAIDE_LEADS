@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_module_energy_uses_nominal_voltage():
+def check_module_energy_uses_nominal_voltage():
     # rated energy = cells x capacity x nominal voltage (not maximum voltage)
     module                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     module.electrical_configuration.series    = 10
@@ -28,7 +28,7 @@ def test_module_energy_uses_nominal_voltage():
     assert module.cell.maximum_voltage != module.cell.nominal_voltage
 
 
-def test_auto_sized_pack_delivers_design_capacity():
+def check_auto_sized_pack_delivers_design_capacity():
     # pack sized from design_capacity holds that energy, to the rounding up of whole cells
     module                               = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     module.BMS_additional_weight_factor  = 1.0
@@ -47,8 +47,8 @@ def test_auto_sized_pack_delivers_design_capacity():
 
 
 def main():
-    test_module_energy_uses_nominal_voltage()
-    test_auto_sized_pack_delivers_design_capacity()
+    check_module_energy_uses_nominal_voltage()
+    check_auto_sized_pack_delivers_design_capacity()
     return
 
 

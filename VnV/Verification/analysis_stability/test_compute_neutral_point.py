@@ -42,13 +42,13 @@ def neutral_point(vehicle, fuselage_correction=True):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_fuselage_moment_factor_is_naca_report_711_figure_8():
+def check_fuselage_moment_factor_is_naca_report_711_figure_8():
     # Gilruth and White, NACA Report 711, Figure 8: K_f = 1.0 at 40% body length, increasing with wing position
     assert np.isclose(np.interp(40., FUSELAGE_MOMENT_FACTOR_POSITION, FUSELAGE_MOMENT_FACTOR), 0.989)
     assert np.all(np.diff(FUSELAGE_MOMENT_FACTOR) > 0)
 
 
-def test_neutral_point_is_smooth_in_tail_position():
+def check_neutral_point_is_smooth_in_tail_position():
     # moving the horizontal tail 0.3 m aft moves the neutral point aft by a small, smooth amount
     vehicle  = e190()
     MAC      = vehicle.wings.main_wing.chords.mean_aerodynamic
@@ -60,7 +60,7 @@ def test_neutral_point_is_smooth_in_tail_position():
         assert 0. < np.sign(dx) * shift < 0.05
 
 
-def test_fuselage_moves_neutral_point_forward():
+def check_fuselage_moves_neutral_point_forward():
     # the fuselage term is destabilizing: removing the fuselage moves the neutral point aft
     vehicle     = e190()
     no_fuselage = deepcopy(vehicle)
@@ -69,7 +69,7 @@ def test_fuselage_moves_neutral_point_forward():
     assert neutral_point(no_fuselage) > neutral_point(deepcopy(vehicle))
 
 
-def test_fuselage_correction_matches_fuselage_panels_on_e190():
+def check_fuselage_correction_matches_fuselage_panels_on_e190():
     # where the VLM fuselage panels behave (E190), both settings agree within 2% MAC (62.3% vs 63.0% MAC)
     vehicle = e190()
     MAC     = vehicle.wings.main_wing.chords.mean_aerodynamic
@@ -77,10 +77,10 @@ def test_fuselage_correction_matches_fuselage_panels_on_e190():
 
 
 def main():
-    test_fuselage_moment_factor_is_naca_report_711_figure_8()
-    test_neutral_point_is_smooth_in_tail_position()
-    test_fuselage_moves_neutral_point_forward()
-    test_fuselage_correction_matches_fuselage_panels_on_e190()
+    check_fuselage_moment_factor_is_naca_report_711_figure_8()
+    check_neutral_point_is_smooth_in_tail_position()
+    check_fuselage_moves_neutral_point_forward()
+    check_fuselage_correction_matches_fuselage_panels_on_e190()
     return
 
 

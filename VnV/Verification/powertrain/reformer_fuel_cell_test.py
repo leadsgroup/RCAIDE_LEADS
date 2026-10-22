@@ -44,7 +44,7 @@ def solve_unit(fuel, electrical_demand=50000.):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_system_fuel_flow_is_demand_over_efficiency_and_lhv():
+def check_system_fuel_flow_is_demand_over_efficiency_and_lhv():
     # fuel drawn = electrical demand / (system efficiency x LHV), for any fuel
     Propellants = RCAIDE.Library.Attributes.Propellants
     for fuel in (Propellants.Jet_A(), Propellants.Liquid_Natural_Gas(), Propellants.Liquid_Petroleum_Gas()):
@@ -53,7 +53,7 @@ def test_system_fuel_flow_is_demand_over_efficiency_and_lhv():
         assert np.isclose(c.fuel_mass_flow_rate[0, 0], 50000. / (unit.system_efficiency * fuel.lower_heating_value), rtol=1e-12)
 
 
-def test_system_defaults_are_nasa_raser_values():
+def check_system_defaults_are_nasa_raser_values():
     # Mak and Meier, NASA/CR-2007-214461/VOL1: 0.46 cruise efficiency (Table 27); 805.4 lb for 185 kW (Tables 27-28)
     unit = RCAIDE.Library.Components.Powertrain.Converters.Reformer_Fuel_Cell()
     assert unit.system_efficiency == 0.46
@@ -61,8 +61,8 @@ def test_system_defaults_are_nasa_raser_values():
 
 
 def main():
-    test_system_fuel_flow_is_demand_over_efficiency_and_lhv()
-    test_system_defaults_are_nasa_raser_values()
+    check_system_fuel_flow_is_demand_over_efficiency_and_lhv()
+    check_system_defaults_are_nasa_raser_values()
     return
 
 

@@ -55,7 +55,7 @@ def fuel_at_thrust(turbofan, thrust, mach_number, altitude, shaft_power_offtake)
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_explicit_design_offtake_reproduces_design_point():
+def check_explicit_design_offtake_reproduces_design_point():
     # an explicit offtake equal to the design offtake must match the default (design-offtake) solution
     generator_power = 100e3
     turbofan        = build_turbofan_with_generator(generator_power)
@@ -68,7 +68,7 @@ def test_explicit_design_offtake_reproduces_design_point():
     assert np.isclose(explicit.fuel_mass_flow_rate, default.fuel_mass_flow_rate, rtol=1e-4)
 
 
-def test_offtake_fuel_cost_is_thermodynamically_plausible():
+def check_offtake_fuel_cost_is_thermodynamically_plausible():
     # extra fuel power for extra shaft power at fixed thrust is 1 / (incremental thermal efficiency); a gas
     # generator core lies between roughly 30% and 60%
     turbofan  = build_turbofan_with_generator(100e3)
@@ -83,8 +83,8 @@ def test_offtake_fuel_cost_is_thermodynamically_plausible():
 
 
 def main():
-    test_explicit_design_offtake_reproduces_design_point()
-    test_offtake_fuel_cost_is_thermodynamically_plausible()
+    check_explicit_design_offtake_reproduces_design_point()
+    check_offtake_fuel_cost_is_thermodynamically_plausible()
     return
 
 

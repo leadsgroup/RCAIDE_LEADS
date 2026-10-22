@@ -292,7 +292,7 @@ def near_empty_dormancy_test():
     return
 
 
-def test_unmet_demand_keeps_physical_mass_bounded_and_reports_deficit():
+def check_unmet_demand_keeps_physical_mass_bounded_and_reports_deficit():
     lh2 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     tank, state = build_case(
         lh2,
@@ -328,6 +328,7 @@ def main():
 
     refuel_cutoff_test()
     near_empty_dormancy_test()
+    check_unmet_demand_keeps_physical_mass_bounded_and_reports_deficit()
 
     print("\nAll cryogenic tank performance tests passed.")
 

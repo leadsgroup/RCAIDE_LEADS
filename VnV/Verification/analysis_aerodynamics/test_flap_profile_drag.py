@@ -56,20 +56,20 @@ CHART_READINGS = [
 SPLIT_READINGS = [(0.30, 60.0, 0.10, 0.280), (0.30, 60.0, 0.30, 0.205), (0.20, 15.0, 0.10, 0.027), (0.30, 15.0, 0.30, 0.019)]
 
 @pytest.mark.parametrize("flap_type, chord_fraction, deflection, expected, figure", CHART_READINGS)
-def test_two_dimensional_increment_matches_chart(flap_type, chord_fraction, deflection, expected, figure):
+def check_two_dimensional_increment_matches_chart(flap_type, chord_fraction, deflection, expected, figure):
     assert abs(two_dimensional_increment(flap_type, chord_fraction, deflection) - expected) < 0.004, figure
 
 
 @pytest.mark.parametrize("chord_fraction, deflection, thickness_to_chord, expected", SPLIT_READINGS)
-def test_split_flap_increment_matches_chart(chord_fraction, deflection, thickness_to_chord, expected):
+def check_split_flap_increment_matches_chart(chord_fraction, deflection, thickness_to_chord, expected):
     assert abs(two_dimensional_increment('split', chord_fraction, deflection, thickness_to_chord) - expected) < 0.004
 
 
-def test_split_flap_thinner_airfoil_has_more_drag():
+def check_split_flap_thinner_airfoil_has_more_drag():
     assert two_dimensional_increment('split', 0.25, 45.0, 0.10) > two_dimensional_increment('split', 0.25, 45.0, 0.20) > two_dimensional_increment('split', 0.25, 45.0, 0.30)
 
 
-def test_increment_monotone_and_zero_at_zero_deflection():
+def check_increment_monotone_and_zero_at_zero_deflection():
     for flap_type in ('plain', 'split', 'single_slotted', 'double_slotted', 'fowler'):
         assert two_dimensional_increment(flap_type, 0.25, 0.0) == 0.0
         by_deflection = [two_dimensional_increment(flap_type, 0.25, d) for d in np.arange(0, 46, 5)]
@@ -77,14 +77,14 @@ def test_increment_monotone_and_zero_at_zero_deflection():
         assert np.all(np.diff(by_deflection) > 0) and np.all(np.diff(by_chord) >= 0)
 
 
-def test_three_dimensional_scaling():
+def check_three_dimensional_scaling():
     # Roskam Part VI Eqs. 4.71 and 4.75: (1 + K_int) * delta c_dp * cos(sweep) * S_wf / S
     wing, flap  = build_wing('double_slotted', 0.30, 40.0, sweep_deg=25.0, flapped_area=0.5)
     expected    = (1 + 0.40) * two_dimensional_increment('double_slotted', 0.30, 40.0) * np.cos(25.0 * Units.deg) * 0.5 / 2.0
     assert np.isclose(compute_flap_profile_drag(wing, flap, 2.0), expected, rtol=1e-12)
 
 
-def test_uncharted_flap_types_fall_back_with_a_warning():
+def check_uncharted_flap_types_fall_back_with_a_warning():
     with pytest.warns(UserWarning):
         wing, flap = build_wing('triple_slotted', 0.25, 30.0)
         triple = compute_flap_profile_drag(wing, flap, 1.0)
@@ -97,12 +97,13 @@ def test_uncharted_flap_types_fall_back_with_a_warning():
 
 def main():
     for reading in CHART_READINGS:
-        test_two_dimensional_increment_matches_chart(*reading)
+        check_two_dimensional_increment_matches_chart(*reading)
     for reading in SPLIT_READINGS:
-        test_split_flap_increment_matches_chart(*reading)
-    test_split_flap_thinner_airfoil_has_more_drag()
-    test_increment_monotone_and_zero_at_zero_deflection()
-    test_three_dimensional_scaling()
+        check_split_flap_increment_matches_chart(*reading)
+    check_split_flap_thinner_airfoil_has_more_drag()
+    check_increment_monotone_and_zero_at_zero_deflection()
+    check_three_dimensional_scaling()
+    check_uncharted_flap_types_fall_back_with_a_warning()
     return
 
 

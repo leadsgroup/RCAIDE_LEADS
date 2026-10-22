@@ -34,7 +34,7 @@ def reform(fuel, fuel_volume_flow_rate=4.5e-9):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_hydrogen_energy_is_efficiency_times_fuel_energy():
+def check_hydrogen_energy_is_efficiency_times_fuel_energy():
     # for every fuel, regardless of its density, LHV of H2 out = efficiency x LHV of fuel in
     Propellants = RCAIDE.Library.Attributes.Propellants
     for fuel in (Propellants.Jet_A(), Propellants.Liquid_Natural_Gas(), Propellants.Liquid_Petroleum_Gas()):
@@ -46,22 +46,22 @@ def test_hydrogen_energy_is_efficiency_times_fuel_energy():
         assert np.isclose(c.reformer_efficiency[0, 0], 100 * reformer.efficiency)
 
 
-def test_default_efficiency_is_halabi_methane_value():
+def check_default_efficiency_is_halabi_methane_value():
     # Halabi et al. (2008): 78% thermal efficiency, 2.6 mol H2 per mol CH4
     reformer = RCAIDE.Library.Components.Powertrain.Converters.Reformer()
     assert reformer.efficiency == 0.78
 
 
-def test_default_specific_power_is_nasa_raser_reformer():
+def check_default_specific_power_is_nasa_raser_reformer():
     # NASA/CR-2007-214461 Table 8: 0.0343 kg per kW of fuel cell output, so 250 kW needs 8.6 kg of reformer
     reformer = RCAIDE.Library.Components.Powertrain.Converters.Reformer()
     assert np.isclose(250e3 / reformer.specific_power, 0.0343 * 250, rtol=1e-12)
 
 
 def main():
-    test_hydrogen_energy_is_efficiency_times_fuel_energy()
-    test_default_efficiency_is_halabi_methane_value()
-    test_default_specific_power_is_nasa_raser_reformer()
+    check_hydrogen_energy_is_efficiency_times_fuel_energy()
+    check_default_efficiency_is_halabi_methane_value()
+    check_default_specific_power_is_nasa_raser_reformer()
     return
 
 

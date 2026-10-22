@@ -61,13 +61,13 @@ def evaluate(has_pylon):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_nacelle_parasite_drag_matches_component_build_up():
+def check_nacelle_parasite_drag_matches_component_build_up():
     state, build_up, settings = evaluate(has_pylon=False)
     nacelles = state.conditions.aerodynamics.coefficients.drag.parasite.nacelles[0, 0]
     assert np.isclose(nacelles, build_up * (1 - settings.drag_reduction_factors.parasite_drag), rtol=1e-12)
 
 
-def test_pylon_parasite_drag_is_summed():
+def check_pylon_parasite_drag_is_summed():
     state, build_up, settings = evaluate(has_pylon=True)
     drag     = state.conditions.aerodynamics.coefficients.drag.parasite
     nacelles = drag.nacelles[0, 0]
@@ -78,8 +78,8 @@ def test_pylon_parasite_drag_is_summed():
 
 
 def main():
-    test_nacelle_parasite_drag_matches_component_build_up()
-    test_pylon_parasite_drag_is_summed()
+    check_nacelle_parasite_drag_matches_component_build_up()
+    check_pylon_parasite_drag_is_summed()
     return
 
 

@@ -61,7 +61,7 @@ def induced_drag(settings, vehicle, mach_number, alpha, surface, delta):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_high_lift_induced_drag_matches_direct_vlm():
+def check_high_lift_induced_drag_matches_direct_vlm():
     vehicle, wing = build_wing_vehicle()
     settings      = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method().settings
     mach_number   = 0.2
@@ -83,7 +83,7 @@ def test_high_lift_induced_drag_matches_direct_vlm():
 
 
 def main():
-    test_high_lift_induced_drag_matches_direct_vlm()
+    check_high_lift_induced_drag_matches_direct_vlm()
     return
 
 
