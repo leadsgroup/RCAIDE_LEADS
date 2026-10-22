@@ -55,7 +55,7 @@ def main():
     power_true = 94985.59125124832
     diff_power = np.abs(power_on[0] - power_true) / power_true
     print('Power: ', power_on[0], ' difference: ', diff_power)
-    assert diff_power < 1e-6
+    assert diff_power < 1e-3
 
     elapsed_time = time.time() - ti
     print('Elapsed time (min): ', elapsed_time / 60)

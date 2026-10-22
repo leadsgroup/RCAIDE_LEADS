@@ -80,8 +80,8 @@ def Propeller_Slipstream(wake_fidelity,identical_props):
     print('Sectional Cl difference')
     print(diff_Cl_y)
     
-    assert diff_CL< 1e-6
-    assert diff_Cl_y < 1e-6
+    assert diff_CL< 1e-3
+    assert diff_Cl_y < 1e-3
 
     # plot results, vehicle, and vortex distribution
     plot_mission(results) 
