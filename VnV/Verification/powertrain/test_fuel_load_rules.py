@@ -26,17 +26,17 @@ mass_properties_module = importlib.import_module(
 
 
 def main():
-    test_compute_fuel_mass_respects_user_tank_load_precedence()
-    test_compute_fuel_mass_distributes_vehicle_load_or_fills_capacity()
-    test_set_vehicle_fuel_mass_uses_capacity_proportions_and_rejects_overfill()
-    test_set_vehicle_fuel_mass_handles_mixed_conventional_and_cryogenic_tanks()
-    test_max_fuel_iteration_sums_mixed_tank_capacities()
-    test_mtow_limit_offloads_existing_tank_pattern_proportionally()
-    test_prescribed_takeoff_mass_is_capped_by_tank_capacity()
-    test_prescribed_takeoff_below_empty_weight_plus_payload_is_rejected()
-    test_oew_plus_payload_above_mtow_is_rejected()
-    test_re_evaluation_clears_only_unchanged_computed_fuel_and_takeoff()
-    test_tanks_keep_fixed_flow_shares_and_report_local_deficit()
+    check_compute_fuel_mass_respects_user_tank_load_precedence()
+    check_compute_fuel_mass_distributes_vehicle_load_or_fills_capacity()
+    check_set_vehicle_fuel_mass_uses_capacity_proportions_and_rejects_overfill()
+    check_set_vehicle_fuel_mass_handles_mixed_conventional_and_cryogenic_tanks()
+    check_max_fuel_iteration_sums_mixed_tank_capacities()
+    check_computed_fuel_is_capped_by_mtow()
+    check_computed_fuel_is_capped_by_tank_capacity()
+    check_prescribed_masses_are_kept_and_flagged()
+    check_oew_plus_payload_above_mtow_is_flagged()
+    check_re_evaluation_clears_only_unchanged_computed_fuel_and_takeoff()
+    check_tanks_keep_fixed_flow_shares_and_report_local_deficit()
 
     return 
 
@@ -75,7 +75,7 @@ def assert_value_error(function, message):
 
 
 # Explicit tank loads take precedence over the aggregate vehicle fuel value.
-def test_compute_fuel_mass_respects_user_tank_load_precedence():
+def check_compute_fuel_mass_respects_user_tank_load_precedence():
     vehicle, tanks = make_vehicle([100.0, 300.0], [15.0, 25.0])
     vehicle.mass_properties.fuel = 0.0
 
@@ -88,7 +88,7 @@ def test_compute_fuel_mass_respects_user_tank_load_precedence():
 
 
 # Aggregate fuel is capacity-weighted across tanks, or defaults to full capacity.
-def test_compute_fuel_mass_distributes_vehicle_load_or_fills_capacity():
+def check_compute_fuel_mass_distributes_vehicle_load_or_fills_capacity():
     vehicle, tanks = make_vehicle([100.0, 300.0])
     vehicle.mass_properties.fuel = 80.0
 
@@ -111,7 +111,7 @@ def test_compute_fuel_mass_distributes_vehicle_load_or_fills_capacity():
 
 
 # Explicit vehicle fuel loads distribute by capacity and reject combined overfill.
-def test_set_vehicle_fuel_mass_uses_capacity_proportions_and_rejects_overfill():
+def check_set_vehicle_fuel_mass_uses_capacity_proportions_and_rejects_overfill():
     vehicle, tanks = make_vehicle([100.0, 300.0])
 
     set_vehicle_fuel_mass(vehicle, 80.0)
@@ -127,7 +127,7 @@ def test_set_vehicle_fuel_mass_uses_capacity_proportions_and_rejects_overfill():
 
 
 # Conventional and cryogenic capacities both contribute to the assigned fuel load.
-def test_set_vehicle_fuel_mass_handles_mixed_conventional_and_cryogenic_tanks():
+def check_set_vehicle_fuel_mass_handles_mixed_conventional_and_cryogenic_tanks():
     vehicle, tanks = make_vehicle([100.0])
     cryogenic_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank()
     cryogenic_tank.tag = "lh2_tank"
@@ -155,7 +155,7 @@ def test_set_vehicle_fuel_mass_handles_mixed_conventional_and_cryogenic_tanks():
 
 
 # Maximum fuel iteration sums conventional and cryogenic tank capacity.
-def test_max_fuel_iteration_sums_mixed_tank_capacities():
+def check_max_fuel_iteration_sums_mixed_tank_capacities():
     vehicle, tanks = make_vehicle([100.0])
     cryogenic_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank()
     cryogenic_tank.tag = "lh2_tank"
@@ -189,77 +189,80 @@ def test_max_fuel_iteration_sums_mixed_tank_capacities():
     assert np.isclose(vehicle.mass_properties.max_fuel, expected_capacity)
 
 
-# MTOW limiting preserves the existing relative tank load pattern.
-def test_mtow_limit_offloads_existing_tank_pattern_proportionally():
-    vehicle, tanks = make_vehicle([100.0, 300.0], [25.0, 75.0])
-    vehicle.mass_properties.fuel = 100.0
+# Computed fuel fills the tanks up to MTOW and is split across the tanks by capacity.
+def check_computed_fuel_is_capped_by_mtow():
+    vehicle, tanks = make_vehicle([100.0, 300.0])
     vehicle.mass_properties.max_takeoff = 250.0
     vehicle.mass_properties.operating_empty = 150.0
     vehicle.mass_properties.payload = 50.0
 
-    limit_fuel_to_max_takeoff(vehicle, i=1)
+    compute_mission_fuel_load(vehicle)
 
     assert np.isclose(vehicle.mass_properties.fuel, 50.0)
     np.testing.assert_allclose(
         [tank.fuel.mass_properties.mass for tank in tanks], [12.5, 37.5]
     )
-    takeoff_mass = (
-        vehicle.mass_properties.operating_empty
-        + vehicle.mass_properties.payload
-        + vehicle.mass_properties.fuel
-    )
-    assert np.isclose(takeoff_mass, vehicle.mass_properties.max_takeoff)
+    assert check_mass_limits(vehicle) == []
 
 
-# A prescribed takeoff mass cannot load more fuel than the tanks can hold.
-def test_prescribed_takeoff_mass_is_capped_by_tank_capacity():
+# Computed fuel for a prescribed takeoff mass is capped by tank capacity; the takeoff mass is kept and flagged.
+def check_computed_fuel_is_capped_by_tank_capacity():
     vehicle, tanks = make_vehicle([60.0, 140.0])
-    vehicle.mass_properties.fuel = 0.0
-    vehicle.mass_properties.takeoff = 500.0
     vehicle.mass_properties.max_takeoff = 600.0
     vehicle.mass_properties.operating_empty = 100.0
     vehicle.mass_properties.payload = 50.0
+    vehicle.mass_properties.takeoff = 500.0
 
-    limit_fuel_to_max_takeoff(vehicle, i=1, prescribed_takeoff=500.0)
+    compute_mission_fuel_load(vehicle, prescribed_takeoff=500.0)
 
     assert np.isclose(vehicle.mass_properties.fuel, 200.0)
-    assert np.isclose(vehicle.mass_properties.takeoff, 350.0)
+    assert np.isclose(vehicle.mass_properties.takeoff, 500.0)
     np.testing.assert_allclose(
         [tank.fuel.mass_properties.mass for tank in tanks], [60.0, 140.0]
     )
+    messages = check_mass_limits(vehicle, prescribed_takeoff=500.0)
+    assert len(messages) == 1 and "differs from OEW plus payload plus fuel" in messages[0], messages
 
 
-# Prescribed takeoff below empty weight plus payload is invalid.
-def test_prescribed_takeoff_below_empty_weight_plus_payload_is_rejected():
-    vehicle, _ = make_vehicle([100.0])
-    vehicle.mass_properties.fuel = 0.0
-    vehicle.mass_properties.max_takeoff = 600.0
-    vehicle.mass_properties.operating_empty = 400.0
-    vehicle.mass_properties.payload = 150.0
-
-    assert_value_error(
-        lambda: limit_fuel_to_max_takeoff(vehicle, i=1, prescribed_takeoff=500.0),
-        "below operating empty weight plus payload",
+# Prescribed fuel and takeoff masses beyond the limits are kept as given and only flagged.
+def check_prescribed_masses_are_kept_and_flagged():
+    vehicle, tanks = make_vehicle([100.0, 300.0], [25.0, 75.0])
+    vehicle.mass_properties.fuel = 100.0
+    vehicle.mass_properties.max_takeoff = 250.0
+    vehicle.mass_properties.operating_empty = 150.0
+    vehicle.mass_properties.payload = 50.0
+    messages = check_mass_limits(vehicle)
+    assert len(messages) == 1 and "plus fuel (300.0 kg) exceeds MTOW" in messages[0], messages
+    assert np.isclose(vehicle.mass_properties.fuel, 100.0)
+    np.testing.assert_allclose(
+        [tank.fuel.mass_properties.mass for tank in tanks], [25.0, 75.0]
     )
 
+    messages = check_mass_limits(vehicle, prescribed_takeoff=300.0)
+    assert any("exceeds MTOW (250.0 kg)" in message and "takeoff" in message for message in messages), messages
 
-# Empty weight plus payload above MTOW is rejected before fuel loading.
-def test_oew_plus_payload_above_mtow_is_rejected():
+    messages = check_mass_limits(vehicle, prescribed_takeoff=180.0)
+    assert any("is below OEW plus payload (200.0 kg)" in message for message in messages), messages
+
+
+# OEW plus payload above MTOW is flagged and leaves no computed fuel.
+def check_oew_plus_payload_above_mtow_is_flagged():
     vehicle, _ = make_vehicle([100.0])
-    vehicle.mass_properties.fuel = 0.0
     vehicle.mass_properties.max_takeoff = 500.0
     vehicle.mass_properties.operating_empty = 400.0
     vehicle.mass_properties.payload = 150.0
 
-    assert_value_error(
-        lambda: limit_fuel_to_max_takeoff(vehicle, i=1), "exceeds MTOW"
-    )
+    compute_mission_fuel_load(vehicle)
 
-    return 
+    assert np.isclose(vehicle.mass_properties.fuel, 0.0)
+    messages = check_mass_limits(vehicle)
+    assert len(messages) == 1 and "OEW plus payload (550.0 kg) exceeds MTOW" in messages[0], messages
+
+    return
 
 
 # Re-evaluation clears computed values but preserves user-edited values.
-def test_re_evaluation_clears_only_unchanged_computed_fuel_and_takeoff():
+def check_re_evaluation_clears_only_unchanged_computed_fuel_and_takeoff():
     vehicle, tanks = make_vehicle([100.0, 300.0], [20.0, 60.0])
     vehicle.mass_properties.fuel = 80.0
     vehicle.mass_properties.computed_fuel = 80.0
@@ -285,7 +288,7 @@ def test_re_evaluation_clears_only_unchanged_computed_fuel_and_takeoff():
 
 
 # Fixed tank flow shares remain fixed and an exhausted tank reports its deficit.
-def test_tanks_keep_fixed_flow_shares_and_report_local_deficit():
+def check_tanks_keep_fixed_flow_shares_and_report_local_deficit():
     vehicle, tanks = make_vehicle([100.0, 300.0], [0.5, 10.0])
     compute_fuel_volume(vehicle, compute_fuel_volume=False)
     assert np.allclose([tank.power_split_ratio for tank in tanks], [0.25, 0.75])

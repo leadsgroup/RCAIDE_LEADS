@@ -4,7 +4,8 @@
 #  Imports 
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports 
-import RCAIDE  
+import RCAIDE
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_tank_capacity import compute_fuel_tank_capacity
 
 # python imports 
 import os 
@@ -13,8 +14,8 @@ import pandas as pd
 # ----------------------------------------------------------------------------------------------------------------------
 #  Helper Functions for Mass Properties Analysis
 # ----------------------------------------------------------------------------------------------------------------------   
-def print_mass_report(analyses): 
-    weights_analysis = analyses.weights 
+def print_mass_report(analyses, prescribed_takeoff = None, fuel_specified = False, mass_limit_warnings = ()):
+    weights_analysis = analyses.weights
     print("\nPerforming Weights Analysis")
     print("--------------------------------------------------------")
     print("Propulsion Architecture:", weights_analysis.propulsion_architecture)
@@ -52,11 +53,21 @@ def print_mass_report(analyses):
     print("-" * 40)
     print(f"{'Operating Empty Weight':<25}{analyses.vehicle.mass_properties.operating_empty:>15.2f}")
     print(f"{'Payload Weight':<25}{analyses.vehicle.mass_properties.payload:>15.2f}")
-    print(f"{'Fuel Weight':<25}{analyses.vehicle.mass_properties.fuel:>15.2f}")
-    print(f"{'Takeoff Weight':<25}{analyses.vehicle.mass_properties.takeoff:>15.2f}")
+    print(f"{'Fuel Weight':<25}{analyses.vehicle.mass_properties.fuel:>15.2f}   {'prescribed' if fuel_specified else 'computed'}")
+    print(f"{'Takeoff Weight':<25}{analyses.vehicle.mass_properties.takeoff:>15.2f}   {'computed' if prescribed_takeoff is None else 'prescribed'}")
     print(f"{'Zero Fuel Weight':<25}{analyses.vehicle.mass_properties.weight_breakdown.get('zero_fuel_weight', 0):>15.2f}")
     print(f"{'Max Takeoff Weight':<25}{analyses.vehicle.mass_properties.max_takeoff:>15.2f}")
-    print("\n===============================\n") 
+    tanks = [source for network in analyses.vehicle.networks for source in network.sources
+             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
+    capacity = sum(max(compute_fuel_tank_capacity(tank), 0) for tank in tanks)
+    if capacity > 0:
+        print(f"{'Fuel Tank Capacity':<25}{capacity:>15.2f}")
+    print("\nMass Limit Checks:")
+    for message in mass_limit_warnings:
+        print(f"  VIOLATED: {message}")
+    if len(mass_limit_warnings) == 0:
+        print("  All prescribed and computed masses are within MTOW and tank capacity")
+    print("\n===============================\n")
 
 def write_mass_report(analyses): 
     # -------------------------------------------------
