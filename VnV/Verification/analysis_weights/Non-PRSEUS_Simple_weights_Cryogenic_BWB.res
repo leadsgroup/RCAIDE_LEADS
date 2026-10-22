@@ -18,11 +18,11 @@
             "empennage": 1828.101419000027,
             "center_body": 19809.335656359155,
             "aft_center_body": 4527.485252099974,
-            "landing_gear": 4074.583748631928,
+            "landing_gear": 4074.5466226729513,
             "nacelle": 1319.6105516754515,
             "booms": 0,
             "paint": 0,
-            "total": 40879.24860424423
+            "total": 40879.21147828525
         },
         "systems": {
             "control_systems": 1165.54193715363,
@@ -35,7 +35,7 @@
             "instruments": 391.4629515114292,
             "total": 6580.799587913475
         },
-        "total": 55423.3194633052
+        "total": 55423.282331763214
     },
     "payload": {
         "total": 15308.742487500002,
@@ -44,13 +44,13 @@
         "cargo": 2.2737367544323206e-13
     },
     "operational_items": {
-        "misc": 292.89599962605814,
+        "misc": 292.89599404306114,
         "flight_crew": 306.17484975,
         "flight_attendants": 442.25256075000004,
         "passenger_service": 0.0,
         "cargo_containers": 0.0,
-        "total": 1041.3234101260582
+        "total": 1041.3234045430613
     },
-    "zero_fuel_weight": 70732.0619508052,
+    "zero_fuel_weight": 70732.02481926321,
     "max_takeoff": 90535.0202
 }
