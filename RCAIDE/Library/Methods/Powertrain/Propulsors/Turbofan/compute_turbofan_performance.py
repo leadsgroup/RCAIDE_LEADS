@@ -17,7 +17,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine              import co
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle     import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan             import compute_thrust
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Common               import compute_gas_generator_shaft_power_offtake
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common               import compute_gas_generator_shaft_power_offtake, extend_thrust_below_floor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance_surrogate import compute_turbofan_performance_surrogate
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
     pack_design_constants, pack_reference_point,
@@ -565,32 +565,6 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_turbofan_performance_offdesign
 # ----------------------------------------------------------------------------------------------------------------------
-def extend_thrust_below_floor(floor_thrust, floor_slope, throttle, floor_fraction):
-    """
-    Thrust below the matching floor. It decays from the floor thrust toward zero, matching the floor thrust
-    and slope at the floor, so it is smooth and never negative and the mission solver keeps a gradient.
-    A non-positive floor thrust or slope is held.
-
-    Parameters
-    ----------
-    floor_thrust : float
-        Thrust at the matching floor [N].
-    floor_slope : float
-        Thrust slope with throttle just above the floor [N].
-    throttle : float
-        Requested combustor exit temperature fraction [-].
-    floor_fraction : float
-        Matching floor combustor exit temperature fraction [-].
-
-    Returns
-    -------
-    thrust : float
-        Thrust below the floor [N].
-    """
-    if floor_thrust <= 0.0 or floor_slope <= 0.0:
-        return floor_thrust
-    return floor_thrust * np.exp(floor_slope * (throttle - floor_fraction) / floor_thrust)
-
 def compute_turbofan_performance_offdesign(turbofan, state, network=None, center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes turbofan thrust and fuel flow by live off-design component

@@ -9,7 +9,8 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core                                                     import Data
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import solve_turbofan_offdesign_robust, OffDesignMatchingError
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import solve_turbofan_offdesign_robust
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_matching_floor import compute_matching_floor
 
 # Python package imports
 import numpy as np
@@ -52,43 +53,5 @@ def compute_turbofan_matching_floor(design_constants, reference_point, altitudes
     offtake, the largest the engine is sized for. Points with no matched solution at any fraction
     take the highest floor found at that altitude.
     """
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    upper      = 1.0
-    lower      = 0.2
-
-    def matched(fraction, mach_number, static_temperature, static_pressure):
-        try:
-            solve_turbofan_offdesign_robust(design_constants, reference_point, mach_number, static_temperature,
-                                            static_pressure, fraction * reference_point.Tt4)
-            return True
-        except OffDesignMatchingError:
-            return False
-
-    fractions = np.full((len(altitudes), len(mach_numbers)), np.nan)
-    for i, altitude in enumerate(altitudes):
-        atmo = atmosphere.compute_values(altitude)
-        T0   = atmo.temperature[0, 0]
-        P0   = atmo.pressure[0, 0]
-        for j, mach_number in enumerate(mach_numbers):
-            if not matched(upper, mach_number, T0, P0):
-                continue
-            if matched(lower, mach_number, T0, P0):
-                fractions[i, j] = lower
-                continue
-            low, high = lower, upper
-            while high - low > tolerance:
-                middle = 0.5 * (low + high)
-                if matched(middle, mach_number, T0, P0):
-                    high = middle
-                else:
-                    low = middle
-            fractions[i, j] = high
-
-        if np.all(np.isnan(fractions[i])):
-            raise ValueError(f"No matched turbofan operating point at altitude {altitude:.0f} m for the matching floor.")
-        fractions[i] = np.where(np.isnan(fractions[i]), np.nanmax(fractions[i]), fractions[i])
-
-    matching_floor = Data(altitude                             = np.asarray(altitudes, dtype=float),
-                          mach_number                          = np.asarray(mach_numbers, dtype=float),
-                          combustor_exit_temperature_fraction  = fractions + margin)
-    return matching_floor
+    return compute_matching_floor(solve_turbofan_offdesign_robust, design_constants, reference_point, altitudes, mach_numbers,
+                                  margin=margin, tolerance=tolerance)
