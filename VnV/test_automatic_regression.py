@@ -23,6 +23,7 @@ modules = [
     'Verification/analysis_aerodynamics/test_parasite_drag_nacelle.py',
     'Verification/analysis_stability/test_compute_neutral_point.py',
     'Verification/network_turbofan/test_turbofan_matching_floor.py',
+    'Verification/network_turbojet/test_turbojet_matching_floor.py',
     'Verification/network_turbofan/test_turbofan_offtake.py',
     'Verification/powertrain/test_compute_battery_properties.py',
     'Verification/powertrain/test_compute_reformer_performance.py',

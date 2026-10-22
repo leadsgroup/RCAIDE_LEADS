@@ -22,7 +22,8 @@ def compute_matching_floor(solve, design_constants, reference_point, altitudes, 
     ----------
     solve : callable
         Off-design solver called as solve(design_constants, reference_point, mach_number, static_temperature,
-        static_pressure, combustor_exit_temperature); raises OffDesignMatchingError where it has no solution.
+        static_pressure, combustor_exit_temperature) returning a result with fuel_to_air_ratio; raises
+        OffDesignMatchingError where it has no solution.
     design_constants : Data
         Engine design constants passed to solve.
     reference_point : Data
@@ -43,7 +44,9 @@ def compute_matching_floor(solve, design_constants, reference_point, altitudes, 
 
     Notes
     -----
-    Below the floor a nozzle total pressure falls below ambient and the matching equations have no solution.
+    Below the floor a nozzle total pressure falls below ambient and the matching equations have no solution,
+    or the requested combustor exit temperature is below the compressor exit temperature (negative fuel-air
+    ratio), which happens in high-Mach flight where ram compression keeps the nozzle pressurized.
     The floor is a limit of the constant-efficiency matching model, not a certified idle setting. Points with
     no matched solution at any fraction take the highest floor found at that altitude.
     """
@@ -54,11 +57,12 @@ def compute_matching_floor(solve, design_constants, reference_point, altitudes, 
     lower      = 0.2
     def matched(fraction, mach_number, static_temperature, static_pressure):
         try:
-            solve(design_constants, reference_point, mach_number, static_temperature, static_pressure,
-                  fraction * reference_point.Tt4)
-            return True
+            result = solve(design_constants, reference_point, mach_number, static_temperature, static_pressure,
+                           fraction * reference_point.Tt4)
         except OffDesignMatchingError:
             return False
+        # a burner cannot cool the flow: below the compressor exit temperature the fuel-air ratio turns negative
+        return result.fuel_to_air_ratio > 0
 
     fractions = np.full((len(altitudes), len(mach_numbers)), np.nan)
     for i, altitude in enumerate(altitudes):

@@ -10,11 +10,11 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  extend_thrust_below_floor
 # ----------------------------------------------------------------------------------------------------------------------
-def extend_thrust_below_floor(floor_thrust, floor_slope, throttle, floor_fraction):
+def extend_thrust_below_floor(floor_thrust, floor_slope, throttle, floor_fraction, lower_bound=0.0):
     """
-    Thrust below the matching floor. It decays from the floor thrust toward zero, matching the floor thrust
-    and slope at the floor, so it is smooth and never negative and the mission solver keeps a gradient.
-    A non-positive floor thrust or slope is held.
+    Thrust below the matching floor. It decays from the floor thrust toward a lower bound, matching the floor
+    thrust and slope at the floor, so it is smooth, bounded and keeps a gradient for the mission solver.
+    A floor thrust at or below the lower bound, or a non-positive slope, is held.
 
     Parameters
     ----------
@@ -26,12 +26,16 @@ def extend_thrust_below_floor(floor_thrust, floor_slope, throttle, floor_fractio
         Requested combustor exit temperature fraction [-].
     floor_fraction : float
         Matching floor combustor exit temperature fraction [-].
+    lower_bound : float, optional
+        Thrust approached far below the floor [N]: zero, or the ram drag -mdot*V0 of an engine with no gross
+        thrust in flight.
 
     Returns
     -------
     thrust : float
         Thrust below the floor [N].
     """
-    if floor_thrust <= 0.0 or floor_slope <= 0.0:
+    span = floor_thrust - lower_bound
+    if span <= 0.0 or floor_slope <= 0.0:
         return floor_thrust
-    return floor_thrust * np.exp(floor_slope * (throttle - floor_fraction) / floor_thrust)
+    return lower_bound + span * np.exp(floor_slope * (throttle - floor_fraction) / span)
