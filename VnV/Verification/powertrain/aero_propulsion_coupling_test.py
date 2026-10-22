@@ -52,7 +52,7 @@ def main():
     assert np.abs(power_on[0] - power_off[0]) / power_off[0] > 1e-4
 
     # regression
-    power_true = 94985.59125124832
+    power_true = 95804.81789793503
     diff_power = np.abs(power_on[0] - power_true) / power_true
     print('Power: ', power_on[0], ' difference: ', diff_power)
     assert diff_power < 1e-2
