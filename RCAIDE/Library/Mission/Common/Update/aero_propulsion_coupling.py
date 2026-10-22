@@ -1,7 +1,8 @@
 # RCAIDE/Library/Missions/Common/Update/aero_propulsion_coupling.py
 # 
 # 
-# Created:  Oct 2026, M. Clarke, H. Hussien
+# Created:  Oct 2026, M. Clarke
+# Modified: Oct 2026, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Aero Propulsion Coupling

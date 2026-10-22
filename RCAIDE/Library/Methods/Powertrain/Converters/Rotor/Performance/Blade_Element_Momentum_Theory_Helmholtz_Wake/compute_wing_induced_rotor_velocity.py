@@ -50,7 +50,7 @@ def compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_
     The unit-strength influence of every wing panel on the disc is cached on the rotor and
     rebuilt only when the rotor, wing geometry or Mach number changes.
     """
-    VD    = conditions.aerodynamics.VD
+    VD    = conditions.aerodynamics.vortex_distribution
     mach  = conditions.freestream.mach_number
     key   = wing_influence_key(rotor, VD, mach, T_body2thrust, r_dim_2d, psi_2d)
     cache = rotor.get('wing_influence_cache')   # runtime cache, not a rotor parameter, so saved rotors stay loadable

@@ -91,7 +91,7 @@ def evaluate_surrogate(state,settings,vehicle):
         else:
             gamma = h_sub(Mach)*sub_sur.gamma_alpha(pts_alpha) + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_sur.gamma_alpha(pts_alpha) + h_sup(Mach)*sup_sur.gamma_alpha(pts_alpha)
         conditions.aerodynamics.gamma = gamma
-        conditions.aerodynamics.VD    = sub_sur.VD
+        conditions.aerodynamics.vortex_distribution    = sub_sur.VD
     
     # -----------------------------------------------------------------------------------------------------------------------
     # Query control surface surrogates if derivatives are not user defined
@@ -211,7 +211,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     conditions.aerodynamics.angles.induced                            = VLM_results.alpha_induced    
     conditions.aerodynamics.spanwise_stations                         = VLM_results.spanwise_stations
     conditions.aerodynamics.gamma                                     = VLM_results.gamma
-    conditions.aerodynamics.VD                                        = VLM_results.VD
+    conditions.aerodynamics.vortex_distribution                                        = VLM_results.VD
 
     # corrections 
     RCAIDE.Library.Methods.Aerodynamics.Common.Lift.fuselage_correction(state,settings,vehicle)     

@@ -1,7 +1,8 @@
-# RCAIDE/Framework/Analyses/Mission/Segments/Conditions/Numerics.py
+# RCAIDE/Framework/Analyses/Mission/Common/Numerics.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Oct 2026, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -23,6 +24,15 @@ class Numerics(Conditions):
         
         Source:
         None
+
+        - self.mission_solver.package can be set to "scipy" or "pyopt", 
+        which package backs the "optimize" dispatch
+
+        - aerodynamics-propulsion coupling, used only by networks with 
+        aero_propulsion_coupling enabled, i.e. wing-to-propeller coupling is enabled
+
+        - self.aero_propulsion_coupling.number_of_passes has to be fixed, so the residuals stay smooth for the mission solver
+
     """
     
     def __defaults__(self):
@@ -43,55 +53,54 @@ class Numerics(Conditions):
             Properties Used:
             None
         """           
-        self.tag                                = 'numerics' 
-        self.number_of_control_points           = 16
-        self.discretization_method              = chebyshev_data
+        self.tag                                                = 'numerics' 
+        self.number_of_control_points                           = 16
+        self.discretization_method                              = chebyshev_data
     
         # mission solver
-        self.mission_solver                     = Conditions()
-        self.mission_solver.type                = "optimize"
-        self.mission_solver.package             = "scipy"    # "scipy" or "pyopt" -- which package backs the "optimize" dispatch
-        self.mission_solver.method              = "SLSQP"
-        self.mission_solver.objective           = "energy"
-        self.mission_solver.tolerance           = 1E-6
-        self.mission_solver.converged           = None
-        self.mission_solver.print_output        = True
-        self.mission_solver.max_evaluations     = 200
-        self.mission_solver.step_size           = 1E-8
-        self.mission_solver.verbose             = False
+        self.mission_solver                                     = Conditions()
+        self.mission_solver.type                                = "optimize"
+        self.mission_solver.package                             = "scipy"    
+        self.mission_solver.method                              = "SLSQP"
+        self.mission_solver.objective                           = "energy"
+        self.mission_solver.tolerance                           = 1E-6
+        self.mission_solver.converged                           = None
+        self.mission_solver.print_output                        = True
+        self.mission_solver.max_evaluations                     = 200
+        self.mission_solver.step_size                           = 1E-8
+        self.mission_solver.verbose                             = False
            
         # network solver    
-        self.network_solver                     = Conditions()
-        self.network_solver.type                = None 
-        self.network_solver.tolerance           = 1E-6     
-        self.network_solver.converged           = None
-        self.network_solver.print_output        = True
-        self.network_solver.max_evaluations     = 200
-        self.network_solver.step_size           = 1E-8   
-        self.network_solver.verbose             = False 
+        self.network_solver                                     = Conditions()
+        self.network_solver.type                                = None 
+        self.network_solver.tolerance                           = 1E-6     
+        self.network_solver.converged                           = None
+        self.network_solver.print_output                        = True
+        self.network_solver.max_evaluations                     = 200
+        self.network_solver.step_size                           = 1E-8   
+        self.network_solver.verbose                             = False 
 
-        # aerodynamics-propulsion coupling, used only by networks with aero_propulsion_coupling enabled
-        self.aero_propulsion_coupling                  = Conditions()
-        self.aero_propulsion_coupling.number_of_passes = 1    # fixed, so the residuals stay smooth for the mission solver
-        
-        self.hp_decomposition                    = Conditions() 
-        self.hp_decomposition.max_dimension      = 64
-        self.hp_decomposition.min_control_points = 4 
-        self.hp_decomposition.enabled            = False 
-        self.hp_decomposition.tolerance          = 1E-4
-        self.hp_decomposition.step_size          = 1E-5 
-        self.hp_decomposition.seed_guess_from_previous_piece = False 
-        self.hp_decomposition.original_tag      = None
-        self.hp_decomposition.piece_index       = None
-        self.hp_decomposition.piece_count       = None
-        self.hp_decomposition.original_segment  = None
+        self.aero_propulsion_coupling                           = Conditions()
+        self.aero_propulsion_coupling.number_of_passes          = 1    
 
-        self.dimensionless                      = Conditions()
-        self.dimensionless.control_points       = np.empty([0,0])
-        self.dimensionless.differentiate        = np.empty([0,0])
-        self.dimensionless.integrate            = np.empty([0,0]) 
+        self.hp_decomposition                                   = Conditions() 
+        self.hp_decomposition.max_dimension                     = 64
+        self.hp_decomposition.min_control_points                = 4 
+        self.hp_decomposition.enabled                           = False 
+        self.hp_decomposition.tolerance                         = 1E-4
+        self.hp_decomposition.step_size                         = 1E-5 
+        self.hp_decomposition.seed_guess_from_previous_piece    = False 
+        self.hp_decomposition.original_tag                      = None
+        self.hp_decomposition.piece_index                       = None
+        self.hp_decomposition.piece_count                       = None
+        self.hp_decomposition.original_segment                  = None
+
+        self.dimensionless                                      = Conditions()
+        self.dimensionless.control_points                       = np.empty([0,0])
+        self.dimensionless.differentiate                        = np.empty([0,0])
+        self.dimensionless.integrate                            = np.empty([0,0]) 
                
-        self.time                               = Conditions()
-        self.time.control_points                = np.empty([0,0])
-        self.time.differentiate                 = np.empty([0,0])
-        self.time.integrate                     = np.empty([0,0])
+        self.time                                               = Conditions()
+        self.time.control_points                                = np.empty([0,0])
+        self.time.differentiate                                 = np.empty([0,0])
+        self.time.integrate                                     = np.empty([0,0])
