@@ -342,7 +342,7 @@ def check_mass_limits(vehicle, prescribed_takeoff = None):
     if prescribed_takeoff is not None:
         if prescribed_takeoff > mp.max_takeoff:
             messages.append(f'Prescribed takeoff mass ({prescribed_takeoff:.1f} kg) exceeds MTOW ({mp.max_takeoff:.1f} kg)')
-        if prescribed_takeoff < zero_fuel:
+        if prescribed_takeoff < zero_fuel * (1 - 1e-6):
             messages.append(f'Prescribed takeoff mass ({prescribed_takeoff:.1f} kg) is below OEW plus payload ({zero_fuel:.1f} kg)')
         elif abs(prescribed_takeoff - zero_fuel - fuel) > 1e-3 * prescribed_takeoff:
             messages.append(f'Prescribed takeoff mass ({prescribed_takeoff:.1f} kg) differs from OEW plus payload plus fuel '
