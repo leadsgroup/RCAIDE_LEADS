@@ -672,6 +672,10 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     pi_d_out        = np.full(n, np.nan)
     pi_f_out        = np.full(n, np.nan)
     fuel_to_air_ratio_out = np.full(n, np.nan)
+    # combustor inlet (station 3) state and core flow, used by the emissions models
+    combustor_inlet_stagnation_temperature = np.full(n, np.nan)
+    combustor_inlet_stagnation_pressure    = np.full(n, np.nan)
+    core_mass_flow_rate                    = np.full(n, np.nan)
 
     packed_design_constants = pack_design_constants(design_constants)
     packed_reference_point  = pack_reference_point(reference_point)
@@ -738,6 +742,9 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
         pi_d_out[i]                                 = result.pi_d
         pi_f_out[i]                                 = result.pi_f
         fuel_to_air_ratio_out[i]                    = result.fuel_to_air_ratio
+        combustor_inlet_stagnation_temperature[i]   = static_temperature[i] * result.tau_r * result.tau_f * result.tau_cH
+        combustor_inlet_stagnation_pressure[i]      = static_pressure[i] * result.pi_r * result.pi_d * result.pi_f * result.pi_cH
+        core_mass_flow_rate[i]                      = result.mass_flow_rate / (1 + result.alpha)
 
     thrust_vector      = np.zeros((n, 3))
     thrust_vector[:,0] = thrust_N
@@ -771,6 +778,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     turbofan_conditions.flow_through_core                  = (1./(1.+alpha_out)).reshape(-1,1)
     turbofan_conditions.flow_through_fan                   = (alpha_out/(1.+alpha_out)).reshape(-1,1)
     turbofan_conditions.fuel_to_air_ratio                  = fuel_to_air_ratio_out.reshape(-1,1)
+    turbofan_conditions.core_mass_flow_rate                = core_mass_flow_rate.reshape(-1,1)
     turbofan_conditions.total_temperature_reference        = (tau_r_out*tau_f_out*static_temperature).reshape(-1,1)
     turbofan_conditions.total_pressure_reference           = (pi_r_out*pi_d_out*pi_f_out*static_pressure).reshape(-1,1)
 
@@ -818,6 +826,12 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
         nozzle_outputs.static_pressure        = P_s.reshape(-1,1)
         nozzle_outputs.stagnation_temperature = T_t.reshape(-1,1)
         nozzle_outputs.stagnation_pressure    = P_t.reshape(-1,1)
+
+    combustor_conditions                                = converters[turbofan.combustor.tag]
+    combustor_conditions.inputs.stagnation_temperature  = combustor_inlet_stagnation_temperature.reshape(-1,1)
+    combustor_conditions.inputs.stagnation_pressure     = combustor_inlet_stagnation_pressure.reshape(-1,1)
+    combustor_conditions.outputs.fuel_to_air_ratio      = fuel_to_air_ratio_out.reshape(-1,1)
+
     fan_conditions                                = converters[turbofan.fan.tag]
     fan_conditions.inputs.stagnation_temperature  = fan_inlet_stagnation_temperature.reshape(-1,1)
     fan_conditions.outputs.stagnation_temperature = fan_exit_stagnation_temperature.reshape(-1,1)

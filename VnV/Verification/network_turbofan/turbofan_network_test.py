@@ -115,7 +115,7 @@ def main():
     cruise_CL_1_truth        = 0.6856921287197084
     cruise_CL_2_truth        = 0.5291559127969058
     descent_throttle_1_truth = 0.3929116717327707
-    descent_2_CL_truth       = 0.7003219628753931
+    descent_2_CL_truth       = 0.7004426721848805
     curved_cruise_CL_truth   = 1.3176754962054966
     descent_throttle_3_truth = 0.1 
     single_pt_CL_1_truth     = 0.2455567597755725

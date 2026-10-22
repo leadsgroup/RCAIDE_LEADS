@@ -48,8 +48,8 @@ def main():
     except:
         pass
        
-    true_EI_CO2s =  [3.16, 3.0996295865239563, 3.1371106320136155]
-    true_EI_H2Os =  [1.23, 1.1911420639654764, 1.2053455595806213]
+    true_EI_CO2s =  [3.16, 3.096862489495085, 2.999956828617588]
+    true_EI_H2Os =  [1.23, 1.236249050747685, 1.1916791237420656]
     i =  0
     for em in  range(len(emissions_methods)):
         for sur in  range(len(use_surrogate)):

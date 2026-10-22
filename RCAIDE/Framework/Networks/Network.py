@@ -1,6 +1,7 @@
 # RCAIDE/Framework/Networks/Network.py 
 #
 # Created:  Mar 2025, M.Clarke
+# Modified: Sep 2026, M.Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Imports
@@ -11,7 +12,7 @@ from RCAIDE.Framework.Mission.Common     import Residuals, Conditions
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns 
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import * 
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_wake_interaction import compute_rotor_wake_interaction
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_to_rotor_interaction import compute_rotor_to_rotor_interaction
 from RCAIDE.Library.Components import Component
 
 # python imports 
@@ -44,6 +45,13 @@ class Network(Component):
 
     reverse_thrust : bool
         Flag to enable reverse thrust computation. Default is False.
+
+    wing_on_rotor_coupling : bool
+        Couples the rotors and the wings in both directions: the rotor slipstream acts on the wing
+        vortex lattice and the wing-induced velocity acts at the rotor disc. Default is False.
+
+    rotor_on_rotor_coupling : bool
+        Solves the electric rotors together with their mutual wake interaction. Default is False.
 
     propulsors : Container
         Collection of propulsor components (turbofans, rotors, etc.).
@@ -135,7 +143,8 @@ class Network(Component):
         """
         self.tag                                 = 'network'
         self.reverse_thrust                      = False
-        self.rotor_wake_interaction              = False
+        self.wing_on_rotor_coupling              = False
+        self.rotor_on_rotor_coupling             = False
         self.propulsors                          = Container()
         self.converters                          = Container()
         self.nacelles                            = Container()
@@ -144,6 +153,11 @@ class Network(Component):
         self.sources                             = Container()
         self.systems                             = Container()
          
+    def reuses_results(self, propulsor, reference):
+        """ True when propulsor can reuse the results, unknowns and residuals of reference, the last propulsor solved on its own """
+        return (reference is not None and propulsor.identical_propulsors
+                and not (self.wing_on_rotor_coupling or self.rotor_on_rotor_coupling)
+                and propulsor.assigned_distributors == reference.assigned_distributors)
 
     def evaluate(network,state,vehicle,ground_operations=False):
         """ Computes the performance of the network.
@@ -174,21 +188,21 @@ class Network(Component):
         # ----------------------------------------------------------
         # Propulsors
         # ----------------------------------------------------------
-        if network.rotor_wake_interaction:
+        if network.rotor_on_rotor_coupling:
+            # electric rotors are solved together; other propulsors solve their own rotor with the coupling
             rotors = []
             for propulsor in propulsors:
-                if propulsor.active:
+                if propulsor.active and isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
                     propulsor.compute_drive(state,network)
                     rotors.append(propulsor.rotor)
-            compute_rotor_wake_interaction(rotors,conditions)
+            compute_rotor_to_rotor_interaction(rotors,conditions,network.wing_on_rotor_coupling)
             
         stored_results_flag  = False
         stored_propulsor_tag = None
         for propulsor in propulsors:
             if propulsor.active: 
-                same_group = (stored_results_flag == True and
-                              propulsor.assigned_distributors == propulsors[stored_propulsor_tag].assigned_distributors)
-                if propulsor.identical_propulsors == False or network.rotor_wake_interaction or not same_group:
+                reference = propulsors[stored_propulsor_tag] if stored_results_flag else None
+                if not network.reuses_results(propulsor, reference):
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network,center_of_gravity=center_of_gravity)
                 else:
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
@@ -375,12 +389,11 @@ class Network(Component):
          
         unknowns(segment)
         for network in segment.analyses.vehicle.networks:
-            reference_distributors = None
-            for p_i, propulsor in enumerate(network.propulsors):
-                if propulsor.active:
-                    if propulsor.identical_propulsors == False or network.rotor_wake_interaction or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
-                        propulsor.unpack_unknowns(segment)
-                        reference_distributors = propulsor.assigned_distributors
+            reference = None
+            for propulsor in network.propulsors:
+                if propulsor.active and not network.reuses_results(propulsor, reference):
+                    propulsor.unpack_unknowns(segment)
+                    reference = propulsor
             reference_source_distributors = None
             for source in network.sources:
                 if source.active:
@@ -417,12 +430,11 @@ class Network(Component):
            N/A
        """         
         for network in segment.analyses.vehicle.networks:
-            reference_distributors = None
-            for p_i, propulsor in enumerate(network.propulsors):
-                if propulsor.active:
-                    if propulsor.identical_propulsors == False or network.rotor_wake_interaction or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
-                        propulsor.pack_residuals(segment)
-                        reference_distributors = propulsor.assigned_distributors
+            reference = None
+            for propulsor in network.propulsors:
+                if propulsor.active and not network.reuses_results(propulsor, reference):
+                    propulsor.pack_residuals(segment)
+                    reference = propulsor
             reference_source_distributors = None
             for source in network.sources:
                 if source.active:

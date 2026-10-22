@@ -61,6 +61,7 @@ modules = [
     'Verification/powertrain/rotor_performance_test.py',
     'Verification/powertrain/propeller_non_uniform_inflow.py',
     'Verification/powertrain/propeller_wing_interaction_test.py',
+    'Verification/powertrain/aero_propulsion_coupling_test.py',
     'Verification/powertrain/generator_test.py',
     'Verification/powertrain/motor_test.py',
     'Verification/powertrain/reformer_test.py',
