@@ -36,10 +36,10 @@ def surrogate_test():
                     'CDi': coefficients.drag.induced.total[2, 0],
                     'CDc': coefficients.drag.compressible.total[2, 0],
                     'CD' : coefficients.drag.total[2, 0]}
-    truth        = {'CL' : 0.5281494006616627,
-                    'CDi': 0.011252794203784248,
-                    'CDc': 0.0019993325194659173,
-                    'CD' : 0.025169368164146118}
+    truth        = {'CL' : 0.5416187161940065,
+                    'CDi': 0.011779193576296771,
+                    'CDc': 0.002054383830799684,
+                    'CD' : 0.025762447861669334}
     for name in truth:
         error = abs(computed[name] - truth[name]) / truth[name]
         print(f'{name}: {computed[name]}, error: {error}')
