@@ -232,10 +232,8 @@ class Electrical_Bus(Distributor):
                     self.design_voltage = converter.voltage
                     self.design_power  += converter.maximum_power
                 elif isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Reformer_Fuel_Cell): 
-                    stack = converter.fuel_cell
-                    if stack is not None and isinstance(stack, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
-                        self.design_voltage = stack.voltage
-                        self.design_power  += stack.maximum_power
+                    self.design_voltage = converter.design_voltage
+                    self.design_power  += converter.design_power
                 elif isinstance(converter, (RCAIDE.Library.Components.Powertrain.Converters.Generator,
                                             RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator)):
                     self.design_power  += generator_design_power(converter)

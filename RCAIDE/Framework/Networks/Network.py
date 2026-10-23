@@ -186,9 +186,9 @@ class Network(Component):
         net_hydraulic_power     = 0. * state.ones_row(1)
  
         # ----------------------------------------------------------
-        # Propulsors
+        # Propulsors (off during stationary ground operations, e.g. dormancy and refuel, which run on ground power)
         # ----------------------------------------------------------
-        if network.rotor_on_rotor_coupling:
+        if network.rotor_on_rotor_coupling and not ground_operations:
             # electric rotors are solved together; other propulsors solve their own rotor with the coupling
             rotors = []
             for propulsor in propulsors:
@@ -200,7 +200,7 @@ class Network(Component):
         stored_results_flag  = False
         stored_propulsor_tag = None
         for propulsor in propulsors:
-            if propulsor.active: 
+            if propulsor.active and not ground_operations:
                 reference = propulsors[stored_propulsor_tag] if stored_results_flag else None
                 if not network.reuses_results(propulsor, reference):
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network,center_of_gravity=center_of_gravity)
@@ -267,7 +267,10 @@ class Network(Component):
         # ----------------------------------------------------------                
         stored_results_flag   = False
         stored_converter_tag  = None
-        for converter in converters:
+        # heaters last, so their tank solve sees the fuel drawn by every other converter
+        is_heater = [isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) for converter in converters]
+        ordered   = [c for c, h in zip(converters, is_heater) if not h] + [c for c, h in zip(converters, is_heater) if h]
+        for converter in ordered:
             if converter.active:
                 same_group = (stored_results_flag == True and
                               converter.assigned_distributors == converters[stored_converter_tag].assigned_distributors)

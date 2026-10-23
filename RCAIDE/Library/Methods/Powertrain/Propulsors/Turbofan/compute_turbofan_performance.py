@@ -17,7 +17,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine              import co
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle     import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle   import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan             import compute_thrust
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Common               import compute_gas_generator_shaft_power_offtake
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common               import compute_gas_generator_shaft_power_offtake, extend_thrust_below_floor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance_surrogate import compute_turbofan_performance_surrogate
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
     pack_design_constants, pack_reference_point,
@@ -25,6 +25,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Ma
 
 import  numpy as  np
 from copy import  deepcopy
+from scipy.interpolate import RegularGridInterpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_performance
@@ -625,6 +626,10 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     itself) has none either, so `noise_conditions` is NaN for exactly those
     points, real everywhere else.
 
+    Below the matching floor the fuel flow stays at the floor and the thrust
+    decays from the floor thrust toward zero (extend_thrust_below_floor), so
+    it is never negative and keeps a gradient for the mission solver.
+
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.solve_turbofan_offdesign_robust
@@ -648,6 +653,18 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     design_constants = turbofan.offdesign_matching.design_constants
     reference_point  = turbofan.offdesign_matching.reference_point
     idle_fallback    = getattr(turbofan.offdesign_matching, 'idle_fallback', None)
+    matching_floor   = getattr(turbofan.offdesign_matching, 'matching_floor', None)
+
+    # lowest Tt4 fraction the matching solver represents; below it thrust decays from the floor (extend_thrust_below_floor)
+    if matching_floor is not None:
+        floor_interpolator = RegularGridInterpolator((matching_floor.altitude, matching_floor.mach_number),
+                                                     matching_floor.combustor_exit_temperature_fraction,
+                                                     bounds_error=False, fill_value=None)
+        floor_fraction     = floor_interpolator(np.column_stack([altitude, mach_number]))
+    else:
+        floor_fraction     = np.full(n, -np.inf)
+    below_floor = throttle < floor_fraction
+    floor_step  = 0.02  # Tt4 fraction step for the floor thrust slope
 
     thrust_N             = np.zeros(n)
     fuel_mass_flow_rate   = np.zeros(n)
@@ -687,42 +704,36 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbofan, state, lpc_conditions.omega)
     shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
     for i in range(n):
-        combustor_exit_temperature = reference_point.Tt4 * throttle[i]
+        combustor_exit_temperature = reference_point.Tt4 * max(throttle[i], floor_fraction[i])
         try:
             result = solve_turbofan_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
                 combustor_exit_temperature, packed_design_constants=packed_design_constants,
                 packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
+            thrust = result.thrust
+            if below_floor[i]:
+                # station data and fuel flow stay at the floor
+                above_floor = solve_turbofan_offdesign_robust(
+                    design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
+                    reference_point.Tt4 * (floor_fraction[i] + floor_step), packed_design_constants=packed_design_constants,
+                    packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
+                floor_slope = (above_floor.thrust - result.thrust) / floor_step
+                thrust      = extend_thrust_below_floor(result.thrust, floor_slope, throttle[i], floor_fraction[i])
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise
-            # rating_code left at default (RC=0): idle_fallback's own build merges idle
-            # shape into the SAME rating-code-0 throttle axis as its part-power sweep (see
-            # aircraft_engine_mission_test.py's build_part_power_deck/setup_offdesign for
-            # why), so the actual requested throttle carries through instead of collapsing
-            # to a fixed idle value regardless of how much power was actually asked for.
-            #
-            # NOT clamped at 0: tried a hard max(throttle, 0.0) here (idle_fallback's deck
-            # has no data below throttle=0, so querying below it is extrapolation past the
-            # RBF's training domain). That is true, but the clamp itself is worse -- it
-            # makes F/FF exactly constant for every throttle < 0, i.e. zero local
-            # derivative there, and the segment's own Newton-type trim solver legitimately
-            # searches through slightly-negative throttle as a smooth control variable
-            # while converging on a small/negative net-thrust target during descent.
-            # Handing it a flat, zero-gradient region broke that Newton iteration outright
-            # (confirmed: thrust and throttle diverged to ~1e20/-1e5 on the very next full
-            # mission run). Left unclamped -- the pre-existing, real, but smooth
-            # extrapolation behavior the solver already relies on -- pending a fix that
-            # preserves a nonzero gradient below throttle=0 (e.g. extending the training
-            # deck with its own smoothly-extrapolated sub-zero anchor points) instead of a
-            # hard clamp. See aircraft_engine_mission_test.py's idle_fallback investigation
-            # in RESEARCH/22_ATI/Engine_Validation/.
+            # the deck is queried at the floor, not extrapolated below its data; fuel flow stays at the floor
+            query_fraction = max(throttle[i], floor_fraction[i])
             F, FF = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
-                                         throttle=np.array([throttle[i]]))
+                                         throttle=np.array([query_fraction]))
+            if below_floor[i]:
+                F_above, _ = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
+                                                 throttle=np.array([floor_fraction[i] + floor_step]))
+                F = np.array([extend_thrust_below_floor(F[0], (F_above[0] - F[0]) / floor_step, throttle[i], floor_fraction[i])])
             thrust_N[i]             = F[0]
             fuel_mass_flow_rate[i]  = FF[0]
             continue
-        thrust_N[i]                                = result.thrust
+        thrust_N[i]                                = thrust
         fuel_mass_flow_rate[i]                      = result.fuel_mass_flow_rate
         core_nozzle_exit_velocity[i]                = result.core_nozzle_exit_velocity
         fan_nozzle_exit_velocity[i]                 = result.fan_nozzle_exit_velocity
@@ -772,6 +783,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     turbofan_conditions.outputs.thrust                     = thrust_vector
     turbofan_conditions.outputs.moment                     = moment
     turbofan_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
+    turbofan_conditions.below_matching_floor               = below_floor.astype(float).reshape(-1,1)
 
     # same fields the analytical path sets (~lines 441-448, 476-477); NaN at idle_fallback points
     turbofan_conditions.bypass_ratio                       = alpha_out.reshape(-1,1)

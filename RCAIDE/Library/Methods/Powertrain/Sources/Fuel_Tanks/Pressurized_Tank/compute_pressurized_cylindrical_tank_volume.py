@@ -6,7 +6,7 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import find_root
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Pressurized Cylindrical Tank Volume
@@ -31,7 +31,8 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
         Tank object.  ``diameters.external`` and ``lengths.external`` must
         already be set by the upstream geometry function.
     fuel_tanks : Container, optional
-        Parent container.  Tank is removed if sizing produces invalid results.
+        Parent container. The tank is removed from it, with a warning, if it is shorter than its diameter or
+        its walls leave no cylindrical section.
 
     Updates (in-place)
     ------------------
@@ -55,6 +56,12 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     P_external     = fuel_tank.design_external_pressure
     sigma_allow    = fuel_tank.inner_structure.material.yield_tensile_strength / safety_factor
     ullage_frac    = fuel_tank.ullage_volume_fraction
+    if fuel_tank.lengths.external < fuel_tank.diameters.external:
+        print(f"[WARNING] Tank '{fuel_tank.tag}' is {fuel_tank.lengths.external:.2f} m long, shorter than its "
+              f"{fuel_tank.diameters.external:.2f} m diameter. Removing from list.")
+        if fuel_tanks is not None:
+            fuel_tanks.pop(fuel_tank.tag)
+        return
 
     R_o   = fuel_tank.diameters.external / 2
     L_o   = fuel_tank.lengths.external
@@ -67,8 +74,8 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     #  equals sigma_allow.  Here ro = R_o (the external radius IS the
     #  pressure-vessel outer radius — no insulation on top).
     # ------------------------------------------------------------------
-    ro_ri  = _find_root(_tank_stress, 1 + 1e-5, 2.0,
-                        args=(P_internal, P_external, sigma_allow), xtol=1e-8)
+    ro_ri  = find_root(tank_stress, 1 + 1e-5, 2.0,
+                       args=(P_internal, P_external, sigma_allow), xtol=1e-8)
     r_inner = R_o / ro_ri
     t_wall  = R_o - r_inner
 
@@ -76,9 +83,8 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     L_cyl_i = L_cyl - 2 * t_wall  # inner cylindrical section length
 
     if L_cyl_i < 0:
+        print(f"[WARNING] Tank '{fuel_tank.tag}': wall thickness exceeds cylinder half-length. Removing from list.")
         if fuel_tanks is not None:
-            print(f"[WARNING] Tank '{fuel_tank.tag}': wall thickness exceeds cylinder half-length. "
-                  "Removing from list.")
             fuel_tanks.pop(fuel_tank.tag)
         return
 
@@ -128,7 +134,7 @@ def compute_pressurized_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Wall thickness: von Mises stress residual for a thick-walled cylinder (Lamé)
 # ----------------------------------------------------------------------------------------------------------------------
-def _tank_stress(ro_ri, P_internal, P_external, sigma_allow):
+def tank_stress(ro_ri, P_internal, P_external, sigma_allow):
     A = (P_internal - P_external * ro_ri**2) / (ro_ri**2 - 1)
     B = (P_internal - P_external) * ro_ri**2 / (ro_ri**2 - 1)
 

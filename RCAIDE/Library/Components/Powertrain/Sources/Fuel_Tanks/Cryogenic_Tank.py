@@ -31,80 +31,47 @@ from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_ro
 # ----------------------------------------------------------------------------------------------------------------------
 class Cryogenic_Tank(Non_Integral_Tank):
     """
-    A non-integral cryogenic fuel tank for liquid hydrogen, liquid natural gas,
-    or other cryogenic propellants.
-
-    The user must set ``fuel`` and ``design_inlet_temperature`` for the specific
-    cryogenic propellant being stored.
+    Non-integral tank for liquid hydrogen, liquid natural gas or other cryogenic propellants. The user sets
+    ``fuel`` and ``design_inlet_temperature``.
 
     Attributes
     ----------
     geometry_type : str
-        Tank shape: 'cylindrical', 'conformal', or 'prismatic' (default: 'cylindrical').
-    design_inlet_temperature : float or None
-        Nominal inlet temperature of the cryogen [K] (default: None).
+        'cylindrical' (default), 'conformal' or 'prismatic'.
+    design_inlet_temperature : float
+        Storage temperature of the liquid [K].
     design_altitude : float
-        Design altitude for thermal/structural sizing [m].
+        Altitude for thermal and structural sizing [m].
     design_heat_flux : float
-        Maximum allowable heat leak per unit area [W/m²] (default: 20).
+        Allowable heat leak per unit area used to size the insulation [W/m^2].
     design_total_heat_transfer : float
-        Maximum allowable total heat leak [W] (default: 2000).
+        Allowable total heat leak [W].
     ullage_volume_fraction : float
-        Fraction of internal volume reserved for ullage (default: 0.07).
+        Fraction of the internal volume left as ullage at full load [-].
     safety_factor : float
-        Structural factor of safety (default: 1.6). Sole structural safety
-        margin on the yield criterion (``sigma_vm <= sigma_y/safety_factor``);
-        no separate burst/proof pressure factor is applied on top of it -- an
-        earlier fixed ``pressure_factor`` (~5x) multiplier stacked
-        multiplicatively on the same yield check as this factor, was never
-        itself sampled/varied, and had no distinct ultimate-strength criterion
-        to justify as a separate margin, so it was removed as redundant.
+        Structural factor of safety on yield, sigma_vm <= sigma_y / safety_factor (default: 1.6).
     boil_off_model : str
-        'quasi_steady' (default) solves the full 6-state implicit two-phase
-        boil-off model (ullage/liquid mass, temperature, volume) as
-        mission-level unknowns -- physically detailed (pressure/temperature
-        evolution, active-heater/vent response, fill-level-dependent wetted
-        area), but adds real coupling to the shared mission-level solve; a
-        vehicle with several tanks can strain solver robustness. 'none'
-        falls back to the plain (non-cryogenic) fuel tank behavior -- no
-        boil-off physics at all, matching ``develop``/``network_refactor``:
-        fuel burns down at the engine's offtake rate only, no unknowns, no
-        per-point coupling. Named to match the quasi-steady two-phase
-        thermodynamic model of the underlying report's Section V.B, rather
-        than as a bare "detailed/not detailed" toggle, so that a future
-        additional model doesn't have to be shoehorned into a boolean.
+        'quasi_steady' (default) solves the two-phase tank model (ullage and liquid mass and temperature)
+        as an ODE within each tank evaluation. 'none' uses the plain fuel tank: fuel leaves only by engine
+        draw, with no boil-off.
+    heater_power_margin : float
+        Multiple of the takeoff pressurant demand the heater is sized to when ``Heater.design_power``
+        is not set (default: 1.5).
     heater_direct_boiloff_fraction : float
-        Fraction of the pressure-builder heater's power that goes directly to
-        flash-boiling liquid at the interface, with the remainder instead
-        raising the bulk liquid temperature (default: 0.1). Matches Adler &
-        Martins (2025) eta_h, Eq. 13/17/24, tuned against real LH2 ground-test
-        data (Section 4.2: "the vast majority of the heat from the heater
-        goes into the liquid... we select a value of 0.1"). Validated for
-        LH2 only; unvalidated for LNG, used here as the best available
-        anchor.
+        Fraction of heater power that boils liquid directly; the rest warms the liquid (default: 0.1).
+        This is eta_h of Adler & Martins (2025), Eqs. 13, 17 and 24, tuned on LH2 ground tests (Sec. IV.B).
+        It has not been validated for LNG.
     pressure_margin : float
-        Operating ullage pressure margin above the saturation pressure at
-        ``design_inlet_temperature`` [Pa] (default: 2 bar = 2e5 Pa). Sets
-        ``design_pressure = P_rated = P_sat(design_inlet_temperature) +
-        pressure_margin``, matching the AST paper's Eq. 4 (sampled 2-6 bar in
-        their Table 5). This is both the in-flight runtime target the
-        detailed boil-off model regulates the ullage to, AND the internal
-        design pressure (``P_internal = P_rated``) fed directly into the
-        structural wall-thickness sizing -- the only additional structural
-        margin beyond the physical rated pressure is ``safety_factor``.
+        Pressure above P_sat(design_inlet_temperature) that sets ``design_pressure``, the maximum operating
+        pressure used for wall sizing and as the vent pressure [Pa] (default: 2 bar).
+    minimum_operating_pressure : float
+        Pressure below which the heater adds boil-off to keep tank pressure from falling [Pa]. Set to
+        P_sat(design_inlet_temperature) during sizing when not given. Between this pressure and
+        ``design_pressure`` the tank self-pressurizes from heat leak, following Adler & Martins (2025),
+        Sec. I: the heater prevents pressure from decreasing and the tank vents at its limit.
     pressure_regulation_time_constant : float
-        Characteristic response time [s] of the tank's heater/vent regulation
-        system correcting a ullage pressure deviation from ``design_pressure``
-        (default: 400 s). Drives the regulation flow explicitly, m_dot_reg =
-        V_g/(R_specific*T_g*tau) * (design_pressure - P) -- a finite-gain
-        feedback law, not an exact/instantaneous constraint. Adler & Martins
-        (2025) tuned their analogous heater thermal-inertia constant C_h to
-        5e-3 /s (~200 s response) against real extraction-test data (their
-        Sec. IV.B); their open-source reference implementation's own example/
-        default is slower still (500-1000 s). 400 s is chosen in that range;
-        the previous 60 s default was untuned and, combined with heater_power
-        having no cap of its own, could demand unphysically large heater
-        power for an ordinary pressure deficit (see Heater.design_power).
+        Response time of the heater and vent regulation [s] (default: 400). Within the range of the heater
+        response constant C_h tuned by Adler & Martins (2025), Sec. IV.B.
     """
 
     def __defaults__(self):
@@ -123,8 +90,10 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.safety_factor                  = 1.6
         self.boil_off_model                 = 'quasi_steady'
         self.heater_direct_boiloff_fraction = 0.1
+        self.heater_power_margin            = 1.5
         self.pressure_margin                = 2 * Units.bar
-        self.design_pressure                = None  # set from pressure_margin during design-time sizing
+        self.design_pressure                = None
+        self.minimum_operating_pressure     = None
         self.pressure_regulation_time_constant = 400.0
 
     def compute_volume(self, wings, fuselages, fuel_tanks):

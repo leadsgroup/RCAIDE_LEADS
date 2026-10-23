@@ -3,7 +3,7 @@
  ---------------------------------------------
  Run case  1:   case_0001_0001
 
- alpha        ->  CL       =   0.3333        
+ alpha        ->  CL       =   0.33333333        
  beta         ->  beta        =   0.0
  pb/2V        ->  pb/2V       =   0.0
  qc/2V        ->  qc/2V       =   0.0
@@ -23,9 +23,9 @@
  bank      =   0.00000     deg
  elevation =   0.00000     deg
  heading   =   0.00000     deg
- Mach      =   0.159
+ Mach      =   0.15901492
  velocity  =   0.0     m/s               
- density   =   1.1379     kg/m^3
+ density   =   1.13787167     kg/m^3
  grav.acc. =   9.80430458268175     m/s^2
  turn_rad. =   0.00000     m
  load_fac. =   0.00000

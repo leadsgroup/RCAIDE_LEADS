@@ -128,7 +128,7 @@ def nacelle_drag(state,settings, nacelle):
 
     The reference area is:
 
-    :math:`S_{ref} = \pi \cdot d_{nac} \cdot l_{nac}`
+    :math:`S_{ref} = \pi d_{nac}^2 / 4`
 
     where :math:`d_{nac}` is the nacelle diameter.
 
@@ -170,7 +170,7 @@ def nacelle_drag(state,settings, nacelle):
     form_factor      = settings.nacelle_parasite_drag_form_factor
     low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number
     high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number 
-    Sref             = np.pi * nacelle.diameter * nacelle.length 
+    Sref             = np.pi * nacelle.diameter**2 / 4  # frontal area, the area parasite_total rescales by
     Swet             = nacelle.areas.wetted
     
     # Reynolds number
