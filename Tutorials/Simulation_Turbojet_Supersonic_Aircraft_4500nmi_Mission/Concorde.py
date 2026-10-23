@@ -243,13 +243,13 @@ def vehicle_setup():
     aileron.chord_fraction        = 0.22 
     wing.append_control_surface(aileron)
         
-    spoiler                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
-    spoiler.tag                   = 'elevator'
-    spoiler.span_fraction_start   = 0.08
-    spoiler.span_fraction_end     = 0.24
-    spoiler.deflection            = 0.0 * Units.degrees
-    spoiler.chord_fraction        = 0.1
-    wing.append_control_surface(spoiler)       
+    elevator                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
+    elevator.tag                   = 'elevator'
+    elevator.span_fraction_start   = 0.08
+    elevator.span_fraction_end     = 0.24
+    elevator.deflection            = 0.0 * Units.degrees
+    elevator.chord_fraction        = 0.1
+    wing.append_control_surface(elevator)       
     
     
     # add to vehicle
