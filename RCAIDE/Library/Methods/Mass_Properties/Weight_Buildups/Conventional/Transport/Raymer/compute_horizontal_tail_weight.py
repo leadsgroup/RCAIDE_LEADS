@@ -17,7 +17,7 @@ import  numpy as  np
 #  Horizontal Tail Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_horizontal_tail_weight(vehicle, wing, settings,elevator_fraction=0.4):
-    """
+    r"""
     Calculates horizontal tail weight based on Raymer's empirical method.
 
     Parameters

@@ -120,9 +120,9 @@ def BWB_Test():
     print('BWB  Moment of Inertia')
     print(computed_moi)
     truth_OEW_CG_mass_percentage = 100.49
-    truth_moi = np.array([[ 3688437.9011694,  1316353.82718926,  -829734.69404991],
-                          [ 1316353.82718926, 13804989.31878658,    41815.97869697],
-                          [ -829734.69404991,    41815.97869697, 16349861.40407366]])
+    truth_moi = np.array([[3966294.8948337063, 1132847.5566527294, -661502.3988005595],
+                          [1132847.5566527294, 12841238.114714295, 11196.023072076852],
+                          [-661502.3988005595, 11196.023072076852, 15824748.080280194]])
 
     error_moi = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_moi < 1e-2),\
@@ -156,10 +156,10 @@ def Transport_Aircraft_Test():
     print('Transport Moment of Inertia')
     print(MOI)
 
-    truth_OEW_CG_mass_percentage = 99.32
-    truth_moi  = np.array([[ 7065324.68531665,   -36885.71263030,  -245501.06986959],
-                           [  -36885.71263030, 33429430.78972817,   111974.20695348],
-                           [ -245501.06986959,   111974.20695348, 36160872.25346041]])
+    truth_OEW_CG_mass_percentage = 99.46
+    truth_moi  = np.array([[12970717.145681057, -68135.05453059517, -673737.9486822262],
+                           [-68135.05453059517, 34105933.215905815, 127034.57682614404],
+                           [-673737.9486822262, 127034.57682614404, 42109466.22712972]])
 
     error_moi = abs((MOI - truth_moi) / np.where(truth_moi != 0, truth_moi, 1))
     assert np.all(error_moi < 1e-6),\
@@ -194,10 +194,10 @@ def General_Aviation_Test():
     print('GA Moment of Inertia')
     print(MOI)
 
-    truth_OEW_CG_mass_percentage = 98.78
-    truth_moi  = np.array([[  449.57227680822189, -6.9540381428015504e-15,  -29.317141217591523],
-                           [-6.9540381428015504e-15,  3767.6375607799655 , -6.1325903062975410e-15],
-                           [ -29.317141217591523 , -6.1325903062975410e-15,  3518.9283237494451 ]])
+    truth_OEW_CG_mass_percentage = 98.83
+    truth_moi  = np.array([[1673.3263273156592, -9.10346811421294e-15, -50.21258015442855],
+                           [-9.10346811421294e-15,3390.339665013296, -3.588447395482367e-15],
+                           [-50.21258015442855, -3.588447395482367e-15, 4403.743245910043]])
 
     error_moi = abs(MOI - truth_moi)
     assert np.all(error_moi < 1e-5),\
@@ -229,10 +229,10 @@ def EVTOL_Aircraft_Test(update_regression_values):
     print('EVTOL Moment of Inertia')
     print(MOI)
 
-    truth_OEW_CG_mass_percentage = 86.08
-    truth_moi  = np.array([[ 9010.39229324,  -563.89801682,  -926.2111993 ],
-                           [ -563.89801682, 10052.15660705,   -82.83881005],
-                           [ -926.2111993 ,   -82.83881005, 17343.21296395]])
+    truth_OEW_CG_mass_percentage = 87.27
+    truth_moi  = np.array([[9754.199745833937, -581.1402882111747, -1057.7065266148538],
+                           [-581.1402882111747, 9590.353939483353, -83.36248879001637],
+                           [-1057.7065266148538, -83.36248879001637, 17612.2915494917]])
 
     error_moi = abs((MOI - truth_moi) / truth_moi)
     assert np.all(error_moi < 5e-2),\

@@ -78,7 +78,7 @@ def AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_
  
     # Extract sample values from computation   
     cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    cruise_CL_thruth = 0.42534522737302277
+    cruise_CL_thruth = 0.4380948634609055
     # Truth values
     error = Data()
     error.cruise_CL   = np.max(np.abs(cruise_CL - cruise_CL_thruth))

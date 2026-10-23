@@ -238,8 +238,12 @@ def populate_wing_sections(avl_wing,rcaide_wing):
 
         # assign wing airfoil
         if  (rcaide_wing.airfoil !=  None) and (isinstance(rcaide_wing.airfoil, RCAIDE.Library.Components.Airfoils.Airfoil)) :
-            root_section.airfoil_coord_file  = rcaide_wing.airfoil.coordinate_file          
-            tip_section.airfoil_coord_file   = rcaide_wing.airfoil.coordinate_file     
+            if type(rcaide_wing.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                root_section.naca_airfoil = rcaide_wing.airfoil.NACA_4_Series_code
+                tip_section.naca_airfoil  = rcaide_wing.airfoil.NACA_4_Series_code
+            else:
+                root_section.airfoil_coord_file  = write_avl_airfoil_file(rcaide_wing.airfoil.coordinate_file, thickness_multiplier = rcaide_wing.airfoil.thickness_multiplier)
+                tip_section.airfoil_coord_file   = write_avl_airfoil_file(rcaide_wing.airfoil.coordinate_file, thickness_multiplier = rcaide_wing.airfoil.thickness_multiplier)
 
         avl_wing.append_section(root_section)
         avl_wing.append_section(tip_section)

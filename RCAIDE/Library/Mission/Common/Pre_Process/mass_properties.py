@@ -14,7 +14,7 @@ from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_ve
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_mass import compute_fuel_mass
 from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_correction_factors   import apply_correction_factors, apply_component_weights
 from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_report import print_mass_report, write_mass_report   
-from scipy.optimize import brentq, minimize_scalar
+from scipy.optimize import brentq
 import numpy as np
 import pandas as pd 
 
@@ -187,7 +187,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
 
         if (analyses.vehicle.mass_properties.fuel  == 0 or analyses.vehicle.mass_properties.fuel is None) and weights_analysis.propulsion_architecture != 'Electric':
             ('Fuel Weight for the mission is not defned. Filling up the airplace till max takeoff weight')     
-            analyses.vehicle.mass_properties.fuel     = analyses.vehicle.mass_properties.max_takeoff- (analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload) 
+            analyses.vehicle.mass_properties.fuel     = analyses.vehicle.mass_properties.max_takeoff- (analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload)
 
         # Compute takeoff weight and max zero fuel weight 
         if analyses.vehicle.mass_properties.takeoff == None:
@@ -218,6 +218,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
                                                 overwrite_center_of_gravity =  weights_analysis.settings.run_center_of_gravity_analysis ,
                                                 segment=segment,
                                                 verbose=verbose_flag)  
+        if i == 0:
+            check_center_of_gravity(analyses.vehicle)
 
         if i==0 and weights_analysis.settings.write_mass_properties:
             # Centre of Gravity sheet
@@ -226,6 +228,10 @@ def mass_properties_preprocess_routine(segment, i = 0):
             print(f"CG breakdown written to Excel:\n  {excel_filename}")
 
         analyses.vehicle.mass_properties.center_of_gravity_breakdown = centre_of_gravity_df  
+    else:
+        # use the vehicle's prescribed center of gravity
+        CG = np.atleast_2d(np.array(analyses.vehicle.mass_properties.center_of_gravity, dtype=float))
+        segment.state.conditions.weights.vehicle.global_center_of_gravity = CG * segment.state.ones_row(1)
 
     # ---------------------------------------------------------------------------------------------------------------------------         
     # STEP 6: Compute Moment of Inertia 
@@ -249,6 +255,14 @@ def mass_properties_preprocess_routine(segment, i = 0):
             with pd.ExcelWriter(excel_filename, engine="openpyxl",mode="a",if_sheet_exists="replace") as writer:
                 moment_of_inertia_df.to_excel(writer,sheet_name="Moment of Inertia",index=False)
             print(f"MOI breakdown written to Excel:\n  {excel_filename}") 
+    else:
+        # use the vehicle's prescribed moment of inertia tensor
+        tensor      = np.array(analyses.vehicle.mass_properties.moments_of_inertia.tensor, dtype=float)
+        ones_row    = segment.state.ones_row
+        vehicle_MOI = segment.state.conditions.weights.vehicle
+        for i_axis, axis_i in enumerate('xyz'):
+            for j_axis, axis_j in enumerate('xyz'):
+                vehicle_MOI['moments_of_inertia_I' + axis_i + axis_j] = tensor[i_axis, j_axis] * ones_row(1)
  
 
 def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
@@ -301,11 +315,19 @@ def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
     return
 
 
-def solve_for_mtow(analyses, weights_analysis, i):
+def solve_for_mtow(analyses, weights_analysis, i, max_bracket_expansions=10):
     """Solves for MTOW that satisfies the target capacity fraction.
 
     The MTOW capacity fraction is MTOW / (OEW + Max Fuel + Max Payload).
     Uses brentq for superlinear convergence instead of fixed-point iteration.
+
+    The initial bracket is +/-50% of the current MTOW guess. If that bracket
+    does not contain a root (the residual has the same sign at both ends),
+    it is expanded, in the direction indicated by the sign of the residual,
+    until a sign change is found or max_bracket_expansions is exhausted. A
+    vehicle whose real max_fuel/OEW/max_payload combination cannot satisfy
+    mtow_capacity_fraction anywhere near the initial guess raises rather than
+    silently returning an unconverged bracket edge.
     """
 
     target_fraction    = weights_analysis.settings.mtow_capacity_fraction
@@ -329,16 +351,54 @@ def solve_for_mtow(analyses, weights_analysis, i):
         max_payload = analyses.vehicle.mass_properties.max_payload
         return target_fraction - mtow / (oew + max_fuel + max_payload)
 
-    mtow_0 = analyses.vehicle.mass_properties.max_takeoff
-    try:
-        mtow_converged = brentq(_mtow_residual, 0.5 * mtow_0, 1.5 * mtow_0, xtol=1.0)
-    except ValueError:
-        res = minimize_scalar(lambda m: _mtow_residual(m)**2,
-                              bounds=(0.5 * mtow_0, 1.5 * mtow_0), method='bounded')
-        mtow_converged = float(res.x)
+    mtow_0  = analyses.vehicle.mass_properties.max_takeoff
+    lo, hi  = 0.5 * mtow_0, 1.5 * mtow_0
+    r_lo, r_hi = _mtow_residual(lo), _mtow_residual(hi)
+
+    expansions = 0
+    while r_lo * r_hi > 0 and expansions < max_bracket_expansions:
+        if r_hi > 0:
+            # target fraction not yet reached even at the top of the bracket: MTOW/capacity
+            # is still below target, so the root (if any) lies above hi
+            hi   *= 1.5
+            r_hi  = _mtow_residual(hi)
+        else:
+            # MTOW/capacity already exceeds target at the bottom of the bracket: the root
+            # (if any) lies below lo
+            lo   *= 0.5
+            r_lo  = _mtow_residual(lo)
+        expansions += 1
+
+    if r_lo * r_hi > 0:
+        raise RuntimeError(
+            f"solve_for_mtow: could not bracket a root for mtow_capacity_fraction="
+            f"{target_fraction} after {expansions} bracket expansions "
+            f"(searched [{lo:.0f}, {hi:.0f}] kg, residuals {r_lo:.4f} / {r_hi:.4f}). "
+            f"The vehicle's OEW/max_fuel/max_payload combination cannot satisfy this "
+            f"capacity fraction near the initial MTOW guess of {mtow_0:.0f} kg -- check "
+            f"that mtow_capacity_fraction is calibrated against this vehicle's actual "
+            f"(e.g. tank-derived) max_fuel rather than copied from another vehicle."
+        )
+
+    mtow_converged = brentq(_mtow_residual, lo, hi, xtol=1.0)
 
     # Final evaluation to leave vehicle in correct state
     _mtow_residual(mtow_converged)
     analyses.vehicle.mass_properties.max_takeoff = mtow_converged
 
+    return
+
+def check_center_of_gravity(vehicle):
+    """Prints a warning when the components miss or double count operating empty mass, or the empty aircraft would tip onto its tail."""
+    mass_properties = vehicle.mass_properties
+    OEW_CG_mass_percentage = mass_properties.get('OEW_CG_mass_percentage')
+    OEW_CG                 = mass_properties.get('operating_empty_center_of_gravity')
+    if OEW_CG_mass_percentage is not None and abs(OEW_CG_mass_percentage - 100) > 2:
+        print(f'Warning: components carry {OEW_CG_mass_percentage:.1f}% of the operating empty weight; the center of gravity omits or double counts mass.')
+    main_gears = [gear for gear in vehicle.landing_gears if isinstance(gear, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear)]
+    if len(main_gears) > 0 and OEW_CG is not None:
+        x_OEW       = np.array(OEW_CG)[0][0]
+        x_main_gear = np.mean([np.array(gear.mass_properties.center_of_gravity)[0][0] + np.array(gear.origin)[0][0] for gear in main_gears])
+        if x_OEW > x_main_gear:
+            print(f'Warning: operating empty center of gravity (x = {x_OEW:.2f} m) is aft of the main landing gear (x = {x_main_gear:.2f} m).')
     return

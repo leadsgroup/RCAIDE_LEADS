@@ -79,44 +79,23 @@ def apply_component_weights(analyses):
             for boom in analyses.vehicle.booms:
                 boom.mass_properties.mass *= structural.get('boom', 1.0)
         elif key == 'systems':
-            # Systems are attached via network.systems (see every vehicle_setup()
-            # in this codebase), not vehicle.systems.
-            all_systems = []
-            for network in analyses.vehicle.networks:
-                all_systems.extend(network.systems)
-            for system in all_systems:
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
+            Systems      = RCAIDE.Library.Components.Powertrain.Systems
+            breakdown    = analyses.vehicle.mass_properties.weight_breakdown
+            system_types = {Systems.Avionics: 'avionics', Systems.Flight_Controls: 'control_systems', Systems.Auxiliary_Power_Unit: 'apu',
+                            Systems.Electrical: 'electrical', Systems.Hydraulics: 'hydraulics', Systems.Environmental_Controls: 'air_conditioner',
+                            Systems.Instruments: 'instruments', Systems.Furnishings: 'furnishings'}
+            all_systems  = [system for network in analyses.vehicle.networks for system in network.systems]
+            for system_type, name in system_types.items():
+                components = [system for system in all_systems if type(system) == system_type and system.mass_properties.mass != 0]
+                if len(components) == 0:
+                    continue
+                for system in components:
                     if system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= systems.get('avionics', 1.0)
-                    else:
-                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.avionics = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
-                    if system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= systems.get('control_systems', 1.0)
-                    else:
-                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.control_systems = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit:
-                    if system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= systems.get('apu', 1.0)
-                    else:
-                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.apu = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical:
-                    if system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= systems.get('electrical', 1.0)
-                    else:
-                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.electrical = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics:
-                    if system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= systems.get('hydraulics', 1.0)
-                    else:
-                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.hydraulics = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls:
-                    if system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= systems.get('air_conditioner', 1.0)
-                    else:
-                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.air_conditioner = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
-                    if system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= systems.get('instruments', 1.0)
-                    else:
-                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.instruments = system.mass_properties.mass  
+                        system.mass_properties.mass *= systems.get(name, 1.0)
+
+                # breakdown entry is the sum of its components so the OEW and the CG use the same mass
+                delta = sum(system.mass_properties.mass for system in components) - breakdown.empty.systems.get(name, 0.0)
+                breakdown.empty.systems[name]                     = breakdown.empty.systems.get(name, 0.0) + delta
+                breakdown.empty.systems.total                    += delta
+                breakdown.empty.total                            += delta
+                analyses.vehicle.mass_properties.operating_empty += delta

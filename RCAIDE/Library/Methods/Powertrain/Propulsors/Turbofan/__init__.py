@@ -15,9 +15,19 @@ RCAIDE.Framework.Analysis.Propulsion
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
  
-from .append_turbofan_conditions                                 import append_turbofan_conditions 
+from .append_turbofan_conditions                                 import append_turbofan_conditions
 from .compute_thurst                                             import compute_thrust
-from .size_core                                                  import size_core 
-from .compute_turbofan_performance                               import compute_turbofan_performance 
+from .size_core                                                  import size_core
+from .compute_turbofan_performance                               import compute_turbofan_performance
 from .compute_turbofan_performance                               import reuse_stored_turbofan_data
-from .design_turbofan                                            import design_turbofan    
+from .compute_turbofan_performance                               import compute_turbofan_performance_offdesign
+from .compute_turbofan_performance_surrogate                     import compute_turbofan_performance_surrogate
+from .design_turbofan                                            import design_turbofan
+from .Turbofan_Surrogate                                         import Turbofan_Surrogate
+from .Turbofan_OffDesign_Matching                                import OffDesignMatchingError
+from .Turbofan_OffDesign_Matching                                import solve_turbofan_offdesign
+from .Turbofan_OffDesign_Matching                                import solve_turbofan_offdesign_robust
+from .design_turbofan_offdesign_matching                         import design_turbofan_offdesign_matching
+from .generate_turbofan_deck                           import generate_turbofan_deck
+from .build_turbofan_offdesign_matching                         import build_turbofan_offdesign_matching
+from .size_turbofan_to_rated_takeoff_thrust                      import size_turbofan_to_rated_takeoff_thrust

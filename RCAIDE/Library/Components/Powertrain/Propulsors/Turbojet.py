@@ -74,7 +74,20 @@ class Turbojet(Propulsor):
         
     compressor_nondimensional_massflow : float
         Non-dimensional mass flow through the compressor. Default is 0.0.
-        
+
+    design_power_offtake : float
+        Design-point shaft power extracted from (or, via `integrated_drive_
+        motor`, added to) the low-pressure spool by `integrated_drive_
+        generator`/`integrated_drive_motor` [W]. Same convention as
+        `Turbofan.design_power_offtake` -- fed into the HP turbine's energy
+        balance as specific work. Default is 0.0.
+
+    design_shaft_work_specific : float
+        HP-spool external shaft power offtake (IDG/motor), as *specific*
+        work [J/kg core flow] at the converged design point -- set by
+        `design_turbojet`. Zero for an engine with no `integrated_drive_
+        generator`/`integrated_drive_motor`. Default is 0.0.
+
     reference_temperature : float
         Reference temperature for calculations [K]. Default is 288.15.
         
@@ -89,7 +102,39 @@ class Turbojet(Propulsor):
         
     OpenVSP_flow_through : bool
         Flag for OpenVSP flow-through analysis. Default is False.
-        
+
+    rated_takeoff_thrust : float, optional
+        Rated (maximum dry) sea-level static takeoff thrust [N]. When set (> 0) without
+        `design_thrust`, `design_turbojet` sizes the engine to it and solves `design_thrust`; when set
+        together with `design_thrust`, it solves `rated_takeoff_temperature_ratio` so that the dry sea-level
+        static thrust equals it. Default is 0.0.
+
+    rated_takeoff_temperature_ratio : float
+        Combustor exit temperature at the takeoff rating divided by its design-point value, set by
+        `design_turbojet` (1.0 without a takeoff rating). Throttle is a fraction of the takeoff rating,
+        so throttle 1 runs at this ratio times the design-point combustor exit temperature. Default is 1.0.
+
+    maximum_climb_throttle : float, optional
+        Throttle of the maximum climb rating. None (default) takes the design point,
+        1/rated_takeoff_temperature_ratio, as maximum climb; set it for an engine whose design point is
+        not maximum climb (e.g. sea-level static).
+
+    takeoff_combustor_exit_temperature_ratio : float
+        Combustor exit temperature at the takeoff rating divided by its design-point value, used when
+        sizing the engine to `rated_takeoff_thrust`. Default is 1.13, the ratio of the SAFAM engine
+        data (T41 of 1900 K at maximum takeoff, 1686 K at maximum climb).
+
+    offdesign_matching : Data, optional
+        If set (as `Data(design_constants=..., reference_point=...)` from
+        `design_turbojet_offdesign_matching`), `compute_turbojet_performance`
+        uses live off-design component matching
+        (`Turbojet_OffDesign_Matching.solve_turbojet_offdesign_robust`)
+        instead of the analytical cycle model. Built by `design_turbojet` by
+        default (see `build_turbojet_offdesign_matching`), making off-design
+        matching the default performance model; set to None after
+        `design_turbojet` to use the analytical cycle model instead. Default is
+        None.
+
     areas : Data
         Collection of engine areas
 
@@ -153,10 +198,17 @@ class Turbojet(Propulsor):
         self.reference_temperature                       = 288.15
         self.reference_pressure                          = 1.01325*10**5
         self.integrated_drive_generator                  = None
-        self.integrated_drive_motor                      = None 
+        self.integrated_drive_motor                      = None
+        self.design_power_offtake                        = 0.0
+        self.design_shaft_work_specific                  = 0.0 
         self.design_thrust                               = 0.0
-        self.design_mass_flow_rate                       = 0.0 
+        self.rated_takeoff_thrust                        = 0.0     # see docstring
+        self.rated_takeoff_temperature_ratio             = 1.0     # see docstring
+        self.takeoff_combustor_exit_temperature_ratio    = 1.13    # see docstring
+        self.maximum_climb_throttle                      = None    # see docstring
+        self.design_mass_flow_rate                       = 0.0
         self.OpenVSP_flow_through                        = False
+        self.offdesign_matching                          = None    # see docstring
    
         #areas needed for drag; not in there yet   
         self.areas                                       = Data()

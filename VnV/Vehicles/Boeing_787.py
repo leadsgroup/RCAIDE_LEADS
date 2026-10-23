@@ -40,14 +40,14 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     vehicle.mass_properties.fuel                      = 57500 *Units.kilogram
     vehicle.mass_properties.max_payload               = 44000
     vehicle.mass_properties.center_of_gravity         = [[27.0, 0, 0]]
-    vehicle.flight_envelope.ultimate_load             = 3.5
+    vehicle.flight_envelope.ultimate_load             = 3.75 # 1.5 x limit load (14 CFR 25.303)
     vehicle.flight_envelope.positive_limit_load       = 2.5  
     vehicle.flight_envelope.negative_limit_load       = 1
     vehicle.flight_envelope.design_mach_number        = 0.85  
     vehicle.flight_envelope.design_cruise_altitude    = 35000.0*Units.feet 
     vehicle.flight_envelope.design_range              = 7305.0 * Units.nmi
     vehicle.reference_area                            = 395.0 * Units['meters**2']    
-    vehicle.number_of_passengers                      = 248 
+    vehicle.number_of_passengers                      = 294 # seats in the cabin layout below
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "long range" 
 
@@ -57,6 +57,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     # ------------------------------------------------------------------ 
     forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
     forward_cargo_bay.mass_properties.mass        = 1850
+    forward_cargo_bay.containerized               = True # LD3 containers
     forward_cargo_bay.origin                      = [[5.82, 0, -0.6]]
     forward_cargo_bay.length                      = 10
     forward_cargo_bay.width                       = 106 *  Units.inches 
@@ -65,6 +66,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
  
     aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
     aft_cargo_bay.mass_properties.mass           = 1440
+    aft_cargo_bay.containerized                  = True # LD3 containers
     aft_cargo_bay.origin                         = [[30, 0, -0.6]]
     aft_cargo_bay.length                         =  10
     aft_cargo_bay.width                          =  106 *  Units.inches 
@@ -81,7 +83,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     main_gear.wheels                         = 8
     main_gear.number_of_gear_types_in_tandem = 2
     main_gear.number_of_wheels_in_gear_type  = 2
-    main_gear.origin                         = [[28, 5.335, -1.5]]
+    main_gear.origin                         = [[27.49, 4.90, -1.5]]  # gear CG at the 28.19 m main axle, 9.80 m track (APM D6-58333 Sec. 2.2.1)
     main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)
 
@@ -93,7 +95,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     nose_gear.wheels                         = 2
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2
-    nose_gear.origin                         = [[7.0, 0, -1.5]]
+    nose_gear.origin                         = [[4.49, 0, -1.5]]  # gear CG at the 5.41 m nose axle (APM D6-58333 Sec. 2.2.1)
     vehicle.append_component(nose_gear)
 
 
@@ -115,7 +117,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     wing.areas.reference                  = 392.27 * Units['meters**2']
     wing.areas.wetted                     = 825.0 * Units['meters**2']
     wing.twists.root                      = 4.0 * Units.degrees 
-    wing.twists.tip                       = -2.0 * Units.degrees 
+    wing.twists.tip                       = -2.15 * Units.degrees 
     wing.origin                           = [[16.59,0,-0.492]]
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
@@ -386,7 +388,6 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     
     # Segment  
@@ -610,35 +611,27 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     # Systems 
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[5.0, 0, 0]]
     net.systems.append(avionics)
 
     flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[36.5, 0, 0]]
     net.systems.append(flight_controls)
 
     auxiliary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxiliary_power_unit.origin       = [[70.9, 0, 0]]
     net.systems.append(auxiliary_power_unit)
 
     electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[18.3, 0, -0.8]]
     net.systems.append(electrical)
 
     hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[36.5, 0, -0.8]]
     net.systems.append(hydraulics)
 
     environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[21.9, 0, -1.0]]
     net.systems.append(environmental_controls)
 
     instruments = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
-    instruments.origin                = [[5.0, 0, 0]]
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[36.5, 0, 0]]
     net.systems.append(furnishings)
 
 
@@ -652,12 +645,12 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()   
     turbofan1.origin                             = [[18, 10.000,-0.953 ]]
     turbofan1.tag                                = 'propulsor_1'    
-    turbofan1.length                             = 6.0                    
+    turbofan1.length                             = 4.95
     turbofan1.diameter                           = 2.822                  
     turbofan1.bypass_ratio                       = 9.1                        
     turbofan1.design_altitude                    = 36000*Units.ft             
     turbofan1.design_mach_number                 = 0.85                     
-    turbofan1.design_thrust                      = 80000* Units.N
+    turbofan1.rated_takeoff_thrust               = 298000. * Units.N # GEnx-1B64 takeoff rating, 298 kN (EASA TCDS IM.E.102, Issue 12)
     
     # working fluid                   
     turbofan1.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air() 
@@ -680,6 +673,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     fan.tag                                     = 'fan'
     fan.polytropic_efficiency                   = 0.98                 
     fan.pressure_ratio                          = 1.4                    
+    fan.rated_angular_velocity                  = 2560.0 * Units.rpm # GEnx-1B 100% N1 (EASA TCDS IM.E.102, Issue 12)
     turbofan1.fan                                = fan        
 
     # low pressure compressor    
@@ -714,7 +708,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
     combustor                                      = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.997                    
-    combustor.turbine_inlet_temperature            = 1440                  
+    combustor.turbine_inlet_temperature            = 1250
     combustor.pressure_ratio                       = 0.94                     
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan1.combustor                             = combustor
@@ -740,10 +734,10 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8') :
 
     # Nacelle 
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
-    nacelle.diameter                            = 3.2
+    nacelle.diameter                            = 3.556
     nacelle.length                              = 4.8
     nacelle.tag                                 = 'nacelle_1'
-    nacelle.inlet_diameter                      = 2.5
+    nacelle.inlet_diameter                      = 2.822
     nacelle.origin                              = [[17.818, 10.000,-0.953]] 
     nacelle.areas.wetted                        = np.pi*nacelle.diameter*nacelle.length
     nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
@@ -861,6 +855,48 @@ def configs_setup(vehicle):
     
     config.V2_VS_ratio = 1.21
     configs.append(config)
+    # ------------------------------------------------------------------
+    #   Transition Configuration (climb to the 35 ft screen height)
+    # ------------------------------------------------------------------
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'transition'
+    config.wings['main_wing'].control_surfaces.flap.deflection  = 10. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    config.landing_gears.main_gear.gear_extended    = True
+    config.landing_gears.nose_gear.gear_extended    = True
+    configs.append(config)
+
+    # ------------------------------------------------------------------
+    #   Initial Climb Configuration (climb to 400 ft)
+    # ------------------------------------------------------------------
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'initial_climb'
+    config.wings['main_wing'].control_surfaces.flap.deflection  = 10. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    config.landing_gears.main_gear.gear_extended    = False
+    config.landing_gears.nose_gear.gear_extended    = False
+    configs.append(config)
+
+    # ------------------------------------------------------------------
+    #   Acceleration Configuration (acceleration at 400 ft)
+    # ------------------------------------------------------------------
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'accel'
+    config.wings['main_wing'].control_surfaces.flap.deflection  = 10. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    configs.append(config)
+
+    # ------------------------------------------------------------------
+    #   Approach Configuration
+    # ------------------------------------------------------------------
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'approach'
+    config.wings['main_wing'].control_surfaces.flap.deflection  = 0. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    config.landing_gears.main_gear.gear_extended    = True
+    config.landing_gears.nose_gear.gear_extended    = True
+    configs.append(config)
+
 
 
     # ------------------------------------------------------------------

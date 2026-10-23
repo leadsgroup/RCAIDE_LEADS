@@ -1284,7 +1284,7 @@ class Distance:
         raise NotImplementedError("Distance is an abstract class")
 
     def destination(self, point, bearing, distance=None):
-        """
+        r"""
         Calculate destination point using a starting point, bearing
         and a distance. This method works for non-abstract distances only.
 

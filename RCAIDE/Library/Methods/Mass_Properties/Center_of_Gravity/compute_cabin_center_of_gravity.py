@@ -40,9 +40,9 @@ def compute_cabin_center_of_gravity(cabin,comp):
     sorted_indices = LOPA_seats[:, 2].argsort()
     LOPA_sorted_seats    = LOPA_seats[sorted_indices] 
     
-    # find center of gravity 
-    cg_x       = np.sum(LOPA_sorted_seats[idxs,2]*point_mass)/cabin_mass
+    # find center of gravity relative to the cabin origin (LOPA seat coordinates already include it)
+    cg_x       = np.sum(LOPA_sorted_seats[idxs,2]*point_mass)/cabin_mass - cabin.origin[0][0]
     cg_y       = 0
-    cg_z       = np.sum(LOPA_sorted_seats[idxs,4]*point_mass)/cabin_mass                    
+    cg_z       = np.sum(LOPA_sorted_seats[idxs,4]*point_mass)/cabin_mass - cabin.origin[0][2]
     cabin.mass_properties.center_of_gravity = [[cg_x, cg_y, cg_z]]
     return cabin.mass_properties.center_of_gravity

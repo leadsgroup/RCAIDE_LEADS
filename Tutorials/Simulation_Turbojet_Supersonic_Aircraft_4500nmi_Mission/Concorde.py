@@ -471,6 +471,9 @@ def vehicle_setup():
     outer_right_turbojet.design_altitude          = 60000.0*Units.ft
     outer_right_turbojet.design_mach_number       = 2.02
     outer_right_turbojet.design_thrust            = 10000. * Units.lbf  
+    outer_right_turbojet.rated_takeoff_thrust     = 31350. * Units.lbf # Olympus 593 Mk 610 dry sea-level static rating, 31,350 lbf (38,050 lbf with reheat;
+                                                    #   GlobalSecurity.org and concordesst.com; some sources give 32,000 lbf dry). With design_thrust
+                                                    #   (Mach 2.02 cruise) also given, the takeoff Tt4 ratio is solved (Mattingly throttle ratio < 1)
     outer_right_turbojet.origin                   = [[37.,5.5,-1.6]] 
     outer_right_turbojet.working_fluid            = RCAIDE.Library.Attributes.Gases.Air()
     

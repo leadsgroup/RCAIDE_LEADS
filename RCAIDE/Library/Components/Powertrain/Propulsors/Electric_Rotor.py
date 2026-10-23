@@ -14,7 +14,7 @@ from .   import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.unpack_electric_rotor_unknowns             import unpack_electric_rotor_unknowns
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.pack_electric_rotor_residuals              import pack_electric_rotor_residuals
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.append_electric_rotor_conditions           import append_electric_rotor_conditions
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.compute_electric_rotor_performance         import compute_electric_rotor_performance, reuse_stored_electric_rotor_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.compute_electric_rotor_performance         import compute_electric_rotor_performance, compute_electric_rotor_drive, reuse_stored_electric_rotor_data
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.append_electric_rotor_residual_and_unknown import append_electric_rotor_residual_and_unknown
  
 # python imports 
@@ -116,6 +116,13 @@ class Electric_Rotor(Propulsor):
         inputs, outputs, stored_results_flag, stored_propulsor_tag = compute_electric_rotor_performance(self,state,network,center_of_gravity)
         return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
+    def compute_drive(self,state,network):
+        """
+        Computes the speed controller and motor and sets the rotor operating point for a rotor wake interaction solve.
+        """
+        compute_electric_rotor_drive(self,state,network)
+        return
+
     def reuse_stored_data(electric_rotor,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored propulsor data for performance calculations.

@@ -305,11 +305,14 @@ def control_surface_deflection_command(case,avl_object,vehicle):
 D{0}
 D{1}
 {2}'''
-    cs_idx = 1 
-    cs_commands = ''
+    # AVL numbers controls by first appearance in the geometry file: wing order, then root to tip
+    cs_names = []
     for wing in vehicle.wings:
-        for ctrl_surf in wing.control_surfaces:
-            cs_command = cs_template.format(cs_idx,cs_idx,round(ctrl_surf.deflection/Units.degrees,4))
-            cs_commands = cs_commands + cs_command
-            cs_idx += 1
+        for ctrl_surf in sorted(wing.control_surfaces, key = lambda cs: cs.span_fraction_start):
+            if ctrl_surf.tag not in cs_names:
+                cs_names.append(ctrl_surf.tag)
+    cs_commands = ''
+    for cs_idx, cs_name in enumerate(cs_names, 1):
+        cs_command  = cs_template.format(cs_idx,cs_idx,round(case.stability_and_control.control_surface_deflections[cs_name],8))
+        cs_commands = cs_commands + cs_command
     return cs_commands 

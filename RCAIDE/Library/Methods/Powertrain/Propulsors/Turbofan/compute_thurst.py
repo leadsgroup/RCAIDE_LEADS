@@ -194,10 +194,11 @@ def compute_thrust(turbofan,conditions):
     # Compute core mass flow
     mdot_core  = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
 
-    # Compute dimensional thrust
-    FD2   = Fsp*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle  
-    FD2_f = Fsp_f*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle
-    FD2_c = Fsp_c*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle
+    # Compute dimensional thrust (throttle is a fraction of the takeoff rating)
+    design_point_throttle = turbofan_conditions.throttle * turbofan.rated_takeoff_temperature_ratio
+    FD2   = Fsp*a0*(1.+bypass_ratio)*mdot_core*design_point_throttle
+    FD2_f = Fsp_f*a0*(1.+bypass_ratio)*mdot_core*design_point_throttle
+    FD2_c = Fsp_c*a0*(1.+bypass_ratio)*mdot_core*design_point_throttle
 
     # Compute power 
     power   = FD2*u0    

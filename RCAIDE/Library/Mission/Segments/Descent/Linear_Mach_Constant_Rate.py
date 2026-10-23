@@ -94,24 +94,22 @@ def initialize_conditions(segment):
     t_nondim     = segment.state.numerics.dimensionless.control_points
     conditions   = segment.state.conditions  
 
-    # Update freestream to get speed of sound
-    atmosphere(segment)
-    a          = conditions.freestream.speed_of_sound        
-    
     # check for initial altitude
     if alt0 is None:
         if not segment.state.initials: raise AttributeError('initial altitude not set')
         alt0 = -1.0 *segment.state.initials.conditions.frames.inertial.position_vector[-1,2]
+
+    # discretize on altitude, then update freestream to get the speed of sound there
+    alt = t_nondim * (altf-alt0) + alt0
+    conditions.freestream.altitude[:,0] =  alt[:,0]  # positive altitude 
+    atmosphere(segment)
+    a          = conditions.freestream.speed_of_sound        
     
     # check for initial velocity vector
     if M0 is None:
         if not segment.state.initials: raise AttributeError('initial mach number not set')
         M0  =  np.linalg.norm(segment.state.initials.conditions.frames.inertial.velocity_vector[-1,:])/a[0,:]         
         
-    # discretize on altitude
-    alt = t_nondim * (altf-alt0) + alt0
-    conditions.freestream.altitude[:,0] =  alt[:,0]  # positive altitude 
-
     # process velocity vector
     mach_number = (Mf-M0)*t_nondim + M0
     v_xy_mag    = mach_number * a

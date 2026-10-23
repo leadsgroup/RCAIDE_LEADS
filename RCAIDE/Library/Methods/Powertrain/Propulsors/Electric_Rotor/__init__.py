@@ -17,7 +17,7 @@ RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor
 
 from .append_electric_rotor_conditions           import append_electric_rotor_conditions
 from .append_electric_rotor_residual_and_unknown import append_electric_rotor_residual_and_unknown
-from .compute_electric_rotor_performance         import compute_electric_rotor_performance
+from .compute_electric_rotor_performance         import compute_electric_rotor_performance, compute_electric_rotor_drive
 from .pack_electric_rotor_residuals              import pack_electric_rotor_residuals
 from .unpack_electric_rotor_unknowns             import unpack_electric_rotor_unknowns
 from .design_electric_rotor                      import design_electric_rotor

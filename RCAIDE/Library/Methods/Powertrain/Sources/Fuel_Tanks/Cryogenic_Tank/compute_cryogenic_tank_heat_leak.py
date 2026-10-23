@@ -8,6 +8,16 @@
 import numpy as np
 from RCAIDE.Framework.Core.Physical_Constants import STEFAN_BOLTZMANN
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
+try:
+    from numba import njit
+except ImportError:  # numba is optional: without it the kernels below run as plain Python
+    def njit(*args, **kwargs):
+        if len(args) == 1 and callable(args[0]):
+            return args[0]
+        return lambda function: function
+
+CYLINDER = 0
+CUBOID   = 1
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Tank Environmental Heat Leak
@@ -55,8 +65,7 @@ def compute_cryogenic_tank_heat_leak(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_a
     * Conduction uses concentric-cylinder and concentric-sphere resistance networks
       through the structural wall and insulation layer.
     """
-    args = (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li)
-    return _solve_heat_leak(_heat_balance_residual, T_env, T_cold, args)
+    return solve_heat_leak(CYLINDER, (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li))
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -70,7 +79,9 @@ def compute_cryogenic_tank_heat_leak(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_a
 #
 #  The root of this equation gives the equilibrium surface temperature Te.
 # ----------------------------------------------------------------------------------------------------------------------
-def _heat_balance_residual(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li):
+@njit(cache=True)
+def heat_balance_residual_cylinder(Te, p):
+    t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11]
     g     = 9.81
     D_out = 2 * (ro + t_ins)                                          # outer diameter including insulation
     Ra    = (g / Ta) * (Ta - Te) * D_out**3 / (alpha_th * nu)         # Rayleigh number
@@ -155,14 +166,15 @@ def compute_cryogenic_tank_heat_leak_cuboid(t_ins, T_env, T_cold, k_mat, k_ins_m
     * Conduction uses a single planar wall/insulation resistance network,
       referenced to the structural (pre-insulation) outer surface area.
     """
-    args = (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
-    return _solve_heat_leak(_heat_balance_residual_cuboid, T_env, T_cold, args)
+    return solve_heat_leak(CUBOID, (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th))
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Heat balance at the insulation outer surface (cuboid case)
 # ----------------------------------------------------------------------------------------------------------------------
-def _heat_balance_residual_cuboid(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th):
+@njit(cache=True)
+def heat_balance_residual_cuboid(Te, p):
+    t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12]
     g    = 9.81
     l_oo = l_o + 2 * t_ins
     w_oo = w_o + 2 * t_ins
@@ -210,12 +222,84 @@ def _heat_balance_residual_cuboid(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu
 #  Common to the cylindrical and cuboid cases -- only the residual function and its
 #  geometry args differ between them.
 # ----------------------------------------------------------------------------------------------------------------------
-def _solve_heat_leak(residual_func, T_env, T_cold, args):
+@njit(cache=True)
+def heat_balance_residual(geometry, Te, p):
+    if geometry == CYLINDER:
+        return heat_balance_residual_cylinder(Te, p)
+    return heat_balance_residual_cuboid(Te, p)
+
+
+@njit(cache=True)
+def brent_heat_leak(geometry, xa, xb, xtol, rtol, maxiter, p):
+    """Brent's method, ported line for line from scipy's brentq (scipy/optimize/Zeros/brentq.c), on the
+    heat-balance residual. Returns (root, status): 0 converged, 1 no sign change, 2 not converged."""
+    xpre, xcur = xa, xb
+    xblk, fblk, spre, scur = 0., 0., 0., 0.
+    fpre = heat_balance_residual(geometry, xpre, p)[0]
+    fcur = heat_balance_residual(geometry, xcur, p)[0]
+    if fpre == 0:
+        return xpre, 0
+    if fcur == 0:
+        return xcur, 0
+    if np.signbit(fpre) == np.signbit(fcur):
+        return 0., 1
+    for i in range(maxiter):
+        if fpre != 0 and fcur != 0 and np.signbit(fpre) != np.signbit(fcur):
+            xblk = xpre
+            fblk = fpre
+            spre = scur = xcur - xpre
+        if abs(fblk) < abs(fcur):
+            xpre = xcur
+            xcur = xblk
+            xblk = xpre
+            fpre = fcur
+            fcur = fblk
+            fblk = fpre
+        delta = (xtol + rtol*abs(xcur))/2
+        sbis  = (xblk - xcur)/2
+        if fcur == 0 or abs(sbis) < delta:
+            return xcur, 0
+        if abs(spre) > delta and abs(fcur) < abs(fpre):
+            if xpre == xblk:
+                stry = -fcur*(xcur - xpre)/(fcur - fpre)                       # interpolate
+            else:
+                dpre = (fpre - fcur)/(xpre - xcur)                             # extrapolate
+                dblk = (fblk - fcur)/(xblk - xcur)
+                stry = -fcur*(fblk*dblk - fpre*dpre)/(dblk*dpre*(fblk - fpre))
+            if 2*abs(stry) < min(abs(spre), 3*abs(sbis) - delta):
+                spre = scur
+                scur = stry
+            else:
+                spre = sbis
+                scur = sbis
+        else:
+            spre = sbis
+            scur = sbis
+        xpre = xcur
+        fpre = fcur
+        if abs(scur) > delta:
+            xcur += scur
+        else:
+            xcur += delta if sbis > 0 else -delta
+        fcur = heat_balance_residual(geometry, xcur, p)[0]
+    return xcur, 2
+
+
+def solve_heat_leak(geometry, args):
+    """Equilibrium outer-surface temperature Te, then the heat leak Q at Te. args = (t_ins, T_env, T_cold,
+    material/air properties, geometry...) as in the public functions; scalars or 1-element arrays."""
+    p = np.array([np.asarray(a, dtype=float).item() for a in args])
+    T_env, T_cold = p[1], p[2]
     if abs(T_env - T_cold) < 1e-9:
         Te = T_cold
     else:
         lo, hi = (T_cold, T_env) if T_env > T_cold else (T_env, T_cold)
-        Te = _find_root(lambda x, *a: residual_func(x, *a)[0], lo, hi, args=args)
-
-    _, Q = residual_func(Te, *args)
+        if not (np.isfinite(lo) and np.isfinite(hi)):
+            _find_root(None, lo, hi)                                           # raises the non-finite-bracket error
+        Te, status = brent_heat_leak(geometry, lo, hi, 1e-9, 4 * np.finfo(float).eps, 100, p)
+        if status == 1:                                                         # no sign change: same fallback as _find_root
+            Te = _find_root(lambda x: heat_balance_residual(geometry, x, p)[0], lo, hi)
+        elif status == 2:
+            raise RuntimeError("solve_heat_leak: Brent's method failed to converge after 100 iterations.")
+    _, Q = heat_balance_residual(geometry, Te, p)
     return Te, Q

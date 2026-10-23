@@ -15,7 +15,7 @@ import numpy as np
 #  size_core
 # ---------------------------------------------------------------------------------------------------------------------- 
 def size_core(turboprop, conditions):
-    """
+    r"""
     Sizes the core flow for a turboprop engine at the design condition.
     
     Parameters
@@ -71,12 +71,12 @@ def size_core(turboprop, conditions):
     The core mass flow rate is calculated from the design thrust and non-dimensional thrust:
     
     .. math::
-        \\dot{m}_{core} = \\frac{F_{design} \\cdot \\text{throttle}}{F_{sp}}
+        \dot{m}_{core} = \frac{F_{design} \cdot \text{throttle}}{F_{sp}}
     
     The non-dimensional mass flow parameter is then calculated:
     
     .. math::
-        \\dot{m}_{hc} = \\frac{\\dot{m}_{core}}{\\sqrt{\\frac{T_{ref}}{T_{t,ref}}} \cdot \\frac{P_{t,ref}}{P_{ref}}}
+        \dot{m}_{hc} = \frac{\dot{m}_{core}}{\sqrt{\frac{T_{ref}}{T_{t,ref}}} \cdot \frac{P_{t,ref}}{P_{ref}}}
     
     References
     ----------

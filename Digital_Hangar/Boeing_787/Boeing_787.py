@@ -54,14 +54,14 @@ def vehicle_setup() :
     vehicle.mass_properties.fuel                      = 57500 *Units.kilogram
     vehicle.mass_properties.max_payload               = 44000
     vehicle.mass_properties.center_of_gravity         = [[27.0, 0, 0]]
-    vehicle.flight_envelope.ultimate_load             = 3.5
+    vehicle.flight_envelope.ultimate_load             = 3.75 # 1.5 x limit load (14 CFR 25.303)
     vehicle.flight_envelope.positive_limit_load       = 2.5  
     vehicle.flight_envelope.negative_limit_load       = 1
     vehicle.flight_envelope.design_mach_number        = 0.85  
     vehicle.flight_envelope.design_cruise_altitude    = 35000.0*Units.feet 
     vehicle.flight_envelope.design_range              = 7305.0 * Units.nmi
     vehicle.reference_area                            = 395.0 * Units['meters**2']    
-    vehicle.number_of_passengers                      = 248 
+    vehicle.number_of_passengers                      = 294 # seats in the cabin layout below
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "long range" 
 
@@ -95,7 +95,7 @@ def vehicle_setup() :
     main_gear.wheels                         = 8
     main_gear.number_of_gear_types_in_tandem = 2
     main_gear.number_of_wheels_in_gear_type  = 2
-    main_gear.origin                         = [[28, 5.335, -1.5]]
+    main_gear.origin = [[27.492, 4.900, -1.5]]  # gear CG at the 28.19 m axle (APM D6-58333 Sec. 2.2.1)
     main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)
 
@@ -107,7 +107,7 @@ def vehicle_setup() :
     nose_gear.wheels                         = 2
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2
-    nose_gear.origin                         = [[7.0, 0, -1.5]]
+    nose_gear.origin = [[4.488, 0.000, -1.5]]  # gear CG at the 5.41 m axle (APM D6-58333 Sec. 2.2.1)
     vehicle.append_component(nose_gear)
 
 
@@ -400,7 +400,6 @@ def vehicle_setup() :
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     
     # Segment  
@@ -624,35 +623,27 @@ def vehicle_setup() :
     # Systems 
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[5.0, 0, 0]]
     net.systems.append(avionics)
 
     flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[36.5, 0, 0]]
     net.systems.append(flight_controls)
 
     auxiliary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxiliary_power_unit.origin       = [[70.9, 0, 0]]
     net.systems.append(auxiliary_power_unit)
 
     electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[18.3, 0, -0.8]]
     net.systems.append(electrical)
 
     hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[36.5, 0, -0.8]]
     net.systems.append(hydraulics)
 
     environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[21.9, 0, -1.0]]
     net.systems.append(environmental_controls)
 
     instruments = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
-    instruments.origin                = [[5.0, 0, 0]]
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[36.5, 0, 0]]
     net.systems.append(furnishings)
 
 
@@ -666,12 +657,12 @@ def vehicle_setup() :
     turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()   
     turbofan1.origin                             = [[18, 10.000,-0.953 ]]
     turbofan1.tag                                = 'propulsor_1'    
-    turbofan1.length                             = 6.0                    
+    turbofan1.length                             = 4.95
     turbofan1.diameter                           = 2.822                  
     turbofan1.bypass_ratio                       = 9.1                        
     turbofan1.design_altitude                    = 36000*Units.ft             
     turbofan1.design_mach_number                 = 0.85                     
-    turbofan1.design_thrust                      = 80000* Units.N
+    turbofan1.design_thrust                      = 60243.8 * Units.N
     
     # working fluid                   
     turbofan1.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air() 
@@ -728,7 +719,7 @@ def vehicle_setup() :
     combustor                                      = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.997                    
-    combustor.turbine_inlet_temperature            = 1440                  
+    combustor.turbine_inlet_temperature            = 1250
     combustor.pressure_ratio                       = 0.94                     
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan1.combustor                             = combustor
@@ -754,10 +745,10 @@ def vehicle_setup() :
 
     # Nacelle 
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
-    nacelle.diameter                            = 3.2
+    nacelle.diameter                            = 3.556
     nacelle.length                              = 4.8
     nacelle.tag                                 = 'nacelle_1'
-    nacelle.inlet_diameter                      = 2.5
+    nacelle.inlet_diameter                      = 2.822
     nacelle.origin                              = [[17.818, 10.000,-0.953]] 
     nacelle.areas.wetted                        = np.pi*nacelle.diameter*nacelle.length
     nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()

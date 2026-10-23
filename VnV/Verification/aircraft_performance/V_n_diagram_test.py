@@ -230,10 +230,10 @@ def test_part_25():
     truth.Va_neg              = 196.0722501867801
     truth.Vc                  = 515.9537531823821
     truth.Vd                  = 644.9421914779776
-    truth.limit_load_pos      = 3.538568908482968
-    truth.limit_load_neg      = -1.5385689084829681
-    truth.dive_limit_load_pos = 2.586605567801855
-    truth.dive_limit_load_neg = -0.5866055678018549
+    truth.limit_load_pos      = 3.5030711681793627
+    truth.limit_load_neg      = -1.5030711681793627
+    truth.dive_limit_load_pos = 2.564419480112102
+    truth.dive_limit_load_neg = -0.5644194801121019
 
     error = Data()
     error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)              / truth.Vs1_pos

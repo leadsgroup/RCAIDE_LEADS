@@ -9,6 +9,7 @@
 # RCAIDE imports 
 from RCAIDE.Framework.Core import Units, Data
 from .AVL_Objects.Run_Case import Run_Case
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup
 
 # package imports 
 import numpy as np
@@ -56,6 +57,12 @@ def translate_conditions_to_cases(avl ,conditions, vehicle):
         case.conditions.static_stability.coefficients.roll    = conditions.static_stability.coefficients.roll[i, 0] 
         case.conditions.static_stability.coefficients.pitch   = conditions.static_stability.coefficients.pitch[i, 0] 
         
+        # control surface deflections [deg] from the flight conditions, keyed by AVL control name
+        for wing in vehicle.wings:
+            for ctrl_surf in wing.control_surfaces:
+                cs_name = cs_lookup(ctrl_surf)[0][1]
+                case.stability_and_control.control_surface_deflections[ctrl_surf.tag] = conditions.control_surfaces[cs_name].deflection[i, 0]/Units.deg
+        
         # determine the number of wings 
         n_wings = 0 
         for wing in vehicle.wings:
@@ -95,6 +102,7 @@ def translate_results_to_conditions(cases,res,results, settings):
          
     wing_areas                    = np.zeros((dim,num_wings)) 
     wing_local_spans              = np.zeros((dim,num_wings,n_sw))
+    wing_strip_widths             = np.zeros((dim,num_wings,n_sw))
     wing_section_chords           = np.zeros((dim,num_wings,n_sw))
     leading_edge_sweeps           = np.zeros((dim,num_wings,n_sw))
         
@@ -116,8 +124,9 @@ def translate_results_to_conditions(cases,res,results, settings):
         case_res = results[tag]       
         
         # stability file       
-        res.aerodynamics.angles.alpha[i][0]                                 = case_res.aerodynamics.AoA * Units.degree
-        res.aerodynamics.angles.beta[i][0]                                  = case_res.aerodynamics.beta * Units.degree
+        # alpha is an AVL output only when the case is run at a prescribed lift coefficient
+        if cases[i].conditions.aerodynamics.coefficients.lift.inviscid.total is not None:
+            res.aerodynamics.angles.alpha[i][0]                             = case_res.aerodynamics.AoA * Units.degree
         res.static_stability.coefficients.X[i][0]                           = case_res.aerodynamics.CX 
         res.static_stability.coefficients.Y[i][0]                           = case_res.aerodynamics.CY  
         res.static_stability.coefficients.Z[i][0]                           = case_res.aerodynamics.CZ    
@@ -196,6 +205,7 @@ def translate_results_to_conditions(cases,res,results, settings):
         
         # aero sectional forces file
         wing_local_spans[i][:]                              = case_res.aerodynamics.wing_local_spans
+        wing_strip_widths[i][:]                             = case_res.aerodynamics.wing_strip_widths
         wing_section_chords[i][:]                           = case_res.aerodynamics.wing_section_chords
         leading_edge_sweeps[i][:]                           = case_res.aerodynamics.leading_edge_sweeps
         
@@ -204,13 +214,13 @@ def translate_results_to_conditions(cases,res,results, settings):
         AOAi =  case_res.aerodynamics.wing_section_aoa_i 
         
         res.aerodynamics.coefficients.lift.spanwise[i][:]   = CL_y.reshape(CL_y.shape[:-2] + (-1,))
-        res.aerodynamics.spanwise_induced_angle[i][:]       = CD_y.reshape(CD_y.shape[:-2] + (-1,))
-        res.aerodynamics.coefficients.drag.spanwise[i][:]   = AOAi.reshape(AOAi.shape[:-2] + (-1,))  
+        res.aerodynamics.spanwise_induced_angle[i][:]       = AOAi.reshape(AOAi.shape[:-2] + (-1,))
+        res.aerodynamics.coefficients.drag.spanwise[i][:]   = CD_y.reshape(CD_y.shape[:-2] + (-1,))  
         res.static_stability.control_surfaces_cases[tag]    = case_res.stability.control_surfaces
         
         
-        for cs in  settings.control_surface_tags: 
-            cs_res =  case_res.stability.control_surfaces.control_surfaces[cs]
+        for cs_name, cs in zip(cases[0].stability_and_control.control_surface_names, settings.control_surface_tags): 
+            cs_res =  case_res.stability.control_surfaces.control_surfaces[cs_name]
             
             if cs == 'flap':
                 letter = 'f' 
@@ -242,12 +252,8 @@ def translate_results_to_conditions(cases,res,results, settings):
         res.static_stability.derivatives.CX_alpha[:, 0] =  np.gradient( res.static_stability.coefficients.X[:, 0],res.aerodynamics.angles.alpha[:, 0] )
         res.static_stability.derivatives.CZ_alpha[:, 0] =  np.gradient( res.static_stability.coefficients.Z[:, 0],res.aerodynamics.angles.alpha[:, 0] ) 
     
-    chords = np.zeros_like(wing_local_spans)
-    chords[:, :, :-1] = np.diff(wing_local_spans, axis=2)
-    chords[:, :, -1]  = chords[:, :, -2]
-    
     settings.vortex_distribution  = Data(
-        chord_widths        = chords.reshape(chords.shape[:-2] + (-1,)), 
+        chord_widths        = wing_strip_widths.reshape(wing_strip_widths.shape[:-2] + (-1,)), 
         chord_lengths       = wing_section_chords.reshape(wing_section_chords.shape[:-2] + (-1,)),
         leading_edge_sweeps = leading_edge_sweeps.reshape(leading_edge_sweeps.shape[:-2] + (-1,)), 
         wing_areas          = wing_areas, 

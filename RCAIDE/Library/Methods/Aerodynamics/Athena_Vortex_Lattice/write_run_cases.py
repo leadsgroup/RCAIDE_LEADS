@@ -105,20 +105,20 @@ def write_run_cases(avl_object,trim_aircraft, vehicle):
             name  = case.tag
             CL    = case.conditions.aerodynamics.coefficients.lift.inviscid.total
             CDp   = 0.
-            AoA   = round(case.conditions.aerodynamics.angles.alpha,4)
-            beta  = round(case.conditions.aerodynamics.angles.beta,4)
-            pb_2V = round(case.conditions.static_stability.coefficients.roll,4)
-            qc_2V = round(case.conditions.static_stability.coefficients.pitch,4)
-            mach  = round(case.conditions.freestream.mach,4)
-            vel   = round(case.conditions.freestream.velocity,4)
-            rho   = round(case.conditions.freestream.density,4)
+            AoA   = round(case.conditions.aerodynamics.angles.alpha,8)
+            beta  = round(case.conditions.aerodynamics.angles.beta,8)
+            pb_2V = round(case.conditions.static_stability.coefficients.roll,8)
+            qc_2V = round(case.conditions.static_stability.coefficients.pitch,8)
+            mach  = round(case.conditions.freestream.mach,8)
+            vel   = round(case.conditions.freestream.velocity,8)
+            rho   = round(case.conditions.freestream.density,8)
             g     = case.conditions.freestream.gravitational_acceleration
             
             if trim_aircraft == False: # this flag sets up a trim analysis if one is declared by the boolean "trim_aircraft"
                 controls_text = ''  
                 if CL is not None: # if flight lift coefficient is specified without trim, the appropriate fields are filled 
                     toggle_idx = 'CL   '
-                    toggle_val = round(CL,4)
+                    toggle_val = round(CL,8)
                     alpha_val  = '0.00000     deg'
                     CL_val     = '0.00000'
                 else: # if angle of attack is specified without trim, the appropriate fields are filled 
@@ -134,7 +134,7 @@ def write_run_cases(avl_object,trim_aircraft, vehicle):
             elif trim_aircraft: # trim is specified  
                 if CL is not None:  # if flight lift coefficient is specified with trim, the appropriate fields are filled with the trim CL
                     toggle_idx = 'CL'
-                    toggle_val = round(CL,4)
+                    toggle_val = round(CL,8)
                     alpha_val  = '0.00000     deg'
                     CL_val     = CL
                 else: # if angle of attack is specified with trim, the appropriate fields are filled with the trim AoA

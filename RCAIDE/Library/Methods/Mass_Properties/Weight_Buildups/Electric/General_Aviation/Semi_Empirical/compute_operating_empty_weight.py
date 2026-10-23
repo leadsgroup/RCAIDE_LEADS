@@ -44,8 +44,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------             
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
-    W_oper = FLOPS.compute_operating_items_weight(vehicle)    
-    
+    W_oper = FLOPS.compute_operating_items_weight(vehicle)
+
+    # split the operational items over the fuselages and blended wing bodies and place them in the cabin
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common.assign_operational_items(vehicle, W_oper)
+
     ##-------------------------------------------------------------------------------         
     # System Weight
     ##------------------------------------------------------------------------------- 

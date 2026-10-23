@@ -329,10 +329,10 @@ def Broadband_Noise_Validation(PP):
     axes_3_2.plot(validation_data.Exp_APC_SF_freqency_spectrum ,     APC_SF_1_3_Spectrum[2,0,8:]  , color = PP.Slc[0] , linestyle = PP.Sls, marker = PP.Slm[0] , markersize = PP.m , linewidth = PP.lw,label = ' RCAIDE 4800 RPM')   
     axes_3_2.legend(loc='lower right')
     
-    axes_3_3.plot(validation_data.Exp_APC_SF_freqency_spectrum , APC_SF_SPL_broadband_1_3_spectrum[1,4,8:] , color = PP.Slc[0] , linestyle = PP.Sls, marker = PP.Slm[0] , markersize = PP.m , linewidth = PP.lw,  label = 'RCAIDE 45 $\degree$ mic')     
+    axes_3_3.plot(validation_data.Exp_APC_SF_freqency_spectrum , APC_SF_SPL_broadband_1_3_spectrum[1,4,8:] , color = PP.Slc[0] , linestyle = PP.Sls, marker = PP.Slm[0] , markersize = PP.m , linewidth = PP.lw,  label = r'RCAIDE 45 $\degree$ mic')     
     axes_3_3.legend(loc='lower right')   
 
-    axes_3_4.plot(validation_data.Exp_APC_SF_freqency_spectrum , APC_SF_SPL_broadband_1_3_spectrum[1,3,8:] , color = PP.Slc[0] , linestyle = PP.Sls, marker = PP.Slm[0] , markersize = PP.m , linewidth = PP.lw,  label = 'RCAIDE 22.5 $\degree$ mic.')   
+    axes_3_4.plot(validation_data.Exp_APC_SF_freqency_spectrum , APC_SF_SPL_broadband_1_3_spectrum[1,3,8:] , color = PP.Slc[0] , linestyle = PP.Sls, marker = PP.Slm[0] , markersize = PP.m , linewidth = PP.lw,  label = r'RCAIDE 22.5 $\degree$ mic.')   
     axes_3_4.legend(loc='lower right')  
 
     # Store errors 
@@ -502,7 +502,7 @@ def Broadband_Noise_Validation_Data(PP):
     fig_3_3.set_size_inches(PP.fig_size_width,PP.fig_size_height)
     fig_3_3.tight_layout()
     axes_3_3 = fig_3_3.add_subplot(1,1,1)           
-    axes_3_3.plot(validation_data.Exp_APC_SF_freqency_spectrum , validation_data.Exp_broadband_APC[0,:], color = PP.Elc[0] , linestyle = PP.Els, marker = PP.Elm[0] , markersize = PP.m , linewidth = PP.lw,    label = 'Exp. 45 $\degree$ mic.')       
+    axes_3_3.plot(validation_data.Exp_APC_SF_freqency_spectrum , validation_data.Exp_broadband_APC[0,:], color = PP.Elc[0] , linestyle = PP.Els, marker = PP.Elm[0] , markersize = PP.m , linewidth = PP.lw,    label = r'Exp. 45 $\degree$ mic.')       
     axes_3_3.set_xscale('log') 
     axes_3_3.set_ylabel(r'SPL$_{1/3}$ (dB)')
     axes_3_3.set_xlabel('Frequency (Hz)')  
@@ -513,7 +513,7 @@ def Broadband_Noise_Validation_Data(PP):
     fig_3_4.set_size_inches(PP.fig_size_width,PP.fig_size_height)
     fig_3_4.tight_layout()
     axes_3_4 = fig_3_4.add_subplot(1,1,1)            
-    axes_3_4.plot(validation_data.Exp_APC_SF_freqency_spectrum , validation_data.Exp_broadband_APC[1,:], color = PP.Elc[0] , linestyle = PP.Els, marker = PP.Elm[0] , markersize = PP.m , linewidth = PP.lw,   label = 'Exp. 22.5 $\degree$ mic.')       
+    axes_3_4.plot(validation_data.Exp_APC_SF_freqency_spectrum , validation_data.Exp_broadband_APC[1,:], color = PP.Elc[0] , linestyle = PP.Els, marker = PP.Elm[0] , markersize = PP.m , linewidth = PP.lw,   label = r'Exp. 22.5 $\degree$ mic.')       
     axes_3_4.set_xscale('log') 
     axes_3_4.set_ylabel(r'SPL$_{1/3}$ (dB)')
     axes_3_4.set_xlabel('Frequency (Hz)')  

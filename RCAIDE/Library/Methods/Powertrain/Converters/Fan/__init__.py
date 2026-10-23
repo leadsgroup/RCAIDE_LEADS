@@ -15,3 +15,4 @@ RCAIDE.Library.Methods.Powertrain.Converters
 
 from .append_fan_conditions   import append_fan_conditions                 
 from .compute_fan_performance import compute_fan_performance
+from .compute_fan_angular_velocity import compute_fan_angular_velocity

@@ -31,6 +31,8 @@ def compute_battery_performance(battery,state,network):
     # Reset accumulators before summing across modules
     battery_conditions.energy[:,0]                = 0.0
     battery_conditions.heat_energy_generated[:,0] = 0.0
+    battery_conditions.voltage_open_circuit[:,0]  = 0.0
+    battery_conditions.voltage_under_load[:,0]    = 0.0
 
     stored_module_tag = None
     for m_i, module in enumerate(battery.modules):

@@ -97,37 +97,46 @@ def compute_combustor_performance(combustor, conditions):
     P0                      = combustor_conditions.inputs.static_pressure  
     M0                      = combustor_conditions.inputs.mach_number 
                                  
-    # Unpack ram inputs         
+    # Unpack ram inputs
     working_fluid           = combustor.working_fluid
- 
-    # Compute the working fluid properties 
-    gamma  = working_fluid.compute_gamma(T0,P0) 
-    Cp     = working_fluid.compute_cp(T0,P0) 
-    
+
+    # Compute the working fluid properties at the (cold) inlet state
+    gamma  = working_fluid.compute_gamma(T0,P0)
+    Cp     = working_fluid.compute_cp(T0,P0)
+
     # unpacking the values form inputs
     Tt_in    = combustor_conditions.inputs.stagnation_temperature
     Pt_in    = combustor_conditions.inputs.stagnation_pressure
-    nondim_r = combustor_conditions.inputs.nondim_mass_ratio 
+    nondim_r = combustor_conditions.inputs.nondim_mass_ratio
     Tt4      = combustor.turbine_inlet_temperature *  np.ones_like(Tt_in)
     pib      = combustor.pressure_ratio
     eta_b    = combustor.efficiency
-    htf      = combustor.fuel_data.specific_energy 
-    
-    # compute stanation pressure 
-    Pt_out  = pib * Pt_in 
-    
+    htf      = combustor.fuel_data.specific_energy
+
+    # compute stanation pressure
+    Pt_out  = pib * Pt_in
+
+    # Working fluid properties at the (hot) exit state Tt4. Using a single cp/gamma for both
+    # the incoming air and the outgoing combustion products understates f, since cp rises
+    # substantially between compressor-exit and turbine-inlet temperature (e.g. ~1090 J/(kg-K)
+    # at 800 K vs ~1240 J/(kg-K) at 1900 K) -- this is why Mattingly's parametric cycle analysis
+    # (Elements of Gas Turbine Propulsion, Ch. 7) keeps cp_c and cp_t as two separate constants
+    # rather than one value spanning the burner.
+    gamma_out = working_fluid.compute_gamma(Tt4,Pt_out)
+    Cp_out    = working_fluid.compute_cp(Tt4,Pt_out)
+
     # Computing stagnation enthalpies from stagnation temperatures
-    ht4     = nondim_r * Cp* Tt4 
-    ht_in   = nondim_r * Cp* Tt_in
-    
+    ht4     = nondim_r * Cp_out * Tt4
+    ht_in   = nondim_r * Cp    * Tt_in
+
     # Compute the fuel to air ratio using turbine exit temperature, the fuel properties and freestream temperature
     f       = (ht4 - ht_in)/(eta_b*htf-ht4)
 
     # Computing the exit static and stagnation conditions
-    ht_out  = Tt4 * Cp
-    
-    T_out     = Tt4/(1.+(gamma-1.)/2.*M0*M0)
-    P_out     = Pt_out/((1.+(gamma-1.)/2.*M0*M0)**(gamma/(gamma-1.)))     
+    ht_out  = Tt4 * Cp_out
+
+    T_out     = Tt4/(1.+(gamma_out-1.)/2.*M0*M0)
+    P_out     = Pt_out/((1.+(gamma_out-1.)/2.*M0*M0)**(gamma_out/(gamma_out-1.)))
     
     # Pack results 
     combustor_conditions.outputs.stagnation_temperature  = Tt4

@@ -12,7 +12,7 @@ from RCAIDE.Framework.Core import Units
 # ----------------------------------------------------------------------
 #  Compute rate of climb capability at a flight condition
 # ----------------------------------------------------------------------
-def estimate_rate_of_climb(analyses=None, altitude=0., mach_number=0., weight=None, delta_isa=0.):
+def estimate_rate_of_climb(analyses=None, altitude=0., mach_number=0., weight=None, delta_isa=0., rating='maximum_climb'):
     """
     Computes the instantaneous rate-of-climb (ROC) capability of a vehicle at a specified
     altitude, Mach number, and weight.
@@ -31,6 +31,9 @@ def estimate_rate_of_climb(analyses=None, altitude=0., mach_number=0., weight=No
         current ``mass_properties.takeoff`` value is used.
     delta_isa : float, optional
         Temperature offset from ISA conditions [K], default 0
+    rating : str, optional
+        Engine rating for the available power: 'maximum_climb' (default), for climb performance
+        and ceilings, or 'takeoff', for takeoff climb gradients
 
     Returns
     -------
@@ -42,14 +45,14 @@ def estimate_rate_of_climb(analyses=None, altitude=0., mach_number=0., weight=No
     Notes
     -----
     This solves a short (0.1 nmi), level, constant-Mach/constant-altitude segment for the
-    throttle and pitch angle that balance the vehicle at the requested condition, then infers
-    maximum available power by assuming available power scales linearly with throttle. This is
-    the same procedure used historically for ICA/service-ceiling sweeps in this codebase
-    (``ICA_evaluation_mission_setup`` / ``Test_R_ICA``), refactored into a single-condition,
-    reusable Performance function.
+    throttle and pitch angle that balance the vehicle at the requested condition, then
+    re-evaluates the propulsors at the requested rating at that same condition to obtain the
+    maximum available power. Throttle is a fraction of the takeoff rating, so maximum climb is a
+    propulsor's maximum_climb_throttle or, when unset, its design point
+    (1/rated_takeoff_temperature_ratio); propulsors without a takeoff rating use throttle 1.
 
     **Major Assumptions**
-        * Available power varies linearly with throttle (``P_avail = P_required / throttle``)
+        * Available power is the propulsive power at the requested rating at the evaluated flight condition
         * Quasi-steady, unaccelerated flight at the evaluated condition (rate of climb read off
           as the specific excess power, not a full climbing trajectory)
         * Vehicle mass is held fixed at the requested weight for the evaluation
@@ -79,11 +82,22 @@ def estimate_rate_of_climb(analyses=None, altitude=0., mach_number=0., weight=No
     if weight is not None:
         vehicle.mass_properties.takeoff = weight
 
-    # gather every propulsor tag so all engines are throttled together
-    propulsor_tags = []
+    if rating not in ('maximum_climb', 'takeoff'):
+        raise ValueError(f"rating must be 'maximum_climb' or 'takeoff', not '{rating}'")
+
+    # gather every propulsor tag so all engines are throttled together, with its throttle at the rating
+    propulsor_tags   = []
+    rating_throttles = {}
     for network in vehicle.networks:
         for propulsor in network.propulsors:
             propulsor_tags.append(propulsor.tag)
+            maximum_climb_throttle = getattr(propulsor, 'maximum_climb_throttle', None)
+            if rating == 'takeoff':
+                rating_throttles[propulsor.tag] = 1.0
+            elif maximum_climb_throttle is not None:
+                rating_throttles[propulsor.tag] = maximum_climb_throttle
+            else:
+                rating_throttles[propulsor.tag] = 1.0 / getattr(propulsor, 'rated_takeoff_temperature_ratio', 1.0)
     if len(propulsor_tags) == 0:
         raise ValueError("No engine found in the vehicle")
 
@@ -126,11 +140,16 @@ def estimate_rate_of_climb(analyses=None, altitude=0., mach_number=0., weight=No
         conditions.energy.propulsors[tag].outputs.power.propulsive[0, 0]
         for tag in propulsor_tags
     )
-    throttle = conditions.energy.propulsors[propulsor_tags[0]].throttle[0, 0]
-    if throttle <= 0:
-        raise ValueError("Solved throttle is zero or negative; cannot back out available power.")
-
-    power_available = power / throttle
+    # available power: re-evaluate the propulsors at the rating at the same flight condition
+    state = results.segments[0].state
+    for tag in propulsor_tags:
+        conditions.energy.propulsors[tag].throttle[:] = rating_throttles[tag]
+    for network in vehicle.networks:
+        network.evaluate(state, vehicle)
+    power_available = sum(
+        conditions.energy.propulsors[tag].outputs.power.propulsive[0, 0]
+        for tag in propulsor_tags
+    )
     excess_power     = power_available - power
     vehicle_mass     = conditions.weights.vehicle.mass[0, 0]
     gravity          = conditions.freestream.gravity[0, 0]

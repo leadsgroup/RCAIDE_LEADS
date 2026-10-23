@@ -20,3 +20,4 @@ RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 from .compute_payload_weight import compute_payload_weight
+from .assign_operational_items import assign_operational_items

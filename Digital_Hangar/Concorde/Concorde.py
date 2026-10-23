@@ -338,7 +338,6 @@ def vehicle_setup():
     fuselage.areas.front_projected                  = 11.9 
     fuselage.effective_diameter                     = 3.1 
     fuselage.differential_pressure                  = 7.4e4 * Units.pascal    # Maximum differential pressure
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
 
     cabin                                               = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()

@@ -2,12 +2,16 @@
 # 
 # 
 # Created: Aug 2025, M. Clarke
+# Modified: Oct 2026, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 import RCAIDE
 from RCAIDE.Framework.Core import Data 
+from RCAIDE.Library.Components import Wings
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.extract_wing_collocation_points        import extract_wing_collocation_points
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_wake_induced_velocity import compute_rotor_wake_induced_velocity
 
 # package imports 
 import numpy as np
@@ -15,7 +19,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Compute RHS matrix 
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,propeller_wake_model):
+def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry):
 
     """ This computes the right hand side matrix for the VLM. In this
     function, induced velocites from propeller wake are also included
@@ -40,7 +44,6 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,propeller_wake_
     conditions.static_stability.yaw_rate         [radians/s]
 
     sur_flag    - use_surrogate flag             [Unitless]
-    slipstream  - propeller_wake_model flag      [Unitless]
     delta, phi  - flow tangency angles           [radians]
 
     Outputs:
@@ -72,35 +75,32 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,propeller_wake_
     num_ctrl_pts     = len(aoa)  
 
     rot_V_wake_ind   = np.zeros((num_ctrl_pts,num_eval_pts,3))
-    Vx_ind_total     = np.zeros_like(V_distribution)
-    Vy_ind_total     = np.zeros_like(V_distribution)
-    Vz_ind_total     = np.zeros_like(V_distribution) 
     dt               = 0
-    for network in geometry.networks:
-        if propeller_wake_model:
-            rot_V_wake_ind = np.zeros((num_ctrl_pts,num_eval_pts,3))
+    if any(network.wing_on_rotor_coupling for network in geometry.networks):
+        # rotor slipstream of coupled networks acts on the main wing, or the last wing when there is no main wing 
+        wing_idx = len(geometry.wings) - 1
+        for i, wing in enumerate(geometry.wings):
+            if isinstance(wing,Wings.Main_Wing) or isinstance(wing,Wings.Blended_Wing_Body):
+                wing_idx = i
+        wing_CPs, slipstream_vd_ids = extract_wing_collocation_points(VD,conditions,settings,geometry,wing_idx)
+        
+        for network in geometry.networks:
+            if not network.wing_on_rotor_coupling:
+                continue
             for propulsor in network.propulsors: 
                 if 'rotor' in  propulsor:
                     rotor =  propulsor.rotor
                 elif 'propeller' in  propulsor :
                     rotor =  propulsor.propeller
-                if (rotor.fidelity == "Blade_Element_Momentum_Theory_Helmholtz_Wake" or rotor.fidelity == "Lifting_Line_Theory") :
-                    if rotor.tag not in conditions.energy.converters:
-                        # Rotor performance hasn't been evaluated for these conditions yet (e.g. VLM
-                        # surrogate training, which runs synthetic AoA/Mach sweeps with no propulsor
-                        # evaluation behind them) -- skip slipstream feedback rather than fail.
-                        continue
-                    rot_V_wake_ind += RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.evaluate_slipstream(rotor,VD,conditions,settings,geometry,num_ctrl_pts)
+                else:
+                    continue
+                # rotor performance is not computed during surrogate training
+                if rotor.tag in conditions.energy.converters:
+                    rot_V_wake_ind[:,slipstream_vd_ids,:] += compute_rotor_wake_induced_velocity(rotor,conditions,wing_CPs)
                     
-            # update the total induced velocity distribution
-            Vx_ind_total = Vx_ind_total  + rot_V_wake_ind[:,:,0]
-            Vy_ind_total = Vy_ind_total  + rot_V_wake_ind[:,:,1]
-            Vz_ind_total = Vz_ind_total  + rot_V_wake_ind[:,:,2]
-
-            rhs = build_RHS(VD, conditions, settings, aoa, delta, phi, PSI_distribution,
-                            Vx_ind_total, Vy_ind_total, Vz_ind_total, V_distribution, dt)           
-            
-            return  rhs
+    Vx_ind_total = rot_V_wake_ind[:,:,0]
+    Vy_ind_total = rot_V_wake_ind[:,:,1]
+    Vz_ind_total = rot_V_wake_ind[:,:,2]
 
     rhs = build_RHS(VD, conditions, settings, aoa, delta, phi, PSI_distribution,
                     Vx_ind_total, Vy_ind_total, Vz_ind_total, V_distribution, dt)
@@ -187,50 +187,51 @@ def build_RHS(VD, conditions, settings, aoa_distribution, delta, phi, PSI_distri
     YGIRO = YY
     ZGIRO = ZZ - Z_MAT
 
-    # VX, VY, VZ ARE THE FLOW ONSET VELOCITY COMPONENTS AT THE LEADING
-    # EDGE (STRIP MIDPOINT). VX, VY, VZ AND THE ROTATION RATES ARE
-    # REFERENCED TO THE FREE STREAM VELOCITY.
-    VX = (COSCOS - PITCH*ZGIRO + YAW  *YGIRO)
-    VY = (COSIN  - YAW  *XGIRO + ROLL *ZGIRO)
-    VZ = (SINALF - ROLL *YGIRO + PITCH*XGIRO)
-    
     #COMPUTE DIRECTION COSINES.
     SCNTL  = VD.SLOPE/np.sqrt(1. + VD.SLOPE **2)
-    CCNTL  = 1. / np.sqrt(1.0 + SCNTL**2) 
+    CCNTL  = 1. / np.sqrt(1.0 + SCNTL**2)
     COD    = np.cos(phi_LE)
     SID    = np.sin(phi_LE)
-
-    # COMPUTE ONSET FLOW COMPONENT ALONG THE OUTWARD NORMAL TO
-    # THE SURFACE AT THE CONTROL POINT, ALOC.
-    ALOC  = VX *SCNTL + VY *CCNTL *SID - VZ *CCNTL *COD
 
     # COMPUTE VELOCITY COMPONENT ALONG X-AXIS INDUCED BY THE RIGID
     # BODY ROTATION, ONSET.
     ONSET = - PITCH *ZGIRO + YAW *YGIRO
 
-    # Body-Frame RHS calculation----------------------------------------------------------
-    # Add wake and rotation effects to the freestream
-    Vx_rotation       = -PITCHQ*ZGIRO + YAWQ  *YGIRO
-    Vy_rotation       = -YAWQ  *XGIRO + ROLLQ *ZGIRO
-    Vz_rotation       = -ROLLQ *YGIRO + PITCHQ*XGIRO
-
-    Vx                = V_distribution*np.cos(aoa_distribution)*np.cos(PSI_distribution) + Vx_rotation + Vx_ind_total
-    Vy                = V_distribution*np.cos(aoa_distribution)*np.sin(PSI_distribution) + Vy_rotation + Vy_ind_total
-    Vz                = V_distribution*np.sin(aoa_distribution)                          + Vz_rotation + Vz_ind_total    
-    
-    aoa_distribution  = np.arctan(Vz/ np.sqrt(Vx**2 + Vy**2) )
-    PSI_distribution  = np.arctan(Vy / Vx)
-
-    # compute RHS: dot(v, panel_normals)
-    V_unit_vector    = ((np.array([Vx,Vy,Vz])/V_distribution).T).swapaxes(0,1)[:, :,np.newaxis,:] 
-    panel_normals    = VD.normals[:, :,np.newaxis,:]         
-    RHS_from_normals = np.sum(np.sum(V_unit_vector*panel_normals, axis=2), axis=2 )   
-
-    #pack values--------------------------------------------------------------------------
+    # Only one of the VORLAX-frame or body-frame RHS is ever used (selected by
+    # settings.use_VORLAX_matrix_calculation below), so only that one is computed.
     use_VORLAX_RHS = settings.use_VORLAX_matrix_calculation
 
+    if use_VORLAX_RHS:
+        # VORLAX frame RHS calculation-------------------------------------------------
+        # VX, VY, VZ ARE THE FLOW ONSET VELOCITY COMPONENTS AT THE LEADING
+        # EDGE (STRIP MIDPOINT). VX, VY, VZ AND THE ROTATION RATES ARE
+        # REFERENCED TO THE FREE STREAM VELOCITY.
+        VX = (COSCOS - PITCH*ZGIRO + YAW  *YGIRO)
+        VY = (COSIN  - YAW  *XGIRO + ROLL *ZGIRO)
+        VZ = (SINALF - ROLL *YGIRO + PITCH*XGIRO)
+
+        # COMPUTE ONSET FLOW COMPONENT ALONG THE OUTWARD NORMAL TO
+        # THE SURFACE AT THE CONTROL POINT, ALOC.
+        RHS = VX *SCNTL + VY *CCNTL *SID - VZ *CCNTL *COD
+    else:
+        # Body-Frame RHS calculation----------------------------------------------------
+        # Add wake and rotation effects to the freestream
+        Vx_rotation       = -PITCHQ*ZGIRO + YAWQ  *YGIRO
+        Vy_rotation       = -YAWQ  *XGIRO + ROLLQ *ZGIRO
+        Vz_rotation       = -ROLLQ *YGIRO + PITCHQ*XGIRO
+
+        Vx                = V_distribution*np.cos(aoa_distribution)*np.cos(PSI_distribution) + Vx_rotation + Vx_ind_total
+        Vy                = V_distribution*np.cos(aoa_distribution)*np.sin(PSI_distribution) + Vy_rotation + Vy_ind_total
+        Vz                = V_distribution*np.sin(aoa_distribution)                          + Vz_rotation + Vz_ind_total
+
+        # compute RHS: dot(v, panel_normals)
+        V_unit_vector    = ((np.array([Vx,Vy,Vz])/V_distribution).T).swapaxes(0,1)[:, :,np.newaxis,:]
+        panel_normals    = VD.normals[:, :,np.newaxis,:]
+        RHS              = np.sum(np.sum(V_unit_vector*panel_normals, axis=2), axis=2 )
+
+    #pack values--------------------------------------------------------------------------
     rhs = Data()
-    rhs.RHS            = RHS_from_normals if not use_VORLAX_RHS else ALOC
+    rhs.RHS            = RHS
     rhs.ONSET          = ONSET
     rhs.Vx_ind_total   = Vx_ind_total
     rhs.Vz_ind_total   = Vz_ind_total
@@ -240,7 +241,6 @@ def build_RHS(VD, conditions, settings, aoa_distribution, delta, phi, PSI_distri
     #these values will be used later to calculate EFFINC
     rhs.YGIRO  = YGIRO
     rhs.ZGIRO  = ZGIRO
-    rhs.VX     = VX
     rhs.SCNTL  = SCNTL
     rhs.CCNTL  = CCNTL
     rhs.COD    = COD

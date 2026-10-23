@@ -14,7 +14,7 @@ import numpy as np
 #  Find Takeoff Weight Given TOFL
 # ----------------------------------------------------------------------
 def estimate_take_off_weight_given_TOFL(analyses=None,target_tofl=0.0,altitude = 0, delta_isa = 0):
-    """
+    r"""
     Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.
 
     Parameters
@@ -57,7 +57,7 @@ def estimate_take_off_weight_given_TOFL(analyses=None,target_tofl=0.0,altitude =
         * T = available thrust
 
     .. math::
-        TOFL \propto \\frac{W}{T}
+        TOFL \propto \frac{W}{T}
 
     See Also
     --------

@@ -5,9 +5,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
- # RCAIDE imports 
+ # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core                                         import Units
 
 # package imports
 import numpy as np 
@@ -23,7 +22,7 @@ def compute_throttle_from_power(engine,conditions):
     ----------
     engine : RCAIDE.Library.Components.Propulsors
         Engine instance with the following attributes:
-            - sea_level_power : float
+            - sealevel_static_power : float
                 Maximum power output at sea level [W]
             - flat_rate_altitude : float
                 Altitude below which power remains constant [m]
@@ -90,7 +89,7 @@ def compute_throttle_from_power(engine,conditions):
     
     # Unpack engine operating conditions 
     engine_conditions = conditions.energy.converters[engine.tag] 
-    PSLS              = engine.sea_level_power
+    PSLS              = engine.sealevel_static_power
     h_flat            = engine.flat_rate_altitude
     P                 = engine_conditions.power.propulsive*1.0
     PSFC              = engine.power_specific_fuel_consumption
@@ -113,9 +112,8 @@ def compute_throttle_from_power(engine,conditions):
     P[P<0.] = 0. 
 
     # Compute fuel flow rate
-    SFC             = PSFC* Units['lb/hp/hr']
     a               = np.zeros_like(altitude)
-    m_dot_fuel      = np.fmax(P*SFC,a)
+    m_dot_fuel      = np.fmax(P*PSFC,a)
     
     # Store outputs 
     engine_conditions.power_specific_fuel_consumption = PSFC

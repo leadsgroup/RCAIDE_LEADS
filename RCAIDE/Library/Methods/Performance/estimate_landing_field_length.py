@@ -20,7 +20,7 @@ import numpy as np
 #  Compute field length required for landing
 # ----------------------------------------------------------------------
 def estimate_landing_field_length(analyses = None, altitude=0, delta_isa=0):
-    """
+    r"""
     Computes the landing field length required for a given vehicle configuration at specified airport conditions.
 
     Parameters
@@ -69,7 +69,7 @@ def estimate_landing_field_length(analyses = None, altitude=0, delta_isa=0):
     The stall speed is computed as:
 
     .. math::
-        V_{stall} = \sqrt{\\frac{2W}{\\rho S C_{L_{max}}}}
+        V_{stall} = \sqrt{\frac{2W}{\rho S C_{L_{max}}}}
 
     References
     ----------

@@ -131,6 +131,12 @@ def compute_systems_weight(vehicle):
 
     WSC     = 145.9*Nf**.554 * (1+Nm/Nf)**-1 * Scs**0.2 * (Iy*10e-6)**0.07 
     WAPU    = 8*(DG**0.4) # APU group weight from Commercial Airplane Design Principles by Pasquale Sforza eq. 8.27. Which is an improvment from Kroo's estimation
+
+    # APUs left to be computed share the APU group estimate; user-set APU masses are kept as given
+    APUs          = [system for network in vehicle.networks for system in network.systems
+                     if isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit)]
+    computed_APUs = [apu for apu in APUs if apu.mass_properties.mass == 0 or apu.mass_properties.calculated_flag]
+    WAPU_each     = WAPU / len(computed_APUs) if computed_APUs else 0.0
     WIN     = 4.509 * Kr * Ktp * flight_crew ** 0.541 * NENG * (L + Bw) ** 0.5
     WHYD    = 0.2673 * Nf * (L + Bw) ** 0.937
     WELEC   = 7.291 * Rkva ** 0.782 * (2*L) ** 0.346 * NENG ** 0.1
@@ -157,7 +163,7 @@ def compute_systems_weight(vehicle):
                 elif isinstance(system, Systems.Flight_Controls):
                     system.mass_properties.mass = WSC * Units.lbs
                 elif isinstance(system, Systems.Auxiliary_Power_Unit):
-                    system.mass_properties.mass = WAPU * Units.lbs
+                    system.mass_properties.mass = WAPU_each * Units.lbs
                 elif isinstance(system, Systems.Electrical):
                     system.mass_properties.mass = WELEC * Units.lbs
                 elif isinstance(system, Systems.Hydraulics):
@@ -174,8 +180,6 @@ def compute_systems_weight(vehicle):
                     WAVONC = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Flight_Controls):
                     WSC    = system.mass_properties.mass / Units.lbs
-                elif isinstance(system, Systems.Auxiliary_Power_Unit):
-                    WAPU   += system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Electrical):
                     WELEC  = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Hydraulics):
@@ -189,6 +193,8 @@ def compute_systems_weight(vehicle):
                     WIN    = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Water_Tank):
                     W_water_tank = system.mass_properties.mass / Units.lbs
+
+    WAPU = sum(apu.mass_properties.mass for apu in APUs) / Units.lbs
 
     output                     = Data()
     output.W_flight_control    = WSC * Units.lbs

@@ -17,7 +17,7 @@ import numpy as np
 # Stall Speed Estimation
 #------------------------------------------------------------------------------ 
 def estimate_stall_speed(vehicle_mass,reference_area,altitude,maximum_lift_coefficient): 
-    """
+    r"""
     Calculates the stall speed of an aircraft at a given altitude and maximum lift coefficient.
 
     Parameters
@@ -41,7 +41,7 @@ def estimate_stall_speed(vehicle_mass,reference_area,altitude,maximum_lift_coeff
     The stall speed is calculated using the standard lift equation solved for velocity:
     
     .. math::
-        V_{stall} = \sqrt{\\frac{2W}{\\rho S C_{L_{max}}}}
+        V_{stall} = \sqrt{\frac{2W}{\rho S C_{L_{max}}}}
 
     where:
         * W = mg (vehicle weight)
