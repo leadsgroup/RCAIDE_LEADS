@@ -163,13 +163,90 @@ def wake_convergence(rotor,wake_inputs):
     else:
         PSI    = np.ones((ctrl_pts,Nr))
 
-    PSI_final,infodict,ier,msg = sp.optimize.fsolve(iteration,PSI,args=(wake_inputs,rotor),xtol=rotor.sol_tolerance,full_output = 1,band=(1,0))
+    if wake_inputs.use_2d_analysis:
+        # each station's residual depends only on its own inflow angle, so the stations are solved independently
+        PSI_final = stationwise_newton(PSI,wake_inputs,rotor)
+    else:
+        PSI_final,infodict,ier,msg = sp.optimize.fsolve(iteration,PSI,args=(wake_inputs,rotor),xtol=rotor.sol_tolerance,full_output = 1,band=(1,0))
     
     # Calculate the velocities given PSI
     va, vt = va_vt(PSI_final, wake_inputs, rotor)
 
     
     return va, vt
+
+def stationwise_newton(PSI, wake_inputs, rotor, max_iterations=50, max_step=0.2, n_scan=61):
+    """
+    Solves the BEVW residual for the inflow angle at every station with a vectorized Newton iteration,
+    falling back to a bracketed bisection at stations where Newton does not converge.
+
+    Parameters
+    ----------
+    PSI : numpy.ndarray
+        Initial inflow angles, shape (ctrl_pts, Nr, Na) [rad]
+    wake_inputs : Data
+        Wake inputs used by iteration()
+    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Rotor with sol_tolerance
+    max_iterations : int
+        Maximum number of Newton iterations
+    max_step : float
+        Largest inflow angle change per Newton iteration [rad]
+    n_scan : int
+        Number of inflow angles scanned to bracket a root at stations where Newton fails
+
+    Returns
+    -------
+    PSI : numpy.ndarray
+        Converged inflow angles, shape (ctrl_pts, Nr, Na) [rad]
+
+    Notes
+    -----
+    The residual of a station depends only on its own inflow angle, so the Jacobian is diagonal and each
+    derivative is a forward difference of the full residual array. Where the residual is not monotonic Newton
+    can cycle; those stations take the sign change closest to the initial guess and bisect it.
+    """
+    tol     = rotor.sol_tolerance
+    h       = 1e-7
+    PSI_0   = PSI.astype(float).copy()
+    PSI     = PSI_0.copy()
+    active  = np.ones(PSI.shape, dtype=bool)
+    for i in range(max_iterations):
+        R      = residual(PSI, wake_inputs, rotor)
+        dR     = (residual(PSI + h, wake_inputs, rotor) - R)/h
+        dR[dR == 0.] = h
+        step   = np.clip(R/dR, -max_step, max_step)*active
+        PSI   -= step
+        active = np.abs(step) > tol*(np.abs(PSI) + tol)
+        if not np.any(active):
+            return PSI
+
+    # bracket the root closest to the initial guess at the unconverged stations
+    scan   = np.linspace(-np.pi/2, np.pi, n_scan)
+    R_scan = np.array([residual(np.where(active, angle, PSI), wake_inputs, rotor) for angle in scan])
+    change = np.sign(R_scan[:-1]) != np.sign(R_scan[1:])
+    middle = 0.5*(scan[:-1] + scan[1:])[:, None, None, None]
+    dist   = np.where(change, np.abs(middle - PSI_0[None]), np.inf)
+    k      = np.argmin(dist, axis=0)
+    found  = active & np.isfinite(np.min(dist, axis=0))
+    lo     = np.where(found, scan[k], PSI)
+    hi     = np.where(found, scan[k + 1], PSI)
+    R_lo   = residual(lo, wake_inputs, rotor)
+
+    # bisection on the bracketed stations
+    while np.any(found & (hi - lo > tol*(np.abs(lo) + tol))):
+        mid      = 0.5*(lo + hi)
+        R_mid    = residual(np.where(found, mid, PSI), wake_inputs, rotor)
+        same     = np.sign(R_mid) == np.sign(R_lo)
+        lo       = np.where(found & same, mid, lo)
+        R_lo     = np.where(found & same, R_mid, R_lo)
+        hi       = np.where(found & ~same, mid, hi)
+    PSI = np.where(found, 0.5*(lo + hi), PSI)
+    return PSI
+
+def residual(PSI, wake_inputs, rotor):
+    """ BEVW residual with the shape of PSI """
+    return iteration(PSI, wake_inputs, rotor).reshape(PSI.shape)
 
 def iteration(PSI, wake_inputs, rotor):
     """

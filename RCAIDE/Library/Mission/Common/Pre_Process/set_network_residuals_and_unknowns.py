@@ -108,19 +108,13 @@ def set_network_residuals_and_unknowns(mission):
             # ---------------------------------------------------------------------------------------------
             # Propulsors
             # ---------------------------------------------------------------------------------------------
-            # A propulsor only needs its own unknown/residual if it isn't a
-            # reuse-eligible duplicate of the most recently registered one --
-            # which requires both identical_propulsors=True *and* the same
-            # distributor group (see the matching comments in Network.py;
-            # e.g. a vehicle with cruise propellers and lift rotors has two
-            # distinct groups even though every propulsor defaults to
-            # identical_propulsors=True).
-            reference_distributors = None
-            for p_i,propulsor in  enumerate(network.propulsors):
-                if propulsor.active:
-                    if propulsor.identical_propulsors == False or network.rotor_wake_interaction or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
-                        propulsor.append_unknowns_and_residuals(segment)
-                        reference_distributors = propulsor.assigned_distributors
+            # A propulsor only needs its own unknown/residual if it can't reuse those of the last
+            # propulsor registered on its own (see Network.reuses_results)
+            reference = None
+            for propulsor in network.propulsors:
+                if propulsor.active and not network.reuses_results(propulsor, reference):
+                    propulsor.append_unknowns_and_residuals(segment)
+                    reference = propulsor
                     
             # ---------------------------------------------------------------------------------------------            
             # Distributors 

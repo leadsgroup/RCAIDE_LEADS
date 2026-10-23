@@ -31,3 +31,4 @@ from .planet_position                          import planet_position
 from .stability                                import stability
 from .thrust                                   import thrust 
 from .weights                                  import weights
+from .aero_propulsion_coupling                 import aero_propulsion_coupling
