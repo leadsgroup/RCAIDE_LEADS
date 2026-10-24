@@ -274,7 +274,7 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_on_rotor_coupling=False):
         ur += rotor.radial_velocities_2d
 
     # Include velocities induced by the wing at the rotor disc
-    if wing_on_rotor_coupling and 'VD' in conditions.aerodynamics:
+    if wing_on_rotor_coupling and 'vortex_distribution' in conditions.aerodynamics:
         use_2d_analysis           = True
         ua_wing, ut_wing, ur_wing = compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_2d, psi_2d)
 

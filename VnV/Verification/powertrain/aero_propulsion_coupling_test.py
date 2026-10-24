@@ -62,7 +62,7 @@ def main():
     return
 
 def evaluate_cruise(coupled):
-    vehicle                                            = vehicle_setup('lithium_ion_nmc', None)
+    vehicle                                            = vehicle_setup('Blade_Element_Momentum_Theory_Helmholtz_Wake')
     vehicle.networks.electric.wing_on_rotor_coupling = coupled
 
     propulsors                                              = vehicle.networks.electric.propulsors

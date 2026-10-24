@@ -113,6 +113,6 @@ def compute_rotor_performance(rotor, conditions, wing_on_rotor_coupling=False):
 
     elif rotor.fidelity == 'Lifting_Line_Theory':
 
-        lifting_line_performance(rotor,conditions)
+        lifting_line_performance(rotor,conditions,wing_on_rotor_coupling)
      
     return
