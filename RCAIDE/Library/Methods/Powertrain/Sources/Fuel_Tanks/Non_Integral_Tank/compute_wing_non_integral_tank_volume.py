@@ -202,14 +202,14 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
     inner_segment_thickness =  np.minimum(inner_front_rib_length,inner_rear_rib_length)
     z_inner_upper  = inner_segment.origin[0][2] + (inner_segment_thickness / 2) - clearance
     z_inner_lower  = inner_segment.origin[0][2] - (inner_segment_thickness / 2) + clearance
-    y_inner_upper  = inner_segment.percent_span_location * wing.spans.projected
+    y_inner_upper  = inner_segment.percent_span_location * semi_span
     y_inner_lower  = y_inner_upper
 
     # outer segment coordinates  
     outer_segment_thickness =  np.minimum(outer_front_rib_length,outer_rear_rib_length)
     z_outer_upper  = inner_segment.origin[0][2] + delta_span *np.tan(inner_segment.dihedral_outboard) + outer_segment_thickness / 2 - clearance
     z_outer_lower  = inner_segment.origin[0][2] + delta_span *np.tan(inner_segment.dihedral_outboard) - outer_segment_thickness / 2 + clearance
-    y_outer_upper  = outer_segment.percent_span_location * wing.spans.projected
+    y_outer_upper  = outer_segment.percent_span_location * semi_span
     y_outer_lower  = y_outer_upper  
 
     dz_upper   = z_outer_upper - z_inner_upper
