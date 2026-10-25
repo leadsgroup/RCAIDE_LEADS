@@ -90,6 +90,7 @@ def lifting_line_performance(rotor, conditions, wing_on_rotor_coupling=False):
     if rotor.wake_inputs is None:
         wake_inputs = Data()
         wake_inputs.include_wake                 = True
+        wake_inputs.free_wake                    = True              # matches Tiltrotor_EVTOL.py's validated choice
         wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
         wake_inputs.wake_model_FF                = 5                 # 4 undisorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
         wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
@@ -103,7 +104,8 @@ def lifting_line_performance(rotor, conditions, wing_on_rotor_coupling=False):
         wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # paramter to delay the growth rate till certain wake age 
         wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from               
         wake_inputs.tol                          = 1e-4
-        wake_inputs.relax_0                      = 0.2
+        wake_inputs.relax_0_Gammab                = 0.1
+        wake_inputs.relax_0_CT                    = 0.2
         wake_inputs.max_iter_Gammab_0            = 1000
         wake_inputs.max_iter_CT_0                = 100
         wake_inputs.CT_iter                      = True
