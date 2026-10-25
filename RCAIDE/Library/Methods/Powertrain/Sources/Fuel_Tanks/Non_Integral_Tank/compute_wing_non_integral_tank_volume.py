@@ -230,10 +230,10 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
         BC =  D / np.cos(lower_slope)
 
         # get equation of upper line
-        f_upper = interp1d(np.array([y_inner_upper ,y_outer_upper  ]), np.array([z_inner_upper ,z_outer_upper  ]))
+        f_upper = interp1d(np.array([y_inner_upper ,y_outer_upper  ]), np.array([z_inner_upper ,z_outer_upper  ]), fill_value='extrapolate')
 
         # get equation of lower line
-        f_lower = interp1d(np.array([y_inner_lower ,y_outer_lower ]), np.array([z_inner_lower ,z_outer_lower ]))
+        f_lower = interp1d(np.array([y_inner_lower ,y_outer_lower ]), np.array([z_inner_lower ,z_outer_lower ]), fill_value='extrapolate')
 
         AB = f_upper(y_inner_upper)  - f_lower(y_inner_upper)
         DC = f_upper(y_inner_upper+D)  - f_lower(y_inner_upper+D)
@@ -245,6 +245,11 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
         detla_D    = delta_AD *  np.cos(upper_slope)
 
         D += detla_D 
+
+    # a tank cannot be wider than the span left in the segment
+    D = np.minimum(D, y_outer_upper - y_inner_upper)
+    if D <= 0:
+        raise ValueError(f"No span left in the segment for tank '{fuel_tank.tag}'")
 
     # update tank percent span location
     tank_percent_span_location = inner_segment.percent_span_location +  D / semi_span 
