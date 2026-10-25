@@ -160,6 +160,12 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
                 x_points_lower = segment_chord * geometry.x_lower_surface
                 y_points_upper = segment_chord * geometry.y_upper_surface
                 y_points_lower = segment_chord * geometry.y_lower_surface
+                # apply the section twist about its leading edge, as the wing surface does (generate_3d_wing_points)
+                twist          = segment.twist
+                x_points_upper, y_points_upper = (x_points_upper * np.cos(twist) + y_points_upper * np.sin(twist),
+                                                  -x_points_upper * np.sin(twist) + y_points_upper * np.cos(twist))
+                x_points_lower, y_points_lower = (x_points_lower * np.cos(twist) + y_points_lower * np.sin(twist),
+                                                  -x_points_lower * np.sin(twist) + y_points_lower * np.cos(twist))
                 # position points correct using segment origin (this is based on sweep and dihedral)
                 x_points_upper_positioned = x_points_upper + wing_segment_origins[seg_i][0]
                 x_points_lower_positioned = x_points_lower + wing_segment_origins[seg_i][0]
