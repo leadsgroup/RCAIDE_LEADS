@@ -190,28 +190,24 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
         inner_ribs = [(1 - w) * a + w * b for a, b in zip(inner_ribs, outer_ribs)]
     inner_front_rib_yu,inner_rear_rib_yu,inner_front_rib_yl,inner_rear_rib_yl = inner_ribs
     inner_segment_chord     = wing.chords.root * inner_segment.root_chord_percent
-    inner_front_rib_length  = inner_segment_chord * (abs(inner_front_rib_yu) + abs(inner_front_rib_yl)) 
-    inner_rear_rib_length   = inner_segment_chord * (abs(inner_rear_rib_yu) + abs(inner_rear_rib_yl) )
 
     clearance  = fuel_tank.wall_clearance
     delta_span = (outer_segment.percent_span_location - inner_segment.percent_span_location) * semi_span
 
     outer_front_rib_yu,outer_rear_rib_yu,outer_front_rib_yl,outer_rear_rib_yl = compute_non_dimensional_rib_coordinates(outer_segment,fuel_tank,fuel_tank.segments_percent_chord_start[1], fuel_tank.segments_percent_chord_end[1])
     outer_segment_chord     = wing.chords.root * outer_segment.root_chord_percent
-    outer_front_rib_length  = outer_segment_chord * (abs(outer_front_rib_yu) + abs(outer_front_rib_yl)) 
-    outer_rear_rib_length   = outer_segment_chord * (abs(outer_rear_rib_yu) + abs(outer_rear_rib_yl))
 
     # inner segment coordinate  
-    inner_segment_thickness =  np.minimum(inner_front_rib_length,inner_rear_rib_length)
-    z_inner_upper  = inner_segment.origin[0][2] + (inner_segment_thickness / 2) - clearance
-    z_inner_lower  = inner_segment.origin[0][2] - (inner_segment_thickness / 2) + clearance
+    # upper/lower bounds from the actual (cambered) surfaces at the spars: lower of the upper surfaces, higher of the lower
+    z_inner_upper  = inner_segment.origin[0][2] + inner_segment_chord * np.minimum(inner_front_rib_yu, inner_rear_rib_yu) - clearance
+    z_inner_lower  = inner_segment.origin[0][2] + inner_segment_chord * np.maximum(inner_front_rib_yl, inner_rear_rib_yl) + clearance
     y_inner_upper  = inner_segment.percent_span_location * semi_span
     y_inner_lower  = y_inner_upper
 
     # outer segment coordinates  
-    outer_segment_thickness =  np.minimum(outer_front_rib_length,outer_rear_rib_length)
-    z_outer_upper  = inner_segment.origin[0][2] + delta_span *np.tan(inner_segment.dihedral_outboard) + outer_segment_thickness / 2 - clearance
-    z_outer_lower  = inner_segment.origin[0][2] + delta_span *np.tan(inner_segment.dihedral_outboard) - outer_segment_thickness / 2 + clearance
+    z_outer_chord  = inner_segment.origin[0][2] + delta_span *np.tan(inner_segment.dihedral_outboard)
+    z_outer_upper  = z_outer_chord + outer_segment_chord * np.minimum(outer_front_rib_yu, outer_rear_rib_yu) - clearance
+    z_outer_lower  = z_outer_chord + outer_segment_chord * np.maximum(outer_front_rib_yl, outer_rear_rib_yl) + clearance
     y_outer_upper  = outer_segment.percent_span_location * semi_span
     y_outer_lower  = y_outer_upper  
 
@@ -278,7 +274,7 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
 
     # get orgin of fuel tank 
     origin_y              = inner_segment.origin[0][1] + D / 2
-    origin_z              = inner_segment.origin[0][2] + (D / 2) *np.tan(inner_segment.dihedral_outboard)
+    origin_z              = (f_upper(y_inner_upper + D / 2) + f_lower(y_inner_upper + D / 2)) / 2   # centred between the bounds
     fuel_tank.origin      = [[origin_x,origin_y,origin_z]]
     fuel_tank.fuel.origin = [[origin_x,origin_y,origin_z]] 
     fuel_tank.fuel.xz_plane_symmetric = wing.xz_plane_symmetric
