@@ -8,7 +8,6 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 import  RCAIDE
-from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  compute_naca_4series
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_non_dimensional_moment_of_inertia import compute_rounded_end_cylinder_non_dimensional_moi
 
@@ -170,7 +169,6 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
 
     semi_span      = wing.spans.projected / 2
     inner_segment  = deepcopy(inner_segment_0) 
-    spar_sweep     = convert_sweep_segments(inner_segment_0.sweeps.quarter_chord, inner_segment_0, outer_segment, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=fuel_tank.percent_span_location  )     
     if tank_percent_span_location > inner_segment_0.percent_span_location: 
         inner_segment.percent_span_location = tank_percent_span_location
         m                                   =  (outer_segment.root_chord_percent -  inner_segment_0.root_chord_percent) / (outer_segment.percent_span_location - inner_segment_0.percent_span_location)
@@ -187,7 +185,6 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
     inner_segment_chord     = wing.chords.root * inner_segment.root_chord_percent
     inner_front_rib_length  = inner_segment_chord * (abs(inner_front_rib_yu) + abs(inner_front_rib_yl)) 
     inner_rear_rib_length   = inner_segment_chord * (abs(inner_rear_rib_yu) + abs(inner_rear_rib_yl) )
-    inner_wingbox_length    = inner_segment_chord * (fuel_tank.segments_percent_chord_end[0] -fuel_tank.segments_percent_chord_start[0]) 
 
     clearance  = fuel_tank.wall_clearance
     delta_span = (outer_segment.percent_span_location - inner_segment.percent_span_location) * semi_span
@@ -196,7 +193,6 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
     outer_segment_chord     = wing.chords.root * outer_segment.root_chord_percent
     outer_front_rib_length  = outer_segment_chord * (abs(outer_front_rib_yu) + abs(outer_front_rib_yl)) 
     outer_rear_rib_length   = outer_segment_chord * (abs(outer_rear_rib_yu) + abs(outer_rear_rib_yl))
-    outer_wingbox_length    = outer_segment_chord * (fuel_tank.segments_percent_chord_end[1] -fuel_tank.segments_percent_chord_start[1]) 
 
     # inner segment coordinate  
     inner_segment_thickness =  np.minimum(inner_front_rib_length,inner_rear_rib_length)
@@ -254,8 +250,26 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
     # update tank percent span location
     tank_percent_span_location = inner_segment.percent_span_location +  D / semi_span 
 
+    # front and rear spar lines, straight between the tank's inner station and the outer segment
+    y_inner   = inner_segment.percent_span_location * semi_span
+    y_outer   = outer_segment.percent_span_location * semi_span
+    x_le_o    = inner_segment_0.origin[0][0] + (y_outer - inner_segment_0.percent_span_location * semi_span) * np.tan(inner_segment_0.sweeps.leading_edge)
+    x_front_i = inner_segment.origin[0][0] + fuel_tank.segments_percent_chord_start[0] * inner_segment_chord
+    x_front_o = x_le_o + fuel_tank.segments_percent_chord_start[1] * outer_segment_chord
+    x_rear_i  = inner_segment.origin[0][0] + fuel_tank.segments_percent_chord_end[0] * inner_segment_chord
+    x_rear_o  = x_le_o + fuel_tank.segments_percent_chord_end[1] * outer_segment_chord
+    tan_front = (x_front_o - x_front_i) / (y_outer - y_inner)
+    tan_rear  = (x_rear_o - x_rear_i) / (y_outer - y_inner)
+
+    # the tank spans y_inner to y_inner + D; its hemispherical caps (centered at y_inner + R) clear each spar line
+    # by placing the cap centers R / cos(sweep) from it, so the tip-to-tip length stays within the wing box
+    R        = D / 2
+    origin_x = x_front_i + R * (tan_front + np.sqrt(1 + tan_front**2) - 1)
+    l        = x_rear_i + R * (tan_rear - np.sqrt(1 + tan_rear**2) + 1) - origin_x
+    if l < D:
+        raise ValueError(f"Wing box too short for tank '{fuel_tank.tag}'")
+
     # get orgin of fuel tank 
-    origin_x              = inner_segment.origin[0][0] + (fuel_tank.segments_percent_chord_start[0] * inner_segment_chord) + (np.tan( np.pi/2 - spar_sweep) * D / 2) -D/2
     origin_y              = inner_segment.origin[0][1] + D / 2
     origin_z              = inner_segment.origin[0][2] + (D / 2) *np.tan(inner_segment.dihedral_outboard)
     fuel_tank.origin      = [[origin_x,origin_y,origin_z]]
@@ -263,12 +277,6 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
     fuel_tank.fuel.xz_plane_symmetric = wing.xz_plane_symmetric
     fuel_tank.fuel.xy_plane_symmetric = wing.xy_plane_symmetric
     fuel_tank.fuel.yz_plane_symmetric = wing.yz_plane_symmetric 
-
-    # get length of tank 
-    m_2 =  (outer_wingbox_length -  inner_wingbox_length) / (outer_segment.percent_span_location - inner_segment_0.percent_span_location)  
-    l_1 =  inner_wingbox_length +  m_2 * (tank_percent_span_location - inner_segment_0.percent_span_location)
-    l_2 =  inner_wingbox_length -  (D / np.tan( np.pi/2 -spar_sweep)) 
-    l   =  np.minimum(l_1, l_2) + D
 
     # internal radius of tank 
     r_out  = (D) / 2
