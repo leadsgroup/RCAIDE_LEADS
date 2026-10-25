@@ -181,7 +181,14 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
         inner_segment.origin[0][1] = inner_segment.percent_span_location * semi_span
         inner_segment.origin[0][2] = inner_segment_0.origin[0][2] +  delta_y *np.tan(inner_segment.dihedral_outboard)
 
-    inner_front_rib_yu,inner_rear_rib_yu,inner_front_rib_yl,inner_rear_rib_yl = compute_non_dimensional_rib_coordinates(inner_segment,fuel_tank,fuel_tank.segments_percent_chord_start[0], fuel_tank.segments_percent_chord_end[0])
+    inner_ribs = compute_non_dimensional_rib_coordinates(inner_segment_0,fuel_tank,fuel_tank.segments_percent_chord_start[0], fuel_tank.segments_percent_chord_end[0])
+    if tank_percent_span_location > inner_segment_0.percent_span_location:
+        # a packed tank's inner station lies between the two sections: blend their rib coordinates linearly in span,
+        # the same linear airfoil transition as generate_interpolated_airfoils (and as the wing surface is lofted)
+        outer_ribs = compute_non_dimensional_rib_coordinates(outer_segment,fuel_tank,fuel_tank.segments_percent_chord_start[0], fuel_tank.segments_percent_chord_end[0])
+        w          = (tank_percent_span_location - inner_segment_0.percent_span_location) / (outer_segment.percent_span_location - inner_segment_0.percent_span_location)
+        inner_ribs = [(1 - w) * a + w * b for a, b in zip(inner_ribs, outer_ribs)]
+    inner_front_rib_yu,inner_rear_rib_yu,inner_front_rib_yl,inner_rear_rib_yl = inner_ribs
     inner_segment_chord     = wing.chords.root * inner_segment.root_chord_percent
     inner_front_rib_length  = inner_segment_chord * (abs(inner_front_rib_yu) + abs(inner_front_rib_yl)) 
     inner_rear_rib_length   = inner_segment_chord * (abs(inner_rear_rib_yu) + abs(inner_rear_rib_yl) )
