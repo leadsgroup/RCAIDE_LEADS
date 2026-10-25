@@ -173,7 +173,7 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
     spar_sweep     = convert_sweep_segments(inner_segment_0.sweeps.quarter_chord, inner_segment_0, outer_segment, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=fuel_tank.percent_span_location  )     
     if tank_percent_span_location > inner_segment_0.percent_span_location: 
         inner_segment.percent_span_location = tank_percent_span_location
-        m                                   =  (outer_segment.root_chord_percent -  inner_segment_0.root_chord_percent) / (outer_segment.percent_span_location - fuel_tank.percent_span_location)
+        m                                   =  (outer_segment.root_chord_percent -  inner_segment_0.root_chord_percent) / (outer_segment.percent_span_location - inner_segment_0.percent_span_location)
         delta_y_percent                     =  (tank_percent_span_location - inner_segment_0.percent_span_location)
         inner_segment.root_chord_percent    = inner_segment_0.root_chord_percent + m*delta_y_percent
 
