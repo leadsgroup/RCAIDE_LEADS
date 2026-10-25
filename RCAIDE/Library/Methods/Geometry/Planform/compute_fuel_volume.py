@@ -71,6 +71,11 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = F
     wings             = vehicle.wings
     fuselages         = vehicle.fuselages
     total_fuel_volume = 0
+    if compute_fuel_volume:
+        # transverse tanks pack behind the previous one via aft_tank_end_percent; clear it so a re-sizing starts afresh
+        for wing in wings:
+            if 'aft_tank_end_percent' in wing:
+                del wing['aft_tank_end_percent']
     for network in vehicle.networks:
          distributor_tanks = {}  # distributor tag -> list of fuel tanks assigned to it, this network only
          fuel_tanks_in_network = [source for source in network.sources
