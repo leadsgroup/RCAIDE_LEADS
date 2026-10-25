@@ -65,7 +65,8 @@ def cryogenic_tank_rates_tables(tank, R_specific, T_g_lo, T_g_hi, T_l_lo, T_l_hi
                        tank.insulation.thickness, tank.inner_structure.material.thermal_conductivity,
                        tank.insulation.material.thermal_conductivity, tank.design_full_liquid_mass,
                        tank.pressure_regulation_time_constant, tank.design_pressure,
-                       tank.heater_direct_boiloff_fraction, tank.minimum_operating_pressure], dtype=float)
+                       tank.heater_direct_boiloff_fraction, tank.minimum_operating_pressure,
+                       tank.vent_time_constant if tank.vent_time_constant is not None else tank.pressure_regulation_time_constant], dtype=float)
     return TL, LQ, TV, VQ, PS, liquid["Temperature (K)"], params, geometry
 
 
@@ -273,7 +274,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
 
     gain             = V_g_c / (R_specific * T_g_c * tau)
     m_dot_heat       = gain * (minimum_pressure - P)
-    m_dot_relief     = gain * (P - design_pressure)
+    m_dot_relief     = V_g_c / (R_specific * T_g_c * params[20]) * (P - design_pressure)
     eps              = 1e-6
     m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
     m_dot_vent       = 0.5 * (m_dot_relief + np.sqrt(m_dot_relief**2 + eps**2))

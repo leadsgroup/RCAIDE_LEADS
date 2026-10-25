@@ -72,6 +72,9 @@ class Cryogenic_Tank(Non_Integral_Tank):
     pressure_regulation_time_constant : float
         Response time of the heater and vent regulation [s] (default: 400). Within the range of the heater
         response constant C_h tuned by Adler & Martins (2025), Sec. IV.B.
+    vent_time_constant : float or None
+        Response time of the relief vent [s] (default: 10). Assumed value approximating a relief valve that holds
+        design_pressure; None uses pressure_regulation_time_constant.
     """
 
     def __defaults__(self):
@@ -95,6 +98,7 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.design_pressure                = None
         self.minimum_operating_pressure     = None
         self.pressure_regulation_time_constant = 400.0
+        self.vent_time_constant                = 10.0
 
     def compute_volume(self, wings, fuselages, fuel_tanks):
         """Computes the net fuel volume and cryogenic structure/insulation sizing.

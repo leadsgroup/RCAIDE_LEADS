@@ -433,9 +433,10 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # minimum_operating_pressure, the tank vents above design_pressure, and in between it self-pressurizes.
     # Each flow is a finite-gain law with response time tau, smoothed so the mission Jacobian stays continuous.
     tau              = tank.pressure_regulation_time_constant
+    tau_vent         = tank.vent_time_constant if tank.vent_time_constant is not None else tau
     gain             = V_g_c / (R_specific * T_g_c * tau)
     m_dot_heat       = gain * (tank.minimum_operating_pressure - P)
-    m_dot_relief     = gain * (P - tank.design_pressure)
+    m_dot_relief     = V_g_c / (R_specific * T_g_c * tau_vent) * (P - tank.design_pressure)
     eps              = 1e-6  # kg/s, smoothing width
     m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
     m_dot_vent       = 0.5 * (m_dot_relief + np.sqrt(m_dot_relief**2 + eps**2))
