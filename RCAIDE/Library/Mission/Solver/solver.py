@@ -566,7 +566,7 @@ def iterate_optimizer(nexus):
             segment.state.unknowns.network = unknowns
     segment.process.iterate(segment)
 
-    residuals = segment.state.residuals.pack_array()
+    residuals = segment.state.residuals.pack_array()    
     nexus.residuals =  residuals
     return nexus
 

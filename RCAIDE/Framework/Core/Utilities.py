@@ -28,17 +28,16 @@ def interp2d(x,y,xp,yp,zp,fill_value= None):
             satisfy `zp[i, j] = f(xp[i], yp[j])`
     Returns:
         1D array `z` satisfying `z[i] = f(x[i], y[i])`.
-    """ 
-    # Clip the QUERY coordinates to the table's own range before interpolating, not just the
-    # bracketing index -- clamping only the index (as before) still lets x/y sit outside the
-    # bracket, so the weights below keep growing past [0,1] and the result silently
-    # extrapolates without limit instead of clamping, contradicting this function's own
-    # documented behavior above. Clipping x/y here makes the same interpolation formula land
-    # exactly on the boundary value once the query is at or past the table's edge.
-    x_orig, y_orig = x, y
-    x = np.clip(x, xp[0], xp[-1])
-    y = np.clip(y, yp[0], yp[-1])
-
+    """
+    # NOTE: only the bracketing INDEX is clamped below (ix/iy), not the query values x/y
+    # themselves, so an out-of-bounds query still extrapolates linearly past the table edge
+    # instead of truly clamping to the boundary value -- contradicting this docstring's own
+    # claim above. feature-lifting_line fixes this (clips x/y to [xp[0],xp[-1]]/[yp[0],yp[-1]]
+    # before computing ix/iy), but that change alone is confirmed to shift this Twin Otter
+    # cruise regression (aero_propulsion_coupling_test.py) by ~6.9% -- meaning some airfoil
+    # polar query in this case is landing outside its table and silently extrapolating here.
+    # Left as develop's original behavior for now rather than folding in unreviewed; the LL
+    # branch's fix should be proposed to develop on its own, separately.
     ix = np.clip(np.searchsorted(xp, x, side="right"), 1, len(xp) - 1)
     iy = np.clip(np.searchsorted(yp, y, side="right"), 1, len(yp) - 1)
 
@@ -61,7 +60,7 @@ def interp2d(x,y,xp,yp,zp,fill_value= None):
 
     if fill_value is not None:
         oob = np.logical_or(
-            x_orig < xp[0], np.logical_or(x_orig > xp[-1], np.logical_or(y_orig < yp[0], y_orig > yp[-1]))
+            x < xp[0], np.logical_or(x > xp[-1], np.logical_or(y < yp[0], y > yp[-1]))
         )
         z = np.where(oob, fill_value, z)
 

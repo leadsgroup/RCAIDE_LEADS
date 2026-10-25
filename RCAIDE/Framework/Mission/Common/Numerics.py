@@ -97,10 +97,10 @@ class Numerics(Conditions):
 
         self.dimensionless                                      = Conditions()
         self.dimensionless.control_points                       = np.empty([0,0])
-        self.dimensionless.differentiate                       = np.empty([0,0])
-        self.dimensionless.integrate                           = np.empty([0,0])
-
-        self.time                                              = Conditions()
-        self.time.control_points                               = np.empty([0,0])
-        self.time.differentiate                                = np.empty([0,0])
-        self.time.integrate                                    = np.empty([0,0])
+        self.dimensionless.differentiate                        = np.empty([0,0])
+        self.dimensionless.integrate                            = np.empty([0,0]) 
+               
+        self.time                                               = Conditions()
+        self.time.control_points                                = np.empty([0,0])
+        self.time.differentiate                                 = np.empty([0,0])
+        self.time.integrate                                     = np.empty([0,0])

@@ -52,7 +52,7 @@ def main():
     assert np.abs(power_on[0] - power_off[0]) / power_off[0] > 1e-4
 
     # regression
-    power_true = 95804.81789793503
+    power_true = 94985.59104913592
     diff_power = np.abs(power_on[0] - power_true) / power_true
     print('Power: ', power_on[0], ' difference: ', diff_power)
     assert diff_power < 1e-2
@@ -62,7 +62,7 @@ def main():
     return
 
 def evaluate_cruise(coupled):
-    vehicle                                            = vehicle_setup('Blade_Element_Momentum_Theory_Helmholtz_Wake')
+    vehicle                                            = vehicle_setup('lithium_ion_nmc', None)
     vehicle.networks.electric.wing_on_rotor_coupling = coupled
 
     propulsors                                              = vehicle.networks.electric.propulsors
