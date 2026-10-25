@@ -283,7 +283,8 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
 
     # internal radius of tank 
     r_out  = (D) / 2
-    r_in   = (D -  2 * fuel_tank.wall_thickness ) / 2
+    t_wall = fuel_tank.wall_thickness if fuel_tank.wall_thickness is not None else 0.0   # None: wall sized by the cryogenic routine that runs next
+    r_in   = (D -  2 * t_wall ) / 2
 
     fuel_tank.diameters.external = D
     fuel_tank.diameters.internal = 2 * r_in
