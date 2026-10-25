@@ -23,6 +23,8 @@ import os
 # ----------------------------------------------------------------------------------------------------------------------
 #  Methods to compute volume of non integrak tanks
 # ----------------------------------------------------------------------------------------------------------------------  
+MINIMUM_TANK_DIAMETER = 0.25   # m; smaller aft tanks are dropped rather than sized
+
 def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
     """
     Computes the volume of an aft fuel tank for a Blended Wing Body (BWB) aircraft configuration.
@@ -96,7 +98,7 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
         ]):
         raise ValueError("One or more required aft tank parameters are not set in 'fuel_tank'.")
     if hasattr( wing, 'aft_tank_end_percent'):
-        if  (fuel_tank.transverse_tank_chord_bounds[1] - wing.aft_tank_end_percent - 0.005)*wing.chords.root > 0.25: # Successive Aft Tank diameter needs to be atleast 0.25m
+        if  (fuel_tank.transverse_tank_chord_bounds[1] - wing.aft_tank_end_percent - 0.005)*wing.chords.root > MINIMUM_TANK_DIAMETER: # successive aft tank must fit at least the minimum diameter
             fuel_tank.transverse_tank_chord_bounds[0] = wing.aft_tank_end_percent + 0.005
         else:
             print(f"[WARNING] Tank '{fuel_tank.tag}' cannot not fit in the space. Removing from list.")
@@ -252,6 +254,10 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
     max_volume = np.max(tank_volumes)
     max_idx    = np.argmax(tank_volumes)
     radius_opt = tank_radii[max_idx]
+    if 2 * radius_opt < MINIMUM_TANK_DIAMETER:
+        print(f"[WARNING] Tank '{fuel_tank.tag}' cannot not fit in the space. Removing from list.")
+        fuel_tanks.pop(fuel_tank.tag)
+        return
     length_opt = tank_lengths[max_idx]
 
     # lengths.external is total tip-to-tip (cylinder + two hemispheres)
