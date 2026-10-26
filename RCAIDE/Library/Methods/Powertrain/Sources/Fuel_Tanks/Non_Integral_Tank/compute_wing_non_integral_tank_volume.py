@@ -9,6 +9,7 @@
 # RCAIDE imports
 import  RCAIDE
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  compute_naca_4series
+from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_non_dimensional_moment_of_inertia import compute_rounded_end_cylinder_non_dimensional_moi
 
 #Python Imports 
@@ -169,6 +170,10 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
 
     semi_span      = wing.spans.projected / 2
     inner_segment  = deepcopy(inner_segment_0) 
+    # segments may define only the quarter-chord sweep
+    le_sweep       = inner_segment_0.sweeps.leading_edge
+    if le_sweep is None:
+        le_sweep = convert_sweep_segments(inner_segment_0.sweeps.quarter_chord, inner_segment_0, outer_segment, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.0)
     if tank_percent_span_location > inner_segment_0.percent_span_location: 
         inner_segment.percent_span_location = tank_percent_span_location
         m                                   =  (outer_segment.root_chord_percent -  inner_segment_0.root_chord_percent) / (outer_segment.percent_span_location - inner_segment_0.percent_span_location)
@@ -177,7 +182,7 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
 
         # update segment origin
         delta_y                    = delta_y_percent * semi_span
-        inner_segment.origin[0][0] = inner_segment_0.origin[0][0] + delta_y * np.tan(inner_segment_0.sweeps.leading_edge) 
+        inner_segment.origin[0][0] = inner_segment_0.origin[0][0] + delta_y * np.tan(le_sweep) 
         inner_segment.origin[0][1] = inner_segment.percent_span_location * semi_span
         inner_segment.origin[0][2] = inner_segment_0.origin[0][2] +  delta_y *np.tan(inner_segment.dihedral_outboard)
 
@@ -256,7 +261,7 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
     # front and rear spar lines, straight between the tank's inner station and the outer segment
     y_inner   = inner_segment.percent_span_location * semi_span
     y_outer   = outer_segment.percent_span_location * semi_span
-    x_le_o    = inner_segment_0.origin[0][0] + (y_outer - inner_segment_0.percent_span_location * semi_span) * np.tan(inner_segment_0.sweeps.leading_edge)
+    x_le_o    = inner_segment_0.origin[0][0] + (y_outer - inner_segment_0.percent_span_location * semi_span) * np.tan(le_sweep)
     x_front_i = inner_segment.origin[0][0] + fuel_tank.segments_percent_chord_start[0] * inner_segment_chord
     x_front_o = x_le_o + fuel_tank.segments_percent_chord_start[1] * outer_segment_chord
     x_rear_i  = inner_segment.origin[0][0] + fuel_tank.segments_percent_chord_end[0] * inner_segment_chord
