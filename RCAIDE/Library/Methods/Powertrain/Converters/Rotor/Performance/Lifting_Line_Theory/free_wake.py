@@ -46,8 +46,10 @@ def free_wake(rotor, wake_inputs, conditions):
     dpsi  = dzeta
     J     = int(round(2*np.pi / dpsi))
 
-    CW   = wake_inputs.omega[:, 0] > 0     # (ctrl_pts,) -- per-control-point rotation sense,
-                                            # matching initialize_lifting_line.py/initialize_wake_geometry.py
+    # rotation sense is a fixed rotor property, not a sign on omega (omega is always a positive
+    # magnitude here, same convention as BEMT_Helmholtz_performance.py's `rotation` variable,
+    # and the same fix already applied in initialize_lifting_line.py/initialize_wake_geometry.py)
+    CW   = np.full(wake_inputs.omega[:, 0].shape, rotor.clockwise_rotation, dtype=bool)   # (ctrl_pts,)
     CW_b = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper for the
                                             # (ctrl_pts, J, Nr_s)/(ctrl_pts, J, N_wake+1) grids below
     j_rot    = dpsi * np.arange(J)
