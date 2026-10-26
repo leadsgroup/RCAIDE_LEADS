@@ -1,6 +1,8 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Performance/Lifting_Line_Theory/initialize_lifting_line.py
 #
 # Created:  Jun 2026, H. Hussien
+# Modified: Oct 2026, H. Hussien -- accepts a single rotor or a list of rotors (multi-rotor
+#           coupling); each rotor is initialized independently, exactly as before
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
@@ -12,7 +14,9 @@ from RCAIDE.Framework.Core import Data, orientation_transpose
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_lifting_line(rotor, conditions):
     """
-    Initializes the lifting-line geometry arrays for a rotor.
+    Initializes the lifting-line geometry arrays for a rotor, or for every rotor in a list
+    (multi-rotor coupling) -- each rotor is initialized independently, with no cross-rotor
+    terms at this stage (those come later, in evaluate_bound_vortex_circulation).
 
     Must be called once before the iteration loop. Fills 1/4-chord and 3/4-chord
     node positions (hub frame and body frame) and allocates zero arrays for
@@ -22,8 +26,8 @@ def initialize_lifting_line(rotor, conditions):
 
     Parameters
     ----------
-    rotor : Data
-        Rotor object. Reads:
+    rotor : Data, or list/dict of Data
+        Rotor object(s). Each reads:
             - number_of_blades
             - radius_distribution
             - sweep_distribution
@@ -33,7 +37,7 @@ def initialize_lifting_line(rotor, conditions):
             - orientation_euler_angles
             - psi_0  (optional, default 0.0)
     conditions : Data
-        Flight conditions. Reads:
+        Flight conditions. Reads, per rotor:
             - frames.body.transform_to_inertial
             - energy.converters[rotor.tag].commanded_thrust_vector_angle
             - energy.converters[rotor.tag].blade_pitch_command
@@ -42,7 +46,7 @@ def initialize_lifting_line(rotor, conditions):
     -------
     None
         Populates rotor.blades (a single Data() container, not a list) with
-        the following stacked attributes:
+        the following stacked attributes, on each rotor in the list:
 
         rotor.blades.bound.psi               : (Nr, B)             azimuth angle [rad]
         rotor.blades.bound.chord             : (Nr, B)             chord distribution [m]
@@ -63,129 +67,133 @@ def initialize_lifting_line(rotor, conditions):
             .nodes                           : None              filled when wake is implemented
             .gamma                           : None              filled when wake is implemented
     """
-    # ------------------------------------------------------------------------------------------------------------------
-    #  Unpack
-    # ------------------------------------------------------------------------------------------------------------------
-    B        = rotor.number_of_blades
-    R        = rotor.tip_radius
-    r_1d     = rotor.radius_distribution                   # (Nr,)
-    sweep    = rotor.sweep_distribution                    # (Nr,)
-    c        = rotor.chord_distribution                    # (Nr,)
-    theta_tw = rotor.twist_distribution                    # (Nr,)
-    Nr       = len(r_1d)
-    rc       = rotor.rc
+    # a single rotor is itself a Data/dict, so identify it by its fields, not by isinstance(dict)
+    rotor_list = [rotor] if hasattr(rotor, 'number_of_blades') else (list(rotor.values()) if isinstance(rotor, dict) else list(rotor))
 
-    if np.isscalar(sweep):
-        sweep = np.zeros(Nr) if sweep == 0 else np.full(Nr, sweep)
+    for rotor in rotor_list:
+        # ------------------------------------------------------------------------------------------------------------------
+        #  Unpack
+        # ------------------------------------------------------------------------------------------------------------------
+        B        = rotor.number_of_blades
+        R        = rotor.tip_radius
+        r_1d     = rotor.radius_distribution                   # (Nr,)
+        sweep    = rotor.sweep_distribution                    # (Nr,)
+        c        = rotor.chord_distribution                    # (Nr,)
+        theta_tw = rotor.twist_distribution                    # (Nr,)
+        Nr       = len(r_1d)
+        rc       = rotor.rc
 
-    commanded_TV = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
-    pitch_c      = conditions.energy.converters[rotor.tag].blade_pitch_command
-    ctrl_pts     = len(conditions.frames.inertial.velocity_vector)
-    omega        = conditions.energy.converters[rotor.tag].omega
+        if np.isscalar(sweep):
+            sweep = np.zeros(Nr) if sweep == 0 else np.full(Nr, sweep)
 
-    # Total blade pitch  -- (ctrl_pts, Nr) then expanded to (ctrl_pts, Nr, B)
-    # theta_tw is (Nr,), pitch_c is (ctrl_pts, 1) or scalar
-    beta_1d = theta_tw[np.newaxis, :] + np.atleast_2d(pitch_c)        # (ctrl_pts, Nr)
-    beta    = np.repeat(beta_1d[:, :, np.newaxis], B, axis=2)       # (ctrl_pts, Nr, B)
+        commanded_TV = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
+        pitch_c      = conditions.energy.converters[rotor.tag].blade_pitch_command
+        ctrl_pts     = len(conditions.frames.inertial.velocity_vector)
+        omega        = conditions.energy.converters[rotor.tag].omega
 
-    # Thrust-to-body rotation matrices  -- (ctrl_pts, 3, 3)
-    T_body2inertial = conditions.frames.body.transform_to_inertial
-    body2thrust, _  = rotor.body_to_prop_vel(commanded_TV)
-    T_body2thrust   = orientation_transpose(
-                          np.ones_like(T_body2inertial[:]) * body2thrust)
-    T_thrust2body   = orientation_transpose(T_body2thrust)   # (ctrl_pts, 3, 3)
+        # Total blade pitch  -- (ctrl_pts, Nr) then expanded to (ctrl_pts, Nr, B)
+        # theta_tw is (Nr,), pitch_c is (ctrl_pts, 1) or scalar
+        beta_1d = theta_tw[np.newaxis, :] + np.atleast_2d(pitch_c)        # (ctrl_pts, Nr)
+        beta    = np.repeat(beta_1d[:, :, np.newaxis], B, axis=2)       # (ctrl_pts, Nr, B)
 
-    # Hub origin in body frame  -- (1, 1, 1, 3)
-    hub_origin = np.array(rotor.origin[0]).reshape(1, 1, 1, 3)
+        # Thrust-to-body rotation matrices  -- (ctrl_pts, 3, 3)
+        T_body2inertial = conditions.frames.body.transform_to_inertial
+        body2thrust, _  = rotor.body_to_prop_vel(commanded_TV)
+        T_body2thrust   = orientation_transpose(
+                              np.ones_like(T_body2inertial[:]) * body2thrust)
+        T_thrust2body   = orientation_transpose(T_body2thrust)   # (ctrl_pts, 3, 3)
 
-    # ------------------------------------------------------------------------------------------------------------------
-    #  Blade azimuth locations
-    # ------------------------------------------------------------------------------------------------------------------
-    pi    = np.pi
-    dpsi  = 2.0 * pi / B                                   # azimuthal spacing between blades
-    # psi +ve in the rotation direction, starting from +z
-    psi_0 = rotor.psi_0 if hasattr(rotor, 'psi_0') else 0.0
+        # Hub origin in body frame  -- (1, 1, 1, 3)
+        hub_origin = np.array(rotor.origin[0]).reshape(1, 1, 1, 3)
 
-    # Root azimuth of each blade  -- (B,)
-    psi_root = psi_0 + np.arange(B) * dpsi
+        # ------------------------------------------------------------------------------------------------------------------
+        #  Blade azimuth locations
+        # ------------------------------------------------------------------------------------------------------------------
+        pi    = np.pi
+        dpsi  = 2.0 * pi / B                                   # azimuthal spacing between blades
+        # psi +ve in the rotation direction, starting from +z
+        psi_0 = rotor.psi_0 if hasattr(rotor, 'psi_0') else 0.0
+
+        # Root azimuth of each blade  -- (B,)
+        psi_root = psi_0 + np.arange(B) * dpsi
 
 
-    # rotation sense is a fixed rotor property, not a sign on omega (omega is always a positive
-    # magnitude here, same convention as BEMT_Helmholtz_performance.py's `rotation` variable)
-    CW = np.full(omega[:, 0].shape, rotor.clockwise_rotation, dtype=bool)   # (ctrl_pts,)
+        # rotation sense is a fixed rotor property, not a sign on omega (omega is always a positive
+        # magnitude here, same convention as BEMT_Helmholtz_performance.py's `rotation` variable)
+        CW = np.full(omega[:, 0].shape, rotor.clockwise_rotation, dtype=bool)   # (ctrl_pts,)
 
-    CW_3 = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper
+        CW_3 = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper
 
-    # ------------------------------------------------------------------------------------------------------------------
-    #  Azimuth per blade per station, corrected with the blade sweep -- (Nr, B)
-    # ------------------------------------------------------------------------------------------------------------------
-    psi = psi_root[np.newaxis, :] - sweep[:, np.newaxis]      # (Nr, B)
+        # ------------------------------------------------------------------------------------------------------------------
+        #  Azimuth per blade per station, corrected with the blade sweep -- (Nr, B)
+        # ------------------------------------------------------------------------------------------------------------------
+        psi = psi_root[np.newaxis, :] - sweep[:, np.newaxis]      # (Nr, B)
 
-    # ------------------------------------------------------------------------------------------------------------------
-    #  1/4c and 3/4c node positions, hub/thrust frame  -- (ctrl_pts, Nr, B, 3)
-    #  x and z don't depend on rotation sense; only the y-component's sign does
-    #  (kept consistent with the shared y/z axis convention used for both CW and CCW).
-    # ------------------------------------------------------------------------------------------------------------------
-    r_2d = r_1d[:, np.newaxis] * np.ones((Nr, B))    # (Nr, B)
-    c_2d = c[:, np.newaxis]    * np.ones((Nr, B))    # (Nr, B)
+        # ------------------------------------------------------------------------------------------------------------------
+        #  1/4c and 3/4c node positions, hub/thrust frame  -- (ctrl_pts, Nr, B, 3)
+        #  x and z don't depend on rotation sense; only the y-component's sign does
+        #  (kept consistent with the shared y/z axis convention used for both CW and CCW).
+        # ------------------------------------------------------------------------------------------------------------------
+        r_2d = r_1d[:, np.newaxis] * np.ones((Nr, B))    # (Nr, B)
+        c_2d = c[:, np.newaxis]    * np.ones((Nr, B))    # (Nr, B)
 
-    nodes_hub_14c = np.zeros((ctrl_pts, Nr, B, 3))
-    # x: along rotor axis (nodes lie in rotor plane)
-    # y: -r*sin(psi) for CW, +r*sin(psi) for CCW
-    # z:  r*cos(psi) either way
-    nodes_hub_14c[:, :, :, 1] = np.where(CW_3, -r_2d[np.newaxis, :, :] * np.sin(psi)[np.newaxis, :, :],
-                                                r_2d[np.newaxis, :, :] * np.sin(psi)[np.newaxis, :, :])
-    nodes_hub_14c[:, :, :, 2] = (r_2d * np.cos(psi))[np.newaxis, :, :] * np.ones((ctrl_pts, 1, 1))
+        nodes_hub_14c = np.zeros((ctrl_pts, Nr, B, 3))
+        # x: along rotor axis (nodes lie in rotor plane)
+        # y: -r*sin(psi) for CW, +r*sin(psi) for CCW
+        # z:  r*cos(psi) either way
+        nodes_hub_14c[:, :, :, 1] = np.where(CW_3, -r_2d[np.newaxis, :, :] * np.sin(psi)[np.newaxis, :, :],
+                                                    r_2d[np.newaxis, :, :] * np.sin(psi)[np.newaxis, :, :])
+        nodes_hub_14c[:, :, :, 2] = (r_2d * np.cos(psi))[np.newaxis, :, :] * np.ones((ctrl_pts, 1, 1))
 
-    # 3/4c node positions  -- offset from 1/4c by c/2 along local chord direction.
-    # beta varies with ctrl_pts, so nodes_hub_34c also varies with ctrl_pts here;
-    # shape becomes (ctrl_pts, Nr, B, 3) directly, skipping a separate hub-only 3/4c array.
-    c_3d   = c_2d[np.newaxis, :, :]                                  # (1, Nr, B)
-    psi_3d = psi[np.newaxis, :, :]                                   # (1, Nr, B)
+        # 3/4c node positions  -- offset from 1/4c by c/2 along local chord direction.
+        # beta varies with ctrl_pts, so nodes_hub_34c also varies with ctrl_pts here;
+        # shape becomes (ctrl_pts, Nr, B, 3) directly, skipping a separate hub-only 3/4c array.
+        c_3d   = c_2d[np.newaxis, :, :]                                  # (1, Nr, B)
+        psi_3d = psi[np.newaxis, :, :]                                   # (1, Nr, B)
 
-    nodes_hub_34c_at_nodes = np.zeros((ctrl_pts, Nr, B, 3))
-    nodes_hub_34c_at_nodes[:, :, :, 0] = c_3d/2 * np.sin(beta)
-    nodes_hub_34c_at_nodes[:, :, :, 1] = np.where(
-        CW_3,
-        nodes_hub_14c[:, :, :, 1] + (c_3d/2 * np.cos(beta)) * np.cos(psi_3d),
-        nodes_hub_14c[:, :, :, 1] - (c_3d/2 * np.cos(beta)) * np.cos(psi_3d)
-    )
-    nodes_hub_34c_at_nodes[:, :, :, 2] = nodes_hub_14c[:, :, :, 2] + (c_3d/2 * np.cos(beta)) * np.sin(psi_3d)
+        nodes_hub_34c_at_nodes = np.zeros((ctrl_pts, Nr, B, 3))
+        nodes_hub_34c_at_nodes[:, :, :, 0] = c_3d/2 * np.sin(beta)
+        nodes_hub_34c_at_nodes[:, :, :, 1] = np.where(
+            CW_3,
+            nodes_hub_14c[:, :, :, 1] + (c_3d/2 * np.cos(beta)) * np.cos(psi_3d),
+            nodes_hub_14c[:, :, :, 1] - (c_3d/2 * np.cos(beta)) * np.cos(psi_3d)
+        )
+        nodes_hub_34c_at_nodes[:, :, :, 2] = nodes_hub_14c[:, :, :, 2] + (c_3d/2 * np.cos(beta)) * np.sin(psi_3d)
 
-    # collocation points are at segment midpoint -- (ctrl_pts, Nr-1, B, 3)
-    nodes_hub_34c = 0.5 * (nodes_hub_34c_at_nodes[:, :-1, :, :] + nodes_hub_34c_at_nodes[:,  1:, :, :])
+        # collocation points are at segment midpoint -- (ctrl_pts, Nr-1, B, 3)
+        nodes_hub_34c = 0.5 * (nodes_hub_34c_at_nodes[:, :-1, :, :] + nodes_hub_34c_at_nodes[:,  1:, :, :])
 
-    # ------------------------------------------------------------------------------------------------------------------
-    #  Transform to body frame  -- (ctrl_pts, Nr, B, 3)
-    # ------------------------------------------------------------------------------------------------------------------
-    nodes_body_14c = np.einsum('cij, crbj -> crbi', T_thrust2body, nodes_hub_14c) \
-                   + hub_origin
-    nodes_body_34c = np.einsum('cij, crbj -> crbi', T_thrust2body, nodes_hub_34c) \
-                   + hub_origin
+        # ------------------------------------------------------------------------------------------------------------------
+        #  Transform to body frame  -- (ctrl_pts, Nr, B, 3)
+        # ------------------------------------------------------------------------------------------------------------------
+        nodes_body_14c = np.einsum('cij, crbj -> crbi', T_thrust2body, nodes_hub_14c) \
+                       + hub_origin
+        nodes_body_34c = np.einsum('cij, crbj -> crbi', T_thrust2body, nodes_hub_34c) \
+                       + hub_origin
 
-    # ------------------------------------------------------------------------------------------------------------------
-    #  Core radius definition
-    # ------------------------------------------------------------------------------------------------------------------
-    rCb = rc * R * np.ones((ctrl_pts, Nr-1, B))   # (ctrl_pts, Nr-1, B)
+        # ------------------------------------------------------------------------------------------------------------------
+        #  Core radius definition
+        # ------------------------------------------------------------------------------------------------------------------
+        rCb = rc * R * np.ones((ctrl_pts, Nr-1, B))   # (ctrl_pts, Nr-1, B)
 
-    # ------------------------------------------------------------------------------------------------------------------
-    #  Store on rotor.blades.bound
-    # ------------------------------------------------------------------------------------------------------------------
-    rotor.blades       = Data()
-    rotor.blades.bound = Data()
-    rotor.blades.wake  = Data()
+        # ------------------------------------------------------------------------------------------------------------------
+        #  Store on rotor.blades.bound
+        # ------------------------------------------------------------------------------------------------------------------
+        rotor.blades       = Data()
+        rotor.blades.bound = Data()
+        rotor.blades.wake  = Data()
 
-    rotor.blades.bound.psi             = psi             # (Nr, B)
-    rotor.blades.bound.chord           = c_2d            # (Nr, B)
-    rotor.blades.bound.radius          = r_2d            # (Nr, B)
-    rotor.blades.bound.beta            = beta            # (ctrl_pts, Nr, B)
-    rotor.blades.bound.nodes_hub_14c   = nodes_hub_14c   # (ctrl_pts, Nr, B, 3)
-    rotor.blades.bound.nodes_body_14c  = nodes_body_14c  # (ctrl_pts, Nr, B, 3)
-    rotor.blades.bound.nodes_hub_34c   = nodes_hub_34c   # (ctrl_pts, Nr-1, B, 3)
-    rotor.blades.bound.nodes_body_34c  = nodes_body_34c  # (ctrl_pts, Nr-1, B, 3)
-    rotor.blades.bound.rCb             = rCb             # (ctrl_pts, Nr-1, B)
+        rotor.blades.bound.psi             = psi             # (Nr, B)
+        rotor.blades.bound.chord           = c_2d            # (Nr, B)
+        rotor.blades.bound.radius          = r_2d            # (Nr, B)
+        rotor.blades.bound.beta            = beta            # (ctrl_pts, Nr, B)
+        rotor.blades.bound.nodes_hub_14c   = nodes_hub_14c   # (ctrl_pts, Nr, B, 3)
+        rotor.blades.bound.nodes_body_14c  = nodes_body_14c  # (ctrl_pts, Nr, B, 3)
+        rotor.blades.bound.nodes_hub_34c   = nodes_hub_34c   # (ctrl_pts, Nr-1, B, 3)
+        rotor.blades.bound.nodes_body_34c  = nodes_body_34c  # (ctrl_pts, Nr-1, B, 3)
+        rotor.blades.bound.rCb             = rCb             # (ctrl_pts, Nr-1, B)
 
-    rotor.blades.wake.nodes            = None            # filled when wake is implemented
-    rotor.blades.wake.gamma            = None            # filled when wake is implemented
+        rotor.blades.wake.nodes            = None            # filled when wake is implemented
+        rotor.blades.wake.gamma            = None            # filled when wake is implemented
 
     return
