@@ -55,6 +55,7 @@ def main():
 def BWB_Test():
 
     vehicle          = BWB_vehicle_setup() 
+    vehicle.mass_properties.moments_of_inertia.tensor = np.zeros((3, 3))  # compute the MOI instead of using the vehicle's prescribed tensor
     fuel_line        = vehicle.networks.fuel.distributors.fuel_line
     vehicle.networks.fuel.sources.clear()
     
@@ -119,10 +120,10 @@ def BWB_Test():
     print('BWB  OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
     print('BWB  Moment of Inertia')
     print(computed_moi)
-    truth_OEW_CG_mass_percentage = 100.49
-    truth_moi = np.array([[3966294.8948337063, 1132847.5566527294, -661502.3988005595],
-                          [1132847.5566527294, 12841238.114714295, 11196.023072076852],
-                          [-661502.3988005595, 11196.023072076852, 15824748.080280194]])
+    truth_OEW_CG_mass_percentage = 100.77
+    truth_moi = np.array([[1177124.2038085272, 56934.56602597049, -142039.35274452207],
+                          [56934.56602597049, 3353711.716510033, 11633.674726777313],
+                          [-142039.35274452207, 11633.674726777313, 4306734.478489947]])
 
     error_moi = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_moi < 1e-2),\
@@ -157,9 +158,9 @@ def Transport_Aircraft_Test():
     print(MOI)
 
     truth_OEW_CG_mass_percentage = 99.46
-    truth_moi  = np.array([[12970717.145681057, -68135.05453059517, -673737.9486822262],
-                           [-68135.05453059517, 34105933.215905815, 127034.57682614404],
-                           [-673737.9486822262, 127034.57682614404, 42109466.22712972]])
+    truth_moi  = np.array([[12608684.349565869, -10713.197935158481, -1363517.3443781016],
+                           [-10713.197935158481, 31748190.178547211, 88720.793429483601],
+                           [-1363517.3443781016, 88720.793429483601, 40113755.985886320]])
 
     error_moi = abs((MOI - truth_moi) / np.where(truth_moi != 0, truth_moi, 1))
     assert np.all(error_moi < 1e-6),\

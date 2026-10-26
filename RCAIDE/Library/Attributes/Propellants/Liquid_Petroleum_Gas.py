@@ -96,6 +96,12 @@ class Liquid_Petroleum_Gas(Propellant):
     **Major Assumptions**
         * Surrogate model captures main combustion characteristics
         * Air composition is standard atmospheric
+
+    References
+    ----------
+    [1] Lower and Higher Heating Values of Gas, Liquid, and Solid Fuels.
+        NPRE 470 course resource, University of Illinois Urbana-Champaign, 2018.
+        https://courses.grainger.illinois.edu/npre470/sp2018/web/Lower_and_Higher_Heating_Values_of_Gas_Liquid_and_Solid_Fuels.pdf
     """
 
     def __defaults__(self):
@@ -105,15 +111,16 @@ class Liquid_Petroleum_Gas(Propellant):
         None
     
     Source:
-        None
-        """    
+        Lower Heating Value: Lower and Higher Heating Values of Gas, Liquid, and Solid Fuels (ORNL, GREET),
+        https://courses.grainger.illinois.edu/npre470/sp2018/web/Lower_and_Higher_Heating_Values_of_Gas_Liquid_and_Solid_Fuels.pdf
+        """
         self.tag                           = 'Liquid_Petroleum_Gas'
         self.reactant                      = 'O2'
-        self.density                       = 509.26                     # kg/m^3 
-        self.specific_energy               = 43.1e6                     # J/kg
-        self.energy_density                = 21949.1e6                  # J/m^3
+        self.density                       = 509.26                     # kg/m^3
+        self.specific_energy               = 46.607e6                   # J/kg
+        self.energy_density                = self.density * self.specific_energy  # J/m^3
         self.gravimetric_efficiency        = 0.7
-        self.lower_heating_value           = 48.6e6                     # J/kg
+        self.lower_heating_value           = 46.607e6                   # J/kg, 20,038 Btu/lb [1]
         self.molecular_weight              = 49.7      # [g/mol] 60/40 propane/butane mass blend
         self.hydrogen_mass_fraction        = 0.179     # [-] mass fraction of hydrogen content
         self.carbon_mass_fraction          = 0.821     # [-] mass fraction of carbon content

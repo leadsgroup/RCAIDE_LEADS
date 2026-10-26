@@ -1,31 +1,34 @@
 # RCAIDE/Library/Methods/Stability/Vortex_Lattice_Method/compute_neutral_point.py
-#  
+#
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports  
-import RCAIDE 
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM 
-from copy import deepcopy 
+# RCAIDE imports
+import RCAIDE
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
+from copy import deepcopy
 
 # package imports
 import numpy  as np
-from scipy.optimize import minimize 
+
+# Fuselage and nacelle moment factor K_f [per radian] against the wing root quarter-chord position in percent of
+# body length, digitized from Gilruth and White, NACA Report 711 (1941), Figure 8
+FUSELAGE_MOMENT_FACTOR_POSITION = np.array([15., 20., 25., 30., 35., 40., 45., 50., 55., 60.])
+FUSELAGE_MOMENT_FACTOR          = np.array([0.176, 0.283, 0.456, 0.592, 0.768, 0.989, 1.260, 1.643, 2.018, 2.585])
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_neutral_point
-# ---------------------------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------------------------------------------------------
 def compute_neutral_point(stability, vehicle):
     """
-    Computes the neutral point of an aircraft using Vortex Lattice Method optimization.
+    Computes the neutral point of an aircraft from the Vortex Lattice Method for the wings and tails, with the
+    destabilizing moment of each fuselage from NACA Report 711.
 
     Parameters
     ----------
     stability : RCAIDE.Framework.Analyses.Stability
         Stability analysis object containing:
-            - vehicle : RCAIDE.Library.Components.Vehicle
-                Vehicle object with geometry and mass properties
             - settings : RCAIDE.Framework.Analyses.Stability.Settings
                 Stability analysis settings
             - training : Data
@@ -34,116 +37,84 @@ def compute_neutral_point(stability, vehicle):
                     Array of angle of attack values [radians]
                 - Mach : numpy.ndarray
                     Array of Mach numbers [unitless]
+    vehicle : RCAIDE.Vehicle
+        Vehicle with geometry and mass properties
 
     Returns
     -------
     None
-        The neutral point is stored in vehicle.neutral_point
+        The neutral point is stored in vehicle.neutral_point [m]
 
     Notes
     -----
-    This function computes the neutral point of an aircraft by finding the center
-    of gravity location where the pitching moment coefficient derivative with respect
-    to angle of attack is zero. It uses an optimization approach with the Vortex
-    Lattice Method to evaluate aerodynamic characteristics. It specifically uses the
-    Scipy SLSQP solver.
-    
+    With settings.fuselage_correction (default True) the wings and tails are panelled without the fuselage, because
+    fuselage panels close to the tail panels move the neutral point by tens of percent MAC for small tail changes.
+    With it False the fuselage panels are kept (settings.model_fuselage) and no fuselage moment is added.
+    dCM/dalpha is linear in the moment reference location, so the wing-and-tail neutral point is the root of that
+    line, found from two VLM evaluations. Each fuselage then moves the neutral point forward by its destabilizing
+    moment K_f w_f^2 L_f (NACA Report 711, Eq. 1) divided by S_ref CL_alpha.
+
     **Major Assumptions**
         * Linear aerodynamics within the analysis range
         * Control surfaces are removed for clean configuration analysis
-        * Vortex Lattice Method accurately represents the aerodynamics
-        * Small angle approximations apply
-    
+        * K_f is held at the end values of Figure 8 outside 15 to 60% body length
+        * Pylon-mounted engine nacelles are not included: the nacelle term of Report 711 is for nacelles the wing
+          passes through
+
     **Theory**
 
-    The neutral point is defined as the center of gravity location where:
-    :math:`\\frac{\\partial C_M}{\\partial \\alpha} = 0`
+    .. math::
+        x_{np} = x_{np,wt} - \\sum \\frac{K_f w_f^2 L_f}{S_{ref} C_{L_\\alpha}}
 
-    **Definitions**
+    References
+    ----------
+    [1] Gilruth, R. R., and White, M. D., "Analysis and Prediction of Longitudinal Stability of Airplanes,"
+        NACA Report No. 711, 1941, Eq. (1) and Figure 8.
+    """
+    settings       = deepcopy(stability.settings)
+    if settings.fuselage_correction:
+        settings.model_fuselage = False
+    AoA            = np.array([stability.training.angle_of_attack[2],stability.training.angle_of_attack[3]])
+    Mach           = np.array([stability.training.Mach[0]])
 
-    'Neutral Point'
-        Center of gravity location where the aircraft has neutral static stability (i.e. Cm_alpha = 0).
+    conditions                                      = RCAIDE.Framework.Mission.Common.Results()
+    conditions.freestream.mach_number               = np.atleast_2d(np.repeat(Mach,len(AoA))).T
+    conditions.freestream.velocity                  = np.ones_like(conditions.freestream.mach_number) * 1e-6
+    conditions.aerodynamics.angles.alpha            = np.atleast_2d(AoA).T
 
-    """ 
-    settings       = stability.settings
-    AoA            = np.array([stability.training.angle_of_attack[2],stability.training.angle_of_attack[3]])  
-    Mach           = np.array([stability.training.Mach[0]]) 
-    len_Mach       = len(Mach)        
-    len_AoA        = len(AoA)
-     
-    AoAs                                            = np.atleast_2d(np.tile(AoA,len_Mach).T.flatten()).T 
-    Machs                                           = np.atleast_2d(np.repeat(Mach,len_AoA)).T      
-    conditions                                      = RCAIDE.Framework.Mission.Common.Results() 
-    conditions.freestream.mach_number               = Machs
-    conditions.freestream.velocity                  = np.ones_like(Machs) * 1e-6
-    conditions.aerodynamics.angles.alpha            = np.ones_like(Machs)*AoAs  
-    
-    # --------------------------------------------------------------------------------------------------------------
-    # Neutral Point 
-    # --------------------------------------------------------------------------------------------------------------   
-    clean_wing_vehicle_np = deepcopy(vehicle) # Double check this is correct
+    clean_wing_vehicle_np = deepcopy(vehicle)
     for wing in clean_wing_vehicle_np.wings:
         wing.control_surfaces = []
-        
-    # use center of gravity as inital guess
-    cg     =  vehicle.mass_properties.center_of_gravity[0][0]
-    bnds   = [[0, 100]]
-    sol = minimize(neutral_point_objective, [cg], args=(conditions,settings,clean_wing_vehicle_np,Mach,AoA) , method='SLSQP', bounds=bnds, tol=1e-4)
-     
-    vehicle.neutral_point  =  sol.x[0]  
-   
-    return 
 
-def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_np,Mach,AoA):
-    """
-    Objective function for neutral point optimization.
+    # wing-and-tail neutral point: root of dCM/dalpha, which is linear in the moment reference location
+    x_cg = vehicle.mass_properties.center_of_gravity[0][0]
+    x_1, x_2 = x_cg - 1.0, x_cg + 1.0
+    slope_1, CL_alpha = pitching_moment_slope(x_1, conditions, settings, clean_wing_vehicle_np, AoA)
+    slope_2, _        = pitching_moment_slope(x_2, conditions, settings, clean_wing_vehicle_np, AoA)
+    neutral_point     = x_1 - slope_1 * (x_2 - x_1) / (slope_2 - slope_1)
 
-    Parameters
-    ----------
-    cg_location : list
-        Center of gravity location [m]
-    conditions : RCAIDE.Framework.Mission.Common.Results
-        Flight conditions for VLM analysis
-    settings : RCAIDE.Framework.Analyses.Stability.Settings
-        Stability analysis settings
-    clean_wing_vehicle_np : RCAIDE.Library.Components.Vehicle
-        Clean wing vehicle configuration (no control surfaces)
-    Mach : numpy.ndarray
-        Array of Mach numbers [unitless]
-    AoA : numpy.ndarray
-        Array of angle of attack values [radians]
+    # fuselage destabilizing moments [1], unless the fuselage panels are kept in the VLM
+    fuselages = vehicle.fuselages if settings.fuselage_correction else []
+    if len(fuselages) > 0:
+        # main wing: the largest Main_Wing, else the largest wing
+        main_wings = [wing for wing in vehicle.wings if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing)]
+        main_wing  = max(main_wings if len(main_wings) > 0 else list(vehicle.wings), key=lambda wing: wing.areas.reference)
+        x_wing_c4  = main_wing.origin[0][0] + 0.25 * main_wing.chords.root
+    for fuselage in fuselages:
+        L_f      = fuselage.lengths.total
+        w_f      = fuselage.width
+        position = 100. * (x_wing_c4 - fuselage.origin[0][0]) / L_f
+        K_f      = np.interp(position, FUSELAGE_MOMENT_FACTOR_POSITION, FUSELAGE_MOMENT_FACTOR)
+        neutral_point -= K_f * w_f**2 * L_f / (vehicle.reference_area * CL_alpha)
 
-    Returns
-    -------
-    float
-        Absolute value of pitching moment coefficient derivative with respect to angle of attack
+    vehicle.neutral_point = neutral_point
+    return
 
-    Notes
-    -----
-    This function serves as the objective function for the neutral point optimization.
-    It updates the vehicle center of gravity, runs VLM analysis, and computes the
-    pitching moment coefficient derivative to minimize.
-    
-    **Major Assumptions**
-        * VLM analysis is valid for the given conditions
-        * Pitching moment coefficient varies linearly with angle of attack
-        * Clean wing configuration represents the neutral point condition
-    """
-    len_Mach       = len(Mach)        
-    len_AoA        = len(AoA)
-    
-    # update neutral point
-    clean_wing_vehicle_np.mass_properties.center_of_gravity[0][0] =  cg_location[0]
-    
-    # run VLM 
-    VLM_results = VLM(conditions,settings,clean_wing_vehicle_np)    
-    
-    AoA       = conditions.aerodynamics.angles.alpha
-    CM_res    = VLM_results.CM
-    CM        = np.reshape(CM_res,(len_Mach,len_AoA)).T 
-    
-    # compute dCM_dalpha 
-    dCM_dalpha = ( CM[1, 0] - CM[0, 0]) /( AoA[1] - AoA[0])
-     
-    # find abs 
-    return  abs(dCM_dalpha)
+
+def pitching_moment_slope(x_reference, conditions, settings, vehicle, AoA):
+    """dCM/dalpha about x_reference, and dCL/dalpha, from two VLM angles of attack."""
+    vehicle.mass_properties.center_of_gravity[0][0] = x_reference
+    VLM_results = VLM(conditions,settings,vehicle)
+    CM          = np.ravel(VLM_results.CM)
+    CL          = np.ravel(VLM_results.CLift)
+    return (CM[1] - CM[0]) / (AoA[1] - AoA[0]), (CL[1] - CL[0]) / (AoA[1] - AoA[0])

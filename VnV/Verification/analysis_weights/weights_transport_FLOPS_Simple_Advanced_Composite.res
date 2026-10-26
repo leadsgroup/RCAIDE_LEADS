@@ -28,12 +28,12 @@
             "electrical": 914.9635422281879,
             "avionics": 820.7249271545871,
             "hydraulics": 479.73800616974546,
-            "furnishings": 3076.367317027811,
+            "furnishings": 2696.6329641180946,
             "air_conditioner": 792.1346452950864,
             "instruments": 245.85316804876413,
-            "total": 7605.849948526038
+            "total": 7226.115595616322
         },
-        "total": 30543.37962003632
+        "total": 30163.64526712661
     },
     "payload": {
         "total": 10500.0,
@@ -49,6 +49,6 @@
         "cargo_containers": 0.0,
         "total": 966.2355987595441
     },
-    "zero_fuel_weight": 41043.37962003632,
+    "zero_fuel_weight": 40663.64526712661,
     "max_takeoff": 79000.0
 }

@@ -3,6 +3,11 @@
 # Created: Sep 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+from .compute_fuel_tank_capacity import compute_fuel_tank_capacity
+
+# ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------
 def distribute_fuel_across_tanks(tanks, total_fuel_mass):
@@ -23,8 +28,7 @@ def distribute_fuel_across_tanks(tanks, total_fuel_mass):
     ----------
     tanks : list of Fuel_Tank
         Tanks to distribute the fuel across (e.g. every tank on one fuel
-        line/network). Each tank's capacity is
-        ``tank.volume_properties.net_volume * tank.fuel.density``.
+        line/network). Each tank's capacity is given by compute_fuel_tank_capacity.
     total_fuel_mass : float
         Total fuel mass [kg] to split across the tanks.
 
@@ -33,7 +37,7 @@ def distribute_fuel_across_tanks(tanks, total_fuel_mass):
     ValueError
         If ``total_fuel_mass`` exceeds the tanks' combined capacity.
     """
-    capacities     = [tank.volume_properties.net_volume * tank.fuel.density for tank in tanks]
+    capacities     = [compute_fuel_tank_capacity(tank) for tank in tanks]
     total_capacity = sum(capacities)
 
     if total_fuel_mass > total_capacity * (1 + 1e-6):

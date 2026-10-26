@@ -16,8 +16,10 @@ RCAIDE.Library.Methods.Powertrain.Sources.Cryogenic_Tanks
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 from .append_fuel_tank_conditions   import *
+from .compute_fuel_tank_capacity    import compute_fuel_tank_capacity
 from .compute_fuel_tank_performance import compute_fuel_tank_performance
 from .distribute_fuel_across_tanks  import distribute_fuel_across_tanks
+from .set_vehicle_fuel_mass         import set_vehicle_fuel_mass
 
 from . import Common
 from . import Integral_Tank

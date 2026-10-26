@@ -154,6 +154,10 @@ def parasite_total(state,settings,geometry):
                 nacelle_parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total  
                 conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total  = nacelle_parasite_drag * front_area/vehicle_reference_area
                 total_nacelle_parasite_drag += nacelle_parasite_drag * front_area/vehicle_reference_area
+                # pylon drag is already normalized by the vehicle reference area in parasite_drag_pylon
+                pylon_tag = nacelle.tag + '_pylon'
+                if pylon_tag in conditions.aerodynamics.coefficients.drag.parasite:
+                    total_nacelle_parasite_drag += conditions.aerodynamics.coefficients.drag.parasite[pylon_tag].total
     
     total_parasite_drag = total_nacelle_parasite_drag + total_fuselage_parasite_drag + total_wing_parasite_drag + total_boom_parasite_drag 
     state.conditions.aerodynamics.coefficients.drag.parasite.total     = total_parasite_drag *  (1 -  settings.drag_reduction_factors.parasite_drag)

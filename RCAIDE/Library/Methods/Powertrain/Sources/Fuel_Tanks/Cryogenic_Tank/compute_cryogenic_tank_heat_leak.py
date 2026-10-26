@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
 from RCAIDE.Framework.Core.Physical_Constants import STEFAN_BOLTZMANN
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import find_root
 try:
     from numba import njit
 except ImportError:  # numba is optional: without it the kernels below run as plain Python
@@ -295,10 +295,10 @@ def solve_heat_leak(geometry, args):
     else:
         lo, hi = (T_cold, T_env) if T_env > T_cold else (T_env, T_cold)
         if not (np.isfinite(lo) and np.isfinite(hi)):
-            _find_root(None, lo, hi)                                           # raises the non-finite-bracket error
+            find_root(None, lo, hi)                                           # raises the non-finite-bracket error
         Te, status = brent_heat_leak(geometry, lo, hi, 1e-9, 4 * np.finfo(float).eps, 100, p)
-        if status == 1:                                                         # no sign change: same fallback as _find_root
-            Te = _find_root(lambda x: heat_balance_residual(geometry, x, p)[0], lo, hi)
+        if status == 1:                                                         # no sign change: same fallback as find_root
+            Te = find_root(lambda x: heat_balance_residual(geometry, x, p)[0], lo, hi)
         elif status == 2:
             raise RuntimeError("solve_heat_leak: Brent's method failed to converge after 100 iterations.")
     _, Q = heat_balance_residual(geometry, Te, p)

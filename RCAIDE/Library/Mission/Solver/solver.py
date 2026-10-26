@@ -126,9 +126,9 @@ def converge(segment):
                                  ' to be equal to the number of residuals (equations) to use fsolve or switch RCAIDE solver type to "optimize" when defining the segment.'+ \
                                  '\n i.e. numerics.mission_solver.type  = "optimize" ') 
         else:
-            # scale unknowns/residuals to O(1) before fsolve -- see _magnitude_scale
-            unknown_scale  = _magnitude_scale(unknowns)
-            residual_scale = _magnitude_scale(iterate_root_finder(unknowns, segment))
+            # scale unknowns/residuals to O(1) before fsolve -- see magnitude_scale
+            unknown_scale  = magnitude_scale(unknowns)
+            residual_scale = magnitude_scale(iterate_root_finder(unknowns, segment))
 
             def scaled_iterate(x_scaled):
                 return iterate_root_finder(x_scaled * unknown_scale, segment) / residual_scale
@@ -163,19 +163,10 @@ def converge(segment):
 # ----------------------------------------------------------------------------------------------------------------------
 # scaling helper
 # ----------------------------------------------------------------------------------------------------------------------
-def _magnitude_scale(values, floor_exponent=-6):
-    """Power-of-10 scale so values/scale lands near O(1) (e.g. 1e5 -> scale=1e5).
-    Unscaled, unknowns/residuals of very different physical magnitude sharing
-    one solver tolerance/step size leave the small ones effectively degenerate,
-    and a Newton step can overshoot by orders of magnitude. Zero entries fall
-    back to scale=1. Mirrors the unknown scaling in add_mission_variables.
-
-    floor_exponent bounds how small a scale can get (default 1e-6, matching the
-    typical solver tolerance): a value that's already near machine noise (e.g.
-    ~1e-12, from a residual whose initial guess happens to be almost exact)
-    would otherwise get an equally tiny scale, making that noise look like an
-    O(1) constraint the solver must chase to the same relative precision as
-    everything else -- preventing real convergence indefinitely.
+def magnitude_scale(values, floor_exponent=-6):
+    """Power-of-10 scale that brings values near O(1), so unknowns and residuals of very different magnitude
+    share one solver tolerance. Zero entries use a scale of 1. floor_exponent bounds the smallest scale (1e-6,
+    the typical solver tolerance), so a near-zero residual is not scaled up into noise the solver has to chase.
     """
     factor = np.ceil(np.log10(np.abs(values)))
     factor[~np.isfinite(factor)] = 0
@@ -185,22 +176,11 @@ def _magnitude_scale(values, floor_exponent=-6):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Helper Functions
 # ----------------------------------------------------------------------------------------------------------------------
-def _segment_soft_max_power(segment, sharpness=30.0):
-    """Smooth (log-sum-exp) stand-in for max(power). A hard max is non-differentiable
-    at whichever control point currently holds the peak, so its finite-difference
-    gradient can jump discontinuously when that point changes between SLSQP's
-    perturbed evaluations; this blends nearby points in instead, and is always >=
-    the true max (standard log-sum-exp upper bound), overshooting by at most
-    log(n_points)/p -- i.e. it never understates the peak.
-
-    `sharpness` is in e-foldings across the segment's own power spread (max-min):
-    e.g. sharpness=30 means a point at the very bottom of the segment's power
-    range contributes negligible weight (~1e-13) while points within a few percent
-    of peak blend in smoothly. Falls back to scaling by |peak| when the segment's
-    power is ~constant (spread ~ 0), so it doesn't blow up to infinite sharpness
-    there. Exponents are always <= 0 (peak subtracted first), so this can only
-    underflow toward 0, never overflow -- regardless of the sign or magnitude of
-    power.
+def segment_soft_max_power(segment, sharpness=30.0):
+    """Smooth upper bound on the segment's peak propulsive power by log-sum-exp. A hard max makes the
+    finite-difference gradient jump when the peak moves between control points. The bound never understates
+    the peak and exceeds it by at most log(n_points)/p. sharpness is in e-foldings across the segment's power
+    spread; a segment at constant power is scaled by its peak instead.
     """
     power  = np.ravel(segment.state.conditions.energy.outputs.power.propulsive)
     peak   = np.max(power)
@@ -212,7 +192,7 @@ def _segment_soft_max_power(segment, sharpness=30.0):
 
 def iterate_root_finder(unknowns, segment):
     
-    """Runs one iteration of of all analyses for the mission.
+    """Runs one iteration of all analyses for the mission.
 
     Assumptions:
     fsolve has no native bounds support, unlike the "optimize"/SLSQP
@@ -390,13 +370,13 @@ def add_mission_variables(segment):
     optimization_problem.inputs = np.array(new_inputs,dtype=object)
 
     # -------------------------------------------------------------------------------------------
-    # Construct constraints nexus format: equality constraints, scaled per-residual (see _magnitude_scale)
+    # Construct constraints nexus format: equality constraints, scaled per-residual (see magnitude_scale)
     # -------------------------------------------------------------------------------------------
     segment.process.iterate(segment)
     initial_residuals = segment.state.residuals.mission.pack_array()
     if segment.state.numerics.network_solver.type is None and not single_pt_seg:
         initial_residuals = np.concatenate([initial_residuals, segment.state.residuals.network.pack_array()])
-    residual_scale = _magnitude_scale(initial_residuals)
+    residual_scale = magnitude_scale(initial_residuals)
 
     new_con = np.reshape(np.tile(np.atleast_2d(np.array([None,None,None,None,None])),len_residuals), (-1, 5))
     con_len_strings = np.tile('Residual_', len_residuals)
@@ -465,32 +445,32 @@ def add_mission_variables(segment):
         input_aliases[:,1] = input_string
     
     # Step 4.2: Setup the aliases for the residuals. 
-    def _pack_aliases(container_path, count):
+    def pack_aliases(container_path, count):
         """Build 'container_path[i]' strings for i in 0..count-1."""
         base = np.tile(container_path + '[', count)
         return np.char.add(np.char.add(base, np.arange(count, dtype=np.int16).astype(str)), ']')
 
     if ground_seg_flag:
         # Ground segments have two mission residual fields in pack_array order: 
-        all_res = _pack_aliases('segment.state.residuals.mission.pack_array()', n_points)
+        all_res = pack_aliases('segment.state.residuals.mission.pack_array()', n_points)
 
         if segment.state.numerics.network_solver.type is None:
             n_n_res = n_points * segment.state.number_of_network_residuals
-            res_n   = _pack_aliases('segment.state.residuals.network.pack_array()', n_n_res)
+            res_n   = pack_aliases('segment.state.residuals.network.pack_array()', n_n_res)
             all_res = np.concatenate([all_res, res_n])
 
     elif single_pt_seg:
         # Single-point: one control point per residual; no network coupling.
-        all_res = _pack_aliases('segment.state.residuals.mission.pack_array()', len_residuals)
+        all_res = pack_aliases('segment.state.residuals.mission.pack_array()', len_residuals)
 
     else:
         # General multi-point segments (climb, cruise, descent, …).
         n_m_res = n_points * segment.state.number_of_mission_residuals
-        res_m   = _pack_aliases('segment.state.residuals.mission.pack_array()', n_m_res)
+        res_m   = pack_aliases('segment.state.residuals.mission.pack_array()', n_m_res)
 
         if segment.state.numerics.network_solver.type is None:
             n_n_res = n_points * segment.state.number_of_network_residuals
-            res_n   = _pack_aliases('segment.state.residuals.network.pack_array()', n_n_res)
+            res_n   = pack_aliases('segment.state.residuals.network.pack_array()', n_n_res)
             all_res = np.concatenate([res_m, res_n])
         else:
             all_res = res_m
@@ -511,11 +491,11 @@ def add_mission_variables(segment):
         aliases.append([ 'nothing'                   , 'postprocess.nothing'])
         optimization_problem.objective = np.array([ [  'nothing'  ,  1   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "energy":
-        obj_scale = _magnitude_scale(np.atleast_1d(segment_energy_consumed(segment)))[0]
+        obj_scale = magnitude_scale(np.atleast_1d(segment_energy_consumed(segment)))[0]
         aliases.append([ 'energy_consumed'          , 'postprocess.energy_consumed'])
         optimization_problem.objective = np.array([ [  'energy_consumed'  ,  obj_scale   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "power":
-        obj_scale = _magnitude_scale(np.atleast_1d(_segment_soft_max_power(segment)))[0]
+        obj_scale = magnitude_scale(np.atleast_1d(segment_soft_max_power(segment)))[0]
         aliases.append([ 'maximum_power'          , 'postprocess.maximum_power'])
         optimization_problem.objective = np.array([ [  'maximum_power'  ,  obj_scale   ,    1*Units.less]  ],dtype=object)
     else:
@@ -576,7 +556,7 @@ def segment_post_process(nexus):
     segment = nexus.segment
 
     postprocess                 = nexus.postprocess
-    postprocess.maximum_power   = _segment_soft_max_power(segment)
+    postprocess.maximum_power   = segment_soft_max_power(segment)
     postprocess.energy_consumed = segment_energy_consumed(segment)
     postprocess.nothing         = 0
 

@@ -10,8 +10,8 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units
 
 import numpy as np
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import _find_root
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.solve_insulation import _solve_insulation
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.find_root import find_root
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Common.solve_insulation import solve_insulation
 from .compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak_cuboid
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -56,11 +56,12 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     aspect_ratio  = fuel_tank.lengths.external / fuel_tank.heights.external
     ullage_frac   = fuel_tank.ullage_volume_fraction
     T_inlet       = fuel_tank.design_inlet_temperature
-    Qo_total      = fuel_tank.design_total_heat_transfer
+    Qo            = fuel_tank.design_heat_flux    # [W/m^2]
     k_mat         = fuel_tank.inner_structure.material.thermal_conductivity
     k_ins_mat     = fuel_tank.insulation.material.thermal_conductivity
     sigma_allow   = fuel_tank.inner_structure.material.yield_tensile_strength / safety_factor
     hw_ratio      = fuel_tank.heights.external / fuel_tank.widths.external
+    PI_Q          = 1.5  # heat-flow sizing margin, as in the cylindrical tank
 
     # Net pressure differential for structural sizing. P_internal is the
     # physical rated pressure itself -- no separate burst/proof multiplier is
@@ -72,9 +73,10 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     P_external = fuel_tank.design_external_pressure
     P_net      = P_internal - P_external
 
-    # Operating (rated) pressure target for the in-flight boil-off model --
-    # the same P_rated used as the structural design pressure above.
+    # Vent pressure for the boil-off model is the structural design pressure; the heater holds the fill pressure
     fuel_tank.design_pressure = P_rated
+    if fuel_tank.minimum_operating_pressure is None:
+        fuel_tank.minimum_operating_pressure = P_sat
 
     # Atmospheric conditions at design altitude (computed once, passed to inner solvers)
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
@@ -99,7 +101,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
         V_cuboid = fuel_tank.widths.external * fuel_tank.heights.external * fuel_tank.lengths.external
 
     # Pack thermal constants into a tuple for the inner solvers
-    therm = (Ta, T_inlet, Qo_total, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr)
+    therm = (Ta, T_inlet, Qo, PI_Q, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr)
 
     # ------------------------------------------------------------------
     #  Solve for fuel volume
@@ -108,19 +110,23 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
                   therm, fuel_tank, V_cuboid)
     V_lo    = 1e-3
     V_hi    = V_cuboid
-    V_guess = _find_root(_volume_residual, V_lo, V_hi, args=outer_args, xtol=1e-2)
+    V_guess = find_root(volume_residual, V_lo, V_hi, args=outer_args, xtol=1e-2)
 
     # ------------------------------------------------------------------
     #  Recompute converged geometry
     # ------------------------------------------------------------------
     V_total, h_i, w_i, l_i, th, h_o, w_o, l_o, t_ins, mass_ins, h_o_o, w_o_o, l_o_o = \
-        _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
-                      therm, fuel_tank)
+        sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
+                     therm, fuel_tank)
 
     mass_struct = ((l_o * w_o * h_o) - (h_i * l_i * w_i)) * fuel_tank.inner_structure.material.density
 
+    # Design-point heat leak of the sized tank (both sides of a symmetric pair)
+    _, Qc_total = compute_cryogenic_tank_heat_leak_cuboid(t_ins, Ta, T_inlet, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
+
     # Double for symmetric tanks
     if fuel_tank.xz_plane_symmetric:
+        Qc_total    *= 2
         V_guess     *= 2
         V_total     *= 2
         mass_struct *= 2
@@ -131,6 +137,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     # ------------------------------------------------------------------
     fuel_tank.volume_properties.net_volume   = V_guess
     fuel_tank.volume_properties.gross_volume = V_total
+    fuel_tank.design_total_heat_transfer     = Qc_total
 
     # Structural pressure vessel geometry
     fuel_tank.inner_structure.thickness          = th
@@ -162,8 +169,8 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Sizing chain: V_guess → all intermediate geometry → total outer volume
 # ----------------------------------------------------------------------------------------------------------------------
-def _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
-                  therm, fuel_tank):
+def sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
+                 therm, fuel_tank):
     # Internal volume = fuel + ullage
     V_total = V_guess / (1 - ullage_frac)
 
@@ -184,7 +191,7 @@ def _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_all
     # Insulation thickness: outer convection/radiation balanced against
     # wall+insulation conduction, solved via the shared cuboid heat-leak model
     # (also used at runtime by compute_cryogenic_tank_performance.py)
-    t_ins = _solve_insulation(_insulation_residual, therm, fuel_tank, l_o, w_o, h_o, th)
+    t_ins = solve_insulation(insulation_residual, therm, fuel_tank, l_o, w_o, h_o, th)
 
     # Total outer dimensions (structure + insulation)
     h_o_o = h_o + 2 * t_ins
@@ -201,23 +208,25 @@ def _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_all
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Insulation residual: (conductive heat leak) - (allowable total heat leak)
+#  Insulation residual: (heat flux through insulation) - (allowable heat flux), per unit inner surface area
 # ----------------------------------------------------------------------------------------------------------------------
-def _insulation_residual(t_ins, therm, fuel_tank, l_o, w_o, h_o, th):
-    Ta, Ti, Qo_total, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr = therm
+def insulation_residual(t_ins, therm, fuel_tank, l_o, w_o, h_o, th):
+    Ta, Ti, Qo, PI_Q, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr = therm
 
     _, Qc = compute_cryogenic_tank_heat_leak_cuboid(
         t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
 
-    return Qc - Qo_total
+    l_i, w_i, h_i = l_o - 2 * th, w_o - 2 * th, h_o - 2 * th
+    A_inner = 2 * (l_i * w_i + l_i * h_i + w_i * h_i)
+    return PI_Q * Qc / A_inner - Qo
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Outer volume residual: V_cuboid - V_calculated(V_guess)
 # ----------------------------------------------------------------------------------------------------------------------
-def _volume_residual(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
-                     therm, fuel_tank, V_cuboid):
-    results = _sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
-                            therm, fuel_tank)
+def volume_residual(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
+                    therm, fuel_tank, V_cuboid):
+    results = sizing_chain(V_guess, ullage_frac, aspect_ratio, hw_ratio, P_net, sigma_allow,
+                           therm, fuel_tank)
     h_o_o, w_o_o, l_o_o = results[10], results[11], results[12]
     return V_cuboid - (h_o_o * l_o_o * w_o_o)
