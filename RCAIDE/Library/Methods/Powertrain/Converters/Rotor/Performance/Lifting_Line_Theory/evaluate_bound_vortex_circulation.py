@@ -226,7 +226,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     if wake_inputs.include_wake:
         N_wake   = rotor.blades.wake.N_wake
 
-    CW = omega[:, 0] > 0   # (ctrl_pts,) -- per-control-point rotation sense
+    # rotation sense is a fixed rotor property, not a sign on omega (omega is always a positive
+    # magnitude here, same convention as BEMT_Helmholtz_performance.py's `rotation` variable)
+    CW = np.full(omega[:, 0].shape, rotor.clockwise_rotation, dtype=bool)   # (ctrl_pts,)
     CW_3 = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper
 
     A         = (np.pi * R**2)

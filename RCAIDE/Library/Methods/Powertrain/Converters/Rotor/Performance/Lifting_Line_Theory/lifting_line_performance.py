@@ -78,7 +78,9 @@ def lifting_line_performance(rotor, conditions, wing_on_rotor_coupling=False):
     T_body2thrust   = orientation_transpose(np.ones_like(T_body2inertial[:]) * body2thrust)
     V_thrust        = orientation_product(T_body2thrust, V_body)
 
-    CW = omega[:, 0] > 0   # (ctrl_pts,) -- per-control-point rotation sense
+    # rotation sense is a fixed rotor property, not a sign on omega (omega is always a positive
+    # magnitude here, same convention as BEMT_Helmholtz_performance.py's `rotation` variable)
+    CW = np.full(omega[:, 0].shape, rotor.clockwise_rotation, dtype=bool)   # (ctrl_pts,)
 
     mu_tot = np.sqrt(V_thrust[:, 0]**2 + V_thrust[:, 1]**2
                      + V_thrust[:, 2]**2)   / (np.abs(omega[:, 0]) * R)    # (ctrl_pts,) -- per-control-point advance ratio
