@@ -22,10 +22,14 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.compute_lifting_line_loads        import compute_lifting_line_loads
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.compute_wing_induced_rotor_velocity import compute_wing_induced_rotor_velocity
 
-def lifting_line_performance(rotor, conditions, wing_on_rotor_coupling=False):
+def build_rotor_wake_inputs(rotor, conditions, wing_on_rotor_coupling=False):
     """
-    Computes rotor performance using the lifting-line method with prescribed tip vortex wake.
-    Drop-in replacement for BEMT_Helmholtz_performance with higher-fidelity inter-blade induction.
+    Builds the per-rotor wake_inputs Data object and runs initialize_lifting_line/
+    initialize_wake_geometry for ONE rotor -- the setup step lifting_line_performance() does
+    internally for its single-rotor call, factored out so a multi-rotor caller (e.g.
+    compute_rotor_to_rotor_interaction.py, or a direct multi-rotor test) can build each
+    rotor's wake_inputs the same way before calling evaluate_bound_vortex_circulation() with
+    the full rotor/wake_inputs lists.
 
     Parameters
     ----------
@@ -41,17 +45,12 @@ def lifting_line_performance(rotor, conditions, wing_on_rotor_coupling=False):
     wing_on_rotor_coupling : bool, optional
         If True and conditions.aerodynamics.vortex_distribution is populated, adds the wing's induced velocity
         at each blade node to Ua/Ut before the bound vortex circulation solve.
-    wake_inputs : Data, optional
-        If None, default validated hover parameters are used (Combination #22).
-        Fields: wake_model, vc_correction, dpsi, n_turns, CT, lamb_oseen_rc_0,
-                lamb_oseen_alpha, lamb_oseen_delta, lamb_oseen_sigma,
-                lamb_oseen_core_growth_delay, r_R_shed
 
     Returns
     -------
-    None
-        Populates conditions.energy.converters[rotor.tag] with all standard RCAIDE
-        rotor performance outputs (same interface as BEMT_Helmholtz_performance).
+    wake_inputs : Data
+        Populates rotor.blades (via initialize_lifting_line) and rotor.blades.wake (via
+        initialize_wake_geometry) as a side effect, same as lifting_line_performance().
     """
     # ------------------------------------------------------------------------------------------------------------------
     #  Unpack rotor and conditions
@@ -234,6 +233,33 @@ def lifting_line_performance(rotor, conditions, wing_on_rotor_coupling=False):
         T_thrust2body = orientation_transpose(wake_inputs.T_body2thrust)
         hub_origin    = np.array(rotor.origin[0]).reshape(1, 1, 1, 3)
         rotor.blades.wake.nodes_body = np.einsum('cij,cwbj->cwbi', T_thrust2body, wake_nodes_hub_relaxed) + hub_origin
+
+    return wake_inputs
+
+
+def lifting_line_performance(rotor, conditions, wing_on_rotor_coupling=False):
+    """
+    Computes rotor performance using the lifting-line method with prescribed tip vortex wake.
+    Drop-in replacement for BEMT_Helmholtz_performance with higher-fidelity inter-blade induction.
+    Single-rotor entry point -- see build_rotor_wake_inputs() for the per-rotor setup this
+    wraps, which a multi-rotor caller can use directly for more than one rotor at once.
+
+    Parameters
+    ----------
+    rotor : RCAIDE Rotor object
+        See build_rotor_wake_inputs().
+    conditions : RCAIDE Conditions object
+        See build_rotor_wake_inputs().
+    wing_on_rotor_coupling : bool, optional
+        See build_rotor_wake_inputs().
+
+    Returns
+    -------
+    None
+        Populates conditions.energy.converters[rotor.tag] with all standard RCAIDE
+        rotor performance outputs (same interface as BEMT_Helmholtz_performance).
+    """
+    wake_inputs = build_rotor_wake_inputs(rotor, conditions, wing_on_rotor_coupling)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 3: Bound vortex circulation iteration
