@@ -187,9 +187,11 @@ class Rotor(Converter):
         self.airfoils                          = Airfoil_Container() 
         self.airfoil_polar_stations            = []       
 
-        # Initialize the default wake set to Fidelity Zero         
-        self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'          
-        
+        # Initialize the default wake set to Fidelity Zero
+        self.fidelity                          = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
+        self.wake_inputs                       = None   # Lifting_Line_Theory: None -> build_rotor_wake_inputs() fills in its own defaults
+        self.rc                                = 0.05   # Lifting_Line_Theory: vortex core radius, fraction of tip radius
+
         # design flight conditions 
         self.cruise                            = Data() 
         self.cruise.design_power               = None

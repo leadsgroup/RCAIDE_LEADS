@@ -30,34 +30,45 @@ from Electric_Twin_Otter import vehicle_setup, configs_setup
 #  VALIDATION
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
-    """ Same wing-on-rotor coupling check as aero_propulsion_coupling_test.py (rotor slipstream on the wing,
-        wing-induced velocities at the propeller discs), but with Lifting_Line_Theory fidelity rotors instead
-        of BEMT, to confirm the coupling wiring added to lifting_line_performance() actually activates and
-        produces sensible, mirror-symmetric results.
+    """ Staged coupling check with Lifting_Line_Theory fidelity rotors on the real Electric_Twin_Otter:
+        plain (no coupling) -> + wing-on-rotor coupling (rotor slipstream on the wing, wing-induced
+        velocities at the propeller discs) -> + rotor-on-rotor coupling (mutual Biot-Savart induction
+        between the starboard/port rotors' bound vortices and wakes). Each stage is checked for
+        mirror symmetry between the clockwise (starboard) and counter-clockwise (port) propellers,
+        and each new coupling term is checked to actually change the trimmed power by a nontrivial
+        amount on top of the previous stage.
     """
     ti = time.time()
 
-    power_off = evaluate_cruise(coupled=False)
-    power_on  = evaluate_cruise(coupled=True)
-    print('Propeller power uncoupled [W]: ', power_off)
-    print('Propeller power coupled   [W]: ', power_on)
+    power_plain = evaluate_cruise(wing_coupling=False, rotor_coupling=False)
+    power_wing  = evaluate_cruise(wing_coupling=True,  rotor_coupling=False)
+    power_both  = evaluate_cruise(wing_coupling=True,  rotor_coupling=True)
+    print('Propeller power, no coupling     [W]: ', power_plain)
+    print('Propeller power, +wing-on-rotor  [W]: ', power_wing)
+    print('Propeller power, +rotor-on-rotor [W]: ', power_both)
 
-    # mirror symmetry of the clockwise (starboard) and counter-clockwise (port) propellers
-    diff_symmetry = np.abs(power_on[0] - power_on[1]) / power_on[0]
-    print('Starboard/port power difference: ', diff_symmetry)
-    assert diff_symmetry < 1e-6
+    # mirror symmetry of the clockwise (starboard) and counter-clockwise (port) propellers, every stage
+    for label, power in [('plain', power_plain), ('+wing', power_wing), ('+wing+rotor', power_both)]:
+        diff_symmetry = np.abs(power[0] - power[1]) / power[0]
+        print(f'Starboard/port power difference ({label}): ', diff_symmetry)
+        assert diff_symmetry < 1e-6
 
-    # the coupling changes the power required for the trimmed thrust
-    print('Power change from coupling: ', power_on[0] / power_off[0] - 1)
-    assert np.abs(power_on[0] - power_off[0]) / power_off[0] > 1e-4
+    # wing-on-rotor coupling changes the power required for the trimmed thrust
+    print('Power change from wing-on-rotor coupling: ', power_wing[0] / power_plain[0] - 1)
+    assert np.abs(power_wing[0] - power_plain[0]) / power_plain[0] > 1e-4
+
+    # rotor-on-rotor coupling changes the power required for the trimmed thrust, on top of wing coupling
+    print('Power change from rotor-on-rotor coupling: ', power_both[0] / power_wing[0] - 1)
+    assert np.abs(power_both[0] - power_wing[0]) / power_wing[0] > 1e-4
 
     elapsed_time = time.time() - ti
     print('Elapsed time (min): ', elapsed_time / 60)
     return
 
-def evaluate_cruise(coupled):
-    vehicle                                          = vehicle_setup('lithium_ion_nmc', None)
-    vehicle.networks.electric.wing_on_rotor_coupling = coupled
+def evaluate_cruise(wing_coupling, rotor_coupling):
+    vehicle                                           = vehicle_setup('lithium_ion_nmc', None)
+    vehicle.networks.electric.wing_on_rotor_coupling  = wing_coupling
+    vehicle.networks.electric.rotor_on_rotor_coupling = rotor_coupling
 
     propulsors                                              = vehicle.networks.electric.propulsors
     propulsors.starboard_propulsor.rotor.clockwise_rotation = True
