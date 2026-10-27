@@ -294,7 +294,8 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     turboprop_conditions.total_pressure_reference         = compressor_conditions.inputs.stagnation_pressure 
 
     # Compute the power
-    compute_thrust(turboprop,conditions) 
+    compute_thrust(turboprop,conditions)
+    turboprop_conditions.outputs.power.mechanical = turboprop_conditions.propeller_shaft_power
 
     # Compute forces and moments
     moment_vector      = 0*state.ones_row(3)

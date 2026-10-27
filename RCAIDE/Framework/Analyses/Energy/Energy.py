@@ -64,6 +64,15 @@ class Energy(Analysis):
         if 'electrical_power' in state.unknowns.network:
             state.residuals.network['electrical_power'] = net_electrical_power
 
+        # Turboprop integrated drive motor delivers phi of the propeller shaft power
+        for propulsor in network.propulsors:
+            idm = getattr(propulsor, 'integrated_drive_motor', None)
+            if idm is not None and idm.tag + '_shaft_power_fraction' in state.unknowns.network:
+                motor_key   = idm.tag + '_shaft_power_fraction'
+                shaft_power = state.conditions.energy.propulsors[propulsor.tag].outputs.power.mechanical
+                phi         = state.conditions.energy.hybrid_power_split_ratio
+                state.residuals.network[motor_key] = state.unknowns.network[motor_key] - phi * shaft_power / propulsor.design_power
+
         # Unpack Residuals
         residual_keys = list(state.residuals.network.keys())
         residual_keys.remove('tag')

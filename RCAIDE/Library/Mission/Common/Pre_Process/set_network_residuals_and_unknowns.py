@@ -30,6 +30,10 @@ def set_network_residuals_and_unknowns(mission):
     populate it dynamically at evaluation time). It's the max across
     propulsors, not a sum -- ``design_power_offtake`` is the shared target
     each IDG's own ``power_split_ratio`` divides, not a per-propulsor share.
+
+    A turboprop's integrated drive motor instead gets its own unknown, its
+    shaft power as a fraction of ``design_power``, closed by phi (motor shaft
+    power = phi * propeller shaft power).
     """
 
     for segment in mission.segments:
@@ -68,6 +72,8 @@ def set_network_residuals_and_unknowns(mission):
                 for propulsor in network.propulsors:
                     idg = getattr(propulsor, 'integrated_drive_generator', None)
                     idm = getattr(propulsor, 'integrated_drive_motor', None)
+                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
+                        idm = None  # closed by its own phi unknown below
                     idg_or_idm = idg or idm
                     if idg_or_idm is not None:
                         bus_tags = idg_or_idm.assigned_distributors[0] if idg_or_idm.assigned_distributors is not None else []
@@ -101,6 +107,26 @@ def set_network_residuals_and_unknowns(mission):
                 segment.state.unknowns_lower_bounds.network['electrical_power'] = 0.     * ones_row(1)
                 segment.state.number_of_network_unknowns  += 1
                 segment.state.number_of_network_residuals += 1
+
+            # Turboprop integrated drive motor: shaft power (fraction of design_power) is an unknown
+            # closed by phi, the motor's share of propeller shaft power; reused (identical) propulsors copy it.
+            for network in ([] if getattr(segment, 'ground_operations', False) else segment.analyses.vehicle.networks):
+                reference = None
+                for propulsor in network.propulsors:
+                    if not propulsor.active or network.reuses_results(propulsor, reference):
+                        continue
+                    reference = propulsor
+                    idm       = getattr(propulsor, 'integrated_drive_motor', None)
+                    if idm is None or not isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop) or propulsor.design_power == 0.0:
+                        continue
+                    phi       = segment.state.conditions.energy.hybrid_power_split_ratio[0, 0]
+                    motor_key = idm.tag + '_shaft_power_fraction'
+                    segment.state.unknowns.network[motor_key]              = phi * ones_row(1)
+                    segment.state.residuals.network[motor_key]             = 0. * ones_row(1)
+                    segment.state.unknowns_upper_bounds.network[motor_key] = 2. * ones_row(1)
+                    segment.state.unknowns_lower_bounds.network[motor_key] = 0. * ones_row(1)
+                    segment.state.number_of_network_unknowns  += 1
+                    segment.state.number_of_network_residuals += 1
 
 
         for network in segment.analyses.vehicle.networks:         

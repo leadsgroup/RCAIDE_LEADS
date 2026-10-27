@@ -24,8 +24,11 @@ def compute_gas_generator_shaft_power_offtake(propulsor, state, omega):
         Propulsor with optional integrated_drive_motor and integrated_drive_generator, and
         design_power_offtake [W].
     state : RCAIDE.Framework.Mission.Common.State
-        Operating state. In a mission (time differentiation present) the electrical power is read
-        from state.unknowns.network['electrical_power'] when present, else from
+        Operating state. In a mission (time differentiation present) the motor's shaft power, as a
+        fraction of the propulsor's design_power, is read from
+        state.unknowns.network['<motor tag>_shaft_power_fraction'] when present (turboprop, closed
+        by phi); otherwise the electrical power is read from
+        state.unknowns.network['electrical_power'] when present, else from
         conditions.energy.inputs.power.electrical.
     omega : numpy.ndarray
         Angular velocity of the spool the motor and generator are on [rad/s], for their torque.
@@ -68,7 +71,10 @@ def compute_gas_generator_shaft_power_offtake(propulsor, state, omega):
 
     # Motor: consumes electrical power from the bus, delivers mechanical power to the shaft
     if integrated_drive_motor != None:
-        if in_mission:
+        motor_key = integrated_drive_motor.tag + '_shaft_power_fraction'
+        if in_mission and motor_key in state.unknowns.network:
+            motor_electrical_power = state.unknowns.network[motor_key] * propulsor.design_power / integrated_drive_motor.efficiency
+        elif in_mission:
             motor_electrical_power = electrical_power * conditions.energy.hybrid_power_split_ratio
         else:
             motor_electrical_power = propulsor.design_power_offtake * state.ones_row(1)
