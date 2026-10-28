@@ -220,9 +220,12 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
         if diverged:
             break   # stop the outer CT loop too -- no point continuing once it has blown up
 
-        if not conv1:
+        if conv1:
             for s in S:
-                print(f"{s.tag}: Gamma_b did not converge. Residual =", s.residual_Gamma_b)
+                print(f"{s.tag}: Gamma_b converged in {it1+1} iteration(s), residual = {s.residual_Gamma_b:.3e}")
+        else:
+            for s in S:
+                print(f"{s.tag}: Gamma_b did NOT converge after {max_inner} iteration(s). Residual =", s.residual_Gamma_b)
 
         # -- CT check (CT_iter mode only) --
         if CT_iter:
@@ -249,6 +252,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
             if all_conv:
                 conv = True
+                for s in S:
+                    if s.CT_iter:
+                        print(f"{s.tag}: CT converged in {it+1} outer iteration(s), residual = {s.residual_CT:.3e}")
                 break
 
             for s in S:
@@ -258,33 +264,34 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                     new_CT[s.valid_cp] = old_CT[s.valid_cp] + s.relax_CT[s.valid_cp]*(s.Ct_rotor_new[s.valid_cp] - old_CT[s.valid_cp])
                     s.wake_inputs.thrust_coeff_initial_guess = new_CT
 
-            # Regenerate wake geometry for every rotor that includes a wake. free_wake's
-            # multi-rotor extension is not wired in yet, so free_wake is only used on the
-            # ordinary single-rotor path (n_rot==1); any multi-rotor call (n_rot>1) always uses
-            # the prescribed model, regardless of wake_inputs.free_wake, until that's built.
-            if n_rot == 1 and S[0].include_wake and S[0].wake_inputs.free_wake:
-                s0 = S[0]
-                s0.rotor.blades.bound.gamma = s0.Gamma_b
-                s0.rotor.blades.wake.gamma  = np.max(s0.Gamma_b, axis=1, keepdims=True) * np.ones((s0.ctrl_pts, s0.N_wake, s0.B))
-                free_wake(s0.rotor, s0.wake_inputs, conditions)
-            else:
-                wake_rotors      = [s.rotor       for s in S if s.include_wake]
-                wake_wake_inputs = [s.wake_inputs for s in S if s.include_wake]
-                if wake_rotors:
-                    initialize_wake_geometry(wake_rotors, wake_wake_inputs, conditions)
-                    # regeneration resets wake.gamma to zero -- restore it, or the next outer
-                    # iteration's K_wake rebuild would see these wakes with no strength
-                    for s in S:
-                        if s.include_wake:
-                            Gamma_wake = np.max(s.Gamma_b, axis=1, keepdims=True)   # (ctrl_pts, 1, B)
-                            s.rotor.blades.wake.gamma = Gamma_wake * np.ones((s.ctrl_pts, s.N_wake, s.B))
+            # Regenerate prescribed wake geometry for every rotor that includes a wake -- the
+            # fallback shape if nothing wants free_wake, and the starting shape free_wake
+            # further relaxes otherwise. bound.gamma is set for every source rotor (not just
+            # the ones being relaxed), since free_wake uses every rotor's current bound
+            # circulation as a fixed source for the others -- see that function's docstring.
+            wake_rotors      = [s.rotor       for s in S if s.include_wake]
+            wake_wake_inputs = [s.wake_inputs for s in S if s.include_wake]
+            for s in S:
+                if s.include_wake:
+                    s.rotor.blades.bound.gamma = s.Gamma_b
+            if wake_rotors:
+                initialize_wake_geometry(wake_rotors, wake_wake_inputs, conditions)
+                # regeneration resets wake.gamma to zero -- restore it, or the next outer
+                # iteration's/free_wake's K_wake rebuild would see these wakes with no strength
+                for s in S:
+                    if s.include_wake:
+                        Gamma_wake = np.max(s.Gamma_b, axis=1, keepdims=True)   # (ctrl_pts, 1, B)
+                        s.rotor.blades.wake.gamma = Gamma_wake * np.ones((s.ctrl_pts, s.N_wake, s.B))
+
+                if any(wi.free_wake for wi in wake_wake_inputs):
+                    free_wake(wake_rotors, wake_wake_inputs, conditions)
         else:
             conv = True   # simple mode always exits after one outer pass
 
     if not conv and CT_iter:
         for s in S:
             if s.CT_iter:
-                print(f"{s.tag}: CT did not converge. Residual =", s.residual_CT)
+                print(f"{s.tag}: CT did NOT converge after {n_outer} outer iteration(s). Residual =", s.residual_CT)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Store converged results -- per rotor

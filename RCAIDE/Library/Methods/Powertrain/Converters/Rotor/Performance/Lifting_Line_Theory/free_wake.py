@@ -1,6 +1,25 @@
 # This code is used to update the wake locations using the free-wake psuedo implicit model introducted by
 # Bagai and Leishman, 1995.
-
+#
+# Multi-rotor: ported from model15's update_free_wake_location.py (the reference
+# implementation's own validated multi-rotor extension -- see that file's 2-rotor
+# coaxial/tandem/side-by-side result sets), not re-derived here. All rotors passed in are
+# relaxed TOGETHER in one joint predictor/corrector loop; every wake node of every relaxed
+# rotor sees induction from the bound vortices and wakes of EVERY rotor (self + mutual),
+# refreshed every inner relaxation iteration (not frozen/Jacobi between outer CT iterations).
+# A rotor with wake_inputs.free_wake=False is not itself relaxed but still acts as a fixed
+# source for the others. n_rot=1 degenerates to the plain single-rotor case (M/d transforms
+# are identity, the column time-alignment is exact) -- the same algorithm, not a special case.
+#
+# Two differences from the model15 source this was ported from:
+#   1. CW/CCW uses rotor.clockwise_rotation (fixed rotor property), not omega's sign -- the
+#      same bug fix already applied everywhere else in this codebase (omega is always a
+#      positive magnitude here; model15's own `omega[:, 0] > 0` predates that fix).
+#   2. mu/mu_max-based valid_cp masking for the convergence residual (not in model15): control
+#      points outside this method's valid advance-ratio range have no reason for their wake to
+#      settle to anything meaningful and shouldn't drag down the reported residual -- same
+#      rationale as the single-rotor path this replaces.
+#
 # The first step is to model the wake shed from all the blades as a 2-D grid.
 # Each node in the grid has its own psi and wake_age, making it uniquely defined by these two variables
 
@@ -10,20 +29,185 @@
 
 import numpy as np
 from concurrent.futures                import ThreadPoolExecutor
-from RCAIDE.Framework.Core            import orientation_transpose
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_induced_velocity_soa, initialize_wake_geometry, initialize_lifting_line
+from RCAIDE.Framework.Core            import Data, orientation_transpose
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry, initialize_lifting_line
 
 def free_wake(rotor, wake_inputs, conditions):
+    """Relaxes the wake of every rotor whose wake_inputs.free_wake is True (default True), with
+    induction from the bound vortices and wakes of ALL rotors passed in. Rotors with
+    free_wake False keep their current (prescribed) wake and act as fixed sources only.
+
+    Parameters
+    ----------
+    rotor : Data, list, or dict of Data
+        Rotor object(s) -- same single-or-list convention as evaluate_bound_vortex_circulation.
+    wake_inputs : Data, or list of Data (one per rotor, same order as rotor)
+    conditions : Data
+
+    Multi-rotor coupling
+    --------------------
+    Column j of rotor i's periodic grid is the instant t = j*dpsi_i/|Omega_i|; every other
+    rotor s is sampled at the same instant, i.e. its column round(|Omega_s|*t/dpsi_s). Exact
+    when dpsi_s/|Omega_s| is the same for all rotors (e.g. same |Omega| and dpsi); otherwise
+    the nearest column is used and a warning is printed. Source geometry of rotor s is moved
+    into rotor i's hub/thrust frame before Biot-Savart; the CW/CCW sign is carried by the
+    source rotor (sigma = -1 CW, +1 CCW), same convention as evaluate_bound_vortex_circulation.
+    """
+    rotor_list = [rotor] if hasattr(rotor, 'number_of_blades') else (list(rotor.values()) if isinstance(rotor, dict) else list(rotor))
+    wake_inputs_list = [wake_inputs] if len(rotor_list) == 1 and not isinstance(wake_inputs, (list, tuple)) else list(wake_inputs)
 
     #------------------------------------
-    # 0 - pre-computations
+    # 0/1 - per-rotor pre-computations and grids
     #------------------------------------
+    G = [_setup_rotor_grid(r, wi) for r, wi in zip(rotor_list, wake_inputs_list)]
+    n_rot    = len(G)
+    ctrl_pts = G[0].ctrl_pts
+    free_idx = [i for i, g in enumerate(G) if g.relaxed]
+    if not free_idx:
+        return
+
+    # Source geometry of rotor s expressed in rotor i's hub/thrust frame: p_i = M_is p_s + d_is
+    M = [[None]*n_rot for _ in range(n_rot)]
+    d = [[None]*n_rot for _ in range(n_rot)]
+    for i, gi in enumerate(G):
+        for s, gs in enumerate(G):
+            if s != i:
+                M[i][s] = np.einsum('cij,cjk->cik', gi.T_b2t, gs.T_t2b_geom)                          # (ctrl_pts,3,3)
+                d[i][s] = np.einsum('cij,j->ci', gi.T_b2t, (gs.hub_origin - gi.hub_origin).ravel())    # (ctrl_pts,3)
+
+    def to_frame(i, s, grid):
+        """grid (..., J_s, n, 3) in rotor s hub frame, leading axis ctrl_pts -> rotor i hub frame."""
+        if s == i:
+            return grid
+        shp = grid.shape
+        flat = grid.reshape(ctrl_pts, -1, 3)
+        return (np.einsum('cij,cnj->cni', M[i][s], flat) + d[i][s][:, None, :]).reshape(shp)
+
+    # Time-aligned column of rotor s for column j of rotor i
+    colmap = [[None]*n_rot for _ in range(n_rot)]
+    for i, gi in enumerate(G):
+        for s, gs in enumerate(G):
+            t_j = np.arange(gi.J) * gi.dpsi / gi.Omega_ref
+            k_f = t_j * gs.Omega_ref / gs.dpsi
+            k   = np.round(k_f).astype(int) % gs.J
+            if s != i and not np.allclose(k_f, np.round(k_f)):
+                print(f"[free_wake] warning: {gi.tag} and {gs.tag} azimuth grids are not time-aligned "
+                      f"(dpsi/|Omega| differ); using the nearest column of {gs.tag}")
+            colmap[i][s] = k
+
+    # Blade sources in every target frame (fixed during the relaxation)
+    blade_src = [[(to_frame(i, s, gs.Bgrid_start), to_frame(i, s, gs.Bgrid_end)) for s, gs in enumerate(G)] for i in range(n_rot)]
+
+    # Each (i,cp,j) task below is fully independent and writes to a disjoint V_ind slice, so
+    # this is safe to run across threads with no locking. One ThreadPoolExecutor is created
+    # here and reused for every compute_V_ind call in this invocation.
+    _executor = ThreadPoolExecutor()
+
+    def compute_V_ind(field_grids, source_grids):
+        """Induced velocity at the wake nodes of every relaxed rotor i (its own hub frame),
+        from the wakes (source_grids) and blades of every rotor, sampled at the same instant
+        as column j."""
+        V_ind    = {i: np.zeros_like(field_grids[i]) for i in free_idx}
+        wake_src = {i: [to_frame(i, s, source_grids[s]) for s in range(n_rot)] for i in free_idx}
+
+        def _compute_one(i, cp, j):
+            gi = G[i]
+            P  = field_grids[i][cp, :, j, :, :].reshape(gi.B*(gi.N_wake+1), 3)
+            v_sum = np.zeros((gi.B*(gi.N_wake+1), 3))
+            for s, gs in enumerate(G):
+                k = colmap[i][s][j]
+                wake_s    = wake_src[i][s][cp, :, k, :, :]
+                r_w_start = wake_s[:, :-1, :].reshape(gs.B*gs.N_wake, 3)
+                r_w_end   = wake_s[:,  1:, :].reshape(gs.B*gs.N_wake, 3)
+                K_wake = biot_savart_velocity_induction(
+                    P, r_w_start, r_w_end, gs.rcvf_flat[cp], gs.vc_correction)
+                v_wake = np.einsum('mnk,n->mk', K_wake, gs.Gamma_w_flat[cp])
+
+                A_s, B_s = blade_src[i][s]
+                A_blade  = A_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
+                B_blade  = B_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
+                K_blade = biot_savart_velocity_induction(
+                    P, A_blade, B_blade, gs.rcb_flat[cp], gs.vc_correction)
+                v_blade = np.einsum('mnk,n->mk', K_blade, gs.Gamma_b_flat[cp])
+
+                v_s = v_blade + v_wake
+                v_sum += -v_s if gs.CW[cp] else v_s
+            V_ind[i][cp, :, j, :, :] = v_sum.reshape(gi.B, gi.N_wake+1, 3)
+
+        tasks = [(i, cp, j) for i in free_idx for cp in range(ctrl_pts) for j in range(G[i].J)]
+        list(_executor.map(lambda t: _compute_one(*t), tasks))
+        return V_ind
+
+    #-----------------------------------
+    # 2/3/4 - relax: V_ind1 -> predictor -> V_ind2 -> corrector, all rotors together, repeated to convergence
+    #-----------------------------------
+    max_iter = max(G[i].max_iter for i in free_idx)
+    tol_default = max(G[i].tol for i in free_idx)
+    grids    = [g.r_wake_grid for g in G]
+
+    converged = False
+    try:
+        for n in range(max_iter):
+            V_ind1 = compute_V_ind(grids, grids)
+            r_pred = list(grids)
+            for i in free_idx:
+                r_pred[i] = _pseudoimplicit_update(G[i], grids[i], V_ind1[i])
+
+            V_ind2 = compute_V_ind(r_pred, r_pred)
+            residuals = {}
+            new_grids = list(grids)
+            for i in free_idx:
+                gi    = G[i]
+                V_avg = 0.5*(V_ind1[i] + V_ind2[i])
+                r_new = _pseudoimplicit_update(gi, grids[i], V_avg)
+                r_new = gi.relax*r_new + (1.0-gi.relax)*grids[i]
+                residuals[i] = np.sqrt(np.mean((r_new[gi.valid_cp] - grids[i][gi.valid_cp])**2)) / gi.R if np.any(gi.valid_cp) else 0.0
+                new_grids[i] = r_new
+            grids = new_grids
+
+            residual = max(residuals.values())
+            if all(residuals[i] < G[i].tol for i in free_idx):
+                converged = True
+                break
+    finally:
+        _executor.shutdown()
+
+    tags = ', '.join(G[i].tag for i in free_idx)
+    if converged:
+        print(f"[free_wake] {tags}: converged after {n+1} iteration(s), residual = {residual:.3e}")
+    else:
+        print(f"[free_wake] {tags}: did NOT converge after {max_iter} iteration(s), residual = {residual:.3e}")
+
+    #-----------------------------------
+    # feed back -- blade b's real filament is column j=0 of its own grid. r_wake_grid has
+    # been in hub/thrust frame since it was built -- this is the single conversion back to
+    # body frame, matching rotor.blades.wake.nodes_body's established convention.
+    #-----------------------------------
+    for i, g in enumerate(G):
+        if not g.relaxed:
+            continue
+        r_filament      = grids[i][:, :, 0, :, :]      # (ctrl_pts, B, N_wake+1, 3) -- note B before
+                                                        # wake-age, the internal grid convention, NOT
+                                                        # rotor.blades.wake.nodes_body's own
+                                                        # (ctrl_pts, N_wake+1, B, 3) (fixed by the
+                                                        # transpose below).
+        r_filament_body  = np.einsum('cij,cbnj->cbni', g.T_t2b_geom, r_filament) + g.hub_origin
+        g.rotor.blades.wake.nodes_body = np.transpose(r_filament_body, (0, 2, 1, 3))
+
+    return
+
+
+def _setup_rotor_grid(rotor, wake_inputs):
+    """Per-rotor pre-computations: current blade/wake geometry, the periodic azimuth grids (in
+    this rotor's hub/thrust frame), source strengths and relaxation constants."""
     if 'blades' not in rotor or rotor.blades.bound.get('nodes_body_14c', None) is None:
-        initialize_lifting_line(rotor, conditions)
+        raise RuntimeError(f"{rotor.tag}: free_wake() requires initialize_lifting_line() to have "
+                            f"already run (bound geometry missing).")
     r_blade_old = rotor.blades.bound.nodes_body_14c
 
     if rotor.blades.wake.get('nodes_body', None) is None:
-        initialize_wake_geometry(rotor, wake_inputs, conditions)
+        raise RuntimeError(f"{rotor.tag}: free_wake() requires initialize_wake_geometry() to have "
+                            f"already run (prescribed wake geometry missing).")
     r_wake_old = rotor.blades.wake.nodes_body
 
     Gamma_b = rotor.blades.bound.gamma
@@ -47,76 +231,51 @@ def free_wake(rotor, wake_inputs, conditions):
     J     = int(round(2*np.pi / dpsi))
 
     # rotation sense is a fixed rotor property, not a sign on omega (omega is always a positive
-    # magnitude here, same convention as BEMT_Helmholtz_performance.py's `rotation` variable,
-    # and the same fix already applied in initialize_lifting_line.py/initialize_wake_geometry.py)
-    CW   = np.full(wake_inputs.omega[:, 0].shape, rotor.clockwise_rotation, dtype=bool)   # (ctrl_pts,)
+    # magnitude here, same convention as initialize_lifting_line.py/initialize_wake_geometry.py)
+    omega = wake_inputs.omega
+    CW   = np.full(omega[:, 0].shape, rotor.clockwise_rotation, dtype=bool)   # (ctrl_pts,)
     CW_b = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper for the
                                             # (ctrl_pts, J, Nr_s)/(ctrl_pts, J, N_wake+1) grids below
     j_rot    = dpsi * np.arange(J)
     cos_psi, sin_psi = np.cos(j_rot), np.sin(j_rot)
 
-    # The per-j rotation below represents "where is this point once the blade has swept
-    # forward by j*dpsi" -- a pure (y,z) rotation ONLY in the frame where the rotor's own
-    # spin axis is the x-axis (hub/thrust frame -- same frame initialize_lifting_line.py/
-    # initialize_wake_geometry.py use for this exact purpose). Body frame can differ from
-    # thrust frame by a nonzero tilt (rotor cant / commanded thrust vector angle), so
-    # rotating directly in body-frame (y,z) is wrong whenever that tilt is nonzero --
-    # confirmed by reproducing per-blade wake asymmetry, with otherwise perfectly uniform
-    # circulation, purely from a nonzero tilt.
-    #
-    # Rather than transform to hub/thrust frame just for this rotation and immediately back
-    # to body frame, the WHOLE relaxation below (grids, Biot-Savart, V_inf's convection term)
-    # runs in hub/thrust frame -- Biot-Savart is purely geometric and doesn't care which
-    # consistent frame it's given, so this is a strictly smaller number of transforms: one
-    # conversion in (here), one conversion back to body out (at the final feedback), instead
-    # of converting in, back out, and separately converting V_inf's frame too.
+    # The per-j rotation represents "where is this point once the blade has swept forward by
+    # j*dpsi" -- a pure (y,z) rotation, valid only in the frame where the rotor's spin axis is
+    # the x-axis (hub/thrust frame). Body frame can differ from thrust frame by a nonzero tilt
+    # (rotor cant / commanded thrust vector angle), so this whole relaxation (grids,
+    # Biot-Savart, V_inf's convection term) runs in hub/thrust frame throughout -- one
+    # conversion in here, one conversion back to body out at the final feedback.
     hub_origin = np.array(rotor.origin[0]).reshape(1, 1, 1, 3)
-    T_b2t      = wake_inputs.T_body2thrust                      # (ctrl_pts,3,3)
+    T_b2t      = wake_inputs.T_body2thrust                       # (ctrl_pts,3,3)
     T_t2b_geom = orientation_transpose(T_b2t)
 
     r_b_start_hub  = np.einsum('cij,crbj->crbi', T_b2t, r_b_start  - hub_origin)
     r_b_end_hub    = np.einsum('cij,crbj->crbi', T_b2t, r_b_end    - hub_origin)
     r_wake_old_hub = np.einsum('cij,cwbj->cwbi', T_b2t, r_wake_old - hub_origin)
 
+    def rotate(yz0_y, yz0_z):
+        y = np.where(CW_b,
+            cos_psi[None, :, None]*yz0_y[:, None, :] - sin_psi[None, :, None]*yz0_z[:, None, :],
+            cos_psi[None, :, None]*yz0_y[:, None, :] + sin_psi[None, :, None]*yz0_z[:, None, :])
+        z = np.where(CW_b,
+            sin_psi[None, :, None]*yz0_y[:, None, :] + cos_psi[None, :, None]*yz0_z[:, None, :],
+           -sin_psi[None, :, None]*yz0_y[:, None, :] + cos_psi[None, :, None]*yz0_z[:, None, :])
+        return y, z
+
     # -- bound position grid (built in hub/thrust frame) --
     Bgrid_start = np.zeros((ctrl_pts, B, J, Nr_s, 3))
     Bgrid_end   = np.zeros((ctrl_pts, B, J, Nr_s, 3))
     for b in range(B):
-        xb0 = r_b_start_hub[:, :, b, 0]; xb1 = r_b_end_hub[:, :, b, 0]
-        yb0 = r_b_start_hub[:, :, b, 1]; yb1 = r_b_end_hub[:, :, b, 1]
-        zb0 = r_b_start_hub[:, :, b, 2]; zb1 = r_b_end_hub[:, :, b, 2]
-        Bgrid_start[:, b, :, :, 0] = xb0[:, None, :]
-        Bgrid_end[:,   b, :, :, 0] = xb1[:, None, :]
-        Bgrid_start[:, b, :, :, 1] = np.where(CW_b,
-            cos_psi[None, :, None]*yb0[:, None, :] - sin_psi[None, :, None]*zb0[:, None, :],
-            cos_psi[None, :, None]*yb0[:, None, :] + sin_psi[None, :, None]*zb0[:, None, :])
-        Bgrid_start[:, b, :, :, 2] = np.where(CW_b,
-            sin_psi[None, :, None]*yb0[:, None, :] + cos_psi[None, :, None]*zb0[:, None, :],
-           -sin_psi[None, :, None]*yb0[:, None, :] + cos_psi[None, :, None]*zb0[:, None, :])
-        Bgrid_end[:,   b, :, :, 1] = np.where(CW_b,
-            cos_psi[None, :, None]*yb1[:, None, :] - sin_psi[None, :, None]*zb1[:, None, :],
-            cos_psi[None, :, None]*yb1[:, None, :] + sin_psi[None, :, None]*zb1[:, None, :])
-        Bgrid_end[:,   b, :, :, 2] = np.where(CW_b,
-            sin_psi[None, :, None]*yb1[:, None, :] + cos_psi[None, :, None]*zb1[:, None, :],
-           -sin_psi[None, :, None]*yb1[:, None, :] + cos_psi[None, :, None]*zb1[:, None, :])
+        Bgrid_start[:, b, :, :, 0] = r_b_start_hub[:, None, :, b, 0]
+        Bgrid_end[:,   b, :, :, 0] = r_b_end_hub[:,   None, :, b, 0]
+        Bgrid_start[:, b, :, :, 1], Bgrid_start[:, b, :, :, 2] = rotate(r_b_start_hub[:, :, b, 1], r_b_start_hub[:, :, b, 2])
+        Bgrid_end[:,   b, :, :, 1], Bgrid_end[:,   b, :, :, 2] = rotate(r_b_end_hub[:,   :, b, 1], r_b_end_hub[:,   :, b, 2])
 
     # -- wake position grid (built in hub/thrust frame) --
     r_wake_grid = np.zeros((ctrl_pts, B, J, N_wake+1, 3))
     for b in range(B):
-        x0 = r_wake_old_hub[:, :, b, 0]
-        y0 = r_wake_old_hub[:, :, b, 1]
-        z0 = r_wake_old_hub[:, :, b, 2]
-        r_wake_grid[:, b, :, :, 0] = x0[:, None, :]
-        r_wake_grid[:, b, :, :, 1] = np.where(CW_b,
-            cos_psi[None, :, None]*y0[:, None, :] - sin_psi[None, :, None]*z0[:, None, :],
-            cos_psi[None, :, None]*y0[:, None, :] + sin_psi[None, :, None]*z0[:, None, :])
-        r_wake_grid[:, b, :, :, 2] = np.where(CW_b,
-            sin_psi[None, :, None]*y0[:, None, :] + cos_psi[None, :, None]*z0[:, None, :],
-           -sin_psi[None, :, None]*y0[:, None, :] + cos_psi[None, :, None]*z0[:, None, :])
-
-    # Bgrid_start/Bgrid_end/r_wake_grid stay in hub/thrust frame from here on -- see the
-    # relaxation-constants section below for why (V_inf), and the final feedback section
-    # for the single hub->body conversion back, at the very end.
+        r_wake_grid[:, b, :, :, 0] = r_wake_old_hub[:, None, :, b, 0]
+        r_wake_grid[:, b, :, :, 1], r_wake_grid[:, b, :, :, 2] = rotate(r_wake_old_hub[:, :, b, 1], r_wake_old_hub[:, :, b, 2])
 
     # -- Gamma / core-radius, blade-major (position-independent, same for every J column) --
     Gamma_w_bk = np.transpose(Gamma_w, (0, 2, 1))
@@ -124,275 +283,96 @@ def free_wake(rotor, wake_inputs, conditions):
     Gamma_b_bk = np.transpose(Gamma_b, (0, 2, 1))
     rcb_bk     = np.transpose(rcb,     (0, 2, 1))
 
+    g = Data()
+    g.rotor, g.tag     = rotor, rotor.tag
+    g.relaxed          = bool(wake_inputs.get('free_wake', True))
+    g.ctrl_pts, g.B, g.N_wake, g.Nr_s, g.J, g.nwa = ctrl_pts, B, N_wake, Nr_s, J, nwa
+    g.dpsi, g.dzeta    = dpsi, dzeta
+    g.CW               = CW
+    g.hub_origin       = hub_origin
+    g.T_b2t, g.T_t2b_geom = T_b2t, T_t2b_geom
+    g.Bgrid_start, g.Bgrid_end = Bgrid_start, Bgrid_end
+    g.r_wake_grid      = r_wake_grid
+    g.Gamma_w_flat     = Gamma_w_bk.reshape(ctrl_pts, B*N_wake)          # same for every j
+    g.rcvf_flat        = rcvf_bk.reshape(ctrl_pts, B*N_wake)
+    g.Gamma_b_flat     = Gamma_b_bk.reshape(ctrl_pts, B*Nr_s)
+    g.rcb_flat         = rcb_bk.reshape(ctrl_pts, B*Nr_s)
+
     #-----------------------------------
     # relaxation constants
     #-----------------------------------
-    vc_correction = wake_inputs.vc_correction
-    Omega = np.abs(wake_inputs.omega)                                 # (ctrl_pts,1)
-    V_inf = wake_inputs.V_thrust   # (ctrl_pts,3) -- already thrust/hub-frame, no conversion
-                                   # needed now that the relaxation runs in that frame throughout
-    eta1  = (dpsi - dzeta) / (dpsi + dzeta)   # = 0 exactly here, since dpsi = dzeta
-    eta2  = (dpsi * dzeta) / (dpsi + dzeta)
+    g.vc_correction = wake_inputs.vc_correction
+    g.Omega     = np.abs(omega)                                     # (ctrl_pts,1)
+    g.Omega_ref = float(g.Omega[0, 0])                              # for time-aligning rotor grids
+    g.V_inf     = wake_inputs.V_thrust     # (ctrl_pts,3) -- already thrust/hub-frame
+    g.eta1      = (dpsi - dzeta) / (dpsi + dzeta)   # = 0 exactly here, since dpsi = dzeta
+    g.eta2      = (dpsi * dzeta) / (dpsi + dzeta)
+    g.max_iter  = wake_inputs.get('free_wake_max_iter', 15)
+    g.tol       = wake_inputs.get('free_wake_tol', 1e-4)
+    g.relax     = wake_inputs.get('free_wake_relax', 1.0)   # relax=1 -> no change (default)
+    g.R         = rotor.tip_radius
 
-    # Everything below is fixed for the whole relaxation (bound geometry/circulation never
-    # change, and Gamma_w/rcvf/rcb don't vary across the J columns) -- precomputed once here
-    # instead of being re-sliced and re-reshaped (forcing a copy, since these are broadcast
-    # views) on every compute_V_ind call.
-    Gamma_w_flat = Gamma_w_bk.reshape(ctrl_pts, B*N_wake)          # same for every j
-    rcvf_flat    = rcvf_bk.reshape(ctrl_pts, B*N_wake)
-    Gamma_b_flat = Gamma_b_bk.reshape(ctrl_pts, B*Nr_s)
-    rcb_flat     = rcb_bk.reshape(ctrl_pts, B*Nr_s)
-
-    # bound geometry does rotate with j (real, meaningful variation) -- precompute all J columns
-    # once, up front, instead of re-slicing/reshaping the same values on every call.
-    A_blade_all = Bgrid_start.transpose(0, 2, 1, 3, 4).reshape(ctrl_pts, J, B*Nr_s, 3)
-    B_blade_all = Bgrid_end.transpose(  0, 2, 1, 3, 4).reshape(ctrl_pts, J, B*Nr_s, 3)
-
-    # SoA (x/y/z) split of the blade geometry, done ONCE here rather than once per (cp,j) task
-    # inside _compute_one below. A_blade_all/B_blade_all's leading two axes are exactly
-    # (ctrl_pts, J) -- the same two indices _compute_one indexes by with plain integers -- so
-    # A_blade_all[cp, j] is already a fully contiguous view (basic integer indexing on the
-    # leading axes never copies; only the trailing (,3) axis needs splitting). Splitting that
-    # trailing axis here, once for the whole (ctrl_pts, J, B*Nr_s) array, is the only copy ever
-    # paid for this data -- versus once per (cp,j) task, tens of thousands of times per mission.
-    Ax_blade_all = np.ascontiguousarray(A_blade_all[..., 0])
-    Ay_blade_all = np.ascontiguousarray(A_blade_all[..., 1])
-    Az_blade_all = np.ascontiguousarray(A_blade_all[..., 2])
-    Bx_blade_all = np.ascontiguousarray(B_blade_all[..., 0])
-    By_blade_all = np.ascontiguousarray(B_blade_all[..., 1])
-    Bz_blade_all = np.ascontiguousarray(B_blade_all[..., 2])
-
-    # Each (cp,j) task below is fully independent -- no data dependency between columns/control
-    # points within compute_V_ind (that coupling happens through the OUTER predictor/corrector
-    # loop, not here) -- and each writes to a disjoint V_ind[cp,:,j,:,:] slice, so this is safe
-    # to run across threads with no locking. numpy's C-level array ops release the GIL during
-    # computation, so this gets real multi-core parallelism, not just concurrency. One
-    # ThreadPoolExecutor is created here and reused for every compute_V_ind call in this
-    # free_wake() invocation (shut down at the very end) -- creating a fresh one per call
-    # measured meaningfully slower than reusing one (thread creation/teardown overhead, paid
-    # 2x per outer iteration otherwise). Verified bit-for-bit identical to the serial version;
-    # measured ~2.9x faster via a controlled wall-clock A/B (10 runs, 5 each, min-of-N) on a
-    # 20-core machine -- unlike the batching/merging attempts documented below, this doesn't
-    # grow any array size (so no new cache pressure), it just runs the same cache-sized
-    # per-(cp,j) calls on different cores at once.
-    _tasks    = [(cp, j) for cp in range(ctrl_pts) for j in range(J)]
-    _executor = ThreadPoolExecutor()
-
-    def compute_V_ind(field_grid, source_grid):
-        """Same sourcing rule as update_free_wake_location.py -- sources for a query at column
-        j are column j of every blade's grid, matched to that query's own instant. Runs the
-        (cp,j) tasks across the thread pool created above -- see that comment for why/how this
-        is safe and the measured speedup.
-
-        Also tried and measured NOT faster: merging the wake and blade sources into a single
-        biot_savart_velocity_induction call per (cp,j) (concatenating along N instead of two
-        separate calls). Verified bit-for-bit correct, but a controlled wall-clock A/B (10 runs,
-        5 each, min-of-N to filter system noise) showed the merged version ~10% SLOWER, not
-        faster -- despite halving call count for only modestly more N at real scale, it didn't
-        pay off the way the earlier hand-unroll/r0-elimination wins did. Kept as two separate
-        calls.
-
-        Deliberately NOT batched over ctrl_pts or J either (both were tried and measured to be
-        SLOWER, not faster, despite doing the same total elementwise work with fewer Python
-        calls): biot_savart_velocity_induction runs ~25 sequential elementwise passes over
-        temporaries shaped like its (M,N) output. At real scale (ctrl_pts=8, J=24,
-        M~222, N~230) those temporaries are only ~1.2 MB per (cp,j) slice -- comfortably
-        cache-resident -- but batching either axis multiplies that working set by
-        ctrl_pts and/or J (up to ~220 MB), blowing past L2/L3 and turning every one of
-        those ~25 passes into a full RAM round-trip. Measured on the real Twin Otter case
-        (scratchpad/test_free_wake_realscale.py-style benchmark): fully unbatched here is
-        ~1.6x FASTER than batching both axes, and batching ctrl_pts alone is already
-        slower than not batching at all. Re-benchmark before re-batching this if the
-        problem size changes substantially.
-        """
-        V_ind = np.zeros_like(field_grid)
-
-        # Split field_grid/source_grid into contiguous x/y/z components ONCE per compute_V_ind
-        # call (not once per (cp,j) task, as a naive per-task reshape would) -- field_grid[cp,:,j,:,:]
-        # is non-contiguous (j is a middle axis of a 5-D array), so extracting P for a single task
-        # always forces a copy; doing that copy here, for the whole grid in one vectorized pass,
-        # and having _compute_one slice the ALREADY-split result (still one copy per task, since
-        # cp/j slicing a middle-axis-containing array is still non-contiguous, but now only ONE
-        # copy instead of the two a (M,3)-round-trip through biot_savart_induced_velocity used to
-        # cost: one to build (M,3) here, one more inside that function to re-split it into x/y/z).
-        # field_grid and source_grid are the same object at every real call site in this function
-        # (always invoked as compute_V_ind(X, X)) -- the `is` check below skips splitting
-        # source_grid a second time in that case, the only case this codebase exercises.
-        Fx = np.ascontiguousarray(field_grid[..., 0])
-        Fy = np.ascontiguousarray(field_grid[..., 1])
-        Fz = np.ascontiguousarray(field_grid[..., 2])
-        if source_grid is field_grid:
-            Sx, Sy, Sz = Fx, Fy, Fz
-        else:
-            Sx = np.ascontiguousarray(source_grid[..., 0])
-            Sy = np.ascontiguousarray(source_grid[..., 1])
-            Sz = np.ascontiguousarray(source_grid[..., 2])
-
-        def _compute_one(cp, j):
-            Px = Fx[cp, :, j, :].reshape(-1)
-            Py = Fy[cp, :, j, :].reshape(-1)
-            Pz = Fz[cp, :, j, :].reshape(-1)
-
-            wx, wy, wz = Sx[cp, :, j, :], Sy[cp, :, j, :], Sz[cp, :, j, :]
-            r_w_start_x, r_w_end_x = wx[:, :-1].reshape(-1), wx[:, 1:].reshape(-1)
-            r_w_start_y, r_w_end_y = wy[:, :-1].reshape(-1), wy[:, 1:].reshape(-1)
-            r_w_start_z, r_w_end_z = wz[:, :-1].reshape(-1), wz[:, 1:].reshape(-1)
-
-            vwx, vwy, vwz = biot_savart_induced_velocity_soa(
-                Px, Py, Pz, r_w_start_x, r_w_start_y, r_w_start_z, r_w_end_x, r_w_end_y, r_w_end_z,
-                Gamma_w_flat[cp], rcvf_flat[cp], vc_correction)
-
-            vbx, vby, vbz = biot_savart_induced_velocity_soa(
-                Px, Py, Pz,
-                Ax_blade_all[cp, j], Ay_blade_all[cp, j], Az_blade_all[cp, j],
-                Bx_blade_all[cp, j], By_blade_all[cp, j], Bz_blade_all[cp, j],
-                Gamma_b_flat[cp], rcb_flat[cp], vc_correction)
-
-            # Same elementwise sum as before (v_blade + v_wake), just done per-component -- each
-            # scalar addition happens identically either way, so this is bit-exact by
-            # construction, not merely bit-exact by verification.
-            vx = (vbx + vwx).reshape(B, N_wake+1)
-            vy = (vby + vwy).reshape(B, N_wake+1)
-            vz = (vbz + vwz).reshape(B, N_wake+1)
-            v_sum = np.stack((vx, vy, vz), axis=-1)
-            V_ind[cp, :, j, :, :] = np.where(CW[cp], -v_sum, v_sum)
-
-        list(_executor.map(lambda t: _compute_one(*t), _tasks))
-        return V_ind
-
-    # A single lap of the j-loop can't fully resolve the periodic seam (j=0 reading j=J-1's
-    # value) when the wake-age range (nwa) exceeds the number of columns (J) -- the "freshness"
-    # from column 0 needs multiple laps to reach every k. n_inner_passes = ceil(nwa/J) is the
-    # minimum that fully resolves it -- verified via the Appendix B constant-source-term check
-    # (exact one-outer-iteration convergence, machine-precision match to the closed form), and
-    # via a direct comparison against the pre-fix version on real hover/FF cases: same converged
-    # answer (~1e-5 of R), fewer outer iterations needed (hover 29->9, FF 15->10 at tol=1e-6).
-    # Only used by the eta1!=0 fallback loop below -- the eta1==0 fast path resolves the seam
-    # exactly in closed form regardless of pass count.
-    n_inner_passes = int(np.ceil(nwa / J))
-
-    # -- Closed-form fast path (eta1==0, i.e. dpsi==dzeta, always true in this codebase) --
-    # With eta1=0, r_new[j,k] = r_new[j-1,k-1] + C[j,k-1] for k=1..N_wake, with r_new[j,0] fixed
-    # (the wake-root boundary condition, never updated). This is a pure diagonal recurrence:
-    # unrolling it gives r_new[j,k] = anchor[j0] + sum_{i=1}^{k} C[(j0+i)%J, i-1], j0=(j-k)%J --
-    # computable with two fancy-index gathers + one cumsum instead of the O(n_inner_passes*J)
-    # sequential loop. Verified (scratchpad/test_diagonal_recurrence.py) to reproduce the
-    # nested-loop result exactly (to floating-point reassociation, ~1e-14) once the loop is
-    # given enough passes to itself converge -- and, for this repo's actual parameter regime
-    # (N_wake > J, e.g. N_wake=73/J=24), the documented n_inner_passes already provides enough.
-    # These index arrays depend only on J/N_wake (fixed for the whole free_wake call).
-    _j0_ar = np.arange(J)[:, None]
-    _m_ar  = np.arange(N_wake)[None, :]
-    _idx_gather1 = (_j0_ar + _m_ar + 1) % J             # (J, N_wake) -- for building G[j0,m]
-    _idx_gather2 = (np.arange(J)[:, None] - np.arange(1, N_wake+1)[None, :]) % J   # (J,N_wake)
-    _m_broadcast = np.broadcast_to(_m_ar, (J, N_wake))
-
-    def pseudoimplicit_update(V_field):
-        """Same Eq. 3-form update as the reference version. The V_field-derived convection term
-        (eta2*(2/Omega)*(V_inf + v_avg4)) depends only on V_field, this call's fixed input --
-        precomputed once for every J column via np.roll (matching the same j-1-with-wraparound
-        semantics the old per-j negative-index access relied on).
-
-        eta1==0 always in this codebase (dpsi==dzeta, hardcoded above) -- in that case the
-        (pass, j) recurrence collapses to the closed-form diagonal cumsum above, computed in one
-        shot with no Python loop. The nested-loop version is kept as an exact fallback so this
-        stays correct if dpsi and dzeta are ever decoupled (eta1!=0), which is never exercised
-        currently.
-        """
-        Omega_5 = Omega.reshape(ctrl_pts, 1, 1, 1, 1)   # broadcasts against (ctrl_pts,B,J,N_wake,3)
-        V_inf_5 = V_inf[:, None, None, None, :]         # (ctrl_pts,1,1,1,3)
-
-        V_shift    = np.roll(V_field, shift=1, axis=2)    # V_shift[:,:,j] = V_field[:,:,j-1]
-        v_avg4_all = 0.25*(V_shift[:, :, :, :-1, :] + V_shift[:, :, :, 1:, :]
-                          + V_field[:, :, :, :-1, :] + V_field[:, :, :, 1:, :])   # (ctrl_pts,B,J,N_wake,3)
-        C_conv_all = eta2*(2.0/Omega_5)*(V_inf_5 + v_avg4_all)
-
-        if eta1 == 0.0:
-            G      = C_conv_all[:, :, _idx_gather1, _m_broadcast, :]      # (ctrl_pts,B,J,N_wake,3)
-            S_arr  = np.cumsum(G, axis=3)
-            anchor = r_wake_grid[:, :, :, 0, :]                           # (ctrl_pts,B,J,3)
-            anchor_plus_S = anchor[:, :, :, None, :] + S_arr
-            r_new_body = anchor_plus_S[:, :, _idx_gather2, _m_broadcast, :]
-            r_new = r_wake_grid.copy()
-            r_new[:, :, :, 1:, :] = r_new_body
-            return r_new
-
-        r_new = r_wake_grid.copy()
-        for _pass in range(n_inner_passes):
-            for j in range(J):
-                base   = r_new[:, :, j-1, :-1, :]                          # (ctrl_pts,B,nwa-1,3)
-                same_j = r_new[:, :, j,   :-1, :] - r_new[:, :, j-1, 1:, :]
-                r_new[:, :, j, 1:, :] = base + eta1*same_j + C_conv_all[:, :, j, :, :]
-        return r_new
-
-    #-----------------------------------
-    # 2/3/4 - relax: V_ind1 -> predictor -> V_ind2 -> corrector, repeated to convergence
-    #-----------------------------------
-    max_iter = wake_inputs.get('free_wake_max_iter', 15)
-    tol      = wake_inputs.get('free_wake_tol', 1e-4)
-    relax    = wake_inputs.get('free_wake_relax', 1.0)   # see update_free_wake_location.py --
-                                                           # relax=1 -> no change (default)
-    R        = rotor.tip_radius
-
-    # Control points outside the model's valid advance-ratio range (mu > mu_max) are frozen by
-    # evaluate_bound_vortex_circulation.py's own valid_cp logic -- their Gamma_b/CT never update,
-    # so their wake geometry has no reason to settle to anything meaningful. Excluded here from
-    # the convergence check for the same reason: without this, a handful of garbage control
-    # points (observed: mu up to ~157 when an outer solver drives omega toward 0) permanently
-    # drag the reported residual down to a plateau/oscillation floor even after every valid
-    # control point has actually converged -- "did not converge" when the model is, in the only
-    # sense that matters, done. Still computed/updated for all control points (batched together),
-    # just not scored.
+    # Control points outside this method's valid advance-ratio range (mu > mu_max) are frozen
+    # by evaluate_bound_vortex_circulation.py's own valid_cp logic -- their wake geometry has
+    # no reason to settle to anything meaningful. Excluded here from the convergence check for
+    # the same reason (still computed/updated for all control points, just not scored).
     mu     = wake_inputs.get('mu', None)
     mu_max = wake_inputs.get('mu_max', None)
     if mu is None or mu_max is None:
-        # Caller didn't provide mu/mu_max (e.g. standalone/unit-test harnesses that call
-        # free_wake directly, outside the full lifting_line_performance pipeline) -- fall back
-        # to scoring every control point, matching this function's original behavior exactly.
-        valid_cp = np.ones(ctrl_pts, dtype=bool)
+        g.valid_cp = np.ones(ctrl_pts, dtype=bool)
     else:
-        valid_cp = mu <= mu_max
-        if not np.any(valid_cp):
-            valid_cp = np.ones_like(valid_cp)   # degenerate case: nothing valid, fall back to
-                                                 # scoring everything rather than an empty reduction
+        g.valid_cp = mu <= mu_max
+        if not np.any(g.valid_cp):
+            g.valid_cp = np.ones_like(g.valid_cp)
+    return g
 
-    # try/finally so a mid-loop exception (e.g. a NaN blowing up somewhere) still shuts the
-    # thread pool down instead of leaking worker threads -- this function runs many times per
-    # mission (once per outer CT iteration), so a leaked pool per bad evaluation adds up.
-    try:
-        for n in range(max_iter):
-            V_ind1 = compute_V_ind(r_wake_grid, r_wake_grid)
-            r_pred = pseudoimplicit_update(V_ind1)
 
-            V_ind2 = compute_V_ind(r_pred, r_pred)
-            V_avg  = 0.5*(V_ind1 + V_ind2)
-            r_wake_grid_new = pseudoimplicit_update(V_avg)
-            r_wake_grid_new = relax*r_wake_grid_new + (1.0-relax)*r_wake_grid
+def _pseudoimplicit_update(g, r_wake_grid, V_field):
+    """Eq. 3-form update for one rotor. The V_field-derived convection term (eta2*(2/Omega)*(V_inf +
+    v_avg4)) depends only on V_field, this call's fixed input -- precomputed once for
+    every J column via np.roll (matching the j-1-with-wraparound semantics the per-j
+    negative-index access relies on).
 
-            residual = np.sqrt(np.mean((r_wake_grid_new[valid_cp] - r_wake_grid[valid_cp])**2)) / R
-            #print(f"[free_wake] iteration {n+1}: rms(delta r)/R = {residual:.3e}")
+    eta1==0 always in this codebase, so the recurrence collapses to the closed-form
+    diagonal cumsum: r_new[j,k] = r_new[j-1,k-1] + C[j,k-1] for k=1..N_wake, with r_new[j,0]
+    fixed (the wake-root boundary condition). Unrolling it gives r_new[j,k] = anchor[j0] +
+    sum_{i=1}^{k} C[(j0+i)%J, i-1], j0=(j-k)%J -- computed with two fancy-index gathers + one
+    cumsum instead of a sequential loop. The nested-loop version is kept as an exact fallback
+    for eta1!=0, which is never exercised currently."""
+    ctrl_pts, J, N_wake = g.ctrl_pts, g.J, g.N_wake
+    Omega_5 = g.Omega.reshape(ctrl_pts, 1, 1, 1, 1)   # broadcasts against (ctrl_pts,B,J,N_wake,3)
+    V_inf_5 = g.V_inf[:, None, None, None, :]         # (ctrl_pts,1,1,1,3)
 
-            r_wake_grid = r_wake_grid_new
-            if residual < tol:
-                #print(f"[free_wake] converged after {n+1} iterations")
-                break
-        else:
-            print(f"[free_wake] did not converge after {max_iter} iterations, residual = {residual:.3e}")
-    finally:
-        _executor.shutdown()
+    V_shift    = np.roll(V_field, shift=1, axis=2)    # V_shift[:,:,j] = V_field[:,:,j-1]
+    v_avg4_all = 0.25*(V_shift[:, :, :, :-1, :] + V_shift[:, :, :, 1:, :]
+                      + V_field[:, :, :, :-1, :] + V_field[:, :, :, 1:, :])   # (ctrl_pts,B,J,N_wake,3)
+    C_conv_all = g.eta2*(2.0/Omega_5)*(V_inf_5 + v_avg4_all)
 
-    #-----------------------------------
-    # feed back -- blade b's real filament is column j=0 of its own grid. r_wake_grid has
-    # been in hub/thrust frame since it was built (see the frame comment near the top) --
-    # this is the single conversion back to body frame, matching rotor.blades.wake.nodes_body's
-    # established convention.
-    #-----------------------------------
-    r_filament = r_wake_grid[:, :, 0, :, :]   # (ctrl_pts, B, N_wake+1, 3) -- note B before
-                                               # wake-age here, the internal grid convention,
-                                               # NOT rotor.blades.wake.nodes_body's own
-                                               # (ctrl_pts, N_wake+1, B, 3) (fixed by the
-                                               # transpose on the next line).
-    r_filament_body = np.einsum('cij,cbnj->cbni', T_t2b_geom, r_filament) + hub_origin
-    rotor.blades.wake.nodes_body = np.transpose(r_filament_body, (0, 2, 1, 3))
+    if g.eta1 == 0.0:
+        _j0_ar = np.arange(J)[:, None]
+        _m_ar  = np.arange(N_wake)[None, :]
+        _idx_gather1 = (_j0_ar + _m_ar + 1) % J             # (J, N_wake) -- for building G[j0,m]
+        _idx_gather2 = (np.arange(J)[:, None] - np.arange(1, N_wake+1)[None, :]) % J   # (J,N_wake)
+        _m_broadcast = np.broadcast_to(_m_ar, (J, N_wake))
 
-    return
+        Gather = C_conv_all[:, :, _idx_gather1, _m_broadcast, :]      # (ctrl_pts,B,J,N_wake,3)
+        S_arr  = np.cumsum(Gather, axis=3)
+        anchor = r_wake_grid[:, :, :, 0, :]                           # (ctrl_pts,B,J,3)
+        anchor_plus_S = anchor[:, :, :, None, :] + S_arr
+        r_new_body = anchor_plus_S[:, :, _idx_gather2, _m_broadcast, :]
+        r_new = r_wake_grid.copy()
+        r_new[:, :, :, 1:, :] = r_new_body
+        return r_new
+
+    # A single lap of the j-loop can't fully resolve the periodic seam (j=0 reading j=J-1's
+    # value) when the wake-age range (nwa) exceeds J -- freshness from column 0 needs multiple
+    # laps to reach every k. n_inner_passes = ceil(nwa/J) is sufficient here (N_wake is always
+    # an exact multiple of J in this codebase) but not in general.
+    n_inner_passes = int(np.ceil(g.nwa / J))
+    r_new = r_wake_grid.copy()
+    for _pass in range(n_inner_passes):
+        for j in range(J):
+            base   = r_new[:, :, j-1, :-1, :]                          # (ctrl_pts,B,nwa-1,3)
+            same_j = r_new[:, :, j,   :-1, :] - r_new[:, :, j-1, 1:, :]
+            r_new[:, :, j, 1:, :] = base + g.eta1*same_j + C_conv_all[:, :, j, :, :]
+    return r_new
