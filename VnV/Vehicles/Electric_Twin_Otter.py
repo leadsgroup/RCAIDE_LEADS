@@ -6,17 +6,25 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports 
+# running this file directly (`python VnV/Vehicles/Electric_Twin_Otter.py`) sets sys.path[0] to
+# this file's own directory, not the caller's cwd -- without this, `import RCAIDE` below can
+# resolve to a stale site-packages copy instead of this repo (confirmed missing
+# Lifting_Line_Theory entirely). Harmless no-op when this file is imported normally instead.
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')))
+
+# RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core                                                                import Units
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor 
 from RCAIDE.Library.Methods.Powertrain.Converters.Cross_Flow_Heat_Exchanger  import design_cross_flow_heat_exchanger
 from RCAIDE.Library.Methods.Powertrain.Converters.Liquid_Cooled_Wavy_Channel       import design_wavy_channel
 
-# python imports 
-import numpy as np 
+# python imports
+import numpy as np
 from copy import deepcopy
 import os
+import time
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
@@ -653,14 +661,168 @@ def vehicle_setup(cell_chemistry, btms_type):
 
 def configs_setup(vehicle):
 
-    configs     = RCAIDE.Library.Components.Configs.Config.Container() 
-    
+    configs     = RCAIDE.Library.Components.Configs.Config.Container()
+
     # ------------------------------------------------------------------
     #   Initialize Configurations
-    # ------------------------------------------------------------------  
+    # ------------------------------------------------------------------
     base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag = 'base'  
-    configs.append(base_config)   
-    
+    base_config.tag = 'base'
+    configs.append(base_config)
+
     # done!
     return configs
+
+# ----------------------------------------------------------------------------------------------------------------------
+#   Lifting_Line_Theory cruise case -- run this file directly
+# ----------------------------------------------------------------------------------------------------------------------
+# Toggle the couplings here and rerun -- no other changes needed:
+WING_ON_ROTOR_COUPLING  = True   # rotor slipstream on the wing, wing-induced velocity at the discs
+ROTOR_ON_ROTOR_COUPLING = True   # mutual Biot-Savart induction between the two rotors (multi-rotor free_wake)
+FREE_WAKE               = True   # False -> prescribed wake only (fast sanity check before a free_wake run)
+
+def _prescribed_only_wake_inputs():
+    """Same defaults as lifting_line_performance.build_rotor_wake_inputs's
+    `rotor.wake_inputs is None` branch, with free_wake forced off -- used only when
+    FREE_WAKE=False, since that branch itself always sets free_wake=True and there's no other
+    hook to override it before a mission call builds wake_inputs internally."""
+    from RCAIDE.Framework.Core import Data
+    wake_inputs = Data()
+    wake_inputs.include_wake                 = True
+    wake_inputs.free_wake                    = False
+    wake_inputs.wake_model_hov               = 1
+    wake_inputs.wake_model_FF                = 5
+    wake_inputs.vc_correction                = 1
+    wake_inputs.dpsi                         = np.radians(6.8)
+    wake_inputs.n_turns                      = 5.0
+    wake_inputs.thrust_coeff_initial_guess   = 0.00654
+    wake_inputs.lamb_oseen_rc_0              = 0.05
+    wake_inputs.lamb_oseen_alpha             = 1.25643
+    wake_inputs.lamb_oseen_delta             = 120000
+    wake_inputs.lamb_oseen_sigma             = 1.0
+    wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)
+    wake_inputs.r_R_shed                     = 1.0
+    wake_inputs.tol                          = 1e-4
+    wake_inputs.relax_0_Gammab               = 0.1
+    wake_inputs.relax_0_CT                   = 0.2
+    wake_inputs.max_iter_Gammab_0            = 1000
+    wake_inputs.max_iter_CT_0                = 100
+    wake_inputs.CT_iter                      = True
+    wake_inputs.aerofoil_aero                = 2
+    wake_inputs.mu_max                       = 1.0
+    return wake_inputs
+
+def main():
+    print(f'wing_on_rotor_coupling = {WING_ON_ROTOR_COUPLING}, rotor_on_rotor_coupling = {ROTOR_ON_ROTOR_COUPLING}, free_wake = {FREE_WAKE}')
+
+    vehicle = vehicle_setup('lithium_ion_nmc', None)
+    vehicle.networks.electric.wing_on_rotor_coupling  = WING_ON_ROTOR_COUPLING
+    vehicle.networks.electric.rotor_on_rotor_coupling = ROTOR_ON_ROTOR_COUPLING
+
+    propulsors = vehicle.networks.electric.propulsors
+    propulsors.starboard_propulsor.rotor.clockwise_rotation = True
+    propulsors.port_propulsor.rotor.clockwise_rotation      = False
+
+    for propulsor in propulsors:
+        rotor                 = propulsor.rotor
+        rotor.use_2d_analysis = True
+        rotor.fidelity        = 'Lifting_Line_Theory'
+        rotor.rc              = 0.05
+        rotor.wake_inputs     = None if FREE_WAKE else _prescribed_only_wake_inputs()
+
+    configs  = configs_setup(vehicle)
+    analyses = _analyses_setup(configs)
+    mission  = _mission_setup(analyses)
+
+    ti = time.time()
+    results = mission.evaluate()
+    print('Elapsed (min): ', (time.time() - ti) / 60)
+
+    converters = results.segments.cruise.conditions.energy.converters
+    power = {name: converters[propulsors[name].rotor.tag].power[0, 0] for name in ['starboard_propulsor', 'port_propulsor']}
+    print('Converged power [W]: ', power)
+
+    # the mission actually mutated configs.base's (deep-copied) network, not the
+    # original `vehicle` object -- pull the final rotor state from there
+    final_propulsors = configs.base.networks.electric.propulsors
+
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    for name in ['starboard_propulsor', 'port_propulsor']:
+        rotor = final_propulsors[name].rotor
+        save_path = os.path.join(out_dir, f'wake_shape_{name}.npz')
+        np.savez(save_path,
+                 wake_nodes_body = rotor.blades.wake.nodes_body,       # (ctrl_pts, N_wake+1, B, 3)
+                 bound_14c_body  = rotor.blades.bound.nodes_body_14c,  # (ctrl_pts, Nr,      B, 3)
+                 bound_34c_body  = rotor.blades.bound.nodes_body_34c,
+                 hub_origin      = np.array(rotor.origin),
+                 clockwise       = rotor.clockwise_rotation)
+        print(name, 'wake_nodes_body shape:', rotor.blades.wake.nodes_body.shape, '-> saved to', save_path)
+
+    from RCAIDE.Library.Plots import plot_3d_vehicle
+    plot_3d_vehicle(configs.base,
+                     plot_wake      = True,
+                     save_figure    = True,
+                     save_filename  = os.path.join(out_dir, 'electric_twin_otter_wake'),
+                     show_figure    = False)
+    print('Saved vehicle+wake plot to', os.path.join(out_dir, 'electric_twin_otter_wake.png'))
+
+def _analyses_setup(configs):
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+    for tag, config in configs.items():
+        analyses[tag] = _base_analysis(config)
+    return analyses
+
+def _base_analysis(vehicle):
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
+
+    weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation()
+    analyses.append(weights)
+
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.settings.overwrite_reference = False
+    analyses.append(geometry)
+
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.number_of_spanwise_vortices  = 10
+    aerodynamics.settings.number_of_chordwise_vortices = 5
+    aerodynamics.settings.use_surrogate                = False
+    analyses.append(aerodynamics)
+
+    energy = RCAIDE.Framework.Analyses.Energy.Energy()
+    analyses.append(energy)
+
+    planet = RCAIDE.Framework.Analyses.Planets.Earth()
+    analyses.append(planet)
+
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    analyses.append(atmosphere)
+    return analyses
+
+def _mission_setup(analyses):
+    mission     = RCAIDE.Framework.Mission.Sequential_Segments()
+    mission.tag = 'mission'
+    Segments    = RCAIDE.Framework.Mission.Segments
+
+    segment                                          = Segments.Cruise.Constant_Speed_Constant_Altitude()
+    segment.tag                                      = 'cruise'
+    segment.analyses.extend(analyses.base)
+    segment.state.numerics.mission_solver.type       = 'root_finder'
+    segment.state.numerics.number_of_control_points  = 2
+    segment.altitude                                 = 5000 * Units.ft
+    segment.air_speed                                = 130 * Units.kts
+    segment.distance                                 = 10 * Units.nmi
+    segment.initial_battery_state_of_charge          = 1.0
+
+    segment.flight_dynamics.force_x = True
+    segment.flight_dynamics.force_z = True
+
+    segment.assigned_control_variables.throttle.active              = True
+    segment.assigned_control_variables.throttle.assigned_propulsors = [['starboard_propulsor', 'port_propulsor']]
+    segment.assigned_control_variables.pitch_angle.active            = True
+    mission.append_segment(segment)
+    return mission
+
+
+if __name__ == '__main__':
+    main()
