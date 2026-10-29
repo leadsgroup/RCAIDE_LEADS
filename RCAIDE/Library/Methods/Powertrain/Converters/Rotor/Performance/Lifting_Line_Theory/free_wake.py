@@ -30,7 +30,7 @@
 import numpy as np
 from concurrent.futures                import ThreadPoolExecutor
 from RCAIDE.Framework.Core            import Data, orientation_transpose
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry, initialize_lifting_line
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_induced_velocity, initialize_wake_geometry, initialize_lifting_line
 
 def free_wake(rotor, wake_inputs, conditions):
     """Relaxes the wake of every rotor whose wake_inputs.free_wake is True (default True), with
@@ -119,16 +119,22 @@ def free_wake(rotor, wake_inputs, conditions):
                 wake_s    = wake_src[i][s][cp, :, k, :, :]
                 r_w_start = wake_s[:, :-1, :].reshape(gs.B*gs.N_wake, 3)
                 r_w_end   = wake_s[:,  1:, :].reshape(gs.B*gs.N_wake, 3)
-                K_wake = biot_savart_velocity_induction(
-                    P, r_w_start, r_w_end, gs.rcvf_flat[cp], gs.vc_correction)
-                v_wake = np.einsum('mnk,n->mk', K_wake, gs.Gamma_w_flat[cp])
+                # Fused Biot-Savart + contraction (skips materializing the (M,N,3) influence
+                # tensor and its separate einsum pass) -- bit-identical to
+                # biot_savart_velocity_induction(...)+einsum on this call's actual array shapes
+                # and every vc_correction in {1,2,3,4}, verified in
+                # scratchpad/verify_biot_savart_fused.py (2026-10-29). Gamma is already known
+                # here (unlike evaluate_bound_vortex_circulation.py's K_wake, which is reused
+                # across many different Gamma_b guesses in its inner loop and must stay a
+                # cached tensor), so there is nothing lost by contracting directly.
+                v_wake = biot_savart_induced_velocity(
+                    P, r_w_start, r_w_end, gs.Gamma_w_flat[cp], gs.rcvf_flat[cp], gs.vc_correction)
 
                 A_s, B_s = blade_src[i][s]
                 A_blade  = A_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
                 B_blade  = B_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
-                K_blade = biot_savart_velocity_induction(
-                    P, A_blade, B_blade, gs.rcb_flat[cp], gs.vc_correction)
-                v_blade = np.einsum('mnk,n->mk', K_blade, gs.Gamma_b_flat[cp])
+                v_blade = biot_savart_induced_velocity(
+                    P, A_blade, B_blade, gs.Gamma_b_flat[cp], gs.rcb_flat[cp], gs.vc_correction)
 
                 v_s = v_blade + v_wake
                 v_sum += -v_s if gs.CW[cp] else v_s
