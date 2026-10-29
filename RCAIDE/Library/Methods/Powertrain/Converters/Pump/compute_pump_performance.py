@@ -15,16 +15,17 @@ def compute_pump_performance(pump, state, network):
     """
     Computes the performance of an electrically-driven boost pump.
 
-    The pump's shaft-power requirement is not recomputed from a fixed design
-    pressure rise -- it is read from the fuel line's own distribution-loss
-    calculation (RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.
+    The hydraulic power is the fuel line's flow-driven demand plus the pressure
+    rise. The line demand comes from its own distribution-loss calculation
+    (RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.
     compute_fuel_line_distribution_losses), which has already accumulated the
-    actual flow-driven hydraulic power needed by every propulsor assigned to
-    the line (propulsors are evaluated before converters, so this value is
-    populated by the time the pump runs). The pump takes its distributor_split
-    share of that demand, converts it to shaft power via pump.efficiency, then
-    to electrical power via pump.turbine_efficiency, and draws that from its
-    assigned bus (fed by the engines' integrated drive generators).
+    pipe-friction power and the fuel mass flow of every propulsor assigned to
+    the line (propulsors are evaluated before converters, so both are
+    populated by the time the pump runs). The pressure rise from
+    design_inlet_pressure to design_outlet_pressure costs the line's volume
+    flow times that rise. The pump takes its distributor_split share of the
+    total, converts it to shaft power via pump.efficiency, then to electrical
+    power via pump.turbine_efficiency, and draws that from its assigned bus.
     """
     pump_conditions = state.conditions.energy.converters[pump.tag]
 
@@ -37,8 +38,12 @@ def compute_pump_performance(pump, state, network):
             fuel_line = distributor
     fuel_line_conditions = state.conditions.energy.distributors[fuel_line.tag]
 
-    # This pump's share of the line's already-computed flow-driven power demand
-    hydraulic_power = pump.distributor_split * fuel_line_conditions.inputs.power.hydraulic
+    # Pressure rise across the pump: volume flow of the line times (outlet - inlet) pressure
+    volumetric_flow_rate  = fuel_line_conditions.mass_flow_rate / fuel_line.working_fluid.density
+    pressure_rise_power   = volumetric_flow_rate * (pump.design_outlet_pressure - pump.design_inlet_pressure)
+
+    # This pump's share of the line's flow-driven power demand plus the pressure rise
+    hydraulic_power = pump.distributor_split * (fuel_line_conditions.inputs.power.hydraulic + pressure_rise_power)
 
     # hydraulic -> shaft, via pump efficiency
     shaft_power      = hydraulic_power / pump.efficiency
