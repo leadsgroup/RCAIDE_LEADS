@@ -24,7 +24,7 @@ VAPOR_COLUMNS  = ("Density (kg/m3)", "Cp (J/g*K)", "Cv (J/g*K)", "Viscosity (Pa*
                   "Enthalpy (kJ/kg)", "Internal Energy (kJ/kg)", "Pressure (MPa)")
 # Order of the diagnostics returned by cryogenic_tank_rates (as tank_state_rates' diagnostics dict)
 DIAGNOSTICS    = ("P", "m_dot_vent", "m_dot_bo_final", "heater_power", "m_dot_l_engine", "Q_e_l", "Q_e_g", "V_l", "V_g",
-                  "T_out_of_range", "m_l_thermal_floored", "m_dot_deficit", "m_dot_avail", "heater_saturated")
+                  "T_out_of_range", "m_l_thermal_floored", "m_dot_deficit", "m_dot_avail", "heater_saturated", "m_dot_return")
 MPA            = 1e6
 EPS4           = 4 * np.finfo(float).eps
 DELTA_T        = 0.1  # K, interface temperature-difference smoothing (as Q_liq_to_int/Q_gas_to_int)
@@ -278,6 +278,10 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     eps              = 1e-6
     m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
     m_dot_vent       = 0.5 * (m_dot_relief + np.sqrt(m_dot_relief**2 + eps**2))
+    m_dot_return     = 0.0
+    if m_dot_refuel > 0.0:
+        m_dot_recover = V_g_c / (R_specific * T_g_c * params[20]) * (P - minimum_pressure)
+        m_dot_return  = 0.5 * (m_dot_recover + np.sqrt(m_dot_recover**2 + eps**2))
 
     heater_power_uncapped = m_dot_heater_boi * (h_g - h_l) / max(eta_h, 1e-9)
     heater_power          = min(heater_power_uncapped, max_heater_power)
@@ -285,7 +289,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     m_dot_bo_final        = m_dot_bo + m_dot_heater_boi
     Q_h_to_liquid         = heater_power * (1 - eta_h)
 
-    dm_g = m_dot_bo_final - m_dot_vent
+    dm_g = m_dot_bo_final - m_dot_vent - m_dot_return
     m_dot_deficit  = m_dot_l_engine * (1 - m_dot_avail)
     m_dot_l_engine = m_dot_l_engine * m_dot_avail
     dm_l = -m_dot_bo_final - m_dot_l_engine + m_dot_refuel
@@ -338,6 +342,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     diagnostics[11] = m_dot_deficit
     diagnostics[12] = m_dot_avail
     diagnostics[13] = 1.0 if heater_power_uncapped > max_heater_power else 0.0
+    diagnostics[14] = m_dot_return
     return rates, diagnostics, 0
 
 

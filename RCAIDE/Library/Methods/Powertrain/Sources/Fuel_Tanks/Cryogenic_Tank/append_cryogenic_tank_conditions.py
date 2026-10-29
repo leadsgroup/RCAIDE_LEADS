@@ -22,8 +22,9 @@ def append_cryogenic_tank_conditions(tank, segment):
 
     The initial liquid mass is tank.fuel.mass_properties.mass when set, capped at the full liquid mass
     (net volume times liquid density at design_inlet_temperature), and the full liquid mass otherwise. The
-    mass_properties Pre_Process sets the fuel load and appends these conditions again. Liquid and ullage start
-    at design_inlet_temperature with the ullage at P_sat, the only equilibrium pressure at that temperature.
+    mass_properties Pre_Process sets the fuel load and appends these conditions again. The liquid starts at
+    design_inlet_temperature and the ullage at minimum_operating_pressure (P_sat when it is unset), as saturated
+    vapor; when the operating pressure floor lifts that above P_sat, the liquid starts subcooled.
     Later segments start from the previous segment's end state (append_cryogenic_tank_segment_conditions).
     """
     append_fuel_tank_conditions(tank, segment)
@@ -32,7 +33,9 @@ def append_cryogenic_tank_conditions(tank, segment):
     tank_conditions = segment.state.conditions.energy.sources[tank.tag]
 
     T_l_0 = tank.design_inlet_temperature
-    T_g_0 = tank.design_inlet_temperature
+    P_sat = tank.fuel.cryogen_properties(T_l_0, "Pressure (MPa)", phase='liquid') * Units.MPa
+    P_0   = P_sat if tank.minimum_operating_pressure is None else max(P_sat, tank.minimum_operating_pressure)
+    T_g_0 = tank.fuel.saturation_temperature(np.atleast_1d(P_0 / Units.MPa))[0] if P_0 > P_sat else T_l_0
 
     rho_l_0         = tank.fuel.cryogen_properties(T_l_0, "Density (kg/m3)", phase='liquid')
     max_liquid_mass = tank.design_full_liquid_mass
@@ -57,8 +60,7 @@ def append_cryogenic_tank_conditions(tank, segment):
 
     R_specific = UNIVERSAL_GAS_CONSTANT / tank.fuel.molecular_weight
     Z_0        = tank.fuel.compressibility_factor(T_g_0, phase='vapor')
-    P_sat_0    = tank.fuel.cryogen_properties(T_g_0, "Pressure (MPa)", phase='vapor') * Units.MPa  # Pa
-    m_g_0      = P_sat_0 * V_g_0 / (Z_0 * R_specific * T_g_0)
+    m_g_0      = P_0 * V_g_0 / (Z_0 * R_specific * T_g_0)
 
     tank_conditions.ullage_mass             = m_g_0 * ones_row(1)
     tank_conditions.fuel_mass               = m_l_0 * ones_row(1)
@@ -68,6 +70,7 @@ def append_cryogenic_tank_conditions(tank, segment):
     tank_conditions.fuel_volume             = V_l_0 * ones_row(1)
     tank_conditions.pressure                = 0 * ones_row(1)
     tank_conditions.vent_rate               = 0 * ones_row(1)
+    tank_conditions.refuel_return_rate      = 0 * ones_row(1)
     tank_conditions.heater_power            = 0 * ones_row(1)
     tank_conditions.refuel_mass_flow_rate   = 0 * ones_row(1)
     tank_conditions.environmental_heat_leak_liquid = 0 * ones_row(1)

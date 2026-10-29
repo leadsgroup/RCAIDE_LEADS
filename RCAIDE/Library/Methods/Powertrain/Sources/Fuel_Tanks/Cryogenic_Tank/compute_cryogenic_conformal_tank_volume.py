@@ -68,7 +68,8 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     # applied on top of it; safety_factor (via sigma_allow above) is the sole
     # structural margin.
     P_sat      = fuel_tank.fuel.cryogen_properties(T_inlet, "Pressure (MPa)", phase='liquid') * Units.MPa
-    P_rated    = P_sat + fuel_tank.pressure_margin
+    P_operate  = max(P_sat, fuel_tank.operating_pressure_floor)   # subcooled liquid under a pressurized ullage below the floor
+    P_rated    = P_operate + fuel_tank.pressure_margin
     P_internal = P_rated
     P_external = fuel_tank.design_external_pressure
     P_net      = P_internal - P_external
@@ -76,7 +77,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     # Vent pressure for the boil-off model is the structural design pressure; the heater holds the fill pressure
     fuel_tank.design_pressure = P_rated
     if fuel_tank.minimum_operating_pressure is None:
-        fuel_tank.minimum_operating_pressure = P_sat
+        fuel_tank.minimum_operating_pressure = P_operate
 
     # Atmospheric conditions at design altitude (computed once, passed to inner solvers)
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()

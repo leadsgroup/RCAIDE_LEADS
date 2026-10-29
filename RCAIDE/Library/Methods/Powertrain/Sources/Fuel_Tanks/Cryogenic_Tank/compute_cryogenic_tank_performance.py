@@ -28,7 +28,7 @@ SOLVED_FIELDS = ('ullage_mass', 'fuel_mass', 'ullage_volume', 'fuel_volume', 'ul
                  'pressure', 'vent_rate', 'boil_off_flow_rate', 'heater_power', 'refuel_mass_flow_rate',
                  'environmental_heat_leak_liquid', 'environmental_heat_leak_ullage', 'temperature_out_of_range',
                  'liquid_thermal_floor_active', 'fuel_deficit_rate', 'liquid_availability_gate',
-                 'heater_saturated', 'refuel_volume_capped', 'mass_flow_rate')
+                 'heater_saturated', 'refuel_volume_capped', 'mass_flow_rate', 'refuel_return_rate')
 
 def store_tank_solve(tank_conditions, cache_key, result):
     """Caches a tank solve together with every condition array it wrote."""
@@ -132,7 +132,8 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-
         tank_conditions.vent_rate[:,0]          = diag['m_dot_vent']
         tank_conditions.boil_off_flow_rate[:,0] = diag['m_dot_bo_final']
         tank_conditions.heater_power[:,0]       = diag['heater_power']
-        tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] - refuel_pts
+        tank_conditions.refuel_return_rate[:,0]     = diag['m_dot_return']
+        tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] + diag['m_dot_return'] - refuel_pts
         tank_conditions.outputs.power.chemical[:,0] = diag['m_dot_l_engine'] * fuel.lower_heating_value
         tank_conditions.environmental_heat_leak_liquid[:,0] = diag['Q_e_l']
         tank_conditions.environmental_heat_leak_ullage[:,0] = diag['Q_e_g']
@@ -292,8 +293,10 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-
     tank_conditions.heater_saturated[:,0]               = diag['heater_saturated']
     tank_conditions.refuel_volume_capped[:,0]           = float(volume_capped)
 
-    # Net mass leaving the tank system (engine offtake + vented boil-off - refuel inflow)
-    tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] - refuel_pts_eff
+    tank_conditions.refuel_return_rate[:,0]             = diag['m_dot_return']
+
+    # Net mass leaving the tank system (engine offtake + vented boil-off + refuel vapor return - refuel inflow)
+    tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] + diag['m_dot_return'] - refuel_pts_eff
     tank_conditions.outputs.power.chemical[:,0] = diag['m_dot_l_engine'] * fuel.lower_heating_value
 
     stored_results_flag = True
@@ -441,6 +444,11 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
     m_dot_vent       = 0.5 * (m_dot_relief + np.sqrt(m_dot_relief**2 + eps**2))
 
+    # Refuel vapor return: while filling, displaced ullage gas leaves through the ground recovery line and holds the
+    # tank at minimum_operating_pressure (Mangold et al., Energies 15, 2475, 2022, Sec. 2.4.1); it is not vented loss
+    m_dot_recover = V_g_c / (R_specific * T_g_c * tau_vent) * (P - tank.minimum_operating_pressure)
+    m_dot_return  = np.where(m_dot_refuel > 0.0, 0.5 * (m_dot_recover + np.sqrt(m_dot_recover**2 + eps**2)), 0.0)
+
     # Heater power split, Adler & Martins (2025) Eqs. 13, 17 and 24: a fraction eta_h of heater power boils
     # liquid at the interface and the rest warms the liquid. eta_h = 0 is guarded against division by zero.
     eta_h                 = tank.heater_direct_boiloff_fraction
@@ -454,7 +462,7 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     Q_h_to_liquid     = heater_power * (1 - eta_h)
 
     # Mass / volume / energy balances (the ODE right-hand side)
-    dm_g = m_dot_bo_final - m_dot_vent
+    dm_g = m_dot_bo_final - m_dot_vent - m_dot_return
     # Incoming fuel assumed thermally equilibrated with the tank's own bulk
     # liquid, so no separate enthalpy term is needed here.
     m_dot_deficit  = m_dot_l_engine * (1 - m_dot_avail)
@@ -526,7 +534,7 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
                         # Observability of where a run is leaning on a floor/cap/barrier:
                         T_out_of_range=T_out_of_range, m_l_thermal_floored=m_l_thermal_floored,
                         m_dot_deficit=m_dot_deficit, m_dot_avail=m_dot_avail,
-                        heater_saturated=heater_saturated)
+                        heater_saturated=heater_saturated, m_dot_return=m_dot_return)
     return derivatives, diagnostics
 
 
