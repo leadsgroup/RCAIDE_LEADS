@@ -627,8 +627,10 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     points, real everywhere else.
 
     Below the matching floor the fuel flow stays at the floor and the thrust
-    decays from the floor thrust toward zero (extend_thrust_below_floor), so
-    it is never negative and keeps a gradient for the mission solver.
+    decays from the floor thrust toward the floor ram drag -mdot*V0
+    (extend_thrust_below_floor), the net thrust of an engine with no gross
+    thrust, and keeps a gradient for the mission solver. An idle_fallback
+    point has no mass flow, so its thrust decays toward zero.
 
     See Also
     --------
@@ -655,7 +657,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     idle_fallback    = getattr(turbofan.offdesign_matching, 'idle_fallback', None)
     matching_floor   = getattr(turbofan.offdesign_matching, 'matching_floor', None)
 
-    # lowest Tt4 fraction the matching solver represents; below it thrust decays from the floor (extend_thrust_below_floor)
+    # lowest Tt4 fraction the matching solver represents; below it thrust decays from the floor toward the ram drag
     if matching_floor is not None:
         floor_interpolator = RegularGridInterpolator((matching_floor.altitude, matching_floor.mach_number),
                                                      matching_floor.combustor_exit_temperature_fraction,
@@ -718,7 +720,10 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
                     reference_point.Tt4 * (floor_fraction[i] + floor_step), packed_design_constants=packed_design_constants,
                     packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
                 floor_slope = (above_floor.thrust - result.thrust) / floor_step
-                thrust      = extend_thrust_below_floor(result.thrust, floor_slope, throttle[i], floor_fraction[i])
+                # net thrust can go negative down to the ram drag of an engine with no gross thrust
+                ram_drag    = result.mass_flow_rate * velocity[i]
+                thrust      = extend_thrust_below_floor(result.thrust, floor_slope, throttle[i], floor_fraction[i],
+                                                        lower_bound=-ram_drag)
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise
