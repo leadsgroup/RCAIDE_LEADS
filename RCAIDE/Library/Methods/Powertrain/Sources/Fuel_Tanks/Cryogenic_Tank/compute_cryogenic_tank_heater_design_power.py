@@ -18,8 +18,10 @@ def compute_cryogenic_tank_heater_design_power(tank, network):
     ullage at the minimum operating pressure while the tank feeds the engines at
     their takeoff rating: the liquid volume drawn per second is backfilled with
     saturated vapor at that pressure, which takes the latent heat to produce.
+    Only the fraction eta_h (``heater_direct_boiloff_fraction``) of heater power
+    boils liquid directly, the rest warming the liquid, as in the tank model.
 
-        P_heater = margin * (m_dot_takeoff / rho_l) * rho_g * (h_g - h_l)
+        P_heater = margin * (m_dot_takeoff / rho_l) * rho_g * (h_g - h_l) / eta_h
 
     m_dot_takeoff is the tank's ``power_split_ratio`` share of the fuel chemical
     power that the propulsors on its fuel line draw at the sea-level static
@@ -53,4 +55,5 @@ def compute_cryogenic_tank_heater_design_power(tank, network):
     T_sat         = fuel.saturation_temperature(np.clip(np.atleast_1d(tank.minimum_operating_pressure / Units.MPa), P_lo, P_hi))
     rho_l, h_l    = fuel.cryogen_property_set(T_sat, ("Density (kg/m3)", "Enthalpy (kJ/kg)"), phase='liquid')
     rho_g, h_g    = fuel.cryogen_property_set(T_sat, ("Density (kg/m3)", "Enthalpy (kJ/kg)"), phase='vapor')
-    return float(np.ravel(tank.heater_power_margin * (m_dot_takeoff / rho_l) * rho_g * (h_g - h_l) * 1000.0)[0])
+    return float(np.ravel(tank.heater_power_margin * (m_dot_takeoff / rho_l) * rho_g * (h_g - h_l) * 1000.0
+                          / tank.heater_direct_boiloff_fraction)[0])
