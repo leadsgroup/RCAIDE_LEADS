@@ -272,8 +272,11 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     m_dot_avail = s_avail**2 * (3 - 2 * s_avail)
     m_dot_bo    = m_dot_bo * m_dot_avail
 
+    # Feed-forward at or below the setpoint: the vapor that backfills the liquid drawn and replaces interface condensation
     gain             = V_g_c / (R_specific * T_g_c * tau)
-    m_dot_heat       = gain * (minimum_pressure - P)
+    s_ff             = 1.0 / (1.0 + np.exp(min(max(100.0 * (P - minimum_pressure) / minimum_pressure, -50.0), 50.0)))
+    m_dot_heat       = gain * (minimum_pressure - P) + \
+                       s_ff * (rho_g * (m_dot_l_engine * m_dot_avail - m_dot_refuel) / rho_l - m_dot_bo)
     m_dot_relief     = V_g_c / (R_specific * T_g_c * params[20]) * (P - design_pressure)
     eps              = 1e-6
     m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
