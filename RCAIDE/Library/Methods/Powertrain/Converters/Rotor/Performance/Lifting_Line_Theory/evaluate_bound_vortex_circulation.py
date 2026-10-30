@@ -12,7 +12,7 @@
 import numpy as np
 from RCAIDE.Framework.Core                           import Data
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import compute_airfoil_aerodynamics
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry, free_wake
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, contract_influence_tensor, initialize_wake_geometry, free_wake
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_lifting_line_inflow_and_tip_loss
@@ -187,9 +187,15 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             v_by = [[None]*n_rot for _ in range(n_rot)]
             for i, si in enumerate(S):
                 for j, sj in enumerate(S):
-                    v_ij = np.einsum('cmnk,cn->cmk', K_bound[i][j], Gamma_bound_flat[j])
+                    # K_bound/K_wake are built once (K_bound for the whole call, K_wake per
+                    # outer CT iteration) and re-contracted with a NEW Gamma on every single
+                    # Gamma_b inner iteration (up to max_inner times) -- contract_influence_tensor
+                    # is a bit-identical, Numba-accelerated replacement for this exact
+                    # np.einsum('cmnk,cn->cmk', ...) pattern, ~16x faster at realistic sizes
+                    # (verified in scratchpad/verify_numba_einsum_contraction.py, 2026-10-29).
+                    v_ij = contract_influence_tensor(K_bound[i][j], Gamma_bound_flat[j])
                     if sj.include_wake:
-                        v_ij = v_ij + np.einsum('cmnk,cn->cmk', K_wake[i][j], Gamma_wake_flat[j])
+                        v_ij = v_ij + contract_influence_tensor(K_wake[i][j], Gamma_wake_flat[j])
                     v_by[i][j] = sj.sigma * v_ij.reshape(si.ctrl_pts, si.Nr-1, si.B, 3)
 
             bad = False

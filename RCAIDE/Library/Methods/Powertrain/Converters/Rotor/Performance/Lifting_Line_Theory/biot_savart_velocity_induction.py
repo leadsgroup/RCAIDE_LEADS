@@ -140,6 +140,41 @@ if _NUMBA_AVAILABLE:
         return cross
 
     @njit(cache=True, error_model='numpy')
+    def _contract_influence_tensor_batched(K, Gamma):
+        """Bit-exact replica of np.einsum('cmnk,cn->cmk', K, Gamma) -- the batched (leading
+        ctrl_pts axis) contraction of an ALREADY-BUILT influence tensor K against a circulation
+        vector Gamma, used where K itself is reused across many different Gamma guesses (e.g.
+        evaluate_bound_vortex_circulation.py's K_bound/K_wake, cached once per outer CT
+        iteration and re-contracted every Gamma_b inner iteration) -- unlike
+        _biot_savart_kernel_2d_contracted above, which fuses the Biot-Savart build itself and
+        is only valid where K is used exactly once.
+
+        Bit-exactness relies on the SAME reasoning as _biot_savart_kernel_2d_contracted's
+        docstring: accumulating each output element by summing over n=0..N-1 in increasing
+        order, matching numpy's own naive (optimize=False) einsum for this contraction shape.
+        Verified bit-identical (np.array_equal, every element) against
+        np.einsum('cmnk,cn->cmk', K, Gamma) across multiple shapes and random inputs in
+        scratchpad/verify_numba_einsum_contraction.py (2026-10-29) before being wired in
+        anywhere -- 16x faster at realistic (ctrl_pts, M, N) sizes.
+        """
+        C, M, N, _ = K.shape
+        out = np.zeros((C, M, 3))
+        for c in range(C):
+            for m in range(M):
+                s0 = 0.0
+                s1 = 0.0
+                s2 = 0.0
+                for n in range(N):
+                    g = Gamma[c, n]
+                    s0 += K[c, m, n, 0] * g
+                    s1 += K[c, m, n, 1] * g
+                    s2 += K[c, m, n, 2] * g
+                out[c, m, 0] = s0
+                out[c, m, 1] = s1
+                out[c, m, 2] = s2
+        return out
+
+    @njit(cache=True, error_model='numpy')
     def _biot_savart_kernel_2d_contracted(P, A, B, rc_sq_arr, rc_qd_arr, vc_correction, tol, Gamma):
         """Same kernel as _biot_savart_kernel_2d, but contracted against a (N,) circulation
         vector Gamma in the same pass -- i.e. fuses biot_savart_velocity_induction(...)
@@ -658,6 +693,23 @@ def biot_savart_induced_velocity_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, Gamma, 
     B = np.stack((Bx, By, Bz), axis=1)
     result = _biot_savart_kernel_2d_contracted(P, A, B, rc_sq_arr, rc_qd_arr, vc_int, tol_f, Gamma_arr)
     return result[:, 0], result[:, 1], result[:, 2]
+
+
+def contract_influence_tensor(K, Gamma):
+    """Equivalent to np.einsum('cmnk,cn->cmk', K, Gamma) -- contracts an already-built
+    (ctrl_pts, M, N, 3) influence tensor against a (ctrl_pts, N) circulation vector. Use this
+    (not biot_savart_induced_velocity) where K is built once and reused across many different
+    Gamma values -- e.g. evaluate_bound_vortex_circulation.py's K_bound/K_wake, cached per
+    outer CT iteration and re-contracted every Gamma_b inner iteration. Dispatches to a fused
+    Numba kernel (bit-identical to plain np.einsum, see _contract_influence_tensor_batched's
+    docstring) when Numba is installed and K is the expected 4-D shape; falls back to
+    np.einsum directly otherwise.
+    """
+    K_arr     = np.asarray(K, dtype=float)
+    Gamma_arr = np.asarray(Gamma, dtype=float)
+    if _NUMBA_AVAILABLE and K_arr.ndim == 4:
+        return _contract_influence_tensor_batched(K_arr, Gamma_arr)
+    return np.einsum('cmnk,cn->cmk', K_arr, Gamma_arr)
 
 
 def _biot_savart_velocity_induction_numpy(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
