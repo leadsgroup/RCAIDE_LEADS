@@ -664,8 +664,24 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
         propulsor_i.motor.origin                          = [origins[i]]  
         propulsor_i.electronic_speed_controller.tag       = tags[i] +'esc' 
         propulsor_i.electronic_speed_controller.origin    = [origins[i]]  
-        propulsor_i.nacelle.tag                           = tags[i] +'nacelle' 
-        propulsor_i.nacelle.origin                        = [nacelle_origins[i]]   
+        propulsor_i.nacelle.tag                           = tags[i] +'nacelle'
+        propulsor_i.nacelle.origin                        = [nacelle_origins[i]]
+        # Rotor.py's default is clockwise_rotation=True for every rotor -- left uncorrected
+        # here, all 6 propulsors (3 mirrored left/right pairs) would spin the same direction,
+        # with no torque-canceling counter-rotation between port and starboard. Same convention
+        # as Electric_Twin_Otter.py: positive y (starboard) clockwise, negative y (port)
+        # counter-clockwise.
+        propulsor_i.rotor.clockwise_rotation              = origins[i][1] > 0
+        # Propulsor.py defaults identical_propulsors=True, which makes Network.evaluate()
+        # solve ONLY the first propulsor through the real performance method and deepcopy its
+        # thrust/power/Gamma_b/omega onto the rest (see Network.reuses_results/
+        # reuse_stored_electric_rotor_data) -- correct only for genuinely interchangeable
+        # propulsors, which these are not (6 distinct positions, 3 mirrored CW/CCW pairs).
+        # Left on, 5 of 6 rotors would silently report front_port_rotor's results instead of
+        # their own. wing_on_rotor_coupling/rotor_on_rotor_coupling (both default False here)
+        # would also disable the shortcut, but setting this explicitly doesn't depend on those
+        # staying off.
+        propulsor_i.identical_propulsors                  = False
         propulsor_i.assigned_distributors = [[bus.tag]]
         network.propulsors.append(propulsor_i)
         assigned_propulsor_list.append(propulsor_i.tag)
