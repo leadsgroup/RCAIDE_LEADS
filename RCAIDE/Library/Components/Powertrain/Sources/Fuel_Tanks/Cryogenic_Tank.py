@@ -57,6 +57,14 @@ class Cryogenic_Tank(Non_Integral_Tank):
     heater_power_margin : float
         Multiple of the takeoff pressurant demand the heater is sized to when ``Heater.design_power``
         is not set (default: 1.5).
+    insulation_heat_leak_margin : float
+        Multiple of the computed heat leak that must stay within ``design_heat_flux`` when sizing the insulation
+        (default: 1.5, assumption).
+    surface_emissivity : float
+        Emissivity of the insulation outer surface for radiative heat gain (default: 0.03, assumption).
+    heater_heat_leak_power_ratio : float
+        Heater power cap as a multiple of the design heat leak, used when neither ``Heater.design_power`` nor a
+        propulsor takeoff chemical power is available (default: 10, assumption).
     heater_direct_boiloff_fraction : float
         Fraction of heater power that boils liquid directly; the rest warms the liquid (default: 0.1).
         This is eta_h of Adler & Martins (2025), Eqs. 13, 17 and 24, tuned on LH2 ground tests (Sec. IV.B).
@@ -97,6 +105,9 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.boil_off_model                 = 'quasi_steady'
         self.heater_direct_boiloff_fraction = 0.1
         self.heater_power_margin            = 1.5
+        self.heater_heat_leak_power_ratio   = 10.0
+        self.insulation_heat_leak_margin    = 1.5
+        self.surface_emissivity             = 0.03
         self.pressure_margin                = 2 * Units.bar
         self.operating_pressure_floor       = 1.2 * Units.bar
         self.design_pressure                = None

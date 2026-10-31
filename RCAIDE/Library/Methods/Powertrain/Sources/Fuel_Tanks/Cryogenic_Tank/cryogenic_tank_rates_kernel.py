@@ -66,7 +66,8 @@ def cryogenic_tank_rates_tables(tank, R_specific, T_g_lo, T_g_hi, T_l_lo, T_l_hi
                        tank.insulation.material.thermal_conductivity, tank.design_full_liquid_mass,
                        tank.pressure_regulation_time_constant, tank.design_pressure,
                        tank.heater_direct_boiloff_fraction, tank.minimum_operating_pressure,
-                       tank.vent_time_constant if tank.vent_time_constant is not None else tank.pressure_regulation_time_constant], dtype=float)
+                       tank.vent_time_constant if tank.vent_time_constant is not None else tank.pressure_regulation_time_constant,
+                       tank.surface_emissivity], dtype=float)
     return TL, LQ, TV, VQ, PS, liquid["Temperature (K)"], params, geometry
 
 
@@ -135,13 +136,13 @@ def liquid_height(r, l, v):
 
 
 @njit(cache=True)
-def environment_heat_leak(kind, t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, geometry):
+def environment_heat_leak(kind, t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, emissivity, geometry):
     """Heat leak through wall + insulation (solve_heat_leak). Returns (Q, status): status 0 ok, else the
     Python solver's fallback/raise path is needed."""
     if kind == CYLINDER:
-        p = np.array([t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, geometry[4], geometry[5], geometry[6]])
+        p = np.array([t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, emissivity, geometry[4], geometry[5], geometry[6]])
     else:
-        p = np.array([t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, geometry[4], geometry[5], geometry[6], geometry[7]])
+        p = np.array([t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, emissivity, geometry[4], geometry[5], geometry[6], geometry[7]])
     if abs(T_env - T_cold) < 1e-9:
         Te = T_cold
     else:
@@ -197,7 +198,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi   = params[5], params[6], params[7], params[8], params[9], params[10]
     max_heater_power, t_ins, k_mat, k_ins        = params[11], params[12], params[13], params[14]
     m_full, tau, design_pressure, eta_h          = params[15], params[16], params[17], params[18]
-    minimum_pressure                             = params[19]
+    minimum_pressure, emissivity                 = params[19], params[21]
 
     m_g_c = max(m_g, 1e-6)
     m_l_c = max(m_l, 1e-6)
@@ -256,10 +257,10 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     Q_g_i = interface_heat(T_g_c, T_int, A_int, L_int, rho_g, cp_g, mu_g, k_g)
 
     alpha_air = nu_air / Pr_air
-    Q_env_liq, status = environment_heat_leak(kind, t_ins, T_env, T_l_c, k_mat, k_ins, k_air, nu_air, alpha_air, Pr_air, geometry)
+    Q_env_liq, status = environment_heat_leak(kind, t_ins, T_env, T_l_c, k_mat, k_ins, k_air, nu_air, alpha_air, Pr_air, emissivity, geometry)
     if status != 0:
         return rates, diagnostics, status
-    Q_env_gas, status = environment_heat_leak(kind, t_ins, T_env, T_g_c, k_mat, k_ins, k_air, nu_air, alpha_air, Pr_air, geometry)
+    Q_env_gas, status = environment_heat_leak(kind, t_ins, T_env, T_g_c, k_mat, k_ins, k_air, nu_air, alpha_air, Pr_air, emissivity, geometry)
     if status != 0:
         return rates, diagnostics, status
     Q_e_l = n_sides * Q_env_liq * A_wet_frac

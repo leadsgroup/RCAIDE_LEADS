@@ -6,6 +6,7 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
+import warnings
 from scipy.optimize import brentq
 from scipy.integrate import solve_ivp
 
@@ -107,16 +108,21 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-
         restore_tank_solve(tank_conditions, cached[2])
         return cached[1]
 
-    # Heater cap: Heater.design_power when set, else sized to the takeoff pressurant demand, else 10x design heat leak
+    # Heater cap: Heater.design_power when set, else sized to the takeoff pressurant demand, else a multiple of design heat leak
     max_heater_power = compute_cryogenic_tank_heater_design_power(tank, network) if network is not None else None
+    heater_sized     = max_heater_power is not None
     if max_heater_power is None:
-        max_heater_power = 10.0 * tank.design_total_heat_transfer
+        max_heater_power = tank.heater_heat_leak_power_ratio * tank.design_total_heat_transfer
     if network is not None:
         for converter in getattr(network, 'converters', []):
             if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) and \
                getattr(converter, 'assigned_tank', None) == tag and converter.design_power is not None:
                 max_heater_power = converter.design_power
+                heater_sized     = True
                 break
+        if not heater_sized:
+            warnings.warn(f"Cryogenic tank '{tag}': no propulsor on its fuel line reports sealevel_static_chemical_power; "
+                          f"heater capped at heater_heat_leak_power_ratio x the design heat leak. Set Heater.design_power to size it.")
 
     if t.size < 2:
         m_g0, m_l0, T_g0, T_l0 = (np.array([v]) for v in y0)
@@ -401,9 +407,9 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
         li = scalar(tank.inner_structure.lengths.internal)
         for i in range(n_nodes):
             _, Q_env_liq[i] = compute_cryogenic_tank_heat_leak(
-                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], ro, ri, li)
+                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], tank.surface_emissivity, ro, ri, li)
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak(
-                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], ro, ri, li)
+                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], tank.surface_emissivity, ro, ri, li)
     else:
         # Conformal/prismatic tanks: same heat-leak model, using flat-plate
         # free-convection correlations per face instead of cylinder/sphere ones.
@@ -413,9 +419,9 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
         th  = scalar(tank.inner_structure.thickness)
         for i in range(n_nodes):
             _, Q_env_liq[i] = compute_cryogenic_tank_heat_leak_cuboid(
-                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], l_o, w_o, h_o, th)
+                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], tank.surface_emissivity, l_o, w_o, h_o, th)
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak_cuboid(
-                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], l_o, w_o, h_o, th)
+                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], tank.surface_emissivity, l_o, w_o, h_o, th)
 
     Q_e_l = n_sides * Q_env_liq * A_wet_frac
     Q_e_g = n_sides * Q_env_gas * (1 - A_wet_frac)

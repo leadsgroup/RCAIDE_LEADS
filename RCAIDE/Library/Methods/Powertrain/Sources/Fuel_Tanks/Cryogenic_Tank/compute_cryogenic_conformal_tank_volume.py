@@ -61,7 +61,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     k_ins_mat     = fuel_tank.insulation.material.thermal_conductivity
     sigma_allow   = fuel_tank.inner_structure.material.yield_tensile_strength / safety_factor
     hw_ratio      = fuel_tank.heights.external / fuel_tank.widths.external
-    PI_Q          = 1.5  # heat-flow sizing margin, as in the cylindrical tank
+    PI_Q          = fuel_tank.insulation_heat_leak_margin
 
     # Net pressure differential for structural sizing. P_internal is the
     # physical rated pressure itself -- no separate burst/proof multiplier is
@@ -123,7 +123,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     mass_struct = ((l_o * w_o * h_o) - (h_i * l_i * w_i)) * fuel_tank.inner_structure.material.density
 
     # Design-point heat leak of the sized tank (both sides of a symmetric pair)
-    _, Qc_total = compute_cryogenic_tank_heat_leak_cuboid(t_ins, Ta, T_inlet, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
+    _, Qc_total = compute_cryogenic_tank_heat_leak_cuboid(t_ins, Ta, T_inlet, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, fuel_tank.surface_emissivity, l_o, w_o, h_o, th)
 
     # Double for symmetric tanks
     if fuel_tank.xz_plane_symmetric:
@@ -215,7 +215,7 @@ def insulation_residual(t_ins, therm, fuel_tank, l_o, w_o, h_o, th):
     Ta, Ti, Qo, PI_Q, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr = therm
 
     _, Qc = compute_cryogenic_tank_heat_leak_cuboid(
-        t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
+        t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, fuel_tank.surface_emissivity, l_o, w_o, h_o, th)
 
     l_i, w_i, h_i = l_o - 2 * th, w_o - 2 * th, h_o - 2 * th
     A_inner = 2 * (l_i * w_i + l_i * h_i + w_i * h_i)
