@@ -23,8 +23,7 @@ def append_cryogenic_tank_conditions(tank, segment):
     The initial liquid mass is tank.fuel.mass_properties.mass when set, capped at the full liquid mass
     (net volume times liquid density at design_inlet_temperature), and the full liquid mass otherwise. The
     mass_properties Pre_Process sets the fuel load and appends these conditions again. The liquid starts at
-    design_inlet_temperature and the ullage at minimum_operating_pressure (P_sat when it is unset), as saturated
-    vapor; when the operating pressure floor lifts that above P_sat, the liquid starts subcooled.
+    design_inlet_temperature and the ullage as saturated vapor at minimum_operating_pressure (P_sat when unset).
     Later segments start from the previous segment's end state (append_cryogenic_tank_segment_conditions).
     """
     append_fuel_tank_conditions(tank, segment)
