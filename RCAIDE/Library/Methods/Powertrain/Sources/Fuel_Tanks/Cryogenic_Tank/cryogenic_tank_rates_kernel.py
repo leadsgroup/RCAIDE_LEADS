@@ -8,7 +8,7 @@
 import numpy as np
 try:
     from numba import njit
-except ImportError:  # numba is optional: without it the kernel runs as plain Python
+except ImportError:  # pragma: no cover -- numba is optional: without it the kernel runs as plain Python
     def njit(*args, **kwargs):
         if len(args) == 1 and callable(args[0]):
             return args[0]
