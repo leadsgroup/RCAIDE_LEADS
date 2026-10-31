@@ -396,8 +396,9 @@ def design_turbojet(turbojet, build_idle_fallback=True):
         sls_outputs = sea_level_static_performance(1.0)
     finally:
         turbojet.afterburner_active = afterburner_active
-    turbojet.sealevel_static_thrust = sls_outputs.thrust[0][0]
-    turbojet.sealevel_static_power  = sls_outputs.power.propulsive[0][0]
+    turbojet.sealevel_static_thrust         = sls_outputs.thrust[0][0]
+    turbojet.sealevel_static_power          = sls_outputs.power.propulsive[0][0]
+    turbojet.sealevel_static_chemical_power = operating_state.conditions.energy.propulsors[turbojet.tag].inputs.power.chemical[0][0]
     
     return      
   

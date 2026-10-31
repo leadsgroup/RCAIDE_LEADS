@@ -7,6 +7,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports  
+import RCAIDE
 from .Converter  import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Engine.append_engine_conditions import append_engine_conditions
 
@@ -33,6 +34,9 @@ class Engine(Converter):
         
     power_specific_fuel_consumption : float
         Fuel consumption per unit power output [kg/W/s]. Default is 0.36.
+
+    fuel_data : Propellant
+        Fuel burned, whose lower heating value converts fuel flow to chemical power. Default is Aviation_Gasoline.
 
     Notes
     -----
@@ -78,6 +82,7 @@ class Engine(Converter):
         self.flat_rate_altitude              = 0.0
         self.rated_speed                     = 0.0   
         self.power_specific_fuel_consumption = 0.36
+        self.fuel_data                       = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()
 
     def append_operating_conditions(self,segment):   
         append_engine_conditions(self,segment) 
