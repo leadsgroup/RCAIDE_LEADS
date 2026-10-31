@@ -120,10 +120,10 @@ def BWB_Test():
     print('BWB  OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
     print('BWB  Moment of Inertia')
     print(computed_moi)
-    truth_OEW_CG_mass_percentage = 100.77
-    truth_moi = np.array([[1177124.2038085272, 56934.56602597049, -142039.35274452207],
-                          [56934.56602597049, 3353711.716510033, 11633.674726777313],
-                          [-142039.35274452207, 11633.674726777313, 4306734.478489947]])
+    truth_OEW_CG_mass_percentage = 100.76
+    truth_moi = np.array([[1178624.9384380195, 57573.518201039005, -142061.25896003222],
+                          [57573.518201039005, 3355864.331287301, 11634.746416897728],
+                          [-142061.25896003222, 11634.746416897728, 4310289.110110592]])
 
     error_moi = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_moi < 1e-2),\

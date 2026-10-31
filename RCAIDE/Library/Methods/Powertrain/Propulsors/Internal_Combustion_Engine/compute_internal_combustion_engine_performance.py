@@ -112,6 +112,7 @@ def compute_internal_combustion_engine_performance(propulsor, state, network=Non
     
     # Create the outputs
     ice_conditions.fuel_mass_flow_rate       = conditions.energy.converters[engine.tag].fuel_mass_flow_rate  
+    ice_conditions.inputs.power.chemical     = ice_conditions.fuel_mass_flow_rate * engine.fuel_data.lower_heating_value
     stored_results_flag                      = True
     stored_propulsor_tag                     = propulsor.tag  
 

@@ -57,18 +57,29 @@ class Cryogenic_Tank(Non_Integral_Tank):
     heater_power_margin : float
         Multiple of the takeoff pressurant demand the heater is sized to when ``Heater.design_power``
         is not set (default: 1.5).
+    insulation_heat_leak_margin : float
+        Multiple of the computed heat leak that must stay within ``design_heat_flux`` when sizing the insulation
+        (default: 1.5, assumption).
+    surface_emissivity : float
+        Emissivity of the insulation outer surface for radiative heat gain (default: 0.03, assumption).
+    heater_heat_leak_power_ratio : float
+        Heater power cap as a multiple of the design heat leak, used when neither ``Heater.design_power`` nor a
+        propulsor takeoff chemical power is available (default: 10, assumption).
     heater_direct_boiloff_fraction : float
         Fraction of heater power that boils liquid directly; the rest warms the liquid (default: 0.1).
         This is eta_h of Adler & Martins (2025), Eqs. 13, 17 and 24, tuned on LH2 ground tests (Sec. IV.B).
         It has not been validated for LNG.
     pressure_margin : float
-        Pressure above P_sat(design_inlet_temperature) that sets ``design_pressure``, the maximum operating
-        pressure used for wall sizing and as the vent pressure [Pa] (default: 2 bar).
+        Pressure above max(P_sat(design_inlet_temperature), operating_pressure_floor) that sets ``design_pressure``,
+        used for wall sizing and as the vent pressure [Pa] (default: 2 bar).
+    operating_pressure_floor : float
+        Lowest absolute operating pressure, kept above ambient so air cannot enter the tank [Pa] (default: 1.2 bar,
+        Winnefeld et al., Energies 11, 105, 2018, Sec. 2; Mangold et al., Energies 15, 2475, 2022, Sec. 3.12).
     minimum_operating_pressure : float
-        Pressure below which the heater adds boil-off to keep tank pressure from falling [Pa]. Set to
-        P_sat(design_inlet_temperature) during sizing when not given. Between this pressure and
-        ``design_pressure`` the tank self-pressurizes from heat leak, following Adler & Martins (2025),
-        Sec. I: the heater prevents pressure from decreasing and the tank vents at its limit.
+        Pressure below which the heater adds boil-off [Pa]. Set to max(P_sat(design_inlet_temperature),
+        operating_pressure_floor) during sizing when not given. Between this pressure and ``design_pressure`` the
+        tank self-pressurizes from heat leak (Adler & Martins 2025, Sec. I). Refuel vapor returns to the ground at
+        this pressure (Mangold et al. 2022, Sec. 2.4.1).
     pressure_regulation_time_constant : float
         Response time of the heater and vent regulation [s] (default: 400). Within the range of the heater
         response constant C_h tuned by Adler & Martins (2025), Sec. IV.B.
@@ -94,7 +105,11 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.boil_off_model                 = 'quasi_steady'
         self.heater_direct_boiloff_fraction = 0.1
         self.heater_power_margin            = 1.5
+        self.heater_heat_leak_power_ratio   = 10.0
+        self.insulation_heat_leak_margin    = 1.5
+        self.surface_emissivity             = 0.03
         self.pressure_margin                = 2 * Units.bar
+        self.operating_pressure_floor       = 1.2 * Units.bar
         self.design_pressure                = None
         self.minimum_operating_pressure     = None
         self.pressure_regulation_time_constant = 400.0

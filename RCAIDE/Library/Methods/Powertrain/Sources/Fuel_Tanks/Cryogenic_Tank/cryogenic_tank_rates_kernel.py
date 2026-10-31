@@ -24,7 +24,7 @@ VAPOR_COLUMNS  = ("Density (kg/m3)", "Cp (J/g*K)", "Cv (J/g*K)", "Viscosity (Pa*
                   "Enthalpy (kJ/kg)", "Internal Energy (kJ/kg)", "Pressure (MPa)")
 # Order of the diagnostics returned by cryogenic_tank_rates (as tank_state_rates' diagnostics dict)
 DIAGNOSTICS    = ("P", "m_dot_vent", "m_dot_bo_final", "heater_power", "m_dot_l_engine", "Q_e_l", "Q_e_g", "V_l", "V_g",
-                  "T_out_of_range", "m_l_thermal_floored", "m_dot_deficit", "m_dot_avail", "heater_saturated")
+                  "T_out_of_range", "m_l_thermal_floored", "m_dot_deficit", "m_dot_avail", "heater_saturated", "m_dot_return")
 MPA            = 1e6
 EPS4           = 4 * np.finfo(float).eps
 DELTA_T        = 0.1  # K, interface temperature-difference smoothing (as Q_liq_to_int/Q_gas_to_int)
@@ -66,7 +66,8 @@ def cryogenic_tank_rates_tables(tank, R_specific, T_g_lo, T_g_hi, T_l_lo, T_l_hi
                        tank.insulation.material.thermal_conductivity, tank.design_full_liquid_mass,
                        tank.pressure_regulation_time_constant, tank.design_pressure,
                        tank.heater_direct_boiloff_fraction, tank.minimum_operating_pressure,
-                       tank.vent_time_constant if tank.vent_time_constant is not None else tank.pressure_regulation_time_constant], dtype=float)
+                       tank.vent_time_constant if tank.vent_time_constant is not None else tank.pressure_regulation_time_constant,
+                       tank.surface_emissivity], dtype=float)
     return TL, LQ, TV, VQ, PS, liquid["Temperature (K)"], params, geometry
 
 
@@ -135,13 +136,13 @@ def liquid_height(r, l, v):
 
 
 @njit(cache=True)
-def environment_heat_leak(kind, t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, geometry):
+def environment_heat_leak(kind, t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, emissivity, geometry):
     """Heat leak through wall + insulation (solve_heat_leak). Returns (Q, status): status 0 ok, else the
     Python solver's fallback/raise path is needed."""
     if kind == CYLINDER:
-        p = np.array([t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, geometry[4], geometry[5], geometry[6]])
+        p = np.array([t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, emissivity, geometry[4], geometry[5], geometry[6]])
     else:
-        p = np.array([t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, geometry[4], geometry[5], geometry[6], geometry[7]])
+        p = np.array([t_ins, T_env, T_cold, k_mat, k_ins, k_air, nu, alpha, Pr, emissivity, geometry[4], geometry[5], geometry[6], geometry[7]])
     if abs(T_env - T_cold) < 1e-9:
         Te = T_cold
     else:
@@ -197,7 +198,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi   = params[5], params[6], params[7], params[8], params[9], params[10]
     max_heater_power, t_ins, k_mat, k_ins        = params[11], params[12], params[13], params[14]
     m_full, tau, design_pressure, eta_h          = params[15], params[16], params[17], params[18]
-    minimum_pressure                             = params[19]
+    minimum_pressure, emissivity                 = params[19], params[21]
 
     m_g_c = max(m_g, 1e-6)
     m_l_c = max(m_l, 1e-6)
@@ -256,10 +257,10 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     Q_g_i = interface_heat(T_g_c, T_int, A_int, L_int, rho_g, cp_g, mu_g, k_g)
 
     alpha_air = nu_air / Pr_air
-    Q_env_liq, status = environment_heat_leak(kind, t_ins, T_env, T_l_c, k_mat, k_ins, k_air, nu_air, alpha_air, Pr_air, geometry)
+    Q_env_liq, status = environment_heat_leak(kind, t_ins, T_env, T_l_c, k_mat, k_ins, k_air, nu_air, alpha_air, Pr_air, emissivity, geometry)
     if status != 0:
         return rates, diagnostics, status
-    Q_env_gas, status = environment_heat_leak(kind, t_ins, T_env, T_g_c, k_mat, k_ins, k_air, nu_air, alpha_air, Pr_air, geometry)
+    Q_env_gas, status = environment_heat_leak(kind, t_ins, T_env, T_g_c, k_mat, k_ins, k_air, nu_air, alpha_air, Pr_air, emissivity, geometry)
     if status != 0:
         return rates, diagnostics, status
     Q_e_l = n_sides * Q_env_liq * A_wet_frac
@@ -272,12 +273,20 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     m_dot_avail = s_avail**2 * (3 - 2 * s_avail)
     m_dot_bo    = m_dot_bo * m_dot_avail
 
+    # Heater feed-forward below the setpoint: vapor to backfill drawn liquid, less natural boil-off
     gain             = V_g_c / (R_specific * T_g_c * tau)
-    m_dot_heat       = gain * (minimum_pressure - P)
+    s_ff             = 1.0 / (1.0 + np.exp(min(max(100.0 * (P - minimum_pressure) / minimum_pressure, -50.0), 50.0)))
+    m_dot_ff         = rho_g * (m_dot_l_engine * m_dot_avail - m_dot_refuel) / rho_l - m_dot_bo
+    m_dot_heat       = gain * (minimum_pressure - P) + s_ff * m_dot_ff
     m_dot_relief     = V_g_c / (R_specific * T_g_c * params[20]) * (P - design_pressure)
     eps              = 1e-6
     m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
     m_dot_vent       = 0.5 * (m_dot_relief + np.sqrt(m_dot_relief**2 + eps**2))
+    # Refuel vapor return to the ground, holding minimum_pressure
+    m_dot_return     = 0.0
+    if m_dot_refuel > 0.0:
+        m_dot_recover = V_g_c / (R_specific * T_g_c * params[20]) * (P - minimum_pressure)
+        m_dot_return  = 0.5 * (m_dot_recover + np.sqrt(m_dot_recover**2 + eps**2))
 
     heater_power_uncapped = m_dot_heater_boi * (h_g - h_l) / max(eta_h, 1e-9)
     heater_power          = min(heater_power_uncapped, max_heater_power)
@@ -285,7 +294,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     m_dot_bo_final        = m_dot_bo + m_dot_heater_boi
     Q_h_to_liquid         = heater_power * (1 - eta_h)
 
-    dm_g = m_dot_bo_final - m_dot_vent
+    dm_g = m_dot_bo_final - m_dot_vent - m_dot_return
     m_dot_deficit  = m_dot_l_engine * (1 - m_dot_avail)
     m_dot_l_engine = m_dot_l_engine * m_dot_avail
     dm_l = -m_dot_bo_final - m_dot_l_engine + m_dot_refuel
@@ -338,6 +347,7 @@ def cryogenic_tank_rates(t_i, y, t, inputs, TL, LQ, TV, VQ, PS, TS, params, geom
     diagnostics[11] = m_dot_deficit
     diagnostics[12] = m_dot_avail
     diagnostics[13] = 1.0 if heater_power_uncapped > max_heater_power else 0.0
+    diagnostics[14] = m_dot_return
     return rates, diagnostics, 0
 
 
