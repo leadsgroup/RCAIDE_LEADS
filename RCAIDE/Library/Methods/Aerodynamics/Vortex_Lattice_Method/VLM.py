@@ -83,7 +83,6 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     settings.number_of_chordwise_vortices      [Unitless]
 
     settings.use_surrogate                     [Unitless]
-    settings.propeller_wake_model              [Unitless]
     settings.use_VORLAX_matrix_calculation     [boolean]
     settings.floating_point_precision          [float16/32/64]
     induced_velocity_cache                     [dict], optional; reuses C_mn across calls with the same geometry and Mach
@@ -157,7 +156,6 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     settings.vortex_distribution.Y_SW                     = VD.Y_SW
 
     # unpack conditions--------------------------------------------------------------
-    pwm      = settings.propeller_wake_model
     K_SPC    = settings.leading_edge_suction_multiplier
     aoa      = conditions.aerodynamics.angles.alpha
     mach     = conditions.freestream.mach_number
@@ -208,7 +206,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     delta = np.arctan((VD.ZC - VD.ZCH)/((VD.XC - VD.XCH))) # mean camber surface angle
 
     # Build the RHS vector
-    rhs     = compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,pwm)
+    rhs     = compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry)
     RHS     = rhs.RHS*1 # this matches numpy=1.26 in terms of dimension
     ONSET   = rhs.ONSET*1
 

@@ -1,6 +1,6 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Rotor/compute_rotor_wake_induced_velocity.py
 # 
-# Created:  Oct 2026, M. Clarke
+# Created:  Oct 2026, M. Clarke, H. Hussien
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT

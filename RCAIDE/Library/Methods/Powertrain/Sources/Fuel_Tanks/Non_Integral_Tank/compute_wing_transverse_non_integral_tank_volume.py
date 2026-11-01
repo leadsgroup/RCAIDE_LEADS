@@ -23,6 +23,8 @@ import os
 # ----------------------------------------------------------------------------------------------------------------------
 #  Methods to compute volume of non integrak tanks
 # ----------------------------------------------------------------------------------------------------------------------  
+MINIMUM_TANK_DIAMETER = 0.25   # m; smaller aft tanks are dropped rather than sized
+
 def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
     """
     Computes the volume of an aft fuel tank for a Blended Wing Body (BWB) aircraft configuration.
@@ -96,7 +98,7 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
         ]):
         raise ValueError("One or more required aft tank parameters are not set in 'fuel_tank'.")
     if hasattr( wing, 'aft_tank_end_percent'):
-        if  (fuel_tank.transverse_tank_chord_bounds[1] - wing.aft_tank_end_percent - 0.005)*wing.chords.root > 0.25: # Successive Aft Tank diameter needs to be atleast 0.25m
+        if  (fuel_tank.transverse_tank_chord_bounds[1] - wing.aft_tank_end_percent - 0.005)*wing.chords.root > MINIMUM_TANK_DIAMETER: # successive aft tank must fit at least the minimum diameter
             fuel_tank.transverse_tank_chord_bounds[0] = wing.aft_tank_end_percent + 0.005
         else:
             print(f"[WARNING] Tank '{fuel_tank.tag}' cannot not fit in the space. Removing from list.")
@@ -160,6 +162,12 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
                 x_points_lower = segment_chord * geometry.x_lower_surface
                 y_points_upper = segment_chord * geometry.y_upper_surface
                 y_points_lower = segment_chord * geometry.y_lower_surface
+                # apply the section twist about its leading edge, as the wing surface does (generate_3d_wing_points)
+                twist          = segment.twist
+                x_points_upper, y_points_upper = (x_points_upper * np.cos(twist) + y_points_upper * np.sin(twist),
+                                                  -x_points_upper * np.sin(twist) + y_points_upper * np.cos(twist))
+                x_points_lower, y_points_lower = (x_points_lower * np.cos(twist) + y_points_lower * np.sin(twist),
+                                                  -x_points_lower * np.sin(twist) + y_points_lower * np.cos(twist))
                 # position points correct using segment origin (this is based on sweep and dihedral)
                 x_points_upper_positioned = x_points_upper + wing_segment_origins[seg_i][0]
                 x_points_lower_positioned = x_points_lower + wing_segment_origins[seg_i][0]
@@ -246,6 +254,10 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
     max_volume = np.max(tank_volumes)
     max_idx    = np.argmax(tank_volumes)
     radius_opt = tank_radii[max_idx]
+    if 2 * radius_opt < MINIMUM_TANK_DIAMETER:
+        print(f"[WARNING] Tank '{fuel_tank.tag}' cannot not fit in the space. Removing from list.")
+        fuel_tanks.pop(fuel_tank.tag)
+        return
     length_opt = tank_lengths[max_idx]
 
     # lengths.external is total tip-to-tip (cylinder + two hemispheres)

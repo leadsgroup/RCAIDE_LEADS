@@ -8,6 +8,7 @@ from RCAIDE.Input_Output import load as load_results
 from RCAIDE.Input_Output import save as save_results
 from RCAIDE.Library.Methods.Geometry.LOPA import compute_layout_of_passenger_accommodations
 from RCAIDE.Library.Methods.Geometry.Planform import compute_fuel_volume, wing_planform
+from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties import iterate_max_fuel_and_max_zero_fuel
 import numpy as  np 
 import sys
 import os
@@ -366,6 +367,8 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
                     vehicle.reference_area = wing.areas.reference 
             compute_fuel_volume(vehicle, compute_fuel_volume=True)
             weight_analysis.settings.FLOPS.fidelity   = 'Simple' if FLOPS_number == 0 else 'Complex'
+            # max zero fuel mass from the same iteration the mission Pre_Process runs
+            iterate_max_fuel_and_max_zero_fuel(Data(vehicle = vehicle, weights = weight_analysis))
             weight                   = weight_analysis.evaluate(vehicle)
             plot_weight_breakdown(vehicle, show_figure = show_figure) 
 
@@ -419,6 +422,9 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
             else:
                 add_systems_no_weights(vehicle)
 
+            # max zero fuel mass from the same iteration the mission Pre_Process runs
+            compute_fuel_volume(vehicle)
+            iterate_max_fuel_and_max_zero_fuel(Data(vehicle = vehicle, weights = weight_analysis))
             weight                   = weight_analysis.evaluate(vehicle)
             plot_weight_breakdown(vehicle, show_figure = show_figure) 
 

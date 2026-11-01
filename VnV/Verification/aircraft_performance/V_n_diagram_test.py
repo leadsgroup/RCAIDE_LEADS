@@ -30,10 +30,10 @@ from Boeing_737 import configs_setup  as Transport_configs_setup
 def main():
     ti = time.time()
 
-    test_part_23_normal()
-    test_part_23_utility()
-    test_part_23_acrobatic()
-    test_part_25()
+    check_part_23_normal()
+    check_part_23_utility()
+    check_part_23_acrobatic()
+    check_part_25()
 
     elapsed_time = time.time() - ti
     print(f'\nElapsed time (min): {elapsed_time / 60:.4f}')
@@ -87,7 +87,7 @@ def TR_base_analysis(vehicle):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_part_23_normal():
+def check_part_23_normal():
     """FAR Part 23 normal category — positive gust at Va exceeds structural limit,
     triggering the Vb intersection branch and extended stall line."""
     print('\n--- FAR Part 23 normal category (Cessna 172) ---')
@@ -127,7 +127,7 @@ def test_part_23_normal():
     print('  PASSED')
 
 
-def test_part_23_utility():
+def check_part_23_utility():
     """FAR Part 23 utility category — positive limit enforced to minimum 4.4 g,
     negative limit = -0.4 * positive. Dive speed scaled by 1.5."""
     print('\n--- FAR Part 23 utility category ---')
@@ -170,7 +170,7 @@ def test_part_23_utility():
     print('  PASSED')
 
 
-def test_part_23_acrobatic():
+def check_part_23_acrobatic():
     """FAR Part 23 acrobatic category — positive limit enforced to minimum 6.0 g,
     negative limit = -0.5 * positive. Special gust intersection formula applies."""
     print('\n--- FAR Part 23 acrobatic category ---')
@@ -213,7 +213,7 @@ def test_part_23_acrobatic():
     print('  PASSED')
 
 
-def test_part_25():
+def check_part_25():
     """FAR Part 25 transport category (Boeing 737) — load limits follow
     the 2.1 + 24000/(W+10000) formula, capped at 3.8."""
     print('\n--- FAR Part 25 transport category (Boeing 737) ---')

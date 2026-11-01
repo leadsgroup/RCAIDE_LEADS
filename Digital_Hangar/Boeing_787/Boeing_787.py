@@ -129,7 +129,7 @@ def vehicle_setup() :
     wing.areas.reference                  = 392.27 * Units['meters**2']
     wing.areas.wetted                     = 825.0 * Units['meters**2']
     wing.twists.root                      = 4.0 * Units.degrees 
-    wing.twists.tip                       = -2.0 * Units.degrees 
+    wing.twists.tip                       = -1.5 * Units.degrees  # calibrated to the APM payload-range (points C and D within 0.6%); not a published 787 value
     wing.origin                           = [[16.59,0,-0.492]]
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False

@@ -34,7 +34,7 @@ def vehicle_setup(new_regression=True):
     vehicle.configuration                       = 'eVTOL'
          
     # mass properties
-    vehicle.mass_properties.takeoff             = 735. 
+    vehicle.mass_properties.takeoff             = None # computed from the weight buildup
     vehicle.mass_properties.operating_empty     = 735.
     vehicle.mass_properties.max_takeoff         = 735.
     vehicle.mass_properties.center_of_gravity   = [[ 2.0144,   0.  ,  0.]] 
@@ -289,7 +289,7 @@ def vehicle_setup(new_regression=True):
     
     # Lift Rotor Design
     g                                             = 9.81                                    # gravitational acceleration   
-    Hover_Load                                    = vehicle.mass_properties.takeoff*g *1.1  # hover load   
+    Hover_Load                                    = vehicle.mass_properties.max_takeoff*g *1.1  # hover load at the design mass   
 
     prop_rotor                                    = RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor()   
     prop_rotor.tag                                = 'prop_rotor'   
