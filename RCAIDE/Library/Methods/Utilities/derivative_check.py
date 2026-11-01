@@ -47,9 +47,13 @@ def check_derivatives(kernel, inputs, steps=(1e-4, 1e-5, 1e-6), n_directions=3, 
     Notes
     -----
     Derivatives come from ``torch.func.jvp`` and ``torch.func.vjp``; finite differences use the NumPy path, so a
-    kernel whose Torch path detaches or diverges from the NumPy path is caught.
+    kernel whose Torch path detaches or diverges from the NumPy path is caught. Requires the optional ``ad``
+    dependencies (``pip install RCAIDE[ad]``).
     """
-    import torch
+    try:
+        import torch
+    except ImportError as error:  # pragma: no cover -- torch is optional (RCAIDE[ad]) and CI installs it
+        raise ImportError("check_derivatives needs torch: pip install RCAIDE[ad]") from error
 
     rng      = np.random.default_rng(seed)
     x_np     = tuple(np.asarray(x, dtype=np.float64) for x in inputs)

@@ -6,7 +6,9 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
-import torch
+import pytest
+
+torch = pytest.importorskip("torch")   # optional dependency (RCAIDE[ad]); CI installs it, so these run there
 
 from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
 
