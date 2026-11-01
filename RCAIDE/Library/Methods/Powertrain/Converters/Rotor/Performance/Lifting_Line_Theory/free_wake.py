@@ -30,7 +30,7 @@
 import numpy as np
 from concurrent.futures                import ThreadPoolExecutor
 from RCAIDE.Framework.Core            import Data, orientation_transpose
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_induced_velocity, initialize_wake_geometry, initialize_lifting_line
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_induced_velocity_soa, initialize_wake_geometry, initialize_lifting_line
 
 def free_wake(rotor, wake_inputs, conditions):
     """Relaxes the wake of every rotor whose wake_inputs.free_wake is True (default True), with
@@ -112,33 +112,56 @@ def free_wake(rotor, wake_inputs, conditions):
 
         def _compute_one(i, cp, j):
             gi = G[i]
-            P  = field_grids[i][cp, :, j, :, :].reshape(gi.B*(gi.N_wake+1), 3)
-            v_sum = np.zeros((gi.B*(gi.N_wake+1), 3))
+            M  = gi.B*(gi.N_wake+1)
+            # P is the same field-point set for every rotor s and for both the wake and blade
+            # contribution below -- split to contiguous SoA components once per task instead of
+            # inside biot_savart_induced_velocity on every one of the 2*n_rot calls that used to
+            # happen per task (was the single largest GIL-held, un-parallelizable cost left after
+            # the Biot-Savart kernels themselves were made nogil -- see commit ee5e13a3e3 and the
+            # real-mission cProfile it was based on).
+            P_xyz = field_grids[i][cp, :, j, :, :].reshape(M, 3)
+            Px = np.ascontiguousarray(P_xyz[:, 0])
+            Py = np.ascontiguousarray(P_xyz[:, 1])
+            Pz = np.ascontiguousarray(P_xyz[:, 2])
+            sumx = np.zeros(M); sumy = np.zeros(M); sumz = np.zeros(M)
             for s, gs in enumerate(G):
                 k = colmap[i][s][j]
                 wake_s    = wake_src[i][s][cp, :, k, :, :]
                 r_w_start = wake_s[:, :-1, :].reshape(gs.B*gs.N_wake, 3)
                 r_w_end   = wake_s[:,  1:, :].reshape(gs.B*gs.N_wake, 3)
-                # Fused Biot-Savart + contraction (skips materializing the (M,N,3) influence
-                # tensor and its separate einsum pass) -- bit-identical to
-                # biot_savart_velocity_induction(...)+einsum on this call's actual array shapes
-                # and every vc_correction in {1,2,3,4}, verified in
-                # scratchpad/verify_biot_savart_fused.py (2026-10-29). Gamma is already known
-                # here (unlike evaluate_bound_vortex_circulation.py's K_wake, which is reused
-                # across many different Gamma_b guesses in its inner loop and must stay a
-                # cached tensor), so there is nothing lost by contracting directly.
-                v_wake = biot_savart_induced_velocity(
-                    P, r_w_start, r_w_end, gs.Gamma_w_flat[cp], gs.rcvf_flat[cp], gs.vc_correction)
+                # Fused Biot-Savart + contraction, SoA entry point (skips materializing the
+                # (M,N,3) influence tensor, its separate einsum pass, AND the (M,3) stack this
+                # function's non-SoA sibling would otherwise do on every call) -- bit-identical
+                # to biot_savart_velocity_induction(...)+einsum on this call's actual array
+                # shapes and every vc_correction in {1,2,3,4}, verified in
+                # scratchpad/verify_biot_savart_fused.py (2026-10-29) and
+                # scratchpad/verify_soa_refactor.py (2026-11-01). Gamma is already known here
+                # (unlike evaluate_bound_vortex_circulation.py's K_wake, which is reused across
+                # many different Gamma_b guesses in its inner loop and must stay a cached
+                # tensor), so there is nothing lost by contracting directly.
+                wx, wy, wz = biot_savart_induced_velocity_soa(
+                    Px, Py, Pz,
+                    np.ascontiguousarray(r_w_start[:, 0]), np.ascontiguousarray(r_w_start[:, 1]), np.ascontiguousarray(r_w_start[:, 2]),
+                    np.ascontiguousarray(r_w_end[:, 0]),   np.ascontiguousarray(r_w_end[:, 1]),   np.ascontiguousarray(r_w_end[:, 2]),
+                    gs.Gamma_w_flat[cp], gs.rcvf_flat[cp], gs.vc_correction)
 
                 A_s, B_s = blade_src[i][s]
                 A_blade  = A_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
                 B_blade  = B_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
-                v_blade = biot_savart_induced_velocity(
-                    P, A_blade, B_blade, gs.Gamma_b_flat[cp], gs.rcb_flat[cp], gs.vc_correction)
+                bx, by, bz = biot_savart_induced_velocity_soa(
+                    Px, Py, Pz,
+                    np.ascontiguousarray(A_blade[:, 0]), np.ascontiguousarray(A_blade[:, 1]), np.ascontiguousarray(A_blade[:, 2]),
+                    np.ascontiguousarray(B_blade[:, 0]), np.ascontiguousarray(B_blade[:, 1]), np.ascontiguousarray(B_blade[:, 2]),
+                    gs.Gamma_b_flat[cp], gs.rcb_flat[cp], gs.vc_correction)
 
-                v_s = v_blade + v_wake
-                v_sum += -v_s if gs.CW[cp] else v_s
-            V_ind[i][cp, :, j, :, :] = v_sum.reshape(gi.B, gi.N_wake+1, 3)
+                vx = bx + wx; vy = by + wy; vz = bz + wz
+                if gs.CW[cp]:
+                    sumx -= vx; sumy -= vy; sumz -= vz
+                else:
+                    sumx += vx; sumy += vy; sumz += vz
+            V_ind[i][cp, :, j, :, 0] = sumx.reshape(gi.B, gi.N_wake+1)
+            V_ind[i][cp, :, j, :, 1] = sumy.reshape(gi.B, gi.N_wake+1)
+            V_ind[i][cp, :, j, :, 2] = sumz.reshape(gi.B, gi.N_wake+1)
 
         tasks = [(i, cp, j) for i in free_idx for cp in range(ctrl_pts) for j in range(G[i].J)]
         list(_executor.map(lambda t: _compute_one(*t), tasks))
