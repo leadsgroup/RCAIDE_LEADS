@@ -247,15 +247,14 @@ def check_trim_dispatch(vehicle):
     segment.assigned_control_variables.aileron_deflection.active  = True
     segment.assigned_control_variables.rudder_deflection.active   = True
 
-    segment.state = Data()
-    segment.state.unknowns = Data()
+    segment.state = RCAIDE.Framework.Mission.Common.State()
     segment.state.unknowns.mission = {
         'elevator': np.array([[3.0 * Units.deg]]),
         'aileron':  np.array([[2.0 * Units.deg]]),
         'rudder':   np.array([[4.0 * Units.deg]]),
     }
     segment.state.conditions = RCAIDE.Framework.Mission.Common.Results()
-    segment.state.conditions.expand_rows(1, override=False)
+    segment.state.expand_rows(1, override=False)
 
     unpack_control_surfaces(segment)
 

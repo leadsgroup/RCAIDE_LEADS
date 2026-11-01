@@ -727,20 +727,20 @@ class Data(dict):
                 elif rank == 1:
                     n = len(v)
                     if vector:
-                        D[k][:] = M[index:(index+n)]
+                        D[k] = M[index:(index+n)].copy()
                         index += n
                     else:#array
-                        D[k][:] = M[:,index]
+                        D[k] = M[:,index].copy()
                         index += 1
                     
                 # 2d arrays
                 elif rank == 2:
                     n,m = v.shape
                     if vector:
-                        D[k][:,:] = np.reshape( M[index:(index+(n*m))] ,[n,m], order='F')
+                        D[k] = np.reshape( M[index:(index+(n*m))] ,[n,m], order='F').copy()
                         index += n*m 
                     else:#array
-                        D[k][:,:] = M[:,index:(index+m)]
+                        D[k] = M[:,index:(index+m)].copy()
                         index += m
                 
                 #: switch rank
