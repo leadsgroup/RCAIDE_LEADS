@@ -319,6 +319,8 @@ class Network(Component):
                     total_mdot -= source_conditions.refuel_mass_flow_rate
                 if 'vent_rate' in source_conditions:
                     total_mdot += source_conditions.vent_rate
+                if 'refuel_return_rate' in source_conditions:
+                    total_mdot += source_conditions.refuel_return_rate
 
                 if source.assigned_distributors != None:
                     for distributor_tag in source.assigned_distributors[0]:

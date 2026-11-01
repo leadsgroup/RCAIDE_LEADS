@@ -22,7 +22,7 @@ CUBOID   = 1
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Tank Environmental Heat Leak
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_cryogenic_tank_heat_leak(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li):
+def compute_cryogenic_tank_heat_leak(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, emissivity, ro, ri, li):
     """
     Heat leak through a rounded-end cylindrical tank's structural wall + insulation,
     from natural convection/radiation at the outer surface balanced against conduction
@@ -48,6 +48,8 @@ def compute_cryogenic_tank_heat_leak(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_a
     k_air, nu, alpha_th, Pr : float
         Ambient air thermal conductivity [W/m-K], kinematic viscosity [m^2/s],
         thermal diffusivity [m^2/s], and Prandtl number.
+    emissivity : float
+        Insulation outer-surface emissivity [-].
     ro, ri, li : float
         Structural wall outer radius, inner radius, and inner cylindrical length [m].
 
@@ -65,7 +67,7 @@ def compute_cryogenic_tank_heat_leak(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_a
     * Conduction uses concentric-cylinder and concentric-sphere resistance networks
       through the structural wall and insulation layer.
     """
-    return solve_heat_leak(CYLINDER, (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li))
+    return solve_heat_leak(CYLINDER, (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, emissivity, ro, ri, li))
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -81,7 +83,7 @@ def compute_cryogenic_tank_heat_leak(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_a
 # ----------------------------------------------------------------------------------------------------------------------
 @njit(cache=True)
 def heat_balance_residual_cylinder(Te, p):
-    t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, ro, ri, li = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11]
+    t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, emissivity, ro, ri, li = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12]
     g     = 9.81
     D_out = 2 * (ro + t_ins)                                          # outer diameter including insulation
     Ra    = (g / Ta) * (Ta - Te) * D_out**3 / (alpha_th * nu)         # Rayleigh number
@@ -91,7 +93,7 @@ def heat_balance_residual_cylinder(Te, p):
     h_cyl  = Nu_cyl * k_air / D_out
     A_cyl  = np.pi * D_out * li                                       # lateral surface area
     Qv_cyl = h_cyl * A_cyl * (Ta - Te)                                # convective heat gain
-    Qr_cyl = STEFAN_BOLTZMANN * 0.03 * A_cyl * (Ta**4 - Te**4)      # radiative heat gain (emissivity = 0.03)
+    Qr_cyl = STEFAN_BOLTZMANN * emissivity * A_cyl * (Ta**4 - Te**4)  # radiative heat gain
     Qc_cyl = (Te - Ti) / (np.log(ro / ri)         / (2 * np.pi * li * k_mat) +       # conduction: structural wall
                            np.log((ro + t_ins) / ro) / (2 * np.pi * li * k_ins_mat))  # conduction: insulation layer
 
@@ -100,7 +102,7 @@ def heat_balance_residual_cylinder(Te, p):
     h_sph  = Nu_sph * k_air / D_out
     A_sph  = np.pi * D_out**2                                         # surface area of full sphere
     Qv_sph = h_sph * A_sph * (Ta - Te)
-    Qr_sph = STEFAN_BOLTZMANN * 0.03 * A_sph * (Ta**4 - Te**4)
+    Qr_sph = STEFAN_BOLTZMANN * emissivity * A_sph * (Ta**4 - Te**4)
     Qc_sph = (Te - Ti) / ((ro - ri) / (4 * np.pi * k_mat * ri * ro) +                # conduction: structural wall
                            t_ins     / (4 * np.pi * k_ins_mat * ro * (ro + t_ins)))    # conduction: insulation layer
 
@@ -113,7 +115,7 @@ def heat_balance_residual_cylinder(Te, p):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Tank Environmental Heat Leak (Prismatic/Cuboid)
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_cryogenic_tank_heat_leak_cuboid(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th):
+def compute_cryogenic_tank_heat_leak_cuboid(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, emissivity, l_o, w_o, h_o, th):
     """
     Heat leak through a prismatic (cuboid) tank's structural wall + insulation,
     from natural convection/radiation at the six outer faces balanced against
@@ -142,6 +144,8 @@ def compute_cryogenic_tank_heat_leak_cuboid(t_ins, T_env, T_cold, k_mat, k_ins_m
     k_air, nu, alpha_th, Pr : float
         Ambient air thermal conductivity [W/m-K], kinematic viscosity [m^2/s],
         thermal diffusivity [m^2/s], and Prandtl number.
+    emissivity : float
+        Insulation outer-surface emissivity [-].
     l_o, w_o, h_o : float
         Structural wall outer length, width, height [m] (pre-insulation).
     th : float
@@ -166,7 +170,7 @@ def compute_cryogenic_tank_heat_leak_cuboid(t_ins, T_env, T_cold, k_mat, k_ins_m
     * Conduction uses a single planar wall/insulation resistance network,
       referenced to the structural (pre-insulation) outer surface area.
     """
-    return solve_heat_leak(CUBOID, (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th))
+    return solve_heat_leak(CUBOID, (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, emissivity, l_o, w_o, h_o, th))
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -174,7 +178,7 @@ def compute_cryogenic_tank_heat_leak_cuboid(t_ins, T_env, T_cold, k_mat, k_ins_m
 # ----------------------------------------------------------------------------------------------------------------------
 @njit(cache=True)
 def heat_balance_residual_cuboid(Te, p):
-    t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12]
+    t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, emissivity, l_o, w_o, h_o, th = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12], p[13]
     g    = 9.81
     l_oo = l_o + 2 * t_ins
     w_oo = w_o + 2 * t_ins
@@ -186,7 +190,7 @@ def heat_balance_residual_cuboid(Te, p):
     h_v     = Nu_v * k_air / h_oo
     A_side  = 2 * l_oo * h_oo + 2 * w_oo * h_oo
     Qv_side = h_v * A_side * (Ta - Te)
-    Qr_side = STEFAN_BOLTZMANN * 0.03 * A_side * (Ta**4 - Te**4)
+    Qr_side = STEFAN_BOLTZMANN * emissivity * A_side * (Ta**4 - Te**4)
 
     # ---- Horizontal top/bottom faces ----
     A_horiz = l_oo * w_oo
@@ -198,14 +202,14 @@ def heat_balance_residual_cuboid(Te, p):
     Nu_bot  = 0.54 * Ra_h**(1 / 4) if Ra_h <= 1e7 else 0.15 * Ra_h**(1 / 3)
     h_bot   = Nu_bot * k_air / L_c
     Qv_bot  = h_bot * A_horiz * (Ta - Te)
-    Qr_bot  = STEFAN_BOLTZMANN * 0.03 * A_horiz * (Ta**4 - Te**4)
+    Qr_bot  = STEFAN_BOLTZMANN * emissivity * A_horiz * (Ta**4 - Te**4)
 
     # Top face: cold surface facing up (stably stratified, same correlation
     # family as a hot plate facing down)
     Nu_top  = 0.27 * Ra_h**(1 / 4)
     h_top   = Nu_top * k_air / L_c
     Qv_top  = h_top * A_horiz * (Ta - Te)
-    Qr_top  = STEFAN_BOLTZMANN * 0.03 * A_horiz * (Ta**4 - Te**4)
+    Qr_top  = STEFAN_BOLTZMANN * emissivity * A_horiz * (Ta**4 - Te**4)
 
     # ---- Conduction through wall + insulation (planar, area-referenced to
     #      the structural outer surface) ----

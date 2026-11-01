@@ -53,27 +53,27 @@ def build_state(n_nodes, duration, chemical_power_demand, cruise_altitude):
     state._size = n_nodes
 
     x, D, I = chebyshev_data(n_nodes, integration=True)
-    state.numerics.time.differentiate = D / duration
-    state.numerics.time.integrate      = I * duration
-    state.numerics.time.control_points = x * duration
+    state.numerics.time.differentiate         = D / duration
+    state.numerics.time.integrate             = I * duration
+    state.numerics.time.control_points        = x * duration
 
     state.conditions.weights                  = Conditions()
     state.conditions.weights.components       = Conditions()
     state.conditions.weights.components.mass  = Conditions()
 
-    state.conditions.energy               = Conditions()
-    state.conditions.energy.sources       = Conditions()
-    state.conditions.energy.distributors  = Conditions()
-    state.conditions.energy.distributors['fuel_line'] = Conditions()
-    state.conditions.energy.distributors['fuel_line'].outputs = Conditions()
+    state.conditions.energy                                         = Conditions()
+    state.conditions.energy.sources                                 = Conditions()
+    state.conditions.energy.distributors                            = Conditions()
+    state.conditions.energy.distributors['fuel_line']               = Conditions()
+    state.conditions.energy.distributors['fuel_line'].outputs       = Conditions()
     state.conditions.energy.distributors['fuel_line'].outputs.power = Conditions()
     state.conditions.energy.distributors['fuel_line'].outputs.power.chemical = chemical_power_demand * state.ones_row(1)
 
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data  = atmosphere.compute_values(cruise_altitude)
-    state.conditions.freestream = Conditions()
-    state.conditions.freestream.temperature           = float(np.ravel(atmo_data.temperature)[0])           * state.ones_row(1)
-    state.conditions.freestream.kinematic_viscosity    = float(np.ravel(atmo_data.kinematic_viscosity)[0])    * state.ones_row(1)
+    state.conditions.freestream                         = Conditions()
+    state.conditions.freestream.temperature             = float(np.ravel(atmo_data.temperature)[0])           * state.ones_row(1)
+    state.conditions.freestream.kinematic_viscosity     = float(np.ravel(atmo_data.kinematic_viscosity)[0])    * state.ones_row(1)
     state.conditions.freestream.prandtl_number          = float(np.ravel(atmo_data.prandtl_number)[0])          * state.ones_row(1)
     state.conditions.freestream.thermal_conductivity    = float(np.ravel(atmo_data.thermal_conductivity)[0])    * state.ones_row(1)
 

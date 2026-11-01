@@ -6,6 +6,7 @@
 #  IMPORTS
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
+import warnings
 from scipy.optimize import brentq
 from scipy.integrate import solve_ivp
 
@@ -28,7 +29,7 @@ SOLVED_FIELDS = ('ullage_mass', 'fuel_mass', 'ullage_volume', 'fuel_volume', 'ul
                  'pressure', 'vent_rate', 'boil_off_flow_rate', 'heater_power', 'refuel_mass_flow_rate',
                  'environmental_heat_leak_liquid', 'environmental_heat_leak_ullage', 'temperature_out_of_range',
                  'liquid_thermal_floor_active', 'fuel_deficit_rate', 'liquid_availability_gate',
-                 'heater_saturated', 'refuel_volume_capped', 'mass_flow_rate')
+                 'heater_saturated', 'refuel_volume_capped', 'mass_flow_rate', 'refuel_return_rate')
 
 def store_tank_solve(tank_conditions, cache_key, result):
     """Caches a tank solve together with every condition array it wrote."""
@@ -107,16 +108,21 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-
         restore_tank_solve(tank_conditions, cached[2])
         return cached[1]
 
-    # Heater cap: Heater.design_power when set, else sized to the takeoff pressurant demand, else 10x design heat leak
+    # Heater cap: Heater.design_power when set, else sized to the takeoff pressurant demand, else a multiple of design heat leak
     max_heater_power = compute_cryogenic_tank_heater_design_power(tank, network) if network is not None else None
+    heater_sized     = max_heater_power is not None
     if max_heater_power is None:
-        max_heater_power = 10.0 * tank.design_total_heat_transfer
+        max_heater_power = tank.heater_heat_leak_power_ratio * tank.design_total_heat_transfer
     if network is not None:
         for converter in getattr(network, 'converters', []):
             if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) and \
                getattr(converter, 'assigned_tank', None) == tag and converter.design_power is not None:
                 max_heater_power = converter.design_power
+                heater_sized     = True
                 break
+        if not heater_sized:
+            warnings.warn(f"Cryogenic tank '{tag}': no propulsor on its fuel line reports sealevel_static_chemical_power; "
+                          f"heater capped at heater_heat_leak_power_ratio x the design heat leak. Set Heater.design_power to size it.")
 
     if t.size < 2:
         m_g0, m_l0, T_g0, T_l0 = (np.array([v]) for v in y0)
@@ -132,7 +138,8 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-
         tank_conditions.vent_rate[:,0]          = diag['m_dot_vent']
         tank_conditions.boil_off_flow_rate[:,0] = diag['m_dot_bo_final']
         tank_conditions.heater_power[:,0]       = diag['heater_power']
-        tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] - refuel_pts
+        tank_conditions.refuel_return_rate[:,0]     = diag['m_dot_return']
+        tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] + diag['m_dot_return'] - refuel_pts
         tank_conditions.outputs.power.chemical[:,0] = diag['m_dot_l_engine'] * fuel.lower_heating_value
         tank_conditions.environmental_heat_leak_liquid[:,0] = diag['Q_e_l']
         tank_conditions.environmental_heat_leak_ullage[:,0] = diag['Q_e_g']
@@ -292,8 +299,10 @@ def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-8, atol=1e-
     tank_conditions.heater_saturated[:,0]               = diag['heater_saturated']
     tank_conditions.refuel_volume_capped[:,0]           = float(volume_capped)
 
-    # Net mass leaving the tank system (engine offtake + vented boil-off - refuel inflow)
-    tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] - refuel_pts_eff
+    tank_conditions.refuel_return_rate[:,0]             = diag['m_dot_return']
+
+    # Net mass leaving the tank system (engine offtake + vented boil-off + refuel vapor return - refuel inflow)
+    tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent'] + diag['m_dot_return'] - refuel_pts_eff
     tank_conditions.outputs.power.chemical[:,0] = diag['m_dot_l_engine'] * fuel.lower_heating_value
 
     stored_results_flag = True
@@ -398,9 +407,9 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
         li = scalar(tank.inner_structure.lengths.internal)
         for i in range(n_nodes):
             _, Q_env_liq[i] = compute_cryogenic_tank_heat_leak(
-                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], ro, ri, li)
+                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], tank.surface_emissivity, ro, ri, li)
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak(
-                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], ro, ri, li)
+                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], tank.surface_emissivity, ro, ri, li)
     else:
         # Conformal/prismatic tanks: same heat-leak model, using flat-plate
         # free-convection correlations per face instead of cylinder/sphere ones.
@@ -410,9 +419,9 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
         th  = scalar(tank.inner_structure.thickness)
         for i in range(n_nodes):
             _, Q_env_liq[i] = compute_cryogenic_tank_heat_leak_cuboid(
-                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], l_o, w_o, h_o, th)
+                t_ins_s, T_env_l[i], T_l_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], tank.surface_emissivity, l_o, w_o, h_o, th)
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak_cuboid(
-                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], l_o, w_o, h_o, th)
+                t_ins_s, T_env_l[i], T_g_l[i], k_mat_s, k_ins_s, k_air_l[i], nu_l[i], alpha_l[i], Pr_l[i], tank.surface_emissivity, l_o, w_o, h_o, th)
 
     Q_e_l = n_sides * Q_env_liq * A_wet_frac
     Q_e_g = n_sides * Q_env_gas * (1 - A_wet_frac)
@@ -434,12 +443,20 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     # Each flow is a finite-gain law with response time tau, smoothed so the mission Jacobian stays continuous.
     tau              = tank.pressure_regulation_time_constant
     tau_vent         = tank.vent_time_constant if tank.vent_time_constant is not None else tau
+    # Heater feed-forward below the setpoint: vapor to backfill drawn liquid, less natural boil-off
+    P_min            = tank.minimum_operating_pressure
     gain             = V_g_c / (R_specific * T_g_c * tau)
-    m_dot_heat       = gain * (tank.minimum_operating_pressure - P)
+    s_ff             = 1.0 / (1.0 + np.exp(np.clip(100.0 * (P - P_min) / P_min, -50.0, 50.0)))
+    m_dot_ff         = rho_g * (m_dot_l_engine * m_dot_avail - m_dot_refuel) / rho_l - m_dot_bo
+    m_dot_heat       = gain * (P_min - P) + s_ff * m_dot_ff
     m_dot_relief     = V_g_c / (R_specific * T_g_c * tau_vent) * (P - tank.design_pressure)
     eps              = 1e-6  # kg/s, smoothing width
     m_dot_heater_boi = 0.5 * (m_dot_heat + np.sqrt(m_dot_heat**2 + eps**2)) * m_dot_avail
     m_dot_vent       = 0.5 * (m_dot_relief + np.sqrt(m_dot_relief**2 + eps**2))
+
+    # Refuel vapor return to the ground, holding minimum_operating_pressure (Mangold et al. 2022, Sec. 2.4.1)
+    m_dot_recover = V_g_c / (R_specific * T_g_c * tau_vent) * (P - tank.minimum_operating_pressure)
+    m_dot_return  = np.where(m_dot_refuel > 0.0, 0.5 * (m_dot_recover + np.sqrt(m_dot_recover**2 + eps**2)), 0.0)
 
     # Heater power split, Adler & Martins (2025) Eqs. 13, 17 and 24: a fraction eta_h of heater power boils
     # liquid at the interface and the rest warms the liquid. eta_h = 0 is guarded against division by zero.
@@ -454,7 +471,7 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
     Q_h_to_liquid     = heater_power * (1 - eta_h)
 
     # Mass / volume / energy balances (the ODE right-hand side)
-    dm_g = m_dot_bo_final - m_dot_vent
+    dm_g = m_dot_bo_final - m_dot_vent - m_dot_return
     # Incoming fuel assumed thermally equilibrated with the tank's own bulk
     # liquid, so no separate enthalpy term is needed here.
     m_dot_deficit  = m_dot_l_engine * (1 - m_dot_avail)
@@ -526,7 +543,7 @@ def tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l,
                         # Observability of where a run is leaning on a floor/cap/barrier:
                         T_out_of_range=T_out_of_range, m_l_thermal_floored=m_l_thermal_floored,
                         m_dot_deficit=m_dot_deficit, m_dot_avail=m_dot_avail,
-                        heater_saturated=heater_saturated)
+                        heater_saturated=heater_saturated, m_dot_return=m_dot_return)
     return derivatives, diagnostics
 
 
