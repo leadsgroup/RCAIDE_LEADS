@@ -17,13 +17,16 @@ from RCAIDE.Library.Methods.skip                        import skip
 #  SEGMENT
 # ----------------------------------------------------------------------------------------------------------------------
 class Refuel(Evaluate):
-    """ A stationary ground refueling segment of prescribed duration. Each
-    Cryogenic_Tank fills at ``nominal_fill_rate`` until its fuel_mass reaches
-    ``refuel_target_fill_fraction`` of design_full_liquid_mass, at which point
-    the fill cuts off (mirroring Battery_Recharge's cutoff_SOC) -- it does not
-    just run a fixed rate for a fixed time and hope it lands on target, since
-    ongoing boil-off during the fill would otherwise make it fall short. No
-    flight dynamics.
+    """ A stationary ground refueling segment of prescribed duration. Each fuel tank fills until it reaches
+    its target, then the fill cuts off for the rest of the segment. No flight dynamics.
+
+    Attributes
+    ----------
+    refuel_target_fill_fraction : float or None
+        Target fill as a fraction of the tank's full liquid mass. None refuels to the tank's mission fuel load,
+        which the mass_properties Pre_Process limits to MTOW.
+    nominal_fill_rate : float or None
+        Fill rate [kg/s]. None sizes it to finish within ``time``.
     """
 
     # ------------------------------------------------------------------
@@ -54,8 +57,8 @@ class Refuel(Evaluate):
         # --------------------------------------------------------------
         self.altitude                     = 0.0
         self.time                         = 30.0 * Units.minutes
-        self.refuel_target_fill_fraction  = 1.0
-        self.nominal_fill_rate            = None  # kg/s; None -> sized automatically to comfortably finish within self.time
+        self.refuel_target_fill_fraction  = None
+        self.nominal_fill_rate            = None
         self.true_course                  = 0.0 * Units.degrees
         self.ground_operations            = True
 

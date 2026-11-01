@@ -1,15 +1,18 @@
 # RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/train_VLM_surrogates.py
-#  
+#
+# Created: Aug 2025, M. Clarke
+# Modified: Oct 2026, H. Hussien
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core import  Data
+from RCAIDE.Framework.Core import  Data, Units
 from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
 from copy import deepcopy
 
 # package imports
@@ -148,6 +151,8 @@ def train_model(aerodynamics,Mach, vehicle):
     CN_res           = VLM_results.CN   
 
     training.Clift_spanwise  = VLM_results.sectional_CLift.reshape(len_Mach, len_AoA, np.shape(VLM_results.sectional_CLift)[1]).transpose(1, 0, 2)
+    training.gamma_alpha     = VLM_results.gamma.reshape(len_Mach, len_AoA, np.shape(VLM_results.gamma)[1]).transpose(1, 0, 2)
+    training.VD              = VLM_results.VD
     Clift_alpha              = np.reshape(Clift_res,(len_Mach,len_AoA)).T 
     Cdrag_induced_alpha      = np.reshape(Cdrag_res,(len_Mach,len_AoA)).T 
     CX_alpha                 = np.reshape(CX_res,(len_Mach,len_AoA)).T 
@@ -368,6 +373,10 @@ def train_model(aerodynamics,Mach, vehicle):
                 # reset to 0, not the real deflection, so later surfaces train in isolation
                 setattr(control_surface, deflection_attr, 0)
 
+    # high-lift induced drag at two deflections and two angles of attack (see train_high_lift_induced_drag)
+    if has_control_surfaces:
+        training.update(train_high_lift_induced_drag(settings, vehicle, Mach, VLM_ref.CDrag_induced[:,0]))
+
     # restore real deflections now that training is done
     for wing in vehicle.wings:
         for control_surface in wing.control_surfaces:
@@ -409,6 +418,9 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     # --------------------------------------------------------------------------------------------------------------  
     Clift_alpha           =  np.concatenate((training_subsonic.Clift_alpha[:,-1][:,None] , training_supersonic.Clift_alpha[:,0][:,None] ), axis = 1)
     Clift_spanwise        =np.concatenate((training_subsonic.Clift_spanwise[:,-1][:,None] , training_supersonic.Clift_spanwise[:,0][:,None] ), axis = 1)
+    if 'gamma_alpha' in training_subsonic and 'gamma_alpha' in training_supersonic:
+        training.gamma_alpha = np.concatenate((training_subsonic.gamma_alpha[:,-1][:,None], training_supersonic.gamma_alpha[:,0][:,None]), axis = 1)
+        training.VD          = training_subsonic.VD
     Cdrag_induced_alpha   =  np.concatenate((training_subsonic.Cdrag_induced_alpha[:,-1][:,None]  , training_supersonic.Cdrag_induced_alpha[:,0][:,None] ), axis = 1) 
     CX_alpha              =  np.concatenate((training_subsonic.CX_alpha[:,-1][:,None]    , training_supersonic.CX_alpha[:,0][:,None] ), axis = 1)   
     CY_alpha              =  np.concatenate((training_subsonic.CY_alpha[:,-1][:,None]    , training_supersonic.CY_alpha[:,0][:,None] ), axis = 1)   
@@ -513,7 +525,70 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
             for coeff in ('Clift', 'Cdrag', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN'):
                 key = 'd' + coeff + '_ddelta_' + letter
                 training[key] = np.array([training_subsonic[key][-1], training_supersonic[key][0]])
+    for letter in HIGH_LIFT_LETTERS:
+        for term in HIGH_LIFT_DRAG_TERMS:
+            key = 'high_lift_Cdrag_' + term + '_' + letter
+            if key in training_subsonic and key in training_supersonic:
+                training[key] = np.array([training_subsonic[key][-1], training_supersonic[key][0]])
 
+    return training
+
+
+def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference):
+    """
+    Trains the induced-drag increment of each flap and slat as
+    dCDi = p*delta + q*delta^2 + (r0 + r1*delta)*alpha*delta, from VLM runs at two deflections (15, 30 deg)
+    and two angles of attack (0, 5 deg). Trefftz-plane induced drag is a quadratic form in the circulation,
+    which the VLM solves linearly in alpha and delta; the alpha*delta cross term with the wing's own lift
+    dominates at landing incidence and is missed by a zero-incidence derivative. r1 absorbs the departure from
+    a pure quadratic at large deflection. All control surfaces must be undeflected on entry.
+
+    Consistent with Roskam, Airplane Design Part VI (DARcorporation, 2004 printing), Sec. 4.6.2, where induced drag is computed from the
+    total flaps-down lift coefficient and Eq. 4.74 adds only the span-loading term K^2 dCL_flap^2 cos(sweep):
+    on an E175-like wing (flap 0.2-0.7 span, A 8.5, Fig. 4.53 K = 0.20) that build-up is within 7-12% of the
+    VLM induced drag this model reproduces.
+
+    Parameters
+    ----------
+    settings : Data
+        Vortex lattice settings.
+    vehicle : RCAIDE.Vehicle
+        Vehicle with its control surfaces undeflected.
+    Mach : numpy.ndarray
+        Training Mach numbers [-].
+    CDi_reference : numpy.ndarray
+        Undeflected induced drag at zero incidence for each Mach number [-].
+
+    Returns
+    -------
+    training : Data
+        high_lift_Cdrag_<term>_<letter> for each term in HIGH_LIFT_DRAG_TERMS and each flap or slat letter.
+    """
+    training  = Data()
+    high_lift = [(control_surface, letter, deflection_attr) for wing in vehicle.wings for control_surface in wing.control_surfaces
+                 for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface) if letter in HIGH_LIFT_LETTERS]
+    if len(high_lift) == 0:
+        return training
+    alpha_training         = 5.0 * Units.deg
+    delta_a, delta_b       = 15.0 * Units.deg, 30.0 * Units.deg
+    conditions_alpha       = control_surface_conditions(Mach)
+    conditions_alpha.aerodynamics.angles.alpha[:] = alpha_training
+    CDi_alpha              = call_VLM(conditions_alpha,settings,vehicle).CDrag_induced[:,0]
+    for control_surface, letter, deflection_attr in high_lift:
+        increment = {}
+        for delta in (delta_a, delta_b):
+            setattr(control_surface, deflection_attr, delta)
+            increment[delta] = (call_VLM(control_surface_conditions(Mach),settings,vehicle).CDrag_induced[:,0] - CDi_reference,
+                                call_VLM(conditions_alpha,settings,vehicle).CDrag_induced[:,0] - CDi_alpha)
+            setattr(control_surface, deflection_attr, 0)
+        q   = (increment[delta_b][0] / delta_b - increment[delta_a][0] / delta_a) / (delta_b - delta_a)
+        p   = increment[delta_a][0] / delta_a - q * delta_a
+        r_a = (increment[delta_a][1] - increment[delta_a][0]) / (alpha_training * delta_a)
+        r_b = (increment[delta_b][1] - increment[delta_b][0]) / (alpha_training * delta_b)
+        r1  = (r_b - r_a) / (delta_b - delta_a)
+        r0  = r_a - r1 * delta_a
+        for term, value in zip(HIGH_LIFT_DRAG_TERMS, (p, q, r0, r1)):
+            training['high_lift_Cdrag_' + term + '_' + letter] = value
     return training
 
 
@@ -581,6 +656,8 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CM              = VLM_results.CM
             RES.CN              = VLM_results.CN
             RES.sectional_CLift = VLM_results.sectional_CLift         
+            RES.gamma           = VLM_results.gamma
+            RES.VD              = VLM_results.VD  # full vortex distribution; geometry is the same for every case
             settings.vortex_distribution  = settings.vortex_distribution  
         else: 
             RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift)) 
@@ -592,5 +669,6 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CM              = np.vstack((RES.CM             ,VLM_results.CM))
             RES.CN              = np.vstack((RES.CN             ,VLM_results.CN))
             RES.sectional_CLift = np.vstack((RES.sectional_CLift,VLM_results.sectional_CLift))   
+            RES.gamma           = np.vstack((RES.gamma          ,VLM_results.gamma))
     
     return RES

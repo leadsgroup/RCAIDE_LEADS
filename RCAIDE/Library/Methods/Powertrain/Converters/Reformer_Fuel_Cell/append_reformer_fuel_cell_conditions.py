@@ -11,7 +11,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_
 def append_reformer_fuel_cell_conditions(reformer_fuel_cell,segment):
     """
     Initializes and appends operating conditions data structures for a reformer/fuel-cell
-    composite to the energy conditions structure.
+    system to the energy conditions structure.
 
     Parameters
     ----------
@@ -27,9 +27,8 @@ def append_reformer_fuel_cell_conditions(reformer_fuel_cell,segment):
 
     Notes
     -----
-    This function initializes the condition structure for the reformer/fuel-cell
-    composite and its subcomponents (reformer and fuel_cell) with zero values, then
-    calls the respective append_operating_conditions methods for each subcomponent.
+    This function initializes the power conditions and fuel mass flow rate of the
+    reformer/fuel-cell system with zero values.
 
     See Also
     --------
@@ -39,9 +38,4 @@ def append_reformer_fuel_cell_conditions(reformer_fuel_cell,segment):
     ones_row  = segment.state.ones_row
     rfc_conditions = append_converter_power_conditions(reformer_fuel_cell, segment)
     rfc_conditions.fuel_mass_flow_rate = 0. * ones_row(1)
-
-    reformer  = reformer_fuel_cell.reformer
-    fuel_cell = reformer_fuel_cell.fuel_cell
-    reformer.append_operating_conditions(segment)
-    fuel_cell.append_operating_conditions(segment)
     return

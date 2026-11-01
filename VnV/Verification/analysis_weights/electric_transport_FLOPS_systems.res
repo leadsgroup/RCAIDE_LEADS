@@ -29,12 +29,12 @@
             "electrical": 2.0,
             "avionics": 2.0,
             "hydraulics": 2.0,
-            "furnishings": 1696.320046127946,
+            "furnishings": 1298.3691204740912,
             "air_conditioner": 2.0,
             "instruments": 2.0,
-            "total": 1708.320046127946
+            "total": 1310.3691204740912
         },
-        "total": 16972.343181087297
+        "total": 16574.392255433442
     },
     "payload": {
         "total": 7348.1963940000005,
@@ -49,6 +49,6 @@
         "passenger_service": 0.0,
         "total": 344.7302012
     },
-    "zero_fuel_weight": 24320.5395750873,
+    "zero_fuel_weight": 23922.58864943344,
     "max_takeoff": 23000
 }

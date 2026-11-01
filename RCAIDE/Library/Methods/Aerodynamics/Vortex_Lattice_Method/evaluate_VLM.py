@@ -1,5 +1,8 @@
 # RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/evaluate_VLM.py
- 
+#
+# Created: Aug 2025, M. Clarke
+# Modified: Oct 2026, H. Hussien
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8,7 +11,7 @@
 import RCAIDE 
 from RCAIDE.Framework.Core                                               import Data, orientation_product 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM       import VLM
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
 from RCAIDE.Library.Methods.Utilities                                    import Cubic_Spline_Blender
 from RCAIDE.Library.Mission.Common.Update                                import orientations
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns                       import orientation
@@ -80,6 +83,15 @@ def evaluate_surrogate(state,settings,vehicle):
     
     conditions.static_stability.coefficients.M_0 = compute_stability_derivative(sub_sur.CM_0    ,trans_sur.CM_0    ,sup_sur.CM_0    ,h_sub,h_sup,Mach) 
     conditions.aerodynamics.coefficients.lift.spanwise =  results_alpha.Clift_spanwise     
+
+    # vortex strengths and geometry used by the wing-to-rotor interaction
+    if sub_sur.gamma_alpha is not None:
+        if trans_sur.gamma_alpha is None or sup_sur.gamma_alpha is None:
+            gamma = h_sub(Mach)*sub_sur.gamma_alpha(pts_alpha)
+        else:
+            gamma = h_sub(Mach)*sub_sur.gamma_alpha(pts_alpha) + (1 - (h_sup(Mach) + h_sub(Mach)))*trans_sur.gamma_alpha(pts_alpha) + h_sup(Mach)*sup_sur.gamma_alpha(pts_alpha)
+        conditions.aerodynamics.gamma = gamma
+        conditions.aerodynamics.vortex_distribution    = sub_sur.VD
     
     # -----------------------------------------------------------------------------------------------------------------------
     # Query control surface surrogates if derivatives are not user defined
@@ -142,7 +154,15 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.static_stability.coefficients.M                 += derivative['CM']    * deflection
         conditions.static_stability.coefficients.Z                 += derivative['Clift'] * deflection
         conditions.aerodynamics.coefficients.lift.inviscid.total   += derivative['Clift'] * deflection
-        conditions.aerodynamics.coefficients.drag.induced.inviscid += derivative['Cdrag'] * np.abs(deflection)
+        high_lift_keys = ['high_lift_Cdrag_' + term + '_' + letter for term in HIGH_LIFT_DRAG_TERMS]
+        if letter in HIGH_LIFT_LETTERS and aerodynamics.stability_derivatives['Cdrag_delta_' + letter] is None and high_lift_keys[0] in sub_sur:
+            # quadratic in deflection with the angle-of-attack cross term (see train_VLM_surrogates)
+            p, q, r0, r1 = [compute_stability_derivative(sub_sur[key], trans_sur.get(key) if trans_sur is not None else None,
+                                                         sup_sur.get(key) if sup_sur is not None else None, h_sub, h_sup, Mach)
+                            for key in high_lift_keys]
+            conditions.aerodynamics.coefficients.drag.induced.inviscid += p * deflection + q * deflection**2 + (r0 + r1 * deflection) * AoA * deflection
+        else:
+            conditions.aerodynamics.coefficients.drag.induced.inviscid += derivative['Cdrag'] * np.abs(deflection)
 
         cs_conditions.static_stability.coefficients.Y += derivative['CY'] * deflection
         cs_conditions.static_stability.coefficients.L += derivative['CL'] * deflection
@@ -198,6 +218,8 @@ def evaluate_no_surrogate(state,settings,vehicle):
     conditions.aerodynamics.coefficients.differential_surface_pressure= VLM_results.CP
     conditions.aerodynamics.angles.induced                            = VLM_results.alpha_induced    
     conditions.aerodynamics.spanwise_stations                         = VLM_results.spanwise_stations
+    conditions.aerodynamics.gamma                                     = VLM_results.gamma
+    conditions.aerodynamics.vortex_distribution                                        = VLM_results.VD
 
     # corrections 
     RCAIDE.Library.Methods.Aerodynamics.Common.Lift.fuselage_correction(state,settings,vehicle)     

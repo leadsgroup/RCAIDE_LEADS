@@ -57,7 +57,7 @@ def main():
     plot_mission(results)
 
     # Truth values
-    L_D_truth = 7.896822906641584
+    L_D_truth = 7.6388666333567095
 
     CL  = results.segments.level_cruise.conditions.aerodynamics.coefficients.lift.total
     CD  = results.segments.level_cruise.conditions.aerodynamics.coefficients.drag.total
@@ -426,73 +426,111 @@ def mission_setup(analyses):
 
     # ------------------------------------------------------------------
     #   First Descent Segment
-    # ------------------------------------------------------------------  
-    segment     = Segments.Descent.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag = "descent_2" 
-    segment.analyses.extend( analyses.descent )
-    segment.altitude_start    = 60000. * Units.ft
-    segment.altitude_end      = 41000. * Units.ft
-    segment.air_speed_start   = 1165 *  Units.knots
-    segment.air_speed_end     = 800 *  Units.mph
-    segment.descent_rate      = 4000. * Units['ft/min']  
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                
-    
+    # ------------------------------------------------------------------
+    #   Descent: 60000 ft to 45000 ft, Mach 1.6 (917.7 KTAS at 52500 ft)
+    # ------------------------------------------------------------------
+    segment     = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "descent_1"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed         = 917.712 * Units.kts
+    segment.altitude_end      = 45000. * Units.ft
+    segment.descent_rate      = 4000. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
     mission.append_segment(segment)
-     
+
     # ------------------------------------------------------------------
-    #   First Descent Segment
-    # ------------------------------------------------------------------    
-      
-    segment = Segments.Descent.Linear_Mach_Constant_Rate(base_segment)
-    segment.tag = "descent_3" 
-    segment.analyses.extend( analyses.descent )
+    #   Descent: 45000 ft to 35000 ft, Mach 0.95 (544.9 KTAS at 40000 ft); below Mach 1, where the aerodynamics are singular
+    # ------------------------------------------------------------------
+    segment     = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "descent_2"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed         = 544.892 * Units.kts
+    segment.altitude_end      = 35000. * Units.ft
+    segment.descent_rate      = 3000. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Descent: 35000 ft to 10000 ft, 300 KCAS (415.3 KTAS at 22500 ft)
+    # ------------------------------------------------------------------
+    segment     = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "descent_3"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed         = 415.297 * Units.kts
     segment.altitude_end      = 10000. * Units.ft
-    segment.mach_number_end   = 0.4
-    segment.descent_rate      = 2000. * Units['ft/min']  
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                
-    
-    mission.append_segment(segment)     
-    
+    segment.descent_rate      = 2500. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    mission.append_segment(segment)
+
     # ------------------------------------------------------------------
-    #   First Descent Segment
-    # ------------------------------------------------------------------     
+    #   Descent: 10000 ft to 3000 ft, 250 KCAS (274.3 KTAS at 6500 ft)
+    # ------------------------------------------------------------------
+    segment     = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "descent_4"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed         = 274.272 * Units.kts
+    segment.altitude_end      = 3000. * Units.ft
+    segment.descent_rate      = 1500. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Approach: gear down from 3000 ft at 160 kts (assumed approach speed) on a 3 deg glideslope
+    # ------------------------------------------------------------------
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
-    segment.tag = "descent_4" 
+    segment.tag = "approach"
     segment.analyses.extend( analyses.landing )
+    segment.air_speed    = 160. * Units.kts
     segment.altitude_end = 0. * Units.ft
-    segment.descent_rate = 1000. * Units['ft/min']    
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                
-    
-    mission.append_segment(segment)      
-    
-    # ------------------------------------------------------------------    
-    #   Mission definition complete    
-    # ------------------------------------------------------------------
-    
+    segment.descent_rate = 850. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    mission.append_segment(segment)
+
     return mission
 
 def missions_setup(mission):

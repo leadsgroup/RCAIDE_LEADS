@@ -18,10 +18,10 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute
 heat_leak_module = importlib.import_module('RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak')
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Inputs: LH2 tank, aluminum wall, foam insulation, sea-level air
+#  Inputs: LH2 tank, aluminum wall, foam insulation (emissivity 0.03), sea-level air
 # ----------------------------------------------------------------------------------------------------------------------
 T_ENV, T_COLD = 288.15, 20.0
-COMMON        = (0.05, T_ENV, T_COLD, 167.0, 0.02, 0.025, 1.5e-5, 2.1e-5, 0.71)
+COMMON        = (0.05, T_ENV, T_COLD, 167.0, 0.02, 0.025, 1.5e-5, 2.1e-5, 0.71, 0.03)
 CYLINDER_ARGS = COMMON + (1.0, 0.99, 5.0)
 CUBOID_ARGS   = COMMON + (4.0, 2.0, 1.5, 0.005)
 CASES         = [(CYLINDER, CYLINDER_ARGS, heat_balance_residual_cylinder, compute_cryogenic_tank_heat_leak),

@@ -84,6 +84,7 @@ def append_turbofan_conditions(propulsor, segment):
     # instead of the RC=0 part-power sweep) -- unset segments keep the previous default (None)
     segment.state.conditions.energy.propulsors[propulsor.tag].rating_code                   = getattr(segment, 'rating_code', None)
     segment.state.conditions.energy.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
+    segment.state.conditions.energy.propulsors[propulsor.tag].below_matching_floor          = 0. * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].moment                        = 0. * ones_row(3) 
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.current                = 0. * ones_row(1)

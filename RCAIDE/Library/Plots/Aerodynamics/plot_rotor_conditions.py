@@ -108,8 +108,11 @@ def plot_rotor_conditions(results,
     axis_2_4 = fig_2.add_subplot(2,2,4)      
  
     for network in results.segments[0].analyses.vehicle.networks: 
-        for p_i, propulsor in enumerate(network.propulsors): 
-            if (p_i == 0) or (propulsor.identical_propulsors == False):
+        reference = None
+        for p_i, propulsor in enumerate(network.propulsors):
+            # plot only propulsors solved on their own; the others share their results
+            if not network.reuses_results(propulsor, reference):
+                reference = propulsor
                 plot_propulsor_data(results,propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1_4, axis_2_1, axis_2_2, axis_2_3, axis_2_4,line_colors,ps,p_i)                  
               
     if show_legend:                
