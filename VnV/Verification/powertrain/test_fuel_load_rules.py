@@ -28,6 +28,7 @@ mass_properties_module = importlib.import_module(
 def main():
     check_compute_fuel_mass_respects_user_tank_load_precedence()
     check_compute_fuel_mass_distributes_vehicle_load_or_fills_capacity()
+    check_vehicle_fuel_load_above_capacity_fills_tanks()
     check_set_vehicle_fuel_mass_uses_capacity_proportions_and_rejects_overfill()
     check_set_vehicle_fuel_mass_handles_mixed_conventional_and_cryogenic_tanks()
     check_max_fuel_iteration_sums_mixed_tank_capacities()
@@ -102,6 +103,24 @@ def check_compute_fuel_mass_distributes_vehicle_load_or_fills_capacity():
     for tank in tanks:
         tank.fuel.mass_properties.mass = 0.0
     vehicle.mass_properties.fuel = 0.0
+    compute_fuel_mass(vehicle)
+
+    assert np.isclose(vehicle.mass_properties.fuel, 400.0)
+    np.testing.assert_allclose(
+        [tank.fuel.mass_properties.mass for tank in tanks], [100.0, 300.0]
+    )
+
+
+# A vehicle fuel load above the tank capacity fills the tanks; the prescribed overload is flagged.
+def check_vehicle_fuel_load_above_capacity_fills_tanks():
+    vehicle, tanks = make_vehicle([100.0, 300.0])
+    vehicle.mass_properties.fuel = 500.0
+    vehicle.mass_properties.max_takeoff = 2000.0
+    vehicle.mass_properties.operating_empty = 100.0
+    vehicle.mass_properties.payload = 50.0
+    messages = check_mass_limits(vehicle)
+    assert len(messages) == 1 and "Fuel load (500.0 kg) exceeds the tank capacity (400.0 kg)" in messages[0], messages
+
     compute_fuel_mass(vehicle)
 
     assert np.isclose(vehicle.mass_properties.fuel, 400.0)
