@@ -92,11 +92,11 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment):
 
     return
 
-def reuse_stored_fuel_cell_data(fuel_cell_stack, state, network, stored_conveter_tag):
+def reuse_stored_fuel_cell_data(fuel_cell_stack, state, network, stored_converter_tag):
     '''
     Reuses results from one converter for identical fuel cells
     '''
-    stored_conditions = state.conditions.energy.converters[stored_conveter_tag]
+    stored_conditions = state.conditions.energy.converters[stored_converter_tag]
     fuel_cell_conditions = state.conditions.energy.converters[fuel_cell_stack.tag]
     fuel_cell_conditions.update(deepcopy(stored_conditions))
 

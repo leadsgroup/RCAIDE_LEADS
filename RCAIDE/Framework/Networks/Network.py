@@ -278,7 +278,7 @@ class Network(Component):
                     converter.reverse_mode_computation = True
                     inputs, outputs, stored_results_flag, stored_converter_tag = converter.compute_performance(state,network)
                 else:
-                    inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_converter_tag)
+                    inputs, outputs = converter.reuse_stored_data(state,network,stored_converter_tag=stored_converter_tag)
                 total_mdot             += state.conditions.energy.converters[converter.tag].fuel_mass_flow_rate
                 externally_powered_now  = ground_operations and converter.externally_powered
                 if not externally_powered_now:

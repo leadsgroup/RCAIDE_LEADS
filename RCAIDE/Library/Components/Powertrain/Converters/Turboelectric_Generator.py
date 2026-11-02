@@ -80,6 +80,6 @@ class Turboelectric_Generator(Converter):
         inputs, outputs, stored_results_flag, stored_converter_tag = compute_turboelectric_generator_performance(self,state,network=network)
         return inputs, outputs, stored_results_flag, stored_converter_tag
     
-    def reuse_stored_data(self,state,network,stored_conveter_tag):
-        inputs, outputs  = reuse_stored_turboelectric_generator_data(self,state.conditions,network,stored_conveter_tag)
+    def reuse_stored_data(self,state,network,stored_converter_tag):
+        inputs, outputs  = reuse_stored_turboelectric_generator_data(self,state.conditions,network,stored_converter_tag)
         return inputs, outputs
