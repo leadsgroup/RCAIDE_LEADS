@@ -210,7 +210,7 @@ def Actuator_Disk_performance(rotor, conditions):
             omega                             = omega,
             power_coefficient                 = Cp, 
             thrust_coefficient                = Ct,
-            torque_coefficient                = Cq,  
+            torque_coefficient                = Cq * np.ones_like(torque),  
             speed_of_sound                    = conditions.freestream.speed_of_sound,
             density                           = conditions.freestream.density,
             tip_mach                          = omega * R / conditions.freestream.speed_of_sound, 

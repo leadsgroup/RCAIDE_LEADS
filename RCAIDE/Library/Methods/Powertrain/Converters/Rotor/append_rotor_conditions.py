@@ -55,49 +55,59 @@ def append_rotor_conditions(rotor, segment):
     segment.state.conditions.energy.converters[rotor.tag].design_flag                   = False 
     segment.state.conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
     segment.state.conditions.energy.converters[rotor.tag].blade_pitch_command           = ones_row(1) * rotor.blade_pitch_command 
-    segment.state.conditions.energy.converters[rotor.tag].torque                        = 0. * ones_row(1)
     segment.state.conditions.energy.converters[rotor.tag].throttle                      = ones_row(1)
-    segment.state.conditions.energy.converters[rotor.tag].thrust                        = 0. * ones_row(3)
-    segment.state.conditions.energy.converters[rotor.tag].rpm                           = 0. * ones_row(1)
     segment.state.conditions.energy.converters[rotor.tag].omega                         = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[rotor.tag].disc_loading                  = 0. * ones_row(1)                 
-    segment.state.conditions.energy.converters[rotor.tag].power_loading                 = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[rotor.tag].tip_mach                      = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[rotor.tag].efficiency                    = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[rotor.tag].figure_of_merit               = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[rotor.tag].power_coefficient             = 0. * ones_row(1) 
 
-    # outputs of the rotor performance model, by shape: per point, per point and blade station (Nr), per point,
-    # station and azimuth (Na); azimuthal_distribution and the station counts describe the disc, not the flight.
-    # Only a rotor that can run its model has them: BEMT needs blade stations, so a rotor without blade geometry
-    # (e.g. a turboprop's lumped-efficiency propeller) is never evaluated by it.
+    # outputs of any rotor performance method; a field the selected method does not compute stays NaN
     rotor_conditions = segment.state.conditions.energy.converters[rotor.tag]
     rows             = ones_row(1).shape[0]
-    bemt             = rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
-    if not bemt or np.ndim(rotor.chord_distribution) == 1:
-        per_point = ['power', 'advance_ratio', 'speed_of_sound', 'density', 'thrust_per_blade', 'torque_per_blade',
-                     'thrust_coefficient', 'torque_coefficient']
-        if bemt:
-            Nr, Na    = len(rotor.chord_distribution), rotor.number_azimuthal_stations
-            per_point = per_point + ['rotor_drag', 'rotor_drag_coefficient']
-            for key in ['blade_tangential_induced_velocity', 'blade_axial_induced_velocity', 'blade_reynolds_number',
-                        'blade_effective_angle_of_attack', 'blade_tangential_velocity', 'blade_axial_velocity',
-                        'blade_velocity', 'blade_Mach_number', 'drag_coefficient', 'lift_coefficient', 'blade_dT_dr',
-                        'blade_thrust_distribution', 'blade_dQ_dr', 'blade_torque_distribution',
-                        'converged_inflow_ratio', 'blade_H_distribution']:
-                rotor_conditions[key] = np.zeros((rows, Nr))
-            for key in ['disc_radial_distribution', 'disc_reynolds_number', 'disc_effective_angle_of_attack',
-                        'disc_tangential_induced_velocity', 'disc_axial_induced_velocity', 'disc_tangential_velocity',
-                        'disc_axial_velocity', 'disc_velocity', 'disc_Mach_number', 'disc_circulation', 'disc_dT_dr',
-                        'disc_thrust_distribution', 'disc_azimuthal_distribution', 'disc_dQ_dr',
-                        'disc_torque_distribution']:
-                rotor_conditions[key] = np.zeros((rows, Nr, Na))
-            rotor_conditions.azimuthal_distribution    = np.zeros(Na)
-            rotor_conditions.number_radial_stations    = Nr
-            rotor_conditions.number_azimuthal_stations = Na
-        for key in per_point:
-            rotor_conditions[key] = 0. * ones_row(1)
-        rotor_conditions.velocity = 0. * ones_row(3)
+    for key, shape in rotor_conditions_schema(rotor).items():
+        rotor_conditions[key] = np.full((rows,) + shape, np.nan)
+    rotor_conditions.azimuthal_distribution    = np.full(rotor.number_azimuthal_stations, np.nan)
+    rotor_conditions.number_radial_stations    = blade_stations(rotor)
+    rotor_conditions.number_azimuthal_stations = rotor.number_azimuthal_stations
 
     segment.state.conditions.aeroacoustics.converters[rotor.tag]                                = Conditions() 
-    return 
+    return
+
+
+def rotor_conditions_schema(rotor):
+    """
+    Output fields of a rotor's conditions and their shape per control point, the same for every performance method.
+
+    Parameters
+    ----------
+    rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
+        Rotor with chord_distribution and number_azimuthal_stations
+
+    Returns
+    -------
+    schema : dict
+        field -> shape per control point: (1,) scalars, (3,) vectors, (Nr,) blade stations and (Nr, Na) disc
+        stations, with Nr blade stations (0 for a rotor without blade geometry) and Na azimuthal stations
+    """
+    Nr, Na = blade_stations(rotor), rotor.number_azimuthal_stations
+    schema = {key: (1,) for key in
+              ['torque', 'power', 'rpm', 'tip_mach', 'efficiency', 'figure_of_merit', 'advance_ratio',
+               'speed_of_sound', 'density', 'disc_loading', 'power_loading', 'thrust_per_blade', 'torque_per_blade',
+               'thrust_coefficient', 'torque_coefficient', 'power_coefficient', 'rotor_drag',
+               'rotor_drag_coefficient']}
+    schema.update({key: (3,) for key in ['thrust', 'velocity']})
+    schema.update({key: (Nr,) for key in
+                   ['blade_tangential_induced_velocity', 'blade_axial_induced_velocity', 'blade_reynolds_number',
+                    'blade_effective_angle_of_attack', 'blade_tangential_velocity', 'blade_axial_velocity',
+                    'blade_velocity', 'blade_Mach_number', 'drag_coefficient', 'lift_coefficient', 'blade_dT_dr',
+                    'blade_thrust_distribution', 'blade_dQ_dr', 'blade_torque_distribution',
+                    'converged_inflow_ratio', 'blade_H_distribution']})
+    schema.update({key: (Nr, Na) for key in
+                   ['disc_radial_distribution', 'disc_azimuthal_distribution', 'disc_reynolds_number',
+                    'disc_effective_angle_of_attack', 'disc_tangential_induced_velocity',
+                    'disc_axial_induced_velocity', 'disc_tangential_velocity', 'disc_axial_velocity', 'disc_velocity',
+                    'disc_Mach_number', 'disc_circulation', 'disc_dT_dr', 'disc_thrust_distribution', 'disc_dQ_dr',
+                    'disc_torque_distribution']})
+    return schema
+
+
+def blade_stations(rotor):
+    """Number of radial blade stations, 0 for a rotor without blade geometry."""
+    return np.size(rotor.chord_distribution) if np.ndim(rotor.chord_distribution) == 1 else 0
