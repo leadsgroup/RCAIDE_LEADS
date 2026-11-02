@@ -561,6 +561,10 @@ class Results(Conditions):
         self.energy.total_moment_vector                       = ones_3col * 0 
         self.energy.fuel_consumption                          = ones_1col * 0      
         self.energy.cumulative_fuel_consumption               = ones_1col * 0
+        self.energy.net_electrical_power                      = ones_1col * 0
+        self.energy.net_thermal_power                         = ones_1col * 0
+        self.energy.net_hydraulic_power                       = ones_1col * 0
+        self.energy.net_chemical_power                        = ones_1col * 0
         self.energy.inputs                                    = Conditions()
         self.energy.inputs.power                              = Conditions()  
         self.energy.inputs.power.propulsive                   = ones_1col * 0 
