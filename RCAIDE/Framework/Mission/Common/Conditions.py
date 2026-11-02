@@ -27,6 +27,20 @@ class Conditions(Data):
     """ 
 
     _size = 1
+    segment_layout = None   # the Segment_Layout that bound this node's leaves, if any
+
+    def __setitem__(self, k, v):
+        """Item and attribute assignment. On a node bound by a Segment_Layout, a float array of the same shape
+        assigned over one of the layout's slots is written into that slot, so the buffer stays bound; any other
+        assignment binds as usual."""
+        layout = object.__getattribute__(self, 'segment_layout')
+        if layout is not None:
+            old = dict.get(self, k)
+            if layout.owns(old) and isinstance(v, np.ndarray) and v.dtype.kind == 'f' and v.shape == old.shape:
+                if v is not old:
+                    old[...] = v
+                return
+        dict.__setitem__(self, k, v)
     
     def ones_row(self,cols):
         """ returns a row vector of ones with given number of columns 
