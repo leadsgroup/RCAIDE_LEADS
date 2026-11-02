@@ -157,7 +157,7 @@ def reuse_stored_internal_combustion_engine_data(propulsor,state,network,stored_
     engine_0     = network.propulsors[stored_propulsor_tag].engine
     propeller_0  = network.propulsors[stored_propulsor_tag].propeller  
     
-    # deepcopy results 
+    # copy the stored propulsor's results, reusing memory
     conditions.energy.propulsors[propulsor.tag].copy_values(conditions.energy.propulsors[stored_propulsor_tag])
     conditions.energy.converters[engine.tag].copy_values(conditions.energy.converters[engine_0.tag])
     conditions.energy.converters[propeller.tag].copy_values(conditions.energy.converters[propeller_0.tag])

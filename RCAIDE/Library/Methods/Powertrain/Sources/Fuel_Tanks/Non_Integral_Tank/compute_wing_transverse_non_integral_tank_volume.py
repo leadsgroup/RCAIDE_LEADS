@@ -16,7 +16,6 @@ from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_non_dimens
 import numpy as np
 from scipy.interpolate import interp1d
 from shapely.geometry import Polygon, Point
-from copy import  deepcopy
 import shapely
 import os
 

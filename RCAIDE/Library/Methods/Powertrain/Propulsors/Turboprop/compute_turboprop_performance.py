@@ -384,7 +384,7 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
     low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
 
-    # deep copy results 
+    # copy the stored propulsor's results, reusing memory
     conditions.energy.propulsors[turboprop.tag].copy_values(conditions.energy.propulsors[stored_propulsor_tag])
     conditions.aeroacoustics.propulsors[turboprop.tag].copy_values(conditions.aeroacoustics.propulsors[stored_propulsor_tag])
     conditions.energy.converters[ram.tag].copy_values(conditions.energy.converters[ram_0.tag])
