@@ -62,7 +62,7 @@ class Energy(Analysis):
         net_electrical_power = state.conditions.energy.net_electrical_power
 
         if 'electrical_power' in state.unknowns.network:
-            state.residuals.network['electrical_power'] = net_electrical_power
+            state.residuals.network['electrical_power'][...] = net_electrical_power
 
         # Unpack Residuals
         residual_keys = list(state.residuals.network.keys())
