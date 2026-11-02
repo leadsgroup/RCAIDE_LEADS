@@ -150,3 +150,11 @@ def test_residual_group_check():
     state.conditions.frames.force = state.conditions.frames.force + 1.0
     assert layout.verify(state, group="residuals") == []
     assert layout.verify(state) == ["conditions.frames.force"]
+
+
+def test_leaves_added_after_the_build_are_reported():
+    state  = make_state()
+    layout = Segment_Layout(state)
+    assert layout.added(state) == []
+    state.conditions.freestream.speed_of_sound = np.ones((N, 1))
+    assert layout.added(state) == ["conditions.freestream.speed_of_sound"]

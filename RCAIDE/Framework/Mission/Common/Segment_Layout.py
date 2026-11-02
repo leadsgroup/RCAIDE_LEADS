@@ -105,6 +105,14 @@ class Segment_Layout:
                 rebound.append(".".join(path))
         return rebound
 
+    def added(self, state):
+        """Paths of float array leaves in unknowns, residuals or conditions that the layout does not know, i.e.
+        created after it was built."""
+        known = set(self.views) | set(self.excluded)
+        return [".".join(path) for group in ("unknowns", "residuals", "conditions")
+                for path, v in leaves(state[group], (group,))
+                if isinstance(v, np.ndarray) and v.dtype.kind == "f" and path not in known]
+
 
 def leaves(D, prefix):
     """(path, value) for every non-dict value of a nested Data, in dict order."""
