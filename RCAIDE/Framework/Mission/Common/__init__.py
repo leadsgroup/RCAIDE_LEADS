@@ -13,5 +13,6 @@ from .Conditions   import expanded_array
 from .Numerics     import Numerics
 from .Residuals    import Residuals
 from .Results      import Results
+from .Segment_Layout import Segment_Layout
 from .State        import State
 from .Unknowns     import Unknowns
