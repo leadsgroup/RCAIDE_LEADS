@@ -24,6 +24,6 @@ RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.design_ducted_fan
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 from .compute_ducted_fan_performance     import compute_ducted_fan_performance 
-from .append_ducted_fan_conditions       import append_ducted_fan_conditions 
+from .append_ducted_fan_conditions       import append_ducted_fan_conditions, ducted_fan_conditions_schema
 from .design_ducted_fan                  import design_ducted_fan
 from .                                   import Performance

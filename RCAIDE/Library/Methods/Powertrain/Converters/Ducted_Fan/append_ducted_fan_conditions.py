@@ -5,6 +5,9 @@
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
+# package imports
+import numpy as np
+
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_ducted_fan_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
@@ -75,17 +78,35 @@ def append_ducted_fan_conditions(ducted_fan, segment):
     segment.state.conditions.energy.converters[ducted_fan.tag]                               = Conditions()   
     segment.state.conditions.energy.converters[ducted_fan.tag].orientation                   = 0. * ones_row(3) 
     segment.state.conditions.energy.converters[ducted_fan.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
-    segment.state.conditions.energy.converters[ducted_fan.tag].torque                        = 0. * ones_row(1)
     segment.state.conditions.energy.converters[ducted_fan.tag].throttle                      = ones_row(1)
-    segment.state.conditions.energy.converters[ducted_fan.tag].thrust                        = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[ducted_fan.tag].rpm                           = 0. * ones_row(1)
     segment.state.conditions.energy.converters[ducted_fan.tag].omega                         = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[ducted_fan.tag].disc_loading                  = 0. * ones_row(1)                 
-    segment.state.conditions.energy.converters[ducted_fan.tag].power_loading                 = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[ducted_fan.tag].tip_mach                      = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[ducted_fan.tag].efficiency                    = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[ducted_fan.tag].figure_of_merit               = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[ducted_fan.tag].power_coefficient             = 0. * ones_row(1)  
-    return 
+
+    # outputs of any ducted fan performance method; a field the selected method does not compute stays NaN
+    ducted_fan_conditions = segment.state.conditions.energy.converters[ducted_fan.tag]
+    rows                  = ones_row(1).shape[0]
+    for key, shape in ducted_fan_conditions_schema(ducted_fan).items():
+        ducted_fan_conditions[key] = np.full((rows,) + shape, np.nan)
+    ducted_fan_conditions.number_radial_stations = ducted_fan.number_of_radial_stations
+    return
 
 
+def ducted_fan_conditions_schema(ducted_fan):
+    """
+    Output fields of a ducted fan's conditions and their shape per control point, the same for every performance
+    method.
+
+    Parameters
+    ----------
+    ducted_fan : RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan
+
+    Returns
+    -------
+    schema : dict
+        field -> shape per control point: (1,) scalars and (3,) vectors
+    """
+    schema = {key: (1,) for key in
+              ['torque', 'power', 'rpm', 'tip_mach', 'efficiency', 'figure_of_merit', 'speed_of_sound', 'density',
+               'thrust_per_blade', 'torque_per_blade', 'thrust_coefficient', 'torque_coefficient',
+               'power_coefficient']}
+    schema.update({key: (3,) for key in ['thrust', 'velocity']})
+    return schema
