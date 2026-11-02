@@ -229,13 +229,13 @@ def iterate_root_finder(unknowns, segment, layout):
 
 
 def iterate_in_layout(segment, layout):
-    """One process.iterate; the solver reads residuals from the layout, so a residual rebound to a new array
-    instead of written in place is an error rather than a silently stale value."""
+    """One process.iterate; the solver writes unknowns to and reads residuals from the layout, so either one
+    rebound to a new array instead of written in place is an error rather than a silently stale value."""
     segment.process.iterate(segment)
-    rebound = layout.verify(segment.state, group="residuals")
+    rebound = layout.verify(segment.state, group="unknowns") + layout.verify(segment.state, group="residuals")
     if rebound:
-        raise RuntimeError(f"{', '.join(rebound)} rebound to a new array during iterate; residuals must be "
-                           f"written in place, e.g. residual[...] = value")
+        raise RuntimeError(f"{', '.join(rebound)} rebound to a new array during iterate; unknowns and residuals "
+                           f"must be written in place, e.g. residual[...] = value")
 
 
 def solver_slices(layout, network):
