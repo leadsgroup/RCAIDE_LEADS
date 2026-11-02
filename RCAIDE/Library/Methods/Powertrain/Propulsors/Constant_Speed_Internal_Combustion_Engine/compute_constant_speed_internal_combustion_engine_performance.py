@@ -127,15 +127,7 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor, sta
     ice_cs_conditions.outputs.moment      = moment
 
     ice_cs_conditions.outputs.power.propulsive       = conditions.energy.converters[propeller.tag].power
-    ice_cs_conditions.outputs.power.mechanical       = 0.0 * state.ones_row(1)
-    ice_cs_conditions.outputs.power.electrical       = 0.0 * state.ones_row(1)
-    ice_cs_conditions.outputs.power.chemical         = 0.0 * state.ones_row(1)
-    ice_cs_conditions.outputs.power.pneumatic        = 0.0 * state.ones_row(1)
-    ice_cs_conditions.outputs.power.hydraulic        = 0.0 * state.ones_row(1)
-    ice_cs_conditions.outputs.power.thermal          = 0.0 * state.ones_row(1)
 
-    stored_results_flag            = True
-    stored_propulsor_tag           = propulsor.tag
 
     return ice_cs_conditions.inputs, ice_cs_conditions.outputs, stored_results_flag, stored_propulsor_tag
 

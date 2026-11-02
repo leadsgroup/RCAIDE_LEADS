@@ -119,17 +119,9 @@ def compute_internal_combustion_engine_performance(propulsor, state, network=Non
     ice_conditions.outputs.thrust      = conditions.energy.converters[propeller.tag].thrust
     ice_conditions.outputs.moment      = moment
 
-    # currently, no hybridization
+    # no hybridization: the other outputs.power fields stay at their allocated zeros
     ice_conditions.outputs.power.propulsive       = conditions.energy.converters[propeller.tag].power
-    ice_conditions.outputs.power.mechanical       = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.electrical       = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.chemical         = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.pneumatic        = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.hydraulic        = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.thermal          = 0.0 * state.ones_row(1)
 
-    stored_results_flag            = True
-    stored_propulsor_tag           = propulsor.tag
 
     return ice_conditions.inputs, ice_conditions.outputs, stored_results_flag, stored_propulsor_tag
 
