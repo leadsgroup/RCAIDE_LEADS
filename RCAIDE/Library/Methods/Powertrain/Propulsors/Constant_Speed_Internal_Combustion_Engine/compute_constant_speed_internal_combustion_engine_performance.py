@@ -12,7 +12,6 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Engine import compute_throttle
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import  compute_rotor_performance
  
 # pacakge imports  
-from copy import deepcopy
 import numpy as np  
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -171,10 +170,9 @@ def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,
     propeller_0                = network.propulsors[stored_propulsor_tag].propeller 
     
     # deep copy results
-    conditions.energy.propulsors[propulsor.tag]     = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.energy.converters[engine.tag]        = deepcopy(conditions.energy.converters[engine_0.tag])
-    conditions.energy.converters[propeller.tag]     = deepcopy(conditions.energy.converters[propeller_0.tag])
-
+    conditions.energy.propulsors[propulsor.tag].copy_values(conditions.energy.propulsors[stored_propulsor_tag])
+    conditions.energy.converters[engine.tag].copy_values(conditions.energy.converters[engine_0.tag])
+    conditions.energy.converters[propeller.tag].copy_values(conditions.energy.converters[propeller_0.tag])
     # compute moment
     thrust                  = conditions.energy.converters[propeller.tag].thrust
     power                   = conditions.energy.converters[propeller.tag].power
