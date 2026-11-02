@@ -185,7 +185,6 @@ def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,
     moment                  =  np.cross(moment_vector, thrust)
 
     # pack results
-    conditions.energy.converters[propeller.tag].moment            = moment
     conditions.energy.propulsors[propulsor.tag].outputs.thrust    = thrust
     conditions.energy.propulsors[propulsor.tag].outputs.moment    = moment
     conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive = power

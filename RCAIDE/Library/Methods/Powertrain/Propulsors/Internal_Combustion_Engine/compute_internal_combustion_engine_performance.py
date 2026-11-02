@@ -181,7 +181,6 @@ def reuse_stored_internal_combustion_engine_data(propulsor,state,network,stored_
     moment                  =  np.cross(moment_vector,thrust_vector)
 
     # pack
-    conditions.energy.converters[propeller.tag].moment            = moment
     conditions.energy.propulsors[propulsor.tag].outputs.thrust    = thrust_vector
     conditions.energy.propulsors[propulsor.tag].outputs.moment    = moment
     conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive = power
