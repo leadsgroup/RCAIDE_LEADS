@@ -142,12 +142,6 @@ def compute_electric_ducted_fan_performance(propulsor, state, center_of_gravity=
     EDF_conditions.outputs.moment      = moment
 
     EDF_conditions.outputs.power.propulsive               = conditions.energy.converters[ducted_fan.tag].power
-    EDF_conditions.outputs.power.mechanical               = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.electrical               = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.chemical                 = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.pneumatic                = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.hydraulic                = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.thermal                  = 0.0 * state.ones_row(1)
 
     return EDF_conditions.inputs, EDF_conditions.outputs, stored_results_flag, stored_propulsor_tag
                 
