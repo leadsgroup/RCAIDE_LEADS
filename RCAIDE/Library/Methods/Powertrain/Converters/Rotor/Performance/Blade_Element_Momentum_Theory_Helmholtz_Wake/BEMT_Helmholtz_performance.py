@@ -483,7 +483,8 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_on_rotor_coupling=False):
     thrust_prop_frame[:,0] = thrust[:,0]
     thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)
      
-    conditions.energy.converters[rotor.tag]  = Data( 
+    # write into the rotor's conditions, keeping fields set by its propulsor and reusing memory
+    conditions.energy.converters.copy_values({rotor.tag: Data( 
                 torque                            = torque,
                 thrust                            = thrust_vector,  
                 power                             = power, 
@@ -543,6 +544,6 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_on_rotor_coupling=False):
                 blade_pitch_command               = pitch_c,
                 commanded_thrust_vector_angle     = commanded_TV, 
                 figure_of_merit                   = FoM, 
-        )  
+        )})
 
     return 
