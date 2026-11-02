@@ -10,8 +10,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units 
 import numpy as np
-from copy import deepcopy
- 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_nmc_cell_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -323,7 +321,7 @@ def reuse_stored_nmc_cell_data(battery_module,state,stored_battery_tag,stored_ba
     Properties Used: 
     N.A.        
     ''' 
-    state.conditions.energy.sources[stored_battery_tag][battery_module.tag] = deepcopy(state.conditions.energy.sources[stored_battery_tag][stored_battery_module_tag]) 
+    state.conditions.energy.sources[stored_battery_tag][battery_module.tag].copy_values(state.conditions.energy.sources[stored_battery_tag][stored_battery_module_tag]) 
     inputs  = state.conditions.energy.sources[stored_battery_tag][battery_module.tag].inputs
     outputs = state.conditions.energy.sources[stored_battery_tag][battery_module.tag].outputs 
     return  inputs,outputs
