@@ -135,6 +135,11 @@ class Results(Conditions):
         self.freestream.density                                                = ones_1col * 0
         self.freestream.speed_of_sound                                         = ones_1col * 0
         self.freestream.dynamic_viscosity                                      = ones_1col * 0
+        self.freestream.kinematic_viscosity                                    = ones_1col * 0
+        self.freestream.thermal_conductivity                                   = ones_1col * 0
+        self.freestream.prandtl_number                                         = ones_1col * 0
+        self.freestream.constant_pressure_specific_heat                        = ones_1col * 0
+        self.freestream.specific_heat                                          = ones_1col * 0
         self.freestream.altitude                                               = ones_1col * 0
         self.freestream.gravity                                                = ones_1col * 0
         self.freestream.reynolds_number                                        = ones_1col * 0
