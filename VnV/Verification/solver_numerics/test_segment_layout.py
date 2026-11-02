@@ -158,3 +158,13 @@ def test_leaves_added_after_the_build_are_reported():
     assert layout.added(state) == []
     state.conditions.freestream.speed_of_sound = np.ones((N, 1))
     assert layout.added(state) == ["conditions.freestream.speed_of_sound"]
+
+
+def test_unpack_array_writes_into_the_layout():
+    # the network update unpacks its unknowns every iterate; the optimizer's writes must keep reaching them
+    state  = make_state()
+    layout = Segment_Layout(state)
+    values = np.arange(2.0 * N) + 10.0
+    state.unknowns.network.unpack_array(values)
+    assert layout.verify(state) == []
+    assert np.array_equal(layout.buffer[layout.slices["unknowns.network"]], values)
