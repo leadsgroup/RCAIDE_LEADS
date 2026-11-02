@@ -764,4 +764,35 @@ class Data(dict):
         if not M.shape[-1] == _index[0]: warn('did not unpack all values',RuntimeWarning)
          
         # done!
-        return self      
+        return self
+
+    def copy_values(self, source):
+        """ copies the values of another data structure into this one, reusing memory
+
+            Assumptions:
+            A float array already here with the same shape as source's is written into; anything else
+            (missing keys, other shapes or types) is set to a deep copy. Keys only in self are kept.
+
+            Source:
+            N/A
+
+            Inputs:
+            source - Data with the values to copy
+
+            Outputs:
+            a reference to self, updated in place
+
+            Properties Used:
+            N/A
+        """
+        from copy import deepcopy
+        for k, v in source.items():
+            old = dict.get(self, k)
+            if isinstance(v, dict) and isinstance(old, Data):
+                old.copy_values(v)
+            elif isinstance(v, array_type) and isinstance(old, array_type) and v.dtype.kind == 'f' \
+                    and old.dtype.kind == 'f' and old.flags.writeable and old.shape == v.shape:
+                old[...] = v
+            else:
+                self[k] = deepcopy(v)
+        return self
