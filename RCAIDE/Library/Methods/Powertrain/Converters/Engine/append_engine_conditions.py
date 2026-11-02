@@ -37,5 +37,7 @@ def append_engine_conditions(engine, segment):
     segment.state.conditions.energy.converters[engine.tag].power.propulsive     = 0 * ones_row(1)
     segment.state.conditions.energy.converters[engine.tag].torque               = 0 * ones_row(1)
     segment.state.conditions.energy.converters[engine.tag].omega                = engine.rated_speed * ones_row(1)
+    segment.state.conditions.energy.converters[engine.tag].throttle             = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[engine.tag].fuel_mass_flow_rate  = 0 * ones_row(1)
     
     return 
