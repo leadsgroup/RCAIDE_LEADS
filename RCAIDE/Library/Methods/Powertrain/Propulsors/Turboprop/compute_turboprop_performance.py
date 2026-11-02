@@ -21,7 +21,6 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.Turboprop_OffDesign_
     solve_turboprop_offdesign_robust, OffDesignMatchingError, pack_turboprop_design_constants, pack_turboprop_reference_point)
 
 # python imports 
-from   copy import deepcopy
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -386,16 +385,15 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
 
     # deep copy results 
-    conditions.energy.propulsors[turboprop.tag]                = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.aeroacoustics.propulsors[turboprop.tag]                 = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
-    conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
-    conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
-    conditions.energy.converters[compressor.tag]               = deepcopy(conditions.energy.converters[compressor_0.tag] ) 
-    conditions.energy.converters[combustor.tag]                = deepcopy(conditions.energy.converters[combustor_0.tag]               )
-    conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
-    conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
-    conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
-
+    conditions.energy.propulsors[turboprop.tag].copy_values(conditions.energy.propulsors[stored_propulsor_tag])
+    conditions.aeroacoustics.propulsors[turboprop.tag].copy_values(conditions.aeroacoustics.propulsors[stored_propulsor_tag])
+    conditions.energy.converters[ram.tag].copy_values(conditions.energy.converters[ram_0.tag])
+    conditions.energy.converters[inlet_nozzle.tag].copy_values(conditions.energy.converters[inlet_nozzle_0.tag])
+    conditions.energy.converters[compressor.tag].copy_values(conditions.energy.converters[compressor_0.tag])
+    conditions.energy.converters[combustor.tag].copy_values(conditions.energy.converters[combustor_0.tag])
+    conditions.energy.converters[low_pressure_turbine.tag].copy_values(conditions.energy.converters[low_pressure_turbine_0.tag])
+    conditions.energy.converters[high_pressure_turbine.tag].copy_values(conditions.energy.converters[high_pressure_turbine_0.tag])
+    conditions.energy.converters[core_nozzle.tag].copy_values(conditions.energy.converters[core_nozzle_0.tag])
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
     thrust_vector      = 0*state.ones_row(3)
@@ -413,13 +411,13 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
     idm   = turboprop.integrated_drive_motor
     idm_0 = network.propulsors[stored_propulsor_tag].integrated_drive_motor
     if idm != None and  len(state.numerics.time.differentiate) > 0:
-        conditions.energy.converters[idm.tag]  = deepcopy(conditions.energy.converters[idm_0.tag])
+        conditions.energy.converters[idm.tag].copy_values(conditions.energy.converters[idm_0.tag])
         power_elec_in =  conditions.energy.converters[idm.tag].inputs.power.electrical
 
     idg   = turboprop.integrated_drive_generator
     idg_0 = network.propulsors[stored_propulsor_tag].integrated_drive_generator
     if idg != None and len(state.numerics.time.differentiate) > 0:
-        conditions.energy.converters[idg.tag]  = deepcopy(conditions.energy.converters[idg_0.tag])
+        conditions.energy.converters[idg.tag].copy_values(conditions.energy.converters[idg_0.tag])
         power_elec_out =  conditions.energy.converters[idg.tag].outputs.power.electrical
 
     conditions.energy.propulsors[turboprop.tag].outputs.power.electrical  = power_elec_out
