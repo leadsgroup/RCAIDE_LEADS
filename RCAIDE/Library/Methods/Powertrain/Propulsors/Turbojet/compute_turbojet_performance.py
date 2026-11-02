@@ -22,7 +22,6 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.Turbojet_OffDesign_Ma
 
 # python imports 
 import  numpy as  np 
-from copy import  deepcopy
 from scipy.interpolate import RegularGridInterpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -453,17 +452,16 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
 
     # deep copy results 
-    conditions.energy.propulsors[turbojet.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.aeroacoustics.propulsors[turbojet.tag]          = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
-    conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
-    conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
-    conditions.energy.converters[low_pressure_compressor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.tag] )
-    conditions.energy.converters[high_pressure_compressor.tag] = deepcopy(conditions.energy.converters[high_pressure_compressor_0.tag])
-    conditions.energy.converters[combustor.tag]                = deepcopy(conditions.energy.converters[combustor_0.tag]               )
-    conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
-    conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
-    conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
-
+    conditions.energy.propulsors[turbojet.tag].copy_values(conditions.energy.propulsors[stored_propulsor_tag])
+    conditions.aeroacoustics.propulsors[turbojet.tag].copy_values(conditions.aeroacoustics.propulsors[stored_propulsor_tag])
+    conditions.energy.converters[ram.tag].copy_values(conditions.energy.converters[ram_0.tag])
+    conditions.energy.converters[inlet_nozzle.tag].copy_values(conditions.energy.converters[inlet_nozzle_0.tag])
+    conditions.energy.converters[low_pressure_compressor.tag].copy_values(conditions.energy.converters[low_pressure_compressor_0.tag])
+    conditions.energy.converters[high_pressure_compressor.tag].copy_values(conditions.energy.converters[high_pressure_compressor_0.tag])
+    conditions.energy.converters[combustor.tag].copy_values(conditions.energy.converters[combustor_0.tag])
+    conditions.energy.converters[low_pressure_turbine.tag].copy_values(conditions.energy.converters[low_pressure_turbine_0.tag])
+    conditions.energy.converters[high_pressure_turbine.tag].copy_values(conditions.energy.converters[high_pressure_turbine_0.tag])
+    conditions.energy.converters[core_nozzle.tag].copy_values(conditions.energy.converters[core_nozzle_0.tag])
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
     thrust_vector      = 0*state.ones_row(3)
@@ -479,13 +477,13 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     idm   = turbojet.integrated_drive_motor
     idm_0 = network.propulsors[stored_propulsor_tag].integrated_drive_motor
     if idm != None and  len(state.numerics.time.differentiate) > 0:
-        conditions.energy.converters[idm.tag] = deepcopy(conditions.energy.converters[idm_0.tag])
+        conditions.energy.converters[idm.tag].copy_values(conditions.energy.converters[idm_0.tag])
         conditions.energy.propulsors[turbojet.tag].inputs.power.electrical = conditions.energy.converters[idm.tag].inputs.power.electrical
 
     idg   = turbojet.integrated_drive_generator
     idg_0 = network.propulsors[stored_propulsor_tag].integrated_drive_generator
     if idg != None and len(state.numerics.time.differentiate) > 0:
-        conditions.energy.converters[idg.tag] = deepcopy(conditions.energy.converters[idg_0.tag])
+        conditions.energy.converters[idg.tag].copy_values(conditions.energy.converters[idg_0.tag])
         conditions.energy.propulsors[turbojet.tag].outputs.power.electrical = conditions.energy.converters[idg.tag].outputs.power.electrical
 
     conditions.energy.propulsors[turbojet.tag].outputs.thrust           = thrust_vector
