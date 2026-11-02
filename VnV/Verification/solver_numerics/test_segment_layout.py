@@ -114,8 +114,57 @@ def test_verify_catches_a_rebind_only():
     assert layout.verify(state) == ["residuals.mission.force_x", "conditions.freestream.density"]
 
 
-def test_solver_scalar_rejected():
+def test_scalar_solver_variables_get_their_own_slots():
     state = make_state()
-    state.unknowns.mission.trim = 0.0
+    state.unknowns.mission.elapsed_time       = 30          # ground segments; the same int object at both paths
+    state.residuals.mission.final_velocity_error = 30
+    expected = state.unknowns.mission.pack_array()
+    layout   = Segment_Layout(state)
+    assert state.unknowns.mission.elapsed_time.shape == ()
+    assert state.unknowns.mission.elapsed_time is not state.residuals.mission.final_velocity_error
+    assert np.array_equal(layout.buffer[layout.slices["unknowns.mission"]], expected)
+    assert np.array_equal(state.unknowns.mission.pack_array(), expected)      # rank-0 views pack like numbers
+    state.residuals.mission.final_velocity_error[...] = 1.5
+    assert state.unknowns.mission.elapsed_time == 30 and layout.buffer[layout.slices["residuals.mission"]][-1] == 1.5
+
+
+def test_boolean_solver_variable_rejected():
+    state = make_state()
+    state.unknowns.mission.trim = True
     with pytest.raises(TypeError):
         Segment_Layout(state)
+
+
+def test_relayout_of_a_converged_state_keeps_every_slot():
+    # after converge every leaf is a view of the old buffer; disjoint views of one owner do not overlap
+    state  = make_state()
+    first  = Segment_Layout(state)
+    second = Segment_Layout(state)
+    assert second.excluded == {} and second.buffer.size == first.buffer.size
+    assert not np.shares_memory(state.conditions.freestream.mach, first.buffer)
+
+
+def test_residual_group_check():
+    state  = make_state()
+    layout = Segment_Layout(state)
+    state.conditions.frames.force = state.conditions.frames.force + 1.0
+    assert layout.verify(state, group="residuals") == []
+    assert layout.verify(state) == ["conditions.frames.force"]
+
+
+def test_leaves_added_after_the_build_are_reported():
+    state  = make_state()
+    layout = Segment_Layout(state)
+    assert layout.added(state) == []
+    state.conditions.freestream.speed_of_sound = np.ones((N, 1))
+    assert layout.added(state) == ["conditions.freestream.speed_of_sound"]
+
+
+def test_unpack_array_writes_into_the_layout():
+    # the network update unpacks its unknowns every iterate; the optimizer's writes must keep reaching them
+    state  = make_state()
+    layout = Segment_Layout(state)
+    values = np.arange(2.0 * N) + 10.0
+    state.unknowns.network.unpack_array(values)
+    assert layout.verify(state) == []
+    assert np.array_equal(layout.buffer[layout.slices["unknowns.network"]], values)

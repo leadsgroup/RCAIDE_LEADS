@@ -78,12 +78,11 @@ def SciPy_Solve(problem,solver='SLSQP', sense_step = 1.4901161193847656e-08, ite
     elif solver == 'differential_evolution':
         # Define constraints as a tuple of nonlinear constraints 
         scaled_constraints = []
-        aliases            = problem.optimization_problem.aliases
         for ii in range(0,len(con)):
             de_constraint  = con[[ii]] 
             def fun(x):
                 problem.evaluate(x)
-                constraint_val = help_fun.get_values(problem,de_constraint,aliases)
+                constraint_val = problem.output_values(de_constraint)
                 return np.atleast_1d(constraint_val)
             
             bound  = help_fun.scale_const_bnds(con)

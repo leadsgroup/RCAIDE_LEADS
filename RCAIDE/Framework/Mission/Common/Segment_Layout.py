@@ -33,10 +33,11 @@ class Segment_Layout:
     Notes
     -----
     Unknown and residual slots follow ``Data.pack_array`` order (dict order, column-major), so a solver group's
-    slice equals its ``pack_array()``. Condition slots keep each array's memory order. A condition leaf that
-    shares memory with a different array in the state, or is also held outside unknowns, residuals and
-    conditions (e.g. in initials), is excluded, so every write still reaches the memory it reached before.
-    The layout is a converge-time object; after converge the leaves are ordinary arrays.
+    slice equals its ``pack_array()``; a scalar unknown or residual gets a one-entry rank-0 view. Condition slots
+    keep each array's memory order. A condition leaf whose memory overlaps a different array in the state, or
+    that is also held outside unknowns, residuals and conditions (e.g. in initials), is excluded, so every write
+    still reaches the memory it reached before. The layout is a converge-time object; after converge the leaves
+    are ordinary arrays.
     """
 
     def __init__(self, state):
@@ -45,53 +46,57 @@ class Segment_Layout:
             for path, v in leaves(state[group], (group,)):
                 if not isinstance(v, (int, float, np.ndarray)) or (isinstance(v, np.ndarray) and v.ndim > 2):
                     continue                                       # pack_array skips these too
-                if not (isinstance(v, np.ndarray) and v.dtype == np.float64):
-                    raise TypeError(f"{'.'.join(path)} is packed by the solver but is not a float64 array")
+                if isinstance(v, bool) or (isinstance(v, np.ndarray) and v.dtype != np.float64):
+                    raise TypeError(f"{'.'.join(path)} is packed by the solver but is not a float64 array or number")
                 slots.append((path, v, "F"))
 
         conditions    = [(path, v) for path, v in leaves(state.conditions, ("conditions",))
                          if isinstance(v, np.ndarray) and v.ndim <= 2 and v.dtype.kind == "f"]
         arrays        = [(path, v) for path, v in leaves(state, ()) if isinstance(v, np.ndarray)]
-        sharing       = {}
-        for _, v in arrays:
-            sharing.setdefault(id(root(v)), set()).add(id(v))
+        overlapping   = overlaps([v for _, v in arrays])
         outside       = {id(v) for path, v in arrays if path[0] not in ("unknowns", "residuals", "conditions")}
         self.excluded = {}
         for path, v in conditions:
-            if len(sharing[id(root(v))]) > 1:
-                self.excluded[path] = "shares memory with another array in the state"
+            if id(v) in overlapping:
+                self.excluded[path] = "memory overlaps another array in the state"
             elif id(v) in outside:
                 self.excluded[path] = "also held outside unknowns, residuals and conditions"
             else:
                 slots.append((path, v, "F" if v.flags.f_contiguous and not v.flags.c_contiguous else "C"))
 
+        # one slot per array object; a number is never shared, since equal numbers can be one object
+        key = lambda path, v: id(v) if isinstance(v, np.ndarray) else path
         offsets, bounds, size = {}, {}, 0
         for path, v, order in slots:
-            if id(v) in offsets:
+            if key(path, v) in offsets:
                 continue
-            offsets[id(v)] = (size, order)
+            offsets[key(path, v)] = (size, order)
             keys = (path[:1],) if path[0] == "conditions" else (path[:1], path[:2])   # solver groups get slices too
-            for key in keys:
-                low, high   = bounds.get(key, (size, size))
-                bounds[key] = (min(low, size), max(high, size + v.size))
-            size += v.size
+            for k in keys:
+                low, high = bounds.get(k, (size, size))
+                bounds[k] = (min(low, size), max(high, size + np.size(v)))
+            size += np.size(v)
 
         self.buffer = np.empty(size)
         self.views  = {}
-        by_id       = {}
+        by_key      = {}
         for path, v, _ in slots:
-            if id(v) not in by_id:
-                start, order = offsets[id(v)]
-                by_id[id(v)] = self.buffer[start:start + v.size].reshape(v.shape, order=order)
-                by_id[id(v)][...] = v
-            parent(state, path)[path[-1]] = by_id[id(v)]
-            self.views[path] = by_id[id(v)]
-        self.slices = {".".join(key): slice(*bounds[key]) for key in bounds}
+            if key(path, v) not in by_key:
+                start, order = offsets[key(path, v)]
+                view = self.buffer[start:start + np.size(v)].reshape(np.shape(v), order=order)
+                view[...] = v
+                by_key[key(path, v)] = view
+            parent(state, path)[path[-1]] = by_key[key(path, v)]
+            self.views[path] = by_key[key(path, v)]
+        self.slices = {".".join(k): slice(*bounds[k]) for k in bounds}
 
-    def verify(self, state):
-        """Paths whose leaf is no longer its slot view, i.e. rebound to new memory since the layout was built."""
+    def verify(self, state, group=None):
+        """Paths (only those under one top-level group, e.g. "residuals", if given) whose leaf is no longer its
+        slot view, i.e. rebound to new memory since the layout was built."""
         rebound = []
         for path, view in self.views.items():
+            if group is not None and path[0] != group:
+                continue
             try:
                 leaf = parent(state, path)[path[-1]]
             except KeyError:
@@ -99,6 +104,14 @@ class Segment_Layout:
             if leaf is not view:
                 rebound.append(".".join(path))
         return rebound
+
+    def added(self, state):
+        """Paths of float array leaves in unknowns, residuals or conditions that the layout does not know, i.e.
+        created after it was built."""
+        known = set(self.views) | set(self.excluded)
+        return [".".join(path) for group in ("unknowns", "residuals", "conditions")
+                for path, v in leaves(state[group], (group,))
+                if isinstance(v, np.ndarray) and v.dtype.kind == "f" and path not in known]
 
 
 def leaves(D, prefix):
@@ -123,3 +136,29 @@ def root(v):
     while isinstance(v.base, np.ndarray):
         v = v.base
     return v
+
+
+def overlaps(arrays):
+    """ids of arrays whose memory overlaps a different array in the list, by a sweep over byte ranges per owner."""
+    by_root = {}
+    for v in arrays:
+        if v.size:
+            by_root.setdefault(id(root(v)), {})[id(v)] = v
+    found = set()
+    for group in by_root.values():
+        spans = sorted(byte_range(v) + (k,) for k, v in group.items())
+        reach, reach_key = -1, None
+        for low, high, k in spans:
+            if low < reach:
+                found.update((k, reach_key))
+            if high > reach:
+                reach, reach_key = high, k
+    return found
+
+
+def byte_range(v):
+    """First and one-past-last byte an array can touch."""
+    start = v.__array_interface__["data"][0]
+    low   = start + sum(min(0, (n - 1) * s) for n, s in zip(v.shape, v.strides))
+    high  = start + sum(max(0, (n - 1) * s) for n, s in zip(v.shape, v.strides)) + v.itemsize
+    return low, high

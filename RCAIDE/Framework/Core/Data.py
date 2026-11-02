@@ -672,7 +672,8 @@ class Data(dict):
             M - either a 1D vector or 2D column array
             
             Outputs:
-            a reference to self, updates self in place
+            a reference to self, updates self in place; a writeable float array of the
+            same shape is written into, so views of it (e.g. a Segment_Layout) stay bound
     
             Properties Used:
             N/A    
@@ -693,6 +694,13 @@ class Data(dict):
         
         # counter for unpacking
         _index = [0]
+
+        # write into the existing array where possible, otherwise rebind to a copy
+        def store(D, k, v, value):
+            if isinstance(v, array_type) and v.dtype.kind == 'f' and v.flags.writeable and v.shape == np.shape(value):
+                v[...] = value
+            else:
+                D[k] = np.copy(value) if isinstance(value, array_type) else value
         
         # the unpacking function
         def do_unpack(D):
@@ -717,7 +725,7 @@ class Data(dict):
                 # scalars
                 elif rank == 0:
                     if vector:
-                        D[k] = M[index]
+                        store(D, k, v, M[index])
                         index += 1
                     else:#array
                         continue
@@ -727,20 +735,20 @@ class Data(dict):
                 elif rank == 1:
                     n = len(v)
                     if vector:
-                        D[k] = M[index:(index+n)].copy()
+                        store(D, k, v, M[index:(index+n)])
                         index += n
                     else:#array
-                        D[k] = M[:,index].copy()
+                        store(D, k, v, M[:,index])
                         index += 1
                     
                 # 2d arrays
                 elif rank == 2:
                     n,m = v.shape
                     if vector:
-                        D[k] = np.reshape( M[index:(index+(n*m))] ,[n,m], order='F').copy()
+                        store(D, k, v, np.reshape( M[index:(index+(n*m))] ,[n,m], order='F'))
                         index += n*m 
                     else:#array
-                        D[k] = M[:,index:(index+m)].copy()
+                        store(D, k, v, M[:,index:(index+m)])
                         index += m
                 
                 #: switch rank
