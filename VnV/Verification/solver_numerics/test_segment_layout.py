@@ -168,3 +168,13 @@ def test_unpack_array_writes_into_the_layout():
     state.unknowns.network.unpack_array(values)
     assert layout.verify(state) == []
     assert np.array_equal(layout.buffer[layout.slices["unknowns.network"]], values)
+
+
+def test_rank_3_conditions_get_slots():
+    state = make_state()
+    state.conditions.frames.transform = np.arange(9.0 * N).reshape((N, 3, 3))
+    value  = state.conditions.frames.transform.copy()
+    layout = Segment_Layout(state)
+    assert np.shares_memory(state.conditions.frames.transform, layout.buffer)
+    assert np.array_equal(state.conditions.frames.transform, value)
+    assert layout.buffer.size == 14 * N + 9 * N

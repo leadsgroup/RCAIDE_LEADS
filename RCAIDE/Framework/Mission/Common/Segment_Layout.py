@@ -33,11 +33,11 @@ class Segment_Layout:
     Notes
     -----
     Unknown and residual slots follow ``Data.pack_array`` order (dict order, column-major), so a solver group's
-    slice equals its ``pack_array()``; a scalar unknown or residual gets a one-entry rank-0 view. Condition slots
-    keep each array's memory order. A condition leaf whose memory overlaps a different array in the state, or
-    that is also held outside unknowns, residuals and conditions (e.g. in initials), is excluded, so every write
-    still reaches the memory it reached before. The layout is a converge-time object; after converge the leaves
-    are ordinary arrays.
+    slice equals its ``pack_array()``; a scalar unknown or residual gets a one-entry rank-0 view. Condition slots,
+    of any rank (e.g. one 3x3 transform per row), keep each array's memory order. A condition leaf whose memory
+    overlaps a different array in the state, or that is also held outside unknowns, residuals and conditions (e.g.
+    in initials), is excluded, so every write still reaches the memory it reached before. The layout is a
+    converge-time object; after converge the leaves are ordinary arrays.
     """
 
     def __init__(self, state):
@@ -51,7 +51,7 @@ class Segment_Layout:
                 slots.append((path, v, "F"))
 
         conditions    = [(path, v) for path, v in leaves(state.conditions, ("conditions",))
-                         if isinstance(v, np.ndarray) and v.ndim <= 2 and v.dtype.kind == "f"]
+                         if isinstance(v, np.ndarray) and v.dtype.kind == "f"]
         arrays        = [(path, v) for path, v in leaves(state, ()) if isinstance(v, np.ndarray)]
         overlapping   = overlaps([v for _, v in arrays])
         outside       = {id(v) for path, v in arrays if path[0] not in ("unknowns", "residuals", "conditions")}
