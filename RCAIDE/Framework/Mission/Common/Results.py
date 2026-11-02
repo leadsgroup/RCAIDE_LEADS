@@ -99,7 +99,7 @@ class Results(Conditions):
         self.frames.body.moment_vector                                         = ones_3col * 0
         self.frames.body.velocity_vector                                       = ones_3col * 0
         self.frames.body.total_moment_vector                                  = ones_3col * 0 
-        self.frames.body.transform_to_inertial                                 = np.empty([0,0,0])
+        self.frames.body.transform_to_inertial                                 = np.zeros([1,3,3])
                                                                                
         # wind frame conditions                                                
         self.frames.wind                                                       = Conditions()
@@ -111,14 +111,15 @@ class Results(Conditions):
         self.frames.wind.angular_acceleration_vector                           = ones_3col * 0
         self.frames.wind.total_force_vector                                    = ones_3col * 0
         self.frames.wind.total_moment_vector                                   = ones_3col * 0
-        self.frames.wind.transform_to_inertial                                 = np.empty([0,0,0]) 
+        self.frames.wind.transform_to_inertial                                 = np.zeros([1,3,3])
+        self.frames.wind.transform_to_body                                     = np.zeros([1,3,3])
                                                                                
         # planet frame conditions                                              
         self.frames.planet                                                     = Conditions()
         self.frames.planet.start_time                                          = None
         self.frames.planet.latitude                                            = ones_1col * 0
         self.frames.planet.longitude                                           = ones_1col * 0
-        self.frames.planet.true_course                                         = ones_1col * 0
+        self.frames.planet.true_course                                         = np.zeros([1,3,3])
         self.frames.planet.true_heading                                        = ones_1col * 0
 
         # ----------------------------------------------------------------------------------------------------------------------         

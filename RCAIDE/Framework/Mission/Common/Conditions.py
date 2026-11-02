@@ -126,11 +126,11 @@ class Conditions(Data):
                 v.expand_rows(rows,override=override)
             elif isinstance(v,expanded_array):
                 self[k] = v.resize(rows)
-            # need arrays here
-            elif rank == 2:
+            # need arrays here; rank 3 holds one matrix per row (e.g. frame transforms)
+            elif rank >= 2:
                 #Check if it's already expanded
                 if v.shape[0]<=1 or override:
-                    self[k] = np.resize(v,[rows,v.shape[1]])
+                    self[k] = np.resize(v,(rows,) + v.shape[1:])
 
         return
 
