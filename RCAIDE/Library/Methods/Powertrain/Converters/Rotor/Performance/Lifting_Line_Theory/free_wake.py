@@ -129,6 +129,9 @@ def free_wake(rotor, wake_inputs, conditions):
                 wake_s    = wake_src[i][s][cp, :, k, :, :]
                 r_w_start = wake_s[:, :-1, :].reshape(gs.B*gs.N_wake, 3)
                 r_w_end   = wake_s[:,  1:, :].reshape(gs.B*gs.N_wake, 3)
+                A_s, B_s = blade_src[i][s]
+                A_blade  = A_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
+                B_blade  = B_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
                 # Fused Biot-Savart + contraction, SoA entry point (skips materializing the
                 # (M,N,3) influence tensor, its separate einsum pass, AND the (M,3) stack this
                 # function's non-SoA sibling would otherwise do on every call) -- bit-identical
@@ -139,22 +142,32 @@ def free_wake(rotor, wake_inputs, conditions):
                 # (unlike evaluate_bound_vortex_circulation.py's K_wake, which is reused across
                 # many different Gamma_b guesses in its inner loop and must stay a cached
                 # tensor), so there is nothing lost by contracting directly.
-                wx, wy, wz = biot_savart_induced_velocity_soa(
+                #
+                # Wake and blade sources for the same source rotor gs share one vc_correction
+                # (both calls below always passed gs.vc_correction), so they can be concatenated
+                # into ONE combined source array and dispatched through a single Numba call
+                # instead of two -- the kernel's own internal contraction over N already sums
+                # every source segment's contribution, so summing wake+blade together inside the
+                # kernel is equivalent to computing them separately and adding in Python, up to
+                # floating-point reassociation (same class of ~1e-16 difference already accepted
+                # for the hand-unrolled norm/dot/cross rewrite, commit 60cb5b08ab) -- verified in
+                # scratchpad/verify_wake_blade_fusion.py (2026-11-03). This halves the number of
+                # _dispatch_soa_kernel/Numba-dispatch calls per source rotor (was 87% of total
+                # single-threaded CPU time per scratchpad/bench_ll_serial_diag2.pstats).
+                Cx = np.concatenate((r_w_start[:, 0], A_blade[:, 0]))
+                Cy = np.concatenate((r_w_start[:, 1], A_blade[:, 1]))
+                Cz = np.concatenate((r_w_start[:, 2], A_blade[:, 2]))
+                Dx = np.concatenate((r_w_end[:, 0],   B_blade[:, 0]))
+                Dy = np.concatenate((r_w_end[:, 1],   B_blade[:, 1]))
+                Dz = np.concatenate((r_w_end[:, 2],   B_blade[:, 2]))
+                Gamma_c = np.concatenate((gs.Gamma_w_flat[cp], gs.Gamma_b_flat[cp]))
+                rc_c    = np.concatenate((gs.rcvf_flat[cp],    gs.rcb_flat[cp]))
+                vx, vy, vz = biot_savart_induced_velocity_soa(
                     Px, Py, Pz,
-                    np.ascontiguousarray(r_w_start[:, 0]), np.ascontiguousarray(r_w_start[:, 1]), np.ascontiguousarray(r_w_start[:, 2]),
-                    np.ascontiguousarray(r_w_end[:, 0]),   np.ascontiguousarray(r_w_end[:, 1]),   np.ascontiguousarray(r_w_end[:, 2]),
-                    gs.Gamma_w_flat[cp], gs.rcvf_flat[cp], gs.vc_correction)
+                    np.ascontiguousarray(Cx), np.ascontiguousarray(Cy), np.ascontiguousarray(Cz),
+                    np.ascontiguousarray(Dx), np.ascontiguousarray(Dy), np.ascontiguousarray(Dz),
+                    Gamma_c, rc_c, gs.vc_correction)
 
-                A_s, B_s = blade_src[i][s]
-                A_blade  = A_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
-                B_blade  = B_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
-                bx, by, bz = biot_savart_induced_velocity_soa(
-                    Px, Py, Pz,
-                    np.ascontiguousarray(A_blade[:, 0]), np.ascontiguousarray(A_blade[:, 1]), np.ascontiguousarray(A_blade[:, 2]),
-                    np.ascontiguousarray(B_blade[:, 0]), np.ascontiguousarray(B_blade[:, 1]), np.ascontiguousarray(B_blade[:, 2]),
-                    gs.Gamma_b_flat[cp], gs.rcb_flat[cp], gs.vc_correction)
-
-                vx = bx + wx; vy = by + wy; vz = bz + wz
                 if gs.CW[cp]:
                     sumx -= vx; sumy -= vy; sumz -= vz
                 else:
