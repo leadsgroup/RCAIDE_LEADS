@@ -95,9 +95,7 @@ def compute_turbofan_performance_surrogate(turbofan, state, network=None, center
         exit_stagnation_pressure     = nan_column,
         exit_velocity                = nan_column,
     )
-    noise_conditions.fan_nozzle  = nozzle_res()
-    noise_conditions.core_nozzle = nozzle_res()
-    noise_conditions.fan         = Data(angular_velocity = nan_column)
+    noise_conditions.copy_values({'fan_nozzle': nozzle_res(), 'core_nozzle': nozzle_res(), 'fan': Data(angular_velocity = nan_column)})
 
     stored_results_flag   = True
     stored_propulsor_tag  = turbofan.tag

@@ -108,7 +108,7 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
     
     # Compute rotor performance (coupled rotors are solved together by the network)
     if not network.rotor_on_rotor_coupling:
-        compute_rotor_performance(rotor,conditions,network.wing_on_rotor_coupling)
+        compute_rotor_performance(rotor,conditions,network.wing_vortex_distribution(state))
  
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)

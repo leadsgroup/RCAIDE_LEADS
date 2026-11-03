@@ -100,10 +100,8 @@ def build_surrogate(aerodynamics, training, vehicle):
     surrogates.Clift_spanwise     = RegularGridInterpolator((AoA_data, mach_data),training.Clift_spanwise      ,method='linear',    bounds_error=False, fill_value=None)      
     if 'gamma_alpha' in training: # training data stored before vortex strengths were added has no gamma_alpha
         surrogates.gamma_alpha    = RegularGridInterpolator((AoA_data, mach_data),training.gamma_alpha         ,method='linear',    bounds_error=False, fill_value=None)      
-        surrogates.VD             = training.VD
     else:
         surrogates.gamma_alpha    = None
-        surrogates.VD             = None
 
     surrogates.Clift_beta         = RegularGridInterpolator((Beta_data ,mach_data),training.Clift_beta        ,method = 'linear',   bounds_error=False, fill_value=None)   
     surrogates.Cdrag_induced_beta = RegularGridInterpolator((Beta_data ,mach_data),training.Cdrag_induced_beta,method = 'linear',   bounds_error=False, fill_value=None)    
@@ -116,7 +114,7 @@ def build_surrogate(aerodynamics, training, vehicle):
 
 
     # Use interpolat.interp1d below
-    surrogates.CM_0             = interpolate.interp1d(mach_data, training.CM_0, kind='linear', bounds_error=False, fill_value='extrapolate')         
+    surrogates.CM_zero_lift     = interpolate.interp1d(mach_data, training.CM_zero_lift, kind='linear', bounds_error=False, fill_value='extrapolate')
     surrogates.dClift_dalpha    = interpolate.interp1d(mach_data, training.dClift_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dCX_dalpha       = interpolate.interp1d(mach_data, training.dCX_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dCX_du           = interpolate.interp1d(mach_data, training.dCX_du, kind='linear', bounds_error=False, fill_value='extrapolate')      
@@ -166,7 +164,6 @@ def no_surrogate(aerodynamics, training, vehicle):
     surrogates.Clift_beta             = None
     surrogates.Clift_spanwise         = None
     surrogates.gamma_alpha            = None
-    surrogates.VD                     = None
     surrogates.Cdrag_induced_alpha    = None     
     surrogates.Cdrag_induced_beta     = None 
     surrogates.CX_alpha               = None    
@@ -181,7 +178,7 @@ def no_surrogate(aerodynamics, training, vehicle):
     surrogates.CM_beta                = None 
     surrogates.CN_alpha               = None    
     surrogates.CN_beta                = None    
-    surrogates.CM_0                   = None  
+    surrogates.CM_zero_lift           = None
     
     surrogates.dClift_dalpha          = None      
     surrogates.dCX_dalpha             = None      

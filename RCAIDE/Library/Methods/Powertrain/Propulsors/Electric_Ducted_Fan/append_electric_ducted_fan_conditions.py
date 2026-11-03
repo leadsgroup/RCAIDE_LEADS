@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Mission.Common                             import Conditions
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.append_propulsor_conditions import append_propulsor_conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append electric ducted fan network conditions
@@ -61,33 +61,9 @@ def append_electric_ducted_fan_conditions(propulsor, segment):
     RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.compute_electric_ducted_fan_performance
     """
     # unpack 
-    ones_row                                                                  = segment.state.ones_row 
     
     # add propulsor conditions
-    segment.state.conditions.energy.propulsors[propulsor.tag]                               = Conditions()
-    segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions()
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.thrust                = 0. * ones_row(3)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.moment                = 0. * ones_row(3)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power                  = Conditions()
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.propulsive       = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.mechanical       = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.electrical       = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.chemical         = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.pneumatic        = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.hydraulic        = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.thermal          = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power                 = Conditions()
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive      = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.mechanical      = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical      = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.chemical        = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.pneumatic       = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.hydraulic       = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.thermal         = 0 * ones_row(1)
+    append_propulsor_conditions(propulsor, segment)
 
     for tag, item in propulsor.items():
         if issubclass(type(item), RCAIDE.Library.Components.Component):

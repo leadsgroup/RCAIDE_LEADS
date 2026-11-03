@@ -72,7 +72,8 @@ def postprocess_vortex_distribution(VD, settings):
     TE_X           = X2c[TE_ind]
     TE_Z           = Z2c[TE_ind]
     tan_incidence  = np.repeat((LE_Z-TE_Z)/(LE_X-TE_X), strip_n_cw) # ZETA  in vorlax
-    chord_adjusted = np.repeat(np.sqrt((TE_X-LE_X)**2 + (TE_Z-LE_Z)**2), strip_n_cw) # CHORD in vorlax
+    strip_chords   = np.sqrt((TE_X-LE_X)**2 + (TE_Z-LE_Z)**2)
+    chord_adjusted = np.repeat(strip_chords, strip_n_cw) # CHORD in vorlax
     
     XC_TE_wings  = np.repeat(VD.XC [TE_ind], strip_n_cw)
     YC_TE_wings  = np.repeat(VD.YC [TE_ind], strip_n_cw)
@@ -92,7 +93,8 @@ def postprocess_vortex_distribution(VD, settings):
     VD.SLE                     = SLE
     VD.D                       = D         
     VD.tangent_incidence_angle = tan_incidence
-    VD.chord_lengths           = np.atleast_2d(chord_adjusted)
+    VD.chord_lengths           = np.atleast_2d(chord_adjusted)   # per panel
+    VD.strip_chord_lengths     = strip_chords                    # per spanwise strip
     VD.Y_SW                    = Y_SW
     
     VD.XC_TE  = XC_TE_wings

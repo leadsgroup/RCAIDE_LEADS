@@ -100,7 +100,7 @@ def compute_internal_combustion_engine_performance(propulsor, state, network=Non
     conditions.energy.converters[propeller.tag].omega                         = conditions.energy.converters[engine.tag].omega 
     conditions.energy.converters[propeller.tag].throttle                      = conditions.energy.converters[engine.tag].throttle 
     conditions.energy.converters[propeller.tag].commanded_thrust_vector_angle = conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
-    compute_rotor_performance(propeller,conditions,network is not None and network.wing_on_rotor_coupling)
+    compute_rotor_performance(propeller,conditions,None if network is None else network.wing_vortex_distribution(state))
 
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)

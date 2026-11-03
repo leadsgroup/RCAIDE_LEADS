@@ -12,6 +12,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import  Data, Units
 from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.compute_zero_lift_moment import compute_zero_lift_moment
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
 from copy import deepcopy
 
@@ -141,7 +142,6 @@ def train_model(aerodynamics,Mach, vehicle):
         wing.control_surfaces = []
     VLM_results      = call_VLM(conditions,settings,clean_wing_vehicle)
     Clift_res        = VLM_results.CLift
-    VD_clean         = deepcopy(settings.vortex_distribution)  # clean-wing geometry; VLM overwrites settings.vortex_distribution in place
     Cdrag_res        = VLM_results.CDrag_induced
     CX_res           = VLM_results.CX
     CY_res           = VLM_results.CY
@@ -152,7 +152,6 @@ def train_model(aerodynamics,Mach, vehicle):
 
     training.Clift_spanwise  = VLM_results.sectional_CLift.reshape(len_Mach, len_AoA, np.shape(VLM_results.sectional_CLift)[1]).transpose(1, 0, 2)
     training.gamma_alpha     = VLM_results.gamma.reshape(len_Mach, len_AoA, np.shape(VLM_results.gamma)[1]).transpose(1, 0, 2)
-    training.VD              = VLM_results.VD
     Clift_alpha              = np.reshape(Clift_res,(len_Mach,len_AoA)).T 
     Cdrag_induced_alpha      = np.reshape(Cdrag_res,(len_Mach,len_AoA)).T 
     CX_alpha                 = np.reshape(CX_res,(len_Mach,len_AoA)).T 
@@ -162,15 +161,17 @@ def train_model(aerodynamics,Mach, vehicle):
     CM_alpha                 = np.reshape(CM_res,(len_Mach,len_AoA)).T 
     CN_alpha                 = np.reshape(CN_res,(len_Mach,len_AoA)).T  
     
-    # Angle of Attack at 0 Degrees .
-    Clift_alpha_0   =  np.tile(Clift_alpha[2][None,:],(2,1))
-    Cdrag_alpha_0   =  np.tile(Cdrag_induced_alpha[2][None,:],(2,1))
-    CX_alpha_0      =  np.tile(CX_alpha[2][None,:],(2, 1)) 
-    CY_alpha_0      =  0 * np.tile(CY_alpha[2][None,:],(2, 1)) 
-    CZ_alpha_0      =  np.tile(CZ_alpha[2][None,:],(2, 1)) 
-    CL_alpha_0      =  0 * np.tile(CL_alpha[2][None,:],(2, 1)) 
-    CM_alpha_0      =  np.tile(CM_alpha[2][None,:],(2, 1)) 
-    CN_alpha_0      =  0 * np.tile(CN_alpha[2][None,:],(2, 1)) 
+    # coefficients at zero incidence, the mean of cases at +/- the reference perturbation (independent of the
+    # training grid; a VLM case at exactly zero incidence is noisy for untwisted wings)
+    reference     = reference_coefficients(aerodynamics, Mach, settings, clean_wing_vehicle)
+    Clift_alpha_0 =  np.tile(reference.CLift[None,:],(2,1))
+    Cdrag_alpha_0 =  np.tile(reference.CDrag_induced[None,:],(2,1))
+    CX_alpha_0    =  np.tile(reference.CX[None,:],(2, 1)) 
+    CY_alpha_0    =  0 * np.tile(reference.CY[None,:],(2, 1)) 
+    CZ_alpha_0    =  np.tile(reference.CZ[None,:],(2, 1)) 
+    CL_alpha_0    =  0 * np.tile(reference.CL[None,:],(2, 1)) 
+    CM_alpha_0    =  np.tile(reference.CM[None,:],(2, 1)) 
+    CN_alpha_0    =  0 * np.tile(reference.CN[None,:],(2, 1)) 
         
     # --------------------------------------------------------------------------------------------------------------
     # Beta 
@@ -299,7 +300,7 @@ def train_model(aerodynamics,Mach, vehicle):
     training.CL_alpha                  = CL_alpha   
     training.CM_alpha                  = CM_alpha 
     training.CN_alpha                  = CN_alpha    
-    training.CM_0                      = CM_alpha_0[0]  
+    training.CM_zero_lift              = reference.CM_zero_lift
             
     training.Clift_beta                = Clift_beta 
     training.Cdrag_induced_beta        = Cdrag_induced_beta  
@@ -386,7 +387,6 @@ def train_model(aerodynamics,Mach, vehicle):
     # reset vortex distribution after training
     # restore the clean-wing geometry in place: segments share this object, and the control-surface
     # sweeps above left the last deflected geometry in it (read by e.g. transonic_lift_wave_drag)
-    settings.vortex_distribution.update(VD_clean)
     return training
 
 def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub_Mach, sup_Mach, vehicle): 
@@ -420,7 +420,6 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     Clift_spanwise        =np.concatenate((training_subsonic.Clift_spanwise[:,-1][:,None] , training_supersonic.Clift_spanwise[:,0][:,None] ), axis = 1)
     if 'gamma_alpha' in training_subsonic and 'gamma_alpha' in training_supersonic:
         training.gamma_alpha = np.concatenate((training_subsonic.gamma_alpha[:,-1][:,None], training_supersonic.gamma_alpha[:,0][:,None]), axis = 1)
-        training.VD          = training_subsonic.VD
     Cdrag_induced_alpha   =  np.concatenate((training_subsonic.Cdrag_induced_alpha[:,-1][:,None]  , training_supersonic.Cdrag_induced_alpha[:,0][:,None] ), axis = 1) 
     CX_alpha              =  np.concatenate((training_subsonic.CX_alpha[:,-1][:,None]    , training_supersonic.CX_alpha[:,0][:,None] ), axis = 1)   
     CY_alpha              =  np.concatenate((training_subsonic.CY_alpha[:,-1][:,None]    , training_supersonic.CY_alpha[:,0][:,None] ), axis = 1)   
@@ -428,7 +427,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     CL_alpha              =  np.concatenate((training_subsonic.CL_alpha[:,-1][:,None]    , training_supersonic.CL_alpha[:,0][:,None] ), axis = 1)   
     CM_alpha              =  np.concatenate((training_subsonic.CM_alpha[:,-1][:,None]    , training_supersonic.CM_alpha[:,0][:,None] ), axis = 1)   
     CN_alpha              =  np.concatenate((training_subsonic.CN_alpha[:,-1][:,None]    , training_supersonic.CN_alpha[:,0][:,None] ), axis = 1) 
-    CM_0                  =  np.concatenate((training_subsonic.CM_0[:][-1,None]    , training_supersonic.CM_0[:][0,None] ))      
+    CM_zero_lift          =  np.concatenate((training_subsonic.CM_zero_lift[-1,None], training_supersonic.CM_zero_lift[0,None]))
  
     # --------------------------------------------------------------------------------------------------------------
     # Beta 
@@ -480,7 +479,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     training.CL_alpha                  = CL_alpha
     training.CM_alpha                  = CM_alpha  
     training.CN_alpha                  = CN_alpha
-    training.CM_0                      = CM_0  
+    training.CM_zero_lift              = CM_zero_lift
     training.Clift_spanwise            = Clift_spanwise
     
     
@@ -592,6 +591,30 @@ def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference):
     return training
 
 
+def reference_coefficients(aerodynamics, Mach, settings, vehicle):
+    """Coefficients at zero incidence per Mach, the mean of VLM cases at +/- training.reference_angle_perturbation,
+    and the pitching moment at zero lift from the same cases."""
+    delta                                  = aerodynamics.training.reference_angle_perturbation
+    AoAs                                   = np.atleast_2d(np.tile([delta, -delta], len(Mach))).T
+    Machs                                  = np.atleast_2d(np.repeat(Mach, 2)).T
+    conditions                             = RCAIDE.Framework.Mission.Common.Results()
+    conditions.expand_rows(len(Machs),override=False)
+    conditions.aerodynamics.angles.alpha   = AoAs
+    conditions.aerodynamics.angles.beta    = np.zeros_like(Machs)
+    conditions.freestream.mach_number      = Machs
+    conditions.freestream.velocity         = np.zeros_like(Machs)
+    conditions.static_stability.pitch_rate = np.zeros_like(Machs)
+    conditions.static_stability.roll_rate  = np.zeros_like(Machs)
+    conditions.static_stability.yaw_rate   = np.zeros_like(Machs)
+    VLM_results = call_VLM(conditions, settings, vehicle)
+    reference   = Data()
+    for key in ['CLift', 'CDrag_induced', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN']:
+        reference[key] = np.reshape(VLM_results[key], (len(Mach), 2)).mean(axis=1)
+    CLift, CM   = np.reshape(VLM_results.CLift, (len(Mach), 2)), np.reshape(VLM_results.CM, (len(Mach), 2))
+    reference.CM_zero_lift = compute_zero_lift_moment(CLift[:, 0], CLift[:, 1], CM[:, 0], CM[:, 1])
+    return reference
+
+
 def control_surface_conditions(Mach):
     """Zero-incidence conditions, one case per Mach, for control-surface training."""
     Machs                                  = np.atleast_2d(Mach).T
@@ -657,8 +680,6 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CN              = VLM_results.CN
             RES.sectional_CLift = VLM_results.sectional_CLift         
             RES.gamma           = VLM_results.gamma
-            RES.VD              = VLM_results.VD  # full vortex distribution; geometry is the same for every case
-            settings.vortex_distribution  = settings.vortex_distribution  
         else: 
             RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift)) 
             RES.CDrag_induced   = np.vstack((RES.CDrag_induced  ,VLM_results.CDrag_induced))

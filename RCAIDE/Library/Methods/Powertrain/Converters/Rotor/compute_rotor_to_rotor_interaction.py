@@ -11,8 +11,8 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performanc
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  compute_rotor_to_rotor_interaction
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_rotor_to_rotor_interaction(rotors, conditions, wing_on_rotor_coupling=False):
+def compute_rotor_to_rotor_interaction(rotors, conditions, wing_vortex_distribution=None):
     """Computes the performance of coupled rotors with mutual wake interaction. Rotors are currently solved independently."""
     for rotor in rotors:
-        compute_rotor_performance(rotor,conditions,wing_on_rotor_coupling)
+        compute_rotor_performance(rotor,conditions,wing_vortex_distribution)
     return
