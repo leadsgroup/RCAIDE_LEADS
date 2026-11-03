@@ -460,7 +460,13 @@ def plot_3d_vehicle(vehicle,
         plotter.camera_position = [(L/2, 0 , 2.5 * L ), (L/2.5, 0,0), (0, 0, 1)]       
     else:
         plotter.camera_position = [(L * camera_eye_x, L * camera_eye_y, L * camera_eye_z), (L /2, 0, 0), (0, 0, 1)]
-    
+
+    # the fixed eye/focal distances above are scaled only to the vehicle length L, so they don't
+    # leave margin for wake tubes (plot_wake=True) that extend radially past the rotors -- reset_camera()
+    # keeps the view direction/up vector just set above but refits the distance to actually bound
+    # every actor added (vehicle + wake), so nothing past the vehicle's own silhouette gets clipped
+    plotter.reset_camera()
+
     plotter.window_size = [3000, 2000]
     plotter.set_background('white')
 
