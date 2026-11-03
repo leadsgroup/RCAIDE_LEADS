@@ -8,6 +8,7 @@
 # RCAIDE imports  
 import RCAIDE
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.append_propulsor_conditions import append_propulsor_conditions
 import numpy as np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -76,9 +77,7 @@ def append_turbofan_conditions(propulsor, segment):
     ones_row                                                                                = segment.state.ones_row 
     
     # add propulsor conditions          
-    segment.state.conditions.energy.propulsors[propulsor.tag]                               = Conditions()  
-    segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
+    append_propulsor_conditions(propulsor, segment)
     # segment.rating_code, if set, seeds the surrogate rating-code table used for this
     # segment (e.g. 'FID' to route a descent/idle segment to real flight-idle deck data
     # instead of the RC=0 part-power sweep) -- unset segments keep the previous default (None)
@@ -86,27 +85,8 @@ def append_turbofan_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
     segment.state.conditions.energy.propulsors[propulsor.tag].below_matching_floor          = 0. * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].moment                        = 0. * ones_row(3) 
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.current                = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power                  = Conditions()
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.propulsive       = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.mechanical       = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.electrical       = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.chemical         = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.pneumatic        = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.hydraulic        = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.thermal          = 0. * ones_row(1)  
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions() 
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power                 = Conditions()
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.current               = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive      = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.mechanical      = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical      = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.chemical        = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.pneumatic       = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.hydraulic       = 0. * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.thermal         = 0. * ones_row(1)  
-    segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     segment.state.conditions.aeroacoustics.propulsors[propulsor.tag]                                = Conditions()  
     segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].core_nozzle                    = Conditions() 
     segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].fan_nozzle                     = Conditions() 
