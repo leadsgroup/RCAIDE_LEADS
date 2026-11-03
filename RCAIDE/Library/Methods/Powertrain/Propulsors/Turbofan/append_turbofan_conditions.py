@@ -92,6 +92,19 @@ def append_turbofan_conditions(propulsor, segment):
     segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].fan_nozzle                     = Conditions() 
     segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].fan                            = Conditions()
 
+    # performance and noise-source outputs of every turbofan method, NaN until computed
+    rows                 = ones_row(1).shape[0]
+    turbofan_conditions  = segment.state.conditions.energy.propulsors[propulsor.tag]
+    for key in ['thrust_specific_fuel_consumption', 'bypass_ratio', 'flow_through_core', 'flow_through_fan', 'fuel_to_air_ratio',
+                'core_mass_flow_rate', 'total_temperature_reference', 'total_pressure_reference', 'overall_efficiency']:
+        turbofan_conditions[key] = np.full((rows, 1), np.nan)
+    noise_conditions     = segment.state.conditions.aeroacoustics.propulsors[propulsor.tag]
+    for nozzle in (noise_conditions.core_nozzle, noise_conditions.fan_nozzle):
+        for key in ['exit_static_temperature', 'exit_static_pressure', 'exit_stagnation_temperature', 'exit_stagnation_pressure',
+                    'exit_velocity']:
+            nozzle[key] = np.full((rows, 1), np.nan)
+    noise_conditions.fan.angular_velocity = np.full((rows, 1), np.nan)
+
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
             item.append_operating_conditions(segment) 

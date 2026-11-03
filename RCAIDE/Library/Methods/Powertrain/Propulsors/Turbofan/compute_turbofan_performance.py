@@ -455,9 +455,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
                 exit_velocity                       = fan_nozzle_conditions.outputs.velocity
                 )
                 
-    noise_conditions.fan_nozzle                      = fan_nozzle_res
-    noise_conditions.core_nozzle                     = core_nozzle_res
-    noise_conditions.fan                             = fan_res
+    noise_conditions.copy_values({'fan_nozzle': fan_nozzle_res, 'core_nozzle': core_nozzle_res, 'fan': fan_res})
     stored_results_flag                              = True
     stored_propulsor_tag                             = turbofan.tag  
     
@@ -797,25 +795,25 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
 
     # noise_conditions schema match -- real values at points the live solver handled,
     # NaN at any point routed to idle_fallback (no station data there either)
-    noise_conditions.core_nozzle = Data(
+    noise_conditions.copy_values({'core_nozzle': Data(
         exit_static_temperature      = core_nozzle_exit_static_temperature.reshape(-1,1),
         exit_static_pressure         = core_nozzle_exit_static_pressure.reshape(-1,1),
         exit_stagnation_temperature  = core_nozzle_exit_stagnation_temperature.reshape(-1,1),
         exit_stagnation_pressure     = core_nozzle_exit_stagnation_pressure.reshape(-1,1),
         exit_velocity                = core_nozzle_exit_velocity.reshape(-1,1),
-    )
-    noise_conditions.fan_nozzle = Data(
+    )})
+    noise_conditions.copy_values({'fan_nozzle': Data(
         exit_static_temperature      = fan_nozzle_exit_static_temperature.reshape(-1,1),
         exit_static_pressure         = fan_nozzle_exit_static_pressure.reshape(-1,1),
         exit_stagnation_temperature  = fan_nozzle_exit_stagnation_temperature.reshape(-1,1),
         exit_stagnation_pressure     = fan_nozzle_exit_stagnation_pressure.reshape(-1,1),
         exit_velocity                = fan_nozzle_exit_velocity.reshape(-1,1),
-    )
+    )})
     # fan total temperature rise (fan inlet Tt2 = T0*tau_r) sets the fan angular velocity
     fan_inlet_stagnation_temperature  = tau_r_out * static_temperature
     fan_exit_stagnation_temperature   = fan_inlet_stagnation_temperature * tau_f_alone_out
     fan_angular_velocity              = compute_fan_angular_velocity(turbofan.fan, fan_exit_stagnation_temperature - fan_inlet_stagnation_temperature)
-    noise_conditions.fan = Data(angular_velocity = fan_angular_velocity.reshape(-1,1))
+    noise_conditions.copy_values({'fan': Data(angular_velocity = fan_angular_velocity.reshape(-1,1))})
 
     # component station states, in the same conditions the analytical cycle populates, so that
     # downstream consumers (e.g. the aeroacoustic engine noise models) read one location
