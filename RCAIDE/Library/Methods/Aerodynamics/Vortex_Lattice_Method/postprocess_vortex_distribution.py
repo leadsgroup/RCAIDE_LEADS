@@ -62,8 +62,8 @@ def postprocess_vortex_distribution(VD, settings):
     panel_sweeps[VD.YA1 > VD.YB1] = -panel_sweeps[VD.YA1 > VD.YB1]
     VD.leading_edge_sweeps =  panel_sweeps[LE_ind] 
 
-    # Chord widths
-    Del_Y =  VD.XB1-VD.XA1 
+    # Strip widths: projected spanwise extent of each strip (A inboard, B outboard; abs for the mirrored half)
+    Del_Y =  np.abs(VD.YB1-VD.YA1)
     VD.chord_widths  = Del_Y[LE_ind]  
     
     # Compute strip-wise values
