@@ -8,9 +8,11 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import compute_rotor_performance
 
 # package imports
 import numpy as np
+from copy import deepcopy
 import time
 
 # local imports
@@ -37,8 +39,8 @@ def main():
     """
     ti = time.time()
 
-    power_off = evaluate_cruise(coupled=False)
-    power_on  = evaluate_cruise(coupled=True)
+    power_off, _      = evaluate_cruise(coupled=False)
+    power_on, cruise  = evaluate_cruise(coupled=True)
     print('Propeller power uncoupled [W]: ', power_off)
     print('Propeller power coupled   [W]: ', power_on)
 
@@ -51,8 +53,19 @@ def main():
     print('Power change from coupling: ', power_on[0] / power_off[0] - 1)
     assert np.abs(power_on[0] - power_off[0]) / power_off[0] > 1e-4
 
+    # the wing-induced velocities reach the propeller: at the converged state and the same rpm, the starboard
+    # propeller's thrust differs with and without them
+    rotor  = cruise.analyses.vehicle.networks.electric.propulsors.starboard_propulsor.rotor
+    thrust = []
+    for wing_on_rotor in (False, True):
+        conditions = deepcopy(cruise.conditions)
+        compute_rotor_performance(rotor, conditions, wing_on_rotor)
+        thrust.append(np.linalg.norm(conditions.energy.converters[rotor.tag].thrust[0]))
+    print('Thrust change from wing-induced velocities: ', thrust[1] / thrust[0] - 1)
+    assert np.abs(thrust[1] / thrust[0] - 1) > 1e-3
+
     # regression
-    power_true = 95804.81789793503
+    power_true = 94985.80192421269
     diff_power = np.abs(power_on[0] - power_true) / power_true
     print('Power: ', power_on[0], ' difference: ', diff_power)
     assert diff_power < 1e-2
@@ -79,7 +92,7 @@ def evaluate_cruise(coupled):
 
     converters = results.segments.cruise.conditions.energy.converters
     power      = np.array([converters[propulsor.rotor.tag].power[0,0] for propulsor in propulsors])
-    return power
+    return power, results.segments.cruise
 
 def analyses_setup(configs):
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()

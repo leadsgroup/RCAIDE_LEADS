@@ -28,7 +28,7 @@ def compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_
     rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
         Rotor whose disc is evaluated
     conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Flight conditions with aerodynamics.VD and aerodynamics.gamma from the VLM
+        Flight conditions with aerodynamics.vortex_distribution and aerodynamics.gamma from the VLM
     T_body2thrust : numpy.ndarray
         Body to rotor velocity frame transformation, shape (ctrl_pts, 3, 3)
     r_dim_2d : numpy.ndarray
