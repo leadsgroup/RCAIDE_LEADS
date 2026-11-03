@@ -6,9 +6,6 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imporst 
-from RCAIDE.Framework.Core import Data
-
 # package imports
 import numpy as np
 
@@ -134,8 +131,6 @@ def induced_drag(state,settings,geometry):
     CL            = aero.lift.total
     CDi           = aero.drag.induced.inviscid
 
-    wing_viscous_induced_drags = Data()
-
     # If the oswald efficiency factor is not specified  
     if e_osw == None:
 
@@ -171,10 +166,10 @@ def induced_drag(state,settings,geometry):
         # Calculate the induced drag       
         total_induced_drag = CL **2 / (np.pi*AR*e_osw)
         total_viscous_induced_drag = total_induced_drag - CDi
+        e_osw                      = e_osw * np.ones_like(CL)
         
     aero.drag.induced.total                    = total_induced_drag
     aero.drag.induced.viscous                  = total_viscous_induced_drag 
     aero.drag.induced.oswald_efficiency_factor = e_osw
-    aero.drag.induced.viscous_wings_drag       = wing_viscous_induced_drags 
     
     return 
