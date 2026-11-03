@@ -272,7 +272,9 @@ class Network(Component):
         ordered   = [c for c, h in zip(converters, is_heater) if not h] + [c for c, h in zip(converters, is_heater) if h]
         for converter in ordered:
             if converter.active:
+                # reuse only a converter of the same type
                 same_group = (stored_results_flag == True and
+                              type(converter) is type(converters[stored_converter_tag]) and
                               converter.assigned_distributors == converters[stored_converter_tag].assigned_distributors)
                 if converter.identical_converters == False or not same_group:
                     converter.reverse_mode_computation = True
