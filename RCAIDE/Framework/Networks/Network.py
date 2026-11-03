@@ -159,6 +159,10 @@ class Network(Component):
                 and not (self.wing_on_rotor_coupling or self.rotor_on_rotor_coupling)
                 and propulsor.assigned_distributors == reference.assigned_distributors)
 
+    def wing_vortex_distribution(self, state):
+        """ VLM mesh whose induced velocities enter the rotor discs when wing_on_rotor_coupling is on, else None """
+        return state.context.config.vortex_distribution if self.wing_on_rotor_coupling else None
+
     def evaluate(network,state,vehicle,ground_operations=False):
         """ Computes the performance of the network.
 
@@ -195,7 +199,7 @@ class Network(Component):
                 if propulsor.active and isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
                     propulsor.compute_drive(state,network)
                     rotors.append(propulsor.rotor)
-            compute_rotor_to_rotor_interaction(rotors,conditions,network.wing_on_rotor_coupling)
+            compute_rotor_to_rotor_interaction(rotors,conditions,network.wing_vortex_distribution(state))
             
         stored_results_flag  = False
         stored_propulsor_tag = None

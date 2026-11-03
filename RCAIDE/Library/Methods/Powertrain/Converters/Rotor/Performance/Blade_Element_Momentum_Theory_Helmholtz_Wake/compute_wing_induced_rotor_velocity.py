@@ -19,7 +19,7 @@ BODY_TO_VEHICLE = np.array([-1., 1., -1.])
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_wing_induced_rotor_velocity
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_2d, psi_2d):
+def compute_wing_induced_rotor_velocity(rotor, conditions, VD, T_body2thrust, r_dim_2d, psi_2d):
     """
     Computes the velocity induced by the wing vortex lattice at the rotor disc stations, in the rotor polar frame.
 
@@ -28,7 +28,9 @@ def compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_
     rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
         Rotor whose disc is evaluated
     conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Flight conditions with aerodynamics.vortex_distribution and aerodynamics.gamma from the VLM
+        Flight conditions with aerodynamics.gamma from the VLM
+    VD : Data
+        VLM mesh the vortex strengths gamma are defined on
     T_body2thrust : numpy.ndarray
         Body to rotor velocity frame transformation, shape (ctrl_pts, 3, 3)
     r_dim_2d : numpy.ndarray
@@ -50,7 +52,6 @@ def compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_
     The unit-strength influence of every wing panel on the disc is cached on the rotor and
     rebuilt only when the rotor, wing geometry or Mach number changes.
     """
-    VD    = conditions.aerodynamics.vortex_distribution
     mach  = conditions.freestream.mach_number
     key   = wing_influence_key(rotor, VD, mach, T_body2thrust, r_dim_2d, psi_2d)
     cache = rotor.get('wing_influence_cache')   # runtime cache, not a rotor parameter, so saved rotors stay loadable

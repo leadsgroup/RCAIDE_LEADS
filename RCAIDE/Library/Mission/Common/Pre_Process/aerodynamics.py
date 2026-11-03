@@ -70,10 +70,10 @@ def aerodynamics(mission):
             pass
         else:        
             if segment.analyses.aerodynamics != None:
-                segment.analyses.aerodynamics.append_operating_conditions(segment)
                 if last_tag!=  None and 'compute' in mission.segments[last_tag].analyses.aerodynamics.process.keys(): 
                     segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings
                     segment.analyses.aerodynamics.surrogates                          = mission.segments[last_tag].analyses.aerodynamics.surrogates  
+                    segment.analyses.aerodynamics.vortex_distribution                 = mission.segments[last_tag].analyses.aerodynamics.vortex_distribution
                     if segment.analyses.aerodynamics is not mission.segments[last_tag].analyses.aerodynamics:
                         segment.analyses.aerodynamics.surrogate_owner                 = mission.segments[last_tag].analyses.aerodynamics
                     segment.analyses.aerodynamics.settings.vortex_distribution        = mission.segments[last_tag].analyses.aerodynamics.settings.vortex_distribution 
@@ -87,4 +87,5 @@ def aerodynamics(mission):
                     segment.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), segment.analyses.vehicle.tag +"_" + segment.analyses.aerodynamics.tag +"_aero_training_data.pkl")
                     segment.analyses.aerodynamics.initialize(segment.analyses.vehicle)   
                     last_tag = tag 
+                segment.analyses.aerodynamics.append_operating_conditions(segment)
     return 

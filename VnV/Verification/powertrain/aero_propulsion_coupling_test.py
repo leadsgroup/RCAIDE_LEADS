@@ -57,9 +57,9 @@ def main():
     # propeller's thrust differs with and without them
     rotor  = cruise.analyses.vehicle.networks.electric.propulsors.starboard_propulsor.rotor
     thrust = []
-    for wing_on_rotor in (False, True):
+    for wing_vortex_distribution in (None, cruise.state.context.config.vortex_distribution):
         conditions = deepcopy(cruise.conditions)
-        compute_rotor_performance(rotor, conditions, wing_on_rotor)
+        compute_rotor_performance(rotor, conditions, wing_vortex_distribution)
         thrust.append(np.linalg.norm(conditions.energy.converters[rotor.tag].thrust[0]))
     print('Thrust change from wing-induced velocities: ', thrust[1] / thrust[0] - 1)
     assert np.abs(thrust[1] / thrust[0] - 1) > 1e-3

@@ -13,10 +13,12 @@ from RCAIDE.Library.Methods.Aerodynamics                       import Common
 from .Aerodynamics                                             import Aerodynamics 
 from RCAIDE.Framework.Analyses.Common.Process_Geometry         import Process_Geometry 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import *   
+from RCAIDE.Framework.Mission.Common                           import Results
 
 # package imports 
 import numpy as np 
 import os,pickle
+from copy import deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice_Method
@@ -155,6 +157,12 @@ class Vortex_Lattice_Method(Aerodynamics):
 
     def initialize(self, vehicle): 
          
+        # clean-wing mesh, one case: the geometry the surrogates are trained on and the wing-on-rotor coupling uses
+        clean_wing_vehicle = deepcopy(vehicle)
+        for wing in clean_wing_vehicle.wings:
+            wing.control_surfaces = []
+        self.vortex_distribution = generate_vortex_distribution(Results(), self.settings, clean_wing_vehicle)
+
         use_surrogate        = self.settings.use_surrogate 
         reuse_training_data  = self.settings.reuse_training_data   
 
