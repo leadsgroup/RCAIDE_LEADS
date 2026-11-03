@@ -71,8 +71,8 @@ def planet_position(segment):
     # Pack 
     lat                                           = conditions.frames.planet.latitude[0,0]
     lon                                           = conditions.frames.planet.longitude[0,0]
-    conditions.frames.planet.latitude             = lat + lamda
-    conditions.frames.planet.longitude            = lon + mu 
-    conditions.frames.planet.true_course          = np.tile(phi[None,:,:],(len(V),1,1))    
+    conditions.frames.planet.latitude[...]        = lat + lamda
+    conditions.frames.planet.longitude[...]       = lon + mu 
+    conditions.frames.planet.true_course[...]     = phi    
 
     return 

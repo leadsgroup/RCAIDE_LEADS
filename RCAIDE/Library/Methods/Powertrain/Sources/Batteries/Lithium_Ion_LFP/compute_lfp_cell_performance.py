@@ -9,8 +9,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 import numpy as np
-from copy import deepcopy
-
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_lfp_cell_performance
 # ----------------------------------------------------------------------------------------------------------------------
@@ -178,7 +176,7 @@ def compute_lfp_cell_performance(battery_module, battery, state, network):
 def reuse_stored_lfp_cell_data(battery_module,state,stored_battery_tag,stored_battery_module_tag):
     """Reuses results from one module for identical battery modules"""
 
-    state.conditions.energy.sources[stored_battery_tag][battery_module.tag] = deepcopy(state.conditions.energy.sources[stored_battery_tag][stored_battery_module_tag])
+    state.conditions.energy.sources[stored_battery_tag][battery_module.tag].copy_values(state.conditions.energy.sources[stored_battery_tag][stored_battery_module_tag])
     inputs  = state.conditions.energy.sources[stored_battery_tag][battery_module.tag].inputs
     outputs = state.conditions.energy.sources[stored_battery_tag][battery_module.tag].outputs
     return inputs, outputs

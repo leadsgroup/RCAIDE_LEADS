@@ -5,7 +5,11 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+import collections
+
 import numpy as np
+
+from .Conditions import Conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Segment_Layout
@@ -29,15 +33,18 @@ class Segment_Layout:
         Key path -> the slot view now held at that path; aliased leaves (one array at several paths) share a slot.
     excluded : dict
         Key path -> reason, for numeric condition leaves left as they are.
+    owned : set
+        ids of the slot views held at exactly one path; assigning a same-shape float array over one of these
+        writes into it (``Conditions.__setitem__``).
 
     Notes
     -----
     Unknown and residual slots follow ``Data.pack_array`` order (dict order, column-major), so a solver group's
-    slice equals its ``pack_array()``; a scalar unknown or residual gets a one-entry rank-0 view. Condition slots
-    keep each array's memory order. A condition leaf whose memory overlaps a different array in the state, or
-    that is also held outside unknowns, residuals and conditions (e.g. in initials), is excluded, so every write
-    still reaches the memory it reached before. The layout is a converge-time object; after converge the leaves
-    are ordinary arrays.
+    slice equals its ``pack_array()``; a scalar unknown or residual gets a one-entry rank-0 view. Condition slots,
+    of any rank (e.g. one 3x3 transform per row), keep each array's memory order. A condition leaf whose memory
+    overlaps a different array in the state, or that is also held outside unknowns, residuals and conditions (e.g.
+    in initials), is excluded, so every write still reaches the memory it reached before. The layout is a
+    converge-time object; after converge the leaves are ordinary arrays.
     """
 
     def __init__(self, state):
@@ -51,7 +58,7 @@ class Segment_Layout:
                 slots.append((path, v, "F"))
 
         conditions    = [(path, v) for path, v in leaves(state.conditions, ("conditions",))
-                         if isinstance(v, np.ndarray) and v.ndim <= 2 and v.dtype.kind == "f"]
+                         if isinstance(v, np.ndarray) and v.dtype.kind == "f"]
         arrays        = [(path, v) for path, v in leaves(state, ()) if isinstance(v, np.ndarray)]
         overlapping   = overlaps([v for _, v in arrays])
         outside       = {id(v) for path, v in arrays if path[0] not in ("unknowns", "residuals", "conditions")}
@@ -86,9 +93,32 @@ class Segment_Layout:
                 view = self.buffer[start:start + np.size(v)].reshape(np.shape(v), order=order)
                 view[...] = v
                 by_key[key(path, v)] = view
-            parent(state, path)[path[-1]] = by_key[key(path, v)]
+            dict.__setitem__(parent(state, path), path[-1], by_key[key(path, v)])   # bypasses the storage rule
             self.views[path] = by_key[key(path, v)]
         self.slices = {".".join(k): slice(*bounds[k]) for k in bounds}
+
+        # aliased slots keep today's semantics (assignment rebinds one name), so only single-path slots are owned
+        counts     = collections.Counter(id(view) for view in self.views.values())
+        self.owned = {id(view) for view in self.views.values() if counts[id(view)] == 1}
+        for path in self.views:
+            node = parent(state, path)
+            if isinstance(node, Conditions):
+                object.__setattr__(node, 'segment_layout', self)
+
+    def owns(self, v):
+        """Whether v is one of this layout's single-path slot views."""
+        return id(v) in self.owned
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        """A layout binds one state's memory; a copied state shares the reference but owns none of its slots."""
+        return self
+
+    def __reduce__(self):
+        """Saved states are plain data: a pickled layout loads as None."""
+        return (no_layout, ())
 
     def verify(self, state, group=None):
         """Paths (only those under one top-level group, e.g. "residuals", if given) whose leaf is no longer its
@@ -112,6 +142,11 @@ class Segment_Layout:
         return [".".join(path) for group in ("unknowns", "residuals", "conditions")
                 for path, v in leaves(state[group], (group,))
                 if isinstance(v, np.ndarray) and v.dtype.kind == "f" and path not in known]
+
+
+def no_layout():
+    """What a pickled layout loads as."""
+    return None
 
 
 def leaves(D, prefix):

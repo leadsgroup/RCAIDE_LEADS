@@ -11,7 +11,6 @@ import RCAIDE
 from RCAIDE.Framework.Core import Data      
  
 # python imports 
-from copy import deepcopy 
 import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turboelectric_generator_performance
@@ -148,18 +147,16 @@ def reuse_stored_turboelectric_generator_data(turboelectric_generator,conditions
     low_pressure_turbine_0     = network.converters[stored_converter_tag][turboshaft_0.tag].low_pressure_turbine
     core_nozzle_0              = network.converters[stored_converter_tag][turboshaft_0.tag].core_nozzle
 
-    # deep copy results
-    conditions.energy.converters[turboelectric_generator.tag] = deepcopy(conditions.energy.converters[stored_converter_tag]        )
-    conditions.energy.converters[generator.tag]             = deepcopy(conditions.energy.converters[generator_0.tag]            )
-    conditions.energy.converters[turboshaft.tag]            = deepcopy(conditions.energy.converters[turboshaft_0.tag]           )
-    conditions.energy.converters[ram.tag]                   = deepcopy(conditions.energy.converters[ram_0.tag]                  )
-    conditions.energy.converters[inlet_nozzle.tag]          = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]         )
-    conditions.energy.converters[compressor.tag]            = deepcopy(conditions.energy.converters[compressor_0.tag]           )
-    conditions.energy.converters[low_pressure_turbine.tag]  = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag] )
-    conditions.energy.converters[high_pressure_turbine.tag] = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag])
-    conditions.energy.converters[combustor.tag]             = deepcopy(conditions.energy.converters[combustor_0.tag]            )
-    conditions.energy.converters[core_nozzle.tag]           = deepcopy(conditions.energy.converters[core_nozzle_0.tag]          )
-  
-    
+    # copy the stored generator's results, reusing memory
+    conditions.energy.converters[turboelectric_generator.tag].copy_values(conditions.energy.converters[stored_converter_tag])
+    conditions.energy.converters[generator.tag].copy_values(conditions.energy.converters[generator_0.tag])
+    conditions.energy.converters[turboshaft.tag].copy_values(conditions.energy.converters[turboshaft_0.tag])
+    conditions.energy.converters[ram.tag].copy_values(conditions.energy.converters[ram_0.tag])
+    conditions.energy.converters[inlet_nozzle.tag].copy_values(conditions.energy.converters[inlet_nozzle_0.tag])
+    conditions.energy.converters[compressor.tag].copy_values(conditions.energy.converters[compressor_0.tag])
+    conditions.energy.converters[low_pressure_turbine.tag].copy_values(conditions.energy.converters[low_pressure_turbine_0.tag])
+    conditions.energy.converters[high_pressure_turbine.tag].copy_values(conditions.energy.converters[high_pressure_turbine_0.tag])
+    conditions.energy.converters[combustor.tag].copy_values(conditions.energy.converters[combustor_0.tag])
+    conditions.energy.converters[core_nozzle.tag].copy_values(conditions.energy.converters[core_nozzle_0.tag])
     return conditions.energy.converters[turboelectric_generator.tag].inputs, conditions.energy.converters[turboelectric_generator.tag].outputs
  

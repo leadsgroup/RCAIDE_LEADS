@@ -15,8 +15,6 @@ from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_distributo
 
 # python imports
 import  numpy as  np
-from copy import deepcopy
-
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propulsion Systems Weight
 # ----------------------------------------------------------------------------------------------------------------------

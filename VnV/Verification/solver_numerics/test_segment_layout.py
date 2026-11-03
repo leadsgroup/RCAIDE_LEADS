@@ -109,7 +109,7 @@ def test_verify_catches_a_rebind_only():
     layout = Segment_Layout(state)
     assert layout.verify(state) == []
     state.conditions.freestream.mach[:] = 0.7                           # in place: still the view
-    state.residuals.mission.force_x     = state.residuals.mission.force_x * 2.0   # rebinds to new memory
+    state.residuals.mission.force_x     = np.ones((N + 1, 1))             # a new shape rebinds to new memory
     del state.conditions.freestream["density"]                          # removed: no longer its view either
     assert layout.verify(state) == ["residuals.mission.force_x", "conditions.freestream.density"]
 
@@ -147,7 +147,7 @@ def test_relayout_of_a_converged_state_keeps_every_slot():
 def test_residual_group_check():
     state  = make_state()
     layout = Segment_Layout(state)
-    state.conditions.frames.force = state.conditions.frames.force + 1.0
+    state.conditions.frames.force = np.ones((N, 4))
     assert layout.verify(state, group="residuals") == []
     assert layout.verify(state) == ["conditions.frames.force"]
 
@@ -168,3 +168,77 @@ def test_unpack_array_writes_into_the_layout():
     state.unknowns.network.unpack_array(values)
     assert layout.verify(state) == []
     assert np.array_equal(layout.buffer[layout.slices["unknowns.network"]], values)
+
+
+def test_rank_3_conditions_get_slots():
+    state = make_state()
+    state.conditions.frames.transform = np.arange(9.0 * N).reshape((N, 3, 3))
+    value  = state.conditions.frames.transform.copy()
+    layout = Segment_Layout(state)
+    assert np.shares_memory(state.conditions.frames.transform, layout.buffer)
+    assert np.array_equal(state.conditions.frames.transform, value)
+    assert layout.buffer.size == 14 * N + 9 * N
+
+
+def test_assignment_writes_into_the_slot():
+    state  = make_state()
+    layout = Segment_Layout(state)
+    slot   = state.conditions.freestream.mach
+    state.conditions.freestream.mach = np.full((N, 1), 0.7)              # plain assignment, as physics code writes it
+    state.residuals.mission["force_x"] = np.full((N, 1), 2.0)            # item assignment too
+    assert state.conditions.freestream.mach is slot and np.all(slot == 0.7)
+    assert np.all(layout.buffer[layout.slices["residuals.mission"]][:N] == 2.0)
+    assert layout.verify(state) == []
+
+
+def test_assignment_that_cannot_reuse_the_slot_binds():
+    state  = make_state()
+    layout = Segment_Layout(state)
+    state.conditions.freestream.mach = np.ones((N, 2))                   # new shape
+    state.conditions.frames.force    = np.ones((N, 3), dtype=int)        # not float
+    state.conditions.freestream.density = 1.0                            # not an array
+    assert layout.verify(state) == ["conditions.freestream.mach", "conditions.freestream.density",
+                                    "conditions.frames.force"]
+
+
+def test_slots_not_owned_keep_binding():
+    # excluded leaves (held in initials), aliased slots and views of a slot stored under another name all rebind,
+    # so the previous segment, the other alias name and the viewed slot are never written through
+    state = make_state()
+    state.conditions.freestream.mach = state.initials.conditions.freestream.mach
+    state.conditions.frames.alias    = state.conditions.frames.force
+    layout  = Segment_Layout(state)
+    initial = state.initials.conditions.freestream.mach
+    state.conditions.freestream.mach = np.full((N, 1), 0.1)
+    assert np.all(initial == 0.8)
+    state.conditions.frames.alias = np.zeros((N, 3))
+    assert not np.all(state.conditions.frames.force == 0.0)
+    state.conditions.frames.column = state.conditions.frames.force[:, 0:1]
+    state.conditions.frames.column = np.full((N, 1), -1.0)
+    assert not np.any(state.conditions.frames.force == -1.0)
+
+
+def test_unbound_conditions_unchanged():
+    state = make_state()
+    mach  = state.conditions.freestream.mach
+    state.conditions.freestream.mach = np.full((N, 1), 0.7)
+    assert state.conditions.freestream.mach is not mach and np.all(mach == 0.85)
+
+
+def test_copies_share_the_layout_and_are_not_written_through():
+    import copy
+    state  = make_state()
+    layout = Segment_Layout(state)
+    frames = copy.deepcopy(state.conditions.frames)
+    assert object.__getattribute__(frames, "segment_layout") is layout          # not copied with its buffer
+    frames.force = np.zeros((N, 3))
+    assert not np.all(state.conditions.frames.force == 0.0) and layout.verify(state) == []
+
+
+def test_pickled_state_is_plain_data():
+    import pickle
+    state = make_state()
+    Segment_Layout(state)
+    loaded = pickle.loads(pickle.dumps(state))
+    assert object.__getattribute__(loaded.conditions.frames, "segment_layout") is None
+    assert np.array_equal(loaded.conditions.frames.force, state.conditions.frames.force)

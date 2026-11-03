@@ -17,7 +17,6 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft         import compute_power
  
 # python imports 
-from copy import deepcopy 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turboshaft_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -243,7 +242,7 @@ def compute_turboshaft_performance(turboshaft,conditions, network=None):
     return turboshaft_conditions.inputs ,turboshaft_conditions.outputs,stored_results_flag,stored_propulsor_tag
 
 def reuse_stored_turboshaft_data(turboshaft,conditions,network,stored_converter_tag):
-    '''Reuses results from one turboshaft for identical propulsors
+    '''Reuses results from one turboshaft for identical turboshafts
     
     Assumptions: 
     N/A
@@ -263,31 +262,12 @@ def reuse_stored_turboshaft_data(turboshaft,conditions,network,stored_converter_
     Properties Used: 
     N.A.        
     ''' 
-    turboshaft                  = turboshaft.turboshaft
-    ram                         = turboshaft.ram
-    inlet_nozzle                = turboshaft.inlet_nozzle 
-    compressor                  = turboshaft.compressor
-    high_pressure_compressor    = turboshaft.high_pressure_compressor
-    combustor                   = turboshaft.combustor 
-    low_pressure_turbine        = turboshaft.low_pressure_turbine
-    core_nozzle                 = turboshaft.core_nozzle 
-    turboshaft_0                = network.propulsors[stored_converter_tag].turboshaft
-    ram_0                       = network.propulsors[stored_converter_tag].ram
-    inlet_nozzle_0              = network.propulsors[stored_converter_tag].inlet_nozzle 
-    compressor_0                = network.propulsors[stored_converter_tag].compressor
-    high_pressure_compressor_0  = network.propulsors[stored_converter_tag].high_pressure_compressor
-    combustor_0                 = network.propulsors[stored_converter_tag].combustor
-    low_pressure_turbine_0      = network.propulsors[stored_converter_tag].low_pressure_turbine
-    core_nozzle_0               = network.propulsors[stored_converter_tag].core_nozzle
-    
-    # deep copy results  
-    conditions.energy.converters[turboshaft.tag]               = deepcopy(conditions.energy.converters[turboshaft_0.tag]             ) 
-    conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
-    conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
-    conditions.energy.converters[compressor.tag]               = deepcopy(conditions.energy.converters[compressor_0.tag] )
-    conditions.energy.converters[high_pressure_compressor.tag] = deepcopy(conditions.energy.converters[high_pressure_compressor_0.tag])
-    conditions.energy.converters[combustor.tag]                = deepcopy(conditions.energy.converters[combustor_0.tag]               )
-    conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    ) 
-    conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             ) 
-   
-    return  conditions.energy.converters[turboshaft.tag].inputs, conditions.energy.converters[turboshaft.tag].outputs
+
+    # copy the stored turboshaft's results, its own and its components', reusing memory
+    turboshaft_0 = network.converters[stored_converter_tag]
+    conditions.energy.converters[turboshaft.tag].copy_values(conditions.energy.converters[turboshaft_0.tag])
+    for name in ['ram', 'inlet_nozzle', 'compressor', 'combustor', 'high_pressure_turbine', 'low_pressure_turbine',
+                 'core_nozzle']:
+        conditions.energy.converters[turboshaft[name].tag].copy_values(conditions.energy.converters[turboshaft_0[name].tag])
+
+    return conditions.energy.converters[turboshaft.tag].inputs, conditions.energy.converters[turboshaft.tag].outputs
