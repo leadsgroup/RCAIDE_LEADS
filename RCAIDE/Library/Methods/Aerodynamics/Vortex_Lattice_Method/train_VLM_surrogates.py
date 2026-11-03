@@ -142,7 +142,6 @@ def train_model(aerodynamics,Mach, vehicle):
         wing.control_surfaces = []
     VLM_results      = call_VLM(conditions,settings,clean_wing_vehicle)
     Clift_res        = VLM_results.CLift
-    VD_clean         = deepcopy(settings.vortex_distribution)  # clean-wing geometry; VLM overwrites settings.vortex_distribution in place
     Cdrag_res        = VLM_results.CDrag_induced
     CX_res           = VLM_results.CX
     CY_res           = VLM_results.CY
@@ -388,7 +387,6 @@ def train_model(aerodynamics,Mach, vehicle):
     # reset vortex distribution after training
     # restore the clean-wing geometry in place: segments share this object, and the control-surface
     # sweeps above left the last deflected geometry in it (read by e.g. transonic_lift_wave_drag)
-    settings.vortex_distribution.update(VD_clean)
     return training
 
 def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub_Mach, sup_Mach, vehicle): 
@@ -682,7 +680,6 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CN              = VLM_results.CN
             RES.sectional_CLift = VLM_results.sectional_CLift         
             RES.gamma           = VLM_results.gamma
-            settings.vortex_distribution  = settings.vortex_distribution  
         else: 
             RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift)) 
             RES.CDrag_induced   = np.vstack((RES.CDrag_induced  ,VLM_results.CDrag_induced))

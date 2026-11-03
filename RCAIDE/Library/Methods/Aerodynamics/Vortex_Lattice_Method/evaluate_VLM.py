@@ -300,6 +300,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     
     equilibrium_state                    = RCAIDE.Framework.Mission.Common.State()
     equilibrium_state.conditions         = equilibrium_conditions
+    equilibrium_state.analyses           = state.analyses
     equilibrium_segment                  = RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude()
     equilibrium_segment.conditions       = equilibrium_conditions
     equilibrium_segment.state.conditions = equilibrium_conditions
@@ -333,7 +334,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     pertubation_conditions.aerodynamics.coefficients.drag.induced.wings      = VLM_results.CDrag_induced_wings
     pertubation_conditions.aerodynamics.coefficients.drag.induced.total      = VLM_results.CDrag_induced
 
-    Clift_visc_prime, Cdrag_visc_prime, CX_visc_prime = compute_viscous_prime(pertubation_conditions,settings,vehicle)
+    Clift_visc_prime, Cdrag_visc_prime, CX_visc_prime = compute_viscous_prime(pertubation_conditions,settings,vehicle,state.analyses)
 
     conditions.static_stability.derivatives.Clift_alpha = (Clift_visc_prime - Clift_0) / (delta_angle)
     conditions.static_stability.derivatives.Cdrag_alpha = (Cdrag_visc_prime - Cdrag_0) / (delta_angle)
@@ -375,7 +376,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     pertubation_conditions.aerodynamics.coefficients.drag.induced.wings  = VLM_results.CDrag_induced_wings
     pertubation_conditions.aerodynamics.coefficients.lift.spanwise       = VLM_results.sectional_CLift
 
-    Clift_visc_prime, Cdrag_visc_prime, CX_visc_prime = compute_viscous_prime(pertubation_conditions,settings,vehicle)
+    Clift_visc_prime, Cdrag_visc_prime, CX_visc_prime = compute_viscous_prime(pertubation_conditions,settings,vehicle,state.analyses)
 
     conditions.static_stability.derivatives.Clift_u = (Clift_visc_prime - Clift_0) / (delta_speed)
     conditions.static_stability.derivatives.Cdrag_u = (Cdrag_visc_prime - Cdrag_0) / (delta_speed)
@@ -509,7 +510,7 @@ def apply_drag_corrections(state, settings, vehicle):
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.trim_drag(state,settings,vehicle)
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.total_drag(state,settings,vehicle)
 
-def compute_viscous_prime(pertubation_conditions, settings, vehicle):
+def compute_viscous_prime(pertubation_conditions, settings, vehicle, analyses):
     """Builds a State/Segment around an already-VLM()-evaluated pertubation_conditions,
     runs orientation + apply_drag_corrections, and returns the resulting viscous/total
     (Clift, Cdrag, CX) -- the "prime" values the alpha and u-velocity perturbations in
@@ -519,6 +520,7 @@ def compute_viscous_prime(pertubation_conditions, settings, vehicle):
     perturbation_state                  = RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude()
     perturbation_state.conditions       = pertubation_conditions
     perturbation_state.state.conditions = pertubation_conditions
+    perturbation_state.analyses         = analyses
     orientation(perturbation_state)
     orientations(perturbation_state)
 

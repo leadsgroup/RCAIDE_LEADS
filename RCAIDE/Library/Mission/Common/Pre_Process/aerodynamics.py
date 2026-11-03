@@ -76,7 +76,6 @@ def aerodynamics(mission):
                     segment.analyses.aerodynamics.vortex_distribution                 = mission.segments[last_tag].analyses.aerodynamics.vortex_distribution
                     if segment.analyses.aerodynamics is not mission.segments[last_tag].analyses.aerodynamics:
                         segment.analyses.aerodynamics.surrogate_owner                 = mission.segments[last_tag].analyses.aerodynamics
-                    segment.analyses.aerodynamics.settings.vortex_distribution        = mission.segments[last_tag].analyses.aerodynamics.settings.vortex_distribution 
                     segment.analyses.aerodynamics.aileron_flag                        = mission.segments[last_tag].analyses.aerodynamics.aileron_flag 
                     segment.analyses.aerodynamics.flap_flag                           = mission.segments[last_tag].analyses.aerodynamics.flap_flag    
                     segment.analyses.aerodynamics.rudder_flag                         = mission.segments[last_tag].analyses.aerodynamics.rudder_flag  

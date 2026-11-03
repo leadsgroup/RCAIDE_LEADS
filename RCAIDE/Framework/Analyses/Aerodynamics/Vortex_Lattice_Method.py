@@ -72,7 +72,6 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.settings.number_of_fuselage_chordwise_vortices         = 10 
         self.settings.model_fuselage                                = False 
         self.settings.spanwise_cosine_spacing                       = True
-        self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
         self.settings.horizontal_tail_dynamic_pressure_ratio        = 1.0  # q_h/q at the horizontal tail (Raymer Eq. 16.6)
         self.settings.use_VORLAX_matrix_calculation                 = False

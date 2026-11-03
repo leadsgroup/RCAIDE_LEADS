@@ -129,31 +129,6 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     # Generate Panelization and Vortex Distribution
     # ------------------ --------------------------------------------------------------------
     VD                                                    = generate_vortex_distribution(conditions,settings,geometry)
-    settings.vortex_distribution.chord_lengths            = VD.chord_lengths[VD.leading_edge_indices].reshape(len(VD.n_sw),np.sum(VD.n_sw[0]))
-    settings.vortex_distribution.n_sw                     = VD.n_sw
-    settings.vortex_distribution.n_cw                     = VD.n_cw
-    settings.vortex_distribution.n_w                      = VD.n_w
-    settings.vortex_distribution.chord_widths             = VD.chord_widths
-    settings.vortex_distribution.leading_edge_sweeps      = VD.leading_edge_sweeps
-    settings.vortex_distribution.XA1                      = VD.XA1
-    settings.vortex_distribution.XA2                      = VD.XA2
-    settings.vortex_distribution.XB1                      = VD.XB1
-    settings.vortex_distribution.XB2                      = VD.XB2
-    settings.vortex_distribution.YA1                      = VD.YA1
-    settings.vortex_distribution.YA2                      = VD.YA2
-    settings.vortex_distribution.YB1                      = VD.YB1
-    settings.vortex_distribution.YB2                      = VD.YB2
-    settings.vortex_distribution.ZA1                      = VD.ZA1
-    settings.vortex_distribution.ZA2                      = VD.ZA2
-    settings.vortex_distribution.ZB1                      = VD.ZB1
-    settings.vortex_distribution.ZB2                      = VD.ZB2
-    settings.vortex_distribution.X                        = VD.X
-    settings.vortex_distribution.Y                        = VD.Y
-    settings.vortex_distribution.Z                        = VD.Z
-    settings.vortex_distribution.XC                       = VD.XC
-    settings.vortex_distribution.YC                       = VD.YC
-    settings.vortex_distribution.ZC                       = VD.ZC
-    settings.vortex_distribution.Y_SW                     = VD.Y_SW
 
     # unpack conditions--------------------------------------------------------------
     K_SPC    = settings.leading_edge_suction_multiplier

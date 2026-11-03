@@ -45,7 +45,7 @@ def surrogate_test():
         print(f'{name}: {computed[name]}, error: {error}')
         assert error < 1e-3, f"{name} mismatch: got {computed[name]}, expected {truth[name]}"
 
-    plot_3d_vehicle_vlm_panelization(vortex_distribution      = results.segments.cruise.analyses.aerodynamics.settings.vortex_distribution,
+    plot_3d_vehicle_vlm_panelization(vortex_distribution      = results.segments.cruise.analyses.aerodynamics.vortex_distribution,
                                      save_filename            = "BWB_Top_View",
                                      show_wing_control_points = True,
                                      show_figure              = False)
