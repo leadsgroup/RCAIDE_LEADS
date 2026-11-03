@@ -11,6 +11,7 @@
 import RCAIDE 
 from RCAIDE.Framework.Core                                               import Data, orientation_product 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM       import VLM
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.compute_zero_lift_moment import compute_zero_lift_moment
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
 from RCAIDE.Library.Methods.Utilities                                    import Cubic_Spline_Blender
 from RCAIDE.Library.Mission.Common.Update                                import orientations
@@ -81,7 +82,7 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.aerodynamics.coefficients.drag.induced.inviscid  = results_alpha.Cdrag
     conditions.static_stability.coefficients.M                  = results_alpha.CM
     
-    conditions.static_stability.coefficients.M_0 = compute_stability_derivative(sub_sur.CM_0    ,trans_sur.CM_0    ,sup_sur.CM_0    ,h_sub,h_sup,Mach) 
+    conditions.static_stability.coefficients.M_zero_lift = compute_stability_derivative(sub_sur.CM_zero_lift, trans_sur.CM_zero_lift, sup_sur.CM_zero_lift, h_sub, h_sup, Mach)
     conditions.aerodynamics.coefficients.lift.spanwise =  results_alpha.Clift_spanwise     
 
     # vortex strengths and geometry used by the wing-to-rotor interaction
@@ -279,8 +280,14 @@ def evaluate_no_surrogate(state,settings,vehicle):
     # induced-only baseline; rate/control-surface derivatives below diff against raw induced drag, not total_drag
     Cdrag_induced_0 = VLM_results.CDrag_induced
      
-    # store CM at 0 AoA
-    conditions.static_stability.coefficients.M_0 =  CM_0
+    # pitching moment at zero lift, from cases at +/- the reference perturbation
+    reference = []
+    for sign in (1, -1):
+        reference_conditions = create_conditions(n_cpts,alt,g,V,MAC,conditions.energy)
+        reference_conditions.aerodynamics.angles.alpha[:,0] = sign * aerodynamics.training.reference_angle_perturbation
+        reference.append(VLM(reference_conditions,settings,vehicle))
+    conditions.static_stability.coefficients.M_zero_lift = compute_zero_lift_moment(reference[0].CLift, reference[1].CLift,
+                                                                                    reference[0].CM, reference[1].CM)
     
     # Dimensionalize the lift and drag for each wing   
     equilibrium_conditions.aerodynamics.coefficients.lift.inviscid.wings          = VLM_results.CLift_wings 

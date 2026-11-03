@@ -212,7 +212,6 @@ class Results(Conditions):
         self.control_surfaces.aileron.static_stability.coefficients.Z          = ones_1col * 0         
         self.control_surfaces.aileron.static_stability.coefficients.L          = ones_1col * 0         
         self.control_surfaces.aileron.static_stability.coefficients.M          = ones_1col * 0         
-        self.control_surfaces.aileron.static_stability.coefficients.M_0        = ones_1col * 0        
         self.control_surfaces.aileron.static_stability.coefficients.N          = ones_1col * 0           
         self.control_surfaces.aileron.static_stability.coefficients.e          = ones_1col * 0
         
@@ -335,7 +334,7 @@ class Results(Conditions):
         self.static_stability.coefficients.Z                                   = ones_1col * 0
         self.static_stability.coefficients.L                                   = ones_1col * 0
         self.static_stability.coefficients.M                                   = ones_1col * 0
-        self.static_stability.coefficients.M_0                                 = ones_1col * 0
+        self.static_stability.coefficients.M_zero_lift                         = ones_1col * 0
         self.static_stability.coefficients.N                                   = ones_1col * 0 
         self.static_stability.coefficients.roll                                = ones_1col * 0
         self.static_stability.coefficients.pitch                               = ones_1col * 0

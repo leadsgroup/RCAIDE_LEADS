@@ -12,6 +12,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import  Data, Units
 from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.compute_zero_lift_moment import compute_zero_lift_moment
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
 from copy import deepcopy
 
@@ -301,7 +302,7 @@ def train_model(aerodynamics,Mach, vehicle):
     training.CL_alpha                  = CL_alpha   
     training.CM_alpha                  = CM_alpha 
     training.CN_alpha                  = CN_alpha    
-    training.CM_0                      = CM_alpha_0[0]  
+    training.CM_zero_lift              = reference.CM_zero_lift
             
     training.Clift_beta                = Clift_beta 
     training.Cdrag_induced_beta        = Cdrag_induced_beta  
@@ -430,7 +431,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     CL_alpha              =  np.concatenate((training_subsonic.CL_alpha[:,-1][:,None]    , training_supersonic.CL_alpha[:,0][:,None] ), axis = 1)   
     CM_alpha              =  np.concatenate((training_subsonic.CM_alpha[:,-1][:,None]    , training_supersonic.CM_alpha[:,0][:,None] ), axis = 1)   
     CN_alpha              =  np.concatenate((training_subsonic.CN_alpha[:,-1][:,None]    , training_supersonic.CN_alpha[:,0][:,None] ), axis = 1) 
-    CM_0                  =  np.concatenate((training_subsonic.CM_0[:][-1,None]    , training_supersonic.CM_0[:][0,None] ))      
+    CM_zero_lift          =  np.concatenate((training_subsonic.CM_zero_lift[-1,None], training_supersonic.CM_zero_lift[0,None]))
  
     # --------------------------------------------------------------------------------------------------------------
     # Beta 
@@ -482,7 +483,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     training.CL_alpha                  = CL_alpha
     training.CM_alpha                  = CM_alpha  
     training.CN_alpha                  = CN_alpha
-    training.CM_0                      = CM_0  
+    training.CM_zero_lift              = CM_zero_lift
     training.Clift_spanwise            = Clift_spanwise
     
     
@@ -595,7 +596,8 @@ def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference):
 
 
 def reference_coefficients(aerodynamics, Mach, settings, vehicle):
-    """Coefficients at zero incidence per Mach, the mean of VLM cases at +/- training.reference_angle_perturbation."""
+    """Coefficients at zero incidence per Mach, the mean of VLM cases at +/- training.reference_angle_perturbation,
+    and the pitching moment at zero lift from the same cases."""
     delta                                  = aerodynamics.training.reference_angle_perturbation
     AoAs                                   = np.atleast_2d(np.tile([delta, -delta], len(Mach))).T
     Machs                                  = np.atleast_2d(np.repeat(Mach, 2)).T
@@ -612,6 +614,8 @@ def reference_coefficients(aerodynamics, Mach, settings, vehicle):
     reference   = Data()
     for key in ['CLift', 'CDrag_induced', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN']:
         reference[key] = np.reshape(VLM_results[key], (len(Mach), 2)).mean(axis=1)
+    CLift, CM   = np.reshape(VLM_results.CLift, (len(Mach), 2)), np.reshape(VLM_results.CM, (len(Mach), 2))
+    reference.CM_zero_lift = compute_zero_lift_moment(CLift[:, 0], CLift[:, 1], CM[:, 0], CM[:, 1])
     return reference
 
 

@@ -77,7 +77,6 @@ class Aerodynamics(Analysis):
         self.settings.supersonic.fuselage_parasite_drag_end_blend_mach   = 0.99        
      
         self.stability_derivatives                                       = Data()   
-        self.stability_derivatives.M_0                                   = None
         self.stability_derivatives.Clift_alpha                           = None
         self.stability_derivatives.CX_alpha                              = None
         self.stability_derivatives.CX_u                                  = None

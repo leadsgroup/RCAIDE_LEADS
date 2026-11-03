@@ -81,7 +81,6 @@ class Stability(Analysis):
     
         # Stability derivatives. If these are not user defined, then they will be calculated. 
         self.stability_derivatives                                       = Data()   
-        self.stability_derivatives.M_0                                   = None
         self.stability_derivatives.Clift_alpha                           = None
         self.stability_derivatives.CX_alpha                              = None
         self.stability_derivatives.CX_u                                  = None

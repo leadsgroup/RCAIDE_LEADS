@@ -16,5 +16,5 @@ from .generate_wing_vortex_distribution         import generate_wing_vortex_dist
 from .generate_fuseform_vortex_distribution     import generate_fuseform_vortex_distribution
 from .train_VLM_surrogates                      import train_VLM_surrogates, train_VLM_supersonic_surrogates
 from .VLM                                       import VLM
-from .evaluate_VLM                              import *  
-
+from .evaluate_VLM                              import *
+from .compute_zero_lift_moment                  import compute_zero_lift_moment
