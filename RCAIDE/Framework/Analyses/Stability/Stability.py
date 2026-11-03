@@ -64,7 +64,6 @@ class Stability(Analysis):
         self.settings.drag_coefficient_increment                         = 0.0
         self.settings.recalculate_total_wetted_area                      = False
         self.settings.oswald_efficiency_factor                           = None
-        self.settings.span_efficiency                                    = None
         self.settings.compute_neutral_point                              = True
 
         # Method used to build the dynamic-stability state-space model.

@@ -40,8 +40,6 @@ def induced_drag(state,settings,geometry):
                 Vehicle-level Oswald efficiency factor [unitless]
             - viscous_lift_dependent_drag_factor : float
                 Viscous lift-dependent drag factor K [unitless]
-            - span_efficiency : float, optional
-                Span efficiency factor [unitless]
     geometry : Data
         Aircraft geometry containing:
             - wings : list

@@ -186,7 +186,7 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag.induced.total                      = ones_1col * 0   
         self.aerodynamics.coefficients.drag.induced.viscous                    = ones_1col * 0 
         self.aerodynamics.coefficients.drag.induced.inviscid                   = ones_1col * 0 
-        self.aerodynamics.coefficients.drag.induced.efficiency_factor          = ones_1col * 0 
+        self.aerodynamics.coefficients.drag.induced.span_efficiency            = ones_1col * 0
         self.aerodynamics.coefficients.drag.induced.oswald_efficiency_factor   = ones_1col * 0
         self.aerodynamics.coefficients.drag.cooling                            = Conditions()
         self.aerodynamics.coefficients.drag.cooling.total                      = ones_1col * 0
@@ -201,7 +201,6 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag.windmilling.total                  = ones_1col * 0
         self.aerodynamics.coefficients.drag.asymmetry_trim                     = Conditions()
         self.aerodynamics.coefficients.drag.asymmetry_trim.total               = ones_1col * 0  
-        self.aerodynamics.oswald_efficiency                                    = ones_1col * 0 
  
         # ----------------------------------------------------------------------------------------------------------------------
         # Control Surfaces 
