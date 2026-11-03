@@ -70,6 +70,7 @@ def aerodynamics(mission):
             pass
         else:        
             if segment.analyses.aerodynamics != None:
+                segment.analyses.aerodynamics.append_operating_conditions(segment)
                 if last_tag!=  None and 'compute' in mission.segments[last_tag].analyses.aerodynamics.process.keys(): 
                     segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings
                     segment.analyses.aerodynamics.surrogates                          = mission.segments[last_tag].analyses.aerodynamics.surrogates  

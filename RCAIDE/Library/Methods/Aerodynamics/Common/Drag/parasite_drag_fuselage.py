@@ -207,7 +207,7 @@ def parasite_drag_fuselage(state,settings,fuselage):
         fuselage_parasite_drag = k_fus * cf_fus * Swet / Sref
          
     # Store data 
-    state.conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag] = Data(
+    state.conditions.aerodynamics.coefficients.drag.parasite.copy_values({fuselage.tag: Data(
         wetted_area               = Swet   , 
         reference_area            = Sref   , 
         total                     = fuselage_parasite_drag ,
@@ -215,6 +215,6 @@ def parasite_drag_fuselage(state,settings,fuselage):
         compressibility_factor    = k_comp ,
         reynolds_factor           = k_reyn , 
         form_factor               = k_fus  ,
-    )    
+    )})    
         
     return  

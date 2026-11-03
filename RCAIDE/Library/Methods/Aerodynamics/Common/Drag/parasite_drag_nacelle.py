@@ -239,6 +239,6 @@ def nacelle_drag(state,settings, nacelle):
         reynolds_factor           = k_reyn  , 
         form_factor               = k_nac  ,
     )
-    state.conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag] = results    
+    state.conditions.aerodynamics.coefficients.drag.parasite.copy_values({nacelle.tag: results})    
     
     return

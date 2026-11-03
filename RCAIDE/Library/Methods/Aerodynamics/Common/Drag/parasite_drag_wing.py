@@ -184,7 +184,7 @@ def parasite_drag_wing(state,settings,geometry):
         form_factor               = k_w    ,
     )
     
-    state.conditions.aerodynamics.coefficients.drag.parasite[wing.tag] = wing_result
+    state.conditions.aerodynamics.coefficients.drag.parasite.copy_values({wing.tag: wing_result})
 
     return  
  

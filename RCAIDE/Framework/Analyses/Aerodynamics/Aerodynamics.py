@@ -10,6 +10,7 @@
 # RCAIDE imports   
 from RCAIDE.Framework.Core     import Data
 from RCAIDE.Framework.Analyses import Analysis  
+from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import append_drag_conditions
 
 # package imports 
 import numpy as np
@@ -215,6 +216,11 @@ class Aerodynamics(Analysis):
         
         return results
     
+    def append_operating_conditions(self, segment):
+        """Allocates the segment's aerodynamic outputs before it is solved."""
+        append_drag_conditions(segment, segment.analyses.vehicle)
+        return
+
     def post_process(self):
         """The default post processing function.
 
