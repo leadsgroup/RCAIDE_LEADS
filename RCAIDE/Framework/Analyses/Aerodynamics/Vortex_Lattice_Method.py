@@ -91,6 +91,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.altitude                                      = 0
         self.training.speed_of_sound                                = 343 
         self.training.angle_purtubation                             = 10 * Units.deg          
+        self.training.reference_angle_perturbation                  = 2 * Units.deg   # assumption: inside the linear lift range, clear of the noisy VLM solution at exactly zero incidence
         self.training.speed_purtubation                             = 5  
         self.training.rate_purtubation                              = 0.05 * Units.deg / Units.sec   # 0.05 * Units.deg / Units.sec   
         self.training.control_surface_purtubation                   = 10 * Units.deg          

@@ -162,15 +162,17 @@ def train_model(aerodynamics,Mach, vehicle):
     CM_alpha                 = np.reshape(CM_res,(len_Mach,len_AoA)).T 
     CN_alpha                 = np.reshape(CN_res,(len_Mach,len_AoA)).T  
     
-    # Angle of Attack at 0 Degrees .
-    Clift_alpha_0   =  np.tile(Clift_alpha[2][None,:],(2,1))
-    Cdrag_alpha_0   =  np.tile(Cdrag_induced_alpha[2][None,:],(2,1))
-    CX_alpha_0      =  np.tile(CX_alpha[2][None,:],(2, 1)) 
-    CY_alpha_0      =  0 * np.tile(CY_alpha[2][None,:],(2, 1)) 
-    CZ_alpha_0      =  np.tile(CZ_alpha[2][None,:],(2, 1)) 
-    CL_alpha_0      =  0 * np.tile(CL_alpha[2][None,:],(2, 1)) 
-    CM_alpha_0      =  np.tile(CM_alpha[2][None,:],(2, 1)) 
-    CN_alpha_0      =  0 * np.tile(CN_alpha[2][None,:],(2, 1)) 
+    # coefficients at zero incidence, the mean of cases at +/- the reference perturbation (independent of the
+    # training grid; a VLM case at exactly zero incidence is noisy for untwisted wings)
+    reference     = reference_coefficients(aerodynamics, Mach, settings, clean_wing_vehicle)
+    Clift_alpha_0 =  np.tile(reference.CLift[None,:],(2,1))
+    Cdrag_alpha_0 =  np.tile(reference.CDrag_induced[None,:],(2,1))
+    CX_alpha_0    =  np.tile(reference.CX[None,:],(2, 1)) 
+    CY_alpha_0    =  0 * np.tile(reference.CY[None,:],(2, 1)) 
+    CZ_alpha_0    =  np.tile(reference.CZ[None,:],(2, 1)) 
+    CL_alpha_0    =  0 * np.tile(reference.CL[None,:],(2, 1)) 
+    CM_alpha_0    =  np.tile(reference.CM[None,:],(2, 1)) 
+    CN_alpha_0    =  0 * np.tile(reference.CN[None,:],(2, 1)) 
         
     # --------------------------------------------------------------------------------------------------------------
     # Beta 
@@ -590,6 +592,27 @@ def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference):
         for term, value in zip(HIGH_LIFT_DRAG_TERMS, (p, q, r0, r1)):
             training['high_lift_Cdrag_' + term + '_' + letter] = value
     return training
+
+
+def reference_coefficients(aerodynamics, Mach, settings, vehicle):
+    """Coefficients at zero incidence per Mach, the mean of VLM cases at +/- training.reference_angle_perturbation."""
+    delta                                  = aerodynamics.training.reference_angle_perturbation
+    AoAs                                   = np.atleast_2d(np.tile([delta, -delta], len(Mach))).T
+    Machs                                  = np.atleast_2d(np.repeat(Mach, 2)).T
+    conditions                             = RCAIDE.Framework.Mission.Common.Results()
+    conditions.expand_rows(len(Machs),override=False)
+    conditions.aerodynamics.angles.alpha   = AoAs
+    conditions.aerodynamics.angles.beta    = np.zeros_like(Machs)
+    conditions.freestream.mach_number      = Machs
+    conditions.freestream.velocity         = np.zeros_like(Machs)
+    conditions.static_stability.pitch_rate = np.zeros_like(Machs)
+    conditions.static_stability.roll_rate  = np.zeros_like(Machs)
+    conditions.static_stability.yaw_rate   = np.zeros_like(Machs)
+    VLM_results = call_VLM(conditions, settings, vehicle)
+    reference   = Data()
+    for key in ['CLift', 'CDrag_induced', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN']:
+        reference[key] = np.reshape(VLM_results[key], (len(Mach), 2)).mean(axis=1)
+    return reference
 
 
 def control_surface_conditions(Mach):
