@@ -276,7 +276,8 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_vortex_distribution=None)
         ur += rotor.radial_velocities_2d
 
     # Include velocities induced by the wing at the rotor disc
-    if wing_vortex_distribution is not None and 'gamma' in conditions.aerodynamics:
+    # (vortex strengths are NaN until the segment's first aerodynamics evaluation)
+    if wing_vortex_distribution is not None and 'gamma' in conditions.aerodynamics and np.all(np.isfinite(conditions.aerodynamics.gamma)):
         use_2d_analysis           = True
         ua_wing, ut_wing, ur_wing = compute_wing_induced_rotor_velocity(rotor, conditions, wing_vortex_distribution, T_body2thrust, r_dim_2d, psi_2d)
 

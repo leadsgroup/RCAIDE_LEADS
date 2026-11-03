@@ -192,6 +192,16 @@ class Vortex_Lattice_Method(Aerodynamics):
         return 
     
          
+    def append_operating_conditions(self, segment):
+        """Allocates the aerodynamic outputs, including the spanwise lift and vortex strengths sized by the mesh; NaN
+        until computed."""
+        Aerodynamics.append_operating_conditions(self, segment)
+        rows         = segment.state.ones_row(1).shape[0]
+        aerodynamics = segment.state.conditions.aerodynamics
+        aerodynamics.coefficients.lift.spanwise = np.full((rows, self.vortex_distribution.Y_SW.shape[1]), np.nan)   # per strip
+        aerodynamics.gamma                      = np.full((rows, self.vortex_distribution.XC.shape[1]), np.nan)     # per panel
+        return
+
     def train_supersonic_surrogates(self):
         """Trains and builds the supersonic and transonic surrogates on first need (see evaluate_surrogate)."""
         train_VLM_supersonic_surrogates(self, self.training_vehicle)
