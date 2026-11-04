@@ -69,6 +69,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.settings.number_of_fuselage_spanwise_vortices          = 4
         self.settings.number_of_fuselage_chordwise_vortices         = 10 
         self.settings.model_fuselage                                = False 
+        self.settings.crossflow_fidelity                            = '1D'  #['1D', '2D', '2.5D', '2.75D','2.75D_with_taper_correction','Karman-Tsien','full_3D_correction']  
         self.settings.spanwise_cosine_spacing                       = True
         self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  

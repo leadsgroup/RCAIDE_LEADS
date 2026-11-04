@@ -117,13 +117,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
 
     Properties Used:
     N/A
-    """
-
-    S_ref = geometry.reference_area
-    c_ref = geometry.reference_chord
-    b_ref = geometry.reference_span
-    x_m   = geometry.mass_properties.center_of_gravity[0][0]
-    z_m   = geometry.mass_properties.center_of_gravity[0][2]
+    """ 
 
     # ---------------------------------------------------------------------------------------
     # Generate Panelization and Vortex Distribution
@@ -154,6 +148,79 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     settings.vortex_distribution.YC                       = VD.YC
     settings.vortex_distribution.ZC                       = VD.ZC
     settings.vortex_distribution.Y_SW                     = VD.Y_SW
+
+
+    tolerance = 1e-6
+    error     = 1 
+    if settings.crossflow_fidelity == '1D': 
+        results = VLM_function(VD,conditions,settings,geometry,induced_velocity_cache)
+
+    elif settings.crossflow_fidelity == '2D': 
+        # run VLM
+
+        # Update RHS matrix 
+
+        # Run VLM with 1D crossflow fidelity
+        while error > tolerance:
+            # Compute induced velocities and update RHS 
+
+            pass
+                 
+    
+    elif settings.crossflow_fidelity == '2.5D':
+        # run VLM
+
+        # Update RHS matrix 
+
+        # Run VLM with 1D crossflow fidelity
+        while error > tolerance:
+            # Compute induced velocities and update RHS 
+            pass
+                 
+    elif settings.crossflow_fidelity == '2.75D':
+        # run VLM
+
+        # Update RHS matrix 
+
+        # Run VLM with 1D crossflow fidelity
+        while error > tolerance:
+            # Compute induced velocities and update RHS 
+            pass
+                 
+
+    elif settings.crossflow_fidelity == '2.75D_with_taper_correction':
+        # run VLM
+
+        # Update RHS matrix 
+
+        # Run VLM with 1D crossflow fidelity
+        while error > tolerance:
+            # Compute induced velocities and update RHS 
+            pass
+                 
+    elif settings.crossflow_fidelity == 'Karman-Tsien':
+        # run VLM
+
+        # Update RHS matrix 
+
+        # Run VLM with 1D crossflow fidelity
+        while error > tolerance:
+            # Compute induced velocities and update RHS 
+            pass
+                 
+    else:
+        raise ValueError("Invalid crossflow_fidelity setting")
+
+    return results 
+
+
+def VLM_function(VD,conditions,settings,geometry,induced_velocity_cache): 
+
+    S_ref = geometry.reference_area
+    c_ref = geometry.reference_chord
+    b_ref = geometry.reference_span
+    x_m   = geometry.mass_properties.center_of_gravity[0][0]
+    z_m   = geometry.mass_properties.center_of_gravity[0][2]
 
     # unpack conditions--------------------------------------------------------------
     K_SPC    = settings.leading_edge_suction_multiplier
