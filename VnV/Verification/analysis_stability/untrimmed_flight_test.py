@@ -63,11 +63,19 @@ def main():
     results = missions.base_mission.evaluate() 
 
     CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0][0]
-    CL_true   = 0.7130354497601528
+    CL_true   = 0.729644445712727
     CL_diff   = np.abs(CL - CL_true)
     print('Error: ',CL_diff)
     assert np.abs(CL_diff/CL_true) < 1e-6
-     
+
+    # regression guard: evaluate_no_surrogate() once stored the Slat drag derivative under the
+    # Clift_delta_s key instead of Cdrag_delta_s, leaving Cdrag_delta_s at its zero default.
+    Cdrag_delta_s = results.segments.cruise.conditions.static_stability.derivatives.Cdrag_delta_s[0][0]
+    Clift_delta_s = results.segments.cruise.conditions.static_stability.derivatives.Clift_delta_s[0][0]
+    print('Cdrag_delta_s:', Cdrag_delta_s, 'Clift_delta_s:', Clift_delta_s)
+    assert Cdrag_delta_s != 0.0
+    assert Cdrag_delta_s != Clift_delta_s
+
 
     elapsed_time = time.time() - ti
     elapsed_time_min = elapsed_time / 60

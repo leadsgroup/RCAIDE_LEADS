@@ -367,7 +367,6 @@ def vehicle_setup():
     fuselage.areas.wetted                       = 2 * np.pi * fuselage.width * fuselage.lengths.total + 2 * np.pi * fuselage.width ** 2
     fuselage.areas.front_projected              = np.pi * fuselage.width ** 2
     fuselage.effective_diameter                 = 3.70
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
@@ -589,7 +588,7 @@ def vehicle_setup():
     turbofan.bypass_ratio                       = 12.5   
     turbofan.design_altitude                    = 40000.0*Units.ft
     turbofan.design_mach_number                 = 0.78   
-    turbofan.design_thrust                      = 15500.0* Units.N 
+    turbofan.rated_takeoff_thrust               = 108540. * Units.N # PW1524G takeoff rating, 10854 daN (EASA TCDS IM.E.090, Issue 07)
 
     # fan                
     fan                                         = RCAIDE.Library.Components.Powertrain.Converters.Fan()   

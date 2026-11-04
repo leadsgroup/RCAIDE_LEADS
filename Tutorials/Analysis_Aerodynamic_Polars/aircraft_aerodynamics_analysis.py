@@ -591,13 +591,14 @@ def vehicle_setup():
     turbofan.diameter                              = 1.5494
     turbofan.design_altitude                       = 35000.0*Units.ft
     turbofan.design_mach_number                    = 0.78   
-    turbofan.design_thrust                         = 35000.0* Units.N 
+    turbofan.rated_takeoff_thrust                  = 116990. * Units.N # CFM56-7B26 takeoff rating, 11699 daN (EASA TCDS E.004, Issue 07)
                 
     # fan                   
     fan                                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
     fan.tag                                        = 'fan'
     fan.polytropic_efficiency                      = 0.93
     fan.pressure_ratio                             = 1.7   
+    fan.rated_angular_velocity                     = 5175.0 * Units.rpm # CFM56-7B 100% N1 (EASA TCDS E.004, Issue 07: 5382 rpm = 104%)
     turbofan.fan                                   = fan        
                    
     # working fluid                   

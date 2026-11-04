@@ -131,9 +131,9 @@ class Conditions(Data):
                 #Check if it's already expanded
                 if v.shape[0]<=1 or override:
                     self[k] = np.resize(v,[rows,v.shape[1]])
-        
+
         return
-                
+
 class expanded_array(Data):
     """ This is an array that will expand later when the mission is initialized. It is called specifically by conditions
     

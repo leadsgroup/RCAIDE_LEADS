@@ -103,12 +103,17 @@ def compute_supersonic_nozzle_performance(supersonic_nozzle,conditions):
     
     #Remove check on mach numbers fromn expansion nozzle
     i_low         = Mach < 1.0
-    
-    #initializing the Pout array
-    P_out         = 1.0 *Mach/Mach
-    
-    #Computing output pressure and Mach number for the case Mach <1.0
-    P_out[i_low]  = Po[i_low]
+
+    # Fully expanded (P_out=Po) in both branches -- the Mach number above is already
+    # computed from that same assumption unconditionally, so P_out must match it
+    # unconditionally too. Previously left at a placeholder value of 1.0 (~1 Pa) whenever
+    # Mach>=1 (only the Mach<1 branch below ever overwrote it with Po), corrupting the
+    # pressure-thrust term (core_area_ratio*(P_out/Po-1) in compute_thurst.py) for every
+    # choked/supersonic nozzle -- found via a large, unexplained thrust mismatch while
+    # building turbojet off-design matching (RCAIDE_LEADS RESEARCH/22_ATI session notes).
+    P_out         = Po * np.ones_like(Mach)
+
+    #Computing output Mach number for the case Mach <1.0
     Mach[i_low]   = np.sqrt((((Pt_out[i_low]/Po[i_low])**((gamma[i_low]-1.)/gamma[i_low]))-1.)*2./(gamma[i_low]-1.))
     
     #Computing the output temperature,enthalpy, velocity and density

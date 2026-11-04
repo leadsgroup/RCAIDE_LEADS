@@ -52,8 +52,9 @@ class Stability(Analysis):
         self.settings.maximum_lift_coefficient                           = np.inf 
         self.settings.fuselage_lift_correction                           = 1.20
         self.settings.trim_drag_correction_factor                        = 1.02
-        self.settings.wing_parasite_drag_form_factor                     = 1.1  
+        self.settings.wing_parasite_drag_form_factor                     = 1.1
         self.settings.fuselage_parasite_drag_form_factor                 = 2.1
+        self.settings.nacelle_parasite_drag_form_factor                  = 1.0
         self.settings.drag_reduction_factors                             = Data()
         self.settings.drag_reduction_factors.parasite_drag               = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.drag_reduction_factors.induced_drag                = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
@@ -65,6 +66,13 @@ class Stability(Analysis):
         self.settings.oswald_efficiency_factor                           = None
         self.settings.span_efficiency                                    = None
         self.settings.compute_neutral_point                              = True
+
+        # Method used to build the dynamic-stability state-space model.
+        # "linearized_derivatives" is the only option currently implemented:
+        # the classical small-perturbation stability-derivative EOM
+        # (Blakelock; Etkin & Reid Ch. 5). Reserved for a future higher-fidelity
+        # option (e.g. numerical linearization of the full nonlinear model).
+        self.settings.dynamic_stability_method                           = "linearized_derivatives"
 
         self.settings.supersonic                                         = Data() 
         self.settings.supersonic.begin_drag_rise_mach_number             = 0.95
@@ -104,12 +112,90 @@ class Stability(Analysis):
         self.stability_derivatives.Clift_delta_f                         = None
         self.stability_derivatives.CM_delta_s                            = None
         self.stability_derivatives.Clift_delta_s                         = None    
-        self.stability_derivatives.Cdrag_delta_a                         = None 
-        self.stability_derivatives.Cdrag_delta_r                         = None 
-        self.stability_derivatives.Cdrag_delta_e                         = None 
-        self.stability_derivatives.Cdrag_delta_f                         = None 
-        self.stability_derivatives.Cdrag_delta_s                         = None    
- 
+        self.stability_derivatives.Cdrag_delta_a                         = None
+        self.stability_derivatives.Cdrag_delta_r                         = None
+        self.stability_derivatives.Cdrag_delta_e                         = None
+        self.stability_derivatives.Cdrag_delta_f                         = None
+        self.stability_derivatives.Cdrag_delta_s                         = None 
+        self.stability_derivatives.Clift_delta_a                         = None
+        self.stability_derivatives.CX_delta_a                            = None
+        self.stability_derivatives.CZ_delta_a                            = None
+        self.stability_derivatives.CM_delta_a                            = None
+        self.stability_derivatives.CX_delta_e                            = None
+        self.stability_derivatives.CY_delta_e                            = None
+        self.stability_derivatives.CZ_delta_e                            = None
+        self.stability_derivatives.CL_delta_e                            = None
+        self.stability_derivatives.CN_delta_e                            = None
+        self.stability_derivatives.Clift_delta_r                         = None
+        self.stability_derivatives.CX_delta_r                            = None
+        self.stability_derivatives.CZ_delta_r                            = None
+        self.stability_derivatives.CM_delta_r                            = None
+        self.stability_derivatives.CX_delta_f                            = None
+        self.stability_derivatives.CY_delta_f                            = None
+        self.stability_derivatives.CZ_delta_f                            = None
+        self.stability_derivatives.CL_delta_f                            = None
+        self.stability_derivatives.CN_delta_f                            = None
+        self.stability_derivatives.CX_delta_s                            = None
+        self.stability_derivatives.CY_delta_s                            = None
+        self.stability_derivatives.CZ_delta_s                            = None
+        self.stability_derivatives.CL_delta_s                            = None
+        self.stability_derivatives.CN_delta_s                            = None
+
+        # compound surface: Elevon primary (pitch)
+        self.stability_derivatives.Clift_delta_pe                     = None
+        self.stability_derivatives.Cdrag_delta_pe                     = None
+        self.stability_derivatives.CX_delta_pe                        = None
+        self.stability_derivatives.CY_delta_pe                        = None
+        self.stability_derivatives.CZ_delta_pe                        = None
+        self.stability_derivatives.CL_delta_pe                        = None
+        self.stability_derivatives.CM_delta_pe                        = None
+        self.stability_derivatives.CN_delta_pe                        = None
+        # compound surface: Elevon secondary (roll)
+        self.stability_derivatives.Clift_delta_se                     = None
+        self.stability_derivatives.Cdrag_delta_se                     = None
+        self.stability_derivatives.CX_delta_se                        = None
+        self.stability_derivatives.CY_delta_se                        = None
+        self.stability_derivatives.CZ_delta_se                        = None
+        self.stability_derivatives.CL_delta_se                        = None
+        self.stability_derivatives.CM_delta_se                        = None
+        self.stability_derivatives.CN_delta_se                        = None
+        # compound surface: Flaperon primary (flap)
+        self.stability_derivatives.Clift_delta_pf                     = None
+        self.stability_derivatives.Cdrag_delta_pf                     = None
+        self.stability_derivatives.CX_delta_pf                        = None
+        self.stability_derivatives.CY_delta_pf                        = None
+        self.stability_derivatives.CZ_delta_pf                        = None
+        self.stability_derivatives.CL_delta_pf                        = None
+        self.stability_derivatives.CM_delta_pf                        = None
+        self.stability_derivatives.CN_delta_pf                        = None
+        # compound surface: Flaperon secondary (roll)
+        self.stability_derivatives.Clift_delta_sf                     = None
+        self.stability_derivatives.Cdrag_delta_sf                     = None
+        self.stability_derivatives.CX_delta_sf                        = None
+        self.stability_derivatives.CY_delta_sf                        = None
+        self.stability_derivatives.CZ_delta_sf                        = None
+        self.stability_derivatives.CL_delta_sf                        = None
+        self.stability_derivatives.CM_delta_sf                        = None
+        self.stability_derivatives.CN_delta_sf                        = None
+        # compound surface: Ruddervator primary (pitch)
+        self.stability_derivatives.Clift_delta_pr                     = None
+        self.stability_derivatives.Cdrag_delta_pr                     = None
+        self.stability_derivatives.CX_delta_pr                        = None
+        self.stability_derivatives.CY_delta_pr                        = None
+        self.stability_derivatives.CZ_delta_pr                        = None
+        self.stability_derivatives.CL_delta_pr                        = None
+        self.stability_derivatives.CM_delta_pr                        = None
+        self.stability_derivatives.CN_delta_pr                        = None
+        # compound surface: Ruddervator secondary (yaw)
+        self.stability_derivatives.Clift_delta_sr                     = None
+        self.stability_derivatives.Cdrag_delta_sr                     = None
+        self.stability_derivatives.CX_delta_sr                        = None
+        self.stability_derivatives.CY_delta_sr                        = None
+        self.stability_derivatives.CZ_delta_sr                        = None
+        self.stability_derivatives.CL_delta_sr                        = None
+        self.stability_derivatives.CM_delta_sr                        = None
+        self.stability_derivatives.CN_delta_sr                        = None
+
         return
 
 

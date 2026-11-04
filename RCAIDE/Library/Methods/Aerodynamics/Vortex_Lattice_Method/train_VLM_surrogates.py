@@ -1,15 +1,19 @@
 # RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/train_VLM_surrogates.py
-#  
+#
+# Created: Aug 2025, M. Clarke
+# Modified: Oct 2026, H. Hussien
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports  
-import RCAIDE 
-from RCAIDE.Framework.Core import  Data 
+# RCAIDE imports
+import RCAIDE
+from RCAIDE.Framework.Core import  Data, Units
 from RCAIDE.Library.Plots import *
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM 
-from copy import deepcopy 
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
+from copy import deepcopy
 
 # package imports
 import numpy  as np
@@ -41,15 +45,32 @@ def train_VLM_surrogates(aerodynamics, vehicle):
     sup_Mach      = Mach[sub_len:] 
 
     training.subsonic    =  train_model(aerodynamics, sub_Mach, vehicle)
-    
-    # only build supersonic surrogates if necessary
-    if len(sup_Mach) > 2: 
+
+    # supersonic/transonic surrogates are trained on first need (see train_VLM_supersonic_surrogates)
+    training.supersonic  = None
+    training.transonic   = None
+    return 
+
+def train_VLM_supersonic_surrogates(aerodynamics, vehicle):
+    """Trains the supersonic and transonic surrogates; called the first time a flight condition reaches
+    the subsonic smoothing limit, so subsonic-only missions never pay for them.
+
+    Args:
+        aerodynamics       : VLM analysis, already trained subsonic
+        vehicle            : vehicle the subsonic surrogates were trained on
+
+    Returns:
+        None
+    """
+    Mach          = aerodynamics.training.Mach
+    training      = aerodynamics.training
+    sub_len       = int(sum(Mach<1.))
+    sub_Mach      = Mach[:sub_len]
+    sup_Mach      = Mach[sub_len:]
+    if len(sup_Mach) > 2:
         training.supersonic  =  train_model(aerodynamics, sup_Mach, vehicle)
         training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach, vehicle)
-    else:
-        training.supersonic  = None
-        training.transonic   = None
-    return 
+    return
     
 def train_model(aerodynamics,Mach, vehicle): 
     """Sub function that call methods to run VLM for sample point evaluation. 
@@ -75,39 +96,16 @@ def train_model(aerodynamics,Mach, vehicle):
     training.Mach  = Mach 
     
     # loop through wings to determine what control surfaces are present
-    delta_a_0 = 0
-    delta_e_0 = 0
-    delta_r_0 = 0
-    delta_f_0 = 0
-    delta_s_0 = 0
-    for wing in vehicle.wings: 
-        for control_surface in wing.control_surfaces: 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
-                delta_a_0                  =  control_surface.deflection
-                delta_a                    = aerodynamics.training.aileron_deflection
-                len_d_a                    = len(delta_a)
-                aerodynamics.aileron_flag  = True 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator:
-                delta_e_0                  =  control_surface.deflection
-                delta_e                    = aerodynamics.training.elevator_deflection
-                len_d_e                    = len(delta_e)   
-                aerodynamics.elevator_flag = True 
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:
-                delta_r_0                  =  control_surface.deflection
-                delta_r                    = aerodynamics.training.rudder_deflection
-                aerodynamics.rudder_flag   = True
-                len_d_r                    = len(delta_r)  
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
-                delta_f_0                   =  control_surface.deflection
-                delta_f                     = aerodynamics.training.flap_deflection
-                len_d_f                     = len(delta_f)  
-                aerodynamics.flap_flag      = True
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
-                delta_s_0                   =  control_surface.deflection
-                delta_s                     = aerodynamics.training.slat_deflection
-                len_d_s                     = len(delta_s)  
-                aerodynamics.slat_flag      = True 
-            control_surface.deflection = 0 # set all control surfaces to be 0
+    delta_0     = {}
+    delta_train = {}
+    for wing in vehicle.wings:
+        for control_surface in wing.control_surfaces:
+            for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
+                delta_0[letter]     = getattr(control_surface, deflection_attr)
+                delta_train[letter] = getattr(aerodynamics.training, channel + '_deflection')
+                setattr(aerodynamics, flag, True)
+            control_surface.deflection           = 0 # set all control surfaces to be 0
+            control_surface.secondary_deflection = 0
              
     u              = aerodynamics.training.u
     pitch_rate     = aerodynamics.training.pitch_rate
@@ -143,7 +141,7 @@ def train_model(aerodynamics,Mach, vehicle):
         wing.control_surfaces = []
     VLM_results      = call_VLM(conditions,settings,clean_wing_vehicle)
     Clift_res        = VLM_results.CLift
-    VD_0             = settings.vortex_distribution
+    VD_clean         = deepcopy(settings.vortex_distribution)  # clean-wing geometry; VLM overwrites settings.vortex_distribution in place
     Cdrag_res        = VLM_results.CDrag_induced
     CX_res           = VLM_results.CX
     CY_res           = VLM_results.CY
@@ -153,6 +151,8 @@ def train_model(aerodynamics,Mach, vehicle):
     CN_res           = VLM_results.CN   
 
     training.Clift_spanwise  = VLM_results.sectional_CLift.reshape(len_Mach, len_AoA, np.shape(VLM_results.sectional_CLift)[1]).transpose(1, 0, 2)
+    training.gamma_alpha     = VLM_results.gamma.reshape(len_Mach, len_AoA, np.shape(VLM_results.gamma)[1]).transpose(1, 0, 2)
+    training.VD              = VLM_results.VD
     Clift_alpha              = np.reshape(Clift_res,(len_Mach,len_AoA)).T 
     Cdrag_induced_alpha      = np.reshape(Cdrag_res,(len_Mach,len_AoA)).T 
     CX_alpha                 = np.reshape(CX_res,(len_Mach,len_AoA)).T 
@@ -351,178 +351,43 @@ def train_model(aerodynamics,Mach, vehicle):
     training.dCN_dp     = (CN_p[0,:] - CN_p[1,:]) / ((roll_rate[0]-roll_rate[1])* b / (2 *V[0,:]))  
     training.dCN_dr     = (CN_r[0,:] - CN_r[1,:]) / ((yaw_rate[0]-yaw_rate[1])* b / (2 *V[0,:]))  
 
-    # for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces  
-    Machs                                 = np.atleast_2d(np.repeat(Mach,1)).T         
-    for wing in vehicle.wings: 
-        for control_surface in wing.control_surfaces: 
-            # --------------------------------------------------------------------------------------------------------------
-            # Aileron 
-            # --------------------------------------------------------------------------------------------------------------                   
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
-                CY_d_a         = np.zeros((len_d_a,len_Mach)) 
-                CL_d_a         = np.zeros((len_d_a,len_Mach)) 
-                CN_d_a         = np.zeros((len_d_a,len_Mach)) 
-                Cdrag_d_a      = np.zeros((len_d_a,len_Mach))
-                for a_i in range(len_d_a):           
-                    conditions                            = RCAIDE.Framework.Mission.Common.Results()
-                    conditions.expand_rows(len(Mach),override=False)
-                    conditions.aerodynamics.angles.alpha  = np.ones_like(Machs) *1E-12
-                    conditions.aerodynamics.angles.beta   = np.zeros_like(Machs) 
-                    conditions.freestream.mach_number     = Machs    
-                    conditions.freestream.velocity        = np.zeros_like(Machs)   
-                    conditions.static_stability.pitch_rate= np.zeros_like(Machs)   
-                    conditions.static_stability.roll_rate = np.zeros_like(Machs)   
-                    conditions.static_stability.yaw_rate  = np.zeros_like(Machs) 
-                    control_surface.deflection            = delta_a[a_i]
-                    VLM_results            = call_VLM(conditions,settings,vehicle)
-                    CY_res                 = VLM_results.CY
-                    CL_res                 = VLM_results.CL
-                    CN_res                 = VLM_results.CN
-                    Cdrag_res              = VLM_results.CDrag_induced
-                    CY_d_a[a_i,:]          =  (CY_res[:,0]   - CY_alpha_0[0,:]  ) # Negative sign is due to convention
-                    CL_d_a[a_i,:]          =  (CL_res[:,0]   - CL_alpha_0[0,:])   # Negative sign is due to convention
-                    CN_d_a[a_i,:]          =  (CN_res[:,0]   - CN_alpha_0[0,:]  ) 
-                    Cdrag_d_a[a_i,:]       =  (Cdrag_res[:,0] - Cdrag_alpha_0[0,:])
-                      
-                training.dCY_ddelta_a      = (CY_d_a[0,:] - CY_d_a[1,:]) / (delta_a[0] - delta_a[1]) 
-                training.dCL_ddelta_a      = ((CL_d_a[0,:] - CL_d_a[1,:]) / (delta_a[0] - delta_a[1]))
-                training.dCN_ddelta_a      = (CN_d_a[0,:] - CN_d_a[1,:]) / (delta_a[0] - delta_a[1]) 
-                training.dCdrag_ddelta_a   = (Cdrag_d_a[0,:] - Cdrag_d_a[1,:]) / (delta_a[0] - delta_a[1])
-                control_surface.deflection = delta_a_0
+    # control surface derivatives: one deflected run per channel against a single undeflected reference
+    # shared by all channels; see control_surface_registry.py for why every type is treated identically here.
+    has_control_surfaces = any(len(wing.control_surfaces) > 0 for wing in vehicle.wings)
+    if has_control_surfaces:
+        VLM_ref = call_VLM(control_surface_conditions(Mach),settings,vehicle)  # all deflections are 0 here
+    for wing in vehicle.wings:
+        for control_surface in wing.control_surfaces:
+            for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
+                delta = delta_train[letter][0]
+                setattr(control_surface, deflection_attr, delta)
+                VLM_results = call_VLM(control_surface_conditions(Mach),settings,vehicle)
+                training['dClift_ddelta_' + letter] = (VLM_results.CLift[:,0]         - VLM_ref.CLift[:,0]        ) / delta
+                training['dCdrag_ddelta_' + letter] = (VLM_results.CDrag_induced[:,0] - VLM_ref.CDrag_induced[:,0]) / delta
+                training['dCX_ddelta_'    + letter] = (VLM_results.CX[:,0]            - VLM_ref.CX[:,0]           ) / delta
+                training['dCY_ddelta_'    + letter] = (VLM_results.CY[:,0]            - VLM_ref.CY[:,0]           ) / delta
+                training['dCZ_ddelta_'    + letter] = (VLM_results.CZ[:,0]            - VLM_ref.CZ[:,0]           ) / delta
+                training['dCL_ddelta_'    + letter] = (VLM_results.CL[:,0]            - VLM_ref.CL[:,0]           ) / delta
+                training['dCM_ddelta_'    + letter] = (VLM_results.CM[:,0]            - VLM_ref.CM[:,0]           ) / delta
+                training['dCN_ddelta_'    + letter] = (VLM_results.CN[:,0]            - VLM_ref.CN[:,0]           ) / delta
+                # reset to 0, not the real deflection, so later surfaces train in isolation
+                setattr(control_surface, deflection_attr, 0)
 
-            # --------------------------------------------------------------------------------------------------------------
-            # Elevator 
-            # --------------------------------------------------------------------------------------------------------------    
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator: 
-            
-                Clift_d_e      = np.zeros((len_d_e,len_Mach)) 
-                Cdrag_d_e      = np.zeros((len_d_e,len_Mach)) 
-                CM_d_e         = np.zeros((len_d_e,len_Mach))  
-                for e_i in range(len_d_e):         
-                    conditions                           = RCAIDE.Framework.Mission.Common.Results()
-                    conditions.expand_rows(len(Mach),override=False)
-                    conditions.aerodynamics.angles.alpha  = np.ones_like(Machs) *1E-12
-                    conditions.aerodynamics.angles.beta   = np.zeros_like(Machs) 
-                    conditions.freestream.mach_number     = Machs     
-                    conditions.freestream.velocity        = np.zeros_like(Machs)   
-                    conditions.static_stability.pitch_rate= np.zeros_like(Machs)   
-                    conditions.static_stability.roll_rate = np.zeros_like(Machs)   
-                    conditions.static_stability.yaw_rate  = np.zeros_like(Machs) 
-                    control_surface.deflection            =  delta_e[e_i]
-                    VLM_results            = call_VLM(conditions,settings,vehicle)
-                    Clift_res              = VLM_results.CLift
-                    Cdrag_res              = VLM_results.CDrag_induced
-                    CM_res                 = VLM_results.CM 
-                    Clift_d_e[e_i,:]       = Clift_res[:,0]  - Clift_alpha_0[0,:]
-                    Cdrag_d_e[e_i,:]       = Cdrag_res[:,0]  - Cdrag_alpha_0[0,:]
-                    CM_d_e[e_i,:]          = CM_res[:,0]   - CM_alpha_0[0,:]
-                    
-                training.dClift_ddelta_e   = ((Clift_d_e[0,:] - Clift_d_e[1,:]) / (delta_e[0] - delta_e[1]))
-                training.dCM_ddelta_e      = (CM_d_e[0,:] - CM_d_e[1,:]) / (delta_e[0] - delta_e[1])  
-                training.dCdrag_ddelta_e   = ((Cdrag_d_e[0,:] - Cdrag_d_e[1,:]) / (delta_e[0] - delta_e[1]))
-                control_surface.deflection = delta_e_0
-    
-            # --------------------------------------------------------------------------------------------------------------
-            # Rudder 
-            # --------------------------------------------------------------------------------------------------------------  
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder: 
-                CY_d_r         = np.zeros((len_d_r,len_Mach)) 
-                CL_d_r         = np.zeros((len_d_r,len_Mach)) 
-                CN_d_r         = np.zeros((len_d_r,len_Mach))               
-                Cdrag_d_r      = np.zeros((len_d_r,len_Mach))   
-                for r_i in range(len_d_r):         
-                    conditions                            = RCAIDE.Framework.Mission.Common.Results()
-                    conditions.expand_rows(len(Mach),override=False)
-                    conditions.aerodynamics.angles.alpha  = np.ones_like(Machs) *1E-12
-                    conditions.aerodynamics.angles.beta   = np.zeros_like(Machs) 
-                    conditions.freestream.mach_number     = Machs    
-                    conditions.freestream.velocity        = np.zeros_like(Machs)   
-                    conditions.static_stability.pitch_rate= np.zeros_like(Machs)   
-                    conditions.static_stability.roll_rate = np.zeros_like(Machs)   
-                    conditions.static_stability.yaw_rate  = np.zeros_like(Machs) 
-                    control_surface.deflection            = delta_r[r_i]
-                    VLM_results      = call_VLM(conditions,settings,vehicle)
-                    Cdrag_res        = VLM_results.CDrag_induced
-                    CY_res           = VLM_results.CY
-                    CL_res           = VLM_results.CL
-                    CN_res           = VLM_results.CN
-                    CY_d_r[r_i,:]    = (CY_res[:,0]   - CY_alpha_0[0,:]  ) 
-                    CL_d_r[r_i,:]    = (CL_res[:,0]   - CL_alpha_0[0,:]  ) 
-                    CN_d_r[r_i,:]    = (CN_res[:,0]   - CN_alpha_0[0,:] )
-                    Cdrag_d_r[r_i,:] = (Cdrag_res[:,0] - Cdrag_alpha_0[0,:]) 
-                  
-                training.dCY_ddelta_r      = (CY_d_r[0,:] - CY_d_r[1,:]) / (delta_r[0] - delta_r[1]) 
-                training.dCL_ddelta_r      = (CL_d_r[0,:] - CL_d_r[1,:]) / (delta_r[0] - delta_r[1])  
-                training.dCN_ddelta_r      = (CN_d_r[0,:] - CN_d_r[1,:]) / (delta_r[0] - delta_r[1]) 
-                training.dCdrag_ddelta_r   = (Cdrag_d_r[0,:] - Cdrag_d_r[1,:]) / (delta_r[0] - delta_r[1])
-                control_surface.deflection = delta_r_0
-                    
-            # --------------------------------------------------------------------------------------------------------------
-            # Flap
-            # --------------------------------------------------------------------------------------------------------------  
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
-                CM_d_f         = np.zeros((len_d_f,len_Mach)) 
-                Clift_d_f      = np.zeros((len_d_f,len_Mach))   
-                Cdrag_d_f     = np.zeros((len_d_f,len_Mach))
-                for f_i in range(len_d_f): 
-                    Machs                                           = np.atleast_2d(np.repeat(Mach,1)).T         
-                    conditions                                      = RCAIDE.Framework.Mission.Common.Results()
-                    conditions.expand_rows(len(Mach),override=False)
-                    conditions.aerodynamics.angles.alpha            = np.ones_like(Machs) *1E-12
-                    conditions.aerodynamics.angles.beta             = np.zeros_like(Machs) 
-                    conditions.freestream.mach_number               = Machs    
-                    conditions.freestream.velocity                  = np.zeros_like(Machs)   
-                    conditions.static_stability.pitch_rate          = np.zeros_like(Machs)   
-                    conditions.static_stability.roll_rate           = np.zeros_like(Machs)   
-                    conditions.static_stability.yaw_rate            = np.zeros_like(Machs) 
-                    control_surface.deflection = delta_f[f_i]
-                    VLM_results            = call_VLM(conditions,settings,vehicle)
-                    CM_res                 = VLM_results.CM
-                    Clift_res              = VLM_results.CLift 
-                    Cdrag_res              = VLM_results.CDrag_induced 
-                    Clift_d_f[f_i,:]       = Clift_res[:,0]  - Clift_alpha_0[0,:]  
-                    CM_d_f[f_i,:]          = CM_res[:,0]   - CM_alpha_0[0,:]            
-                    Cdrag_d_f[f_i,:]       = Cdrag_res[:,0]  - Cdrag_alpha_0[0,:]
-                      
-                training.dClift_ddelta_f   = (Clift_d_f[0,:] - Clift_d_f[1,:]) / (delta_f[0] - delta_f[1]) 
-                training.dCM_ddelta_f      = (CM_d_f[0,:] - CM_d_f[1,:]) / (delta_f[0] - delta_f[1])  
-                training.dCdrag_ddelta_f   = (Cdrag_d_f[0,:] - Cdrag_d_f[1,:]) / (delta_f[0] - delta_f[1])
-                control_surface.deflection = delta_f_0
-                
-            # --------------------------------------------------------------------------------------------------------------
-            # Slat
-            # --------------------------------------------------------------------------------------------------------------      
-            if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat: 
-                CM_d_s         = np.zeros((len_d_s,len_Mach)) 
-                Clift_d_s      = np.zeros((len_d_s,len_Mach))   
-                Cdrag_d_s      = np.zeros((len_d_s,len_Mach))   
-                for s_i in range(len_d_s): 
-                    Machs                                           = np.atleast_2d(np.repeat(Mach,1)).T         
-                    conditions                                      = RCAIDE.Framework.Mission.Common.Results()
-                    conditions.expand_rows(len(Mach),override=False)
-                    conditions.aerodynamics.angles.alpha            = np.ones_like(Machs) *1E-12
-                    conditions.aerodynamics.angles.beta             = np.zeros_like(Machs) 
-                    conditions.freestream.mach_number               = Machs    
-                    conditions.freestream.velocity                  = np.zeros_like(Machs)   
-                    conditions.static_stability.pitch_rate          = np.zeros_like(Machs)   
-                    conditions.static_stability.roll_rate           = np.zeros_like(Machs)   
-                    conditions.static_stability.yaw_rate            = np.zeros_like(Machs) 
-                    control_surface.deflection = delta_s[s_i]
-                    VLM_results  = call_VLM(conditions,settings,vehicle)
-                    CM_res       = VLM_results.CM
-                    Clift_res    = VLM_results.CLift 
-                    Cdrag_res    = VLM_results.CDrag_induced
-                    Clift_d_s[s_i,:]      = Clift_res[:,0]  - Clift_alpha_0[0,:]  
-                    Cdrag_d_s[s_i,:]      = Cdrag_res[:,0]  - Cdrag_alpha_0[0,:]
-                    CM_d_s[s_i,:]         = CM_res[:,0]   - CM_alpha_0[0,:]            
-                training.dClift_ddelta_s  = (Clift_d_s[0,:] - Clift_d_s[1,:]) / (delta_s[0] - delta_s[1]) 
-                training.dCM_ddelta_s     = (CM_d_s[0,:] - CM_d_s[1,:]) / (delta_s[0] - delta_s[1])  
-                training.dCdrag_ddelta_s  = (Cdrag_d_s[0,:] - Cdrag_d_s[1,:]) / (delta_s[0] - delta_s[1])
-                control_surface.deflection = delta_s_0
-                
-    # reset vortex distribution after training 
-    settings.vortex_distribution = VD_0      
-    return training 
+    # high-lift induced drag at two deflections and two angles of attack (see train_high_lift_induced_drag)
+    if has_control_surfaces:
+        training.update(train_high_lift_induced_drag(settings, vehicle, Mach, VLM_ref.CDrag_induced[:,0]))
+
+    # restore real deflections now that training is done
+    for wing in vehicle.wings:
+        for control_surface in wing.control_surfaces:
+            for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
+                setattr(control_surface, deflection_attr, delta_0[letter])
+
+    # reset vortex distribution after training
+    # restore the clean-wing geometry in place: segments share this object, and the control-surface
+    # sweeps above left the last deflected geometry in it (read by e.g. transonic_lift_wave_drag)
+    settings.vortex_distribution.update(VD_clean)
+    return training
 
 def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub_Mach, sup_Mach, vehicle): 
     """Sub function that call methods to run VLM for sample point evaluation. 
@@ -553,6 +418,9 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     # --------------------------------------------------------------------------------------------------------------  
     Clift_alpha           =  np.concatenate((training_subsonic.Clift_alpha[:,-1][:,None] , training_supersonic.Clift_alpha[:,0][:,None] ), axis = 1)
     Clift_spanwise        =np.concatenate((training_subsonic.Clift_spanwise[:,-1][:,None] , training_supersonic.Clift_spanwise[:,0][:,None] ), axis = 1)
+    if 'gamma_alpha' in training_subsonic and 'gamma_alpha' in training_supersonic:
+        training.gamma_alpha = np.concatenate((training_subsonic.gamma_alpha[:,-1][:,None], training_supersonic.gamma_alpha[:,0][:,None]), axis = 1)
+        training.VD          = training_subsonic.VD
     Cdrag_induced_alpha   =  np.concatenate((training_subsonic.Cdrag_induced_alpha[:,-1][:,None]  , training_supersonic.Cdrag_induced_alpha[:,0][:,None] ), axis = 1) 
     CX_alpha              =  np.concatenate((training_subsonic.CX_alpha[:,-1][:,None]    , training_supersonic.CX_alpha[:,0][:,None] ), axis = 1)   
     CY_alpha              =  np.concatenate((training_subsonic.CY_alpha[:,-1][:,None]    , training_supersonic.CY_alpha[:,0][:,None] ), axis = 1)   
@@ -650,48 +518,93 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     training.dCN_dr =  (CN_r[0,:] - CN_r[1,:]) / (yaw_rate[0]-yaw_rate[1])
 
 
-    '''  for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces'''
-     
-    # --------------------------------------------------------------------------------------------------------------
-    # Aileron 
-    # --------------------------------------------------------------------------------------------------------------   
-    if aerodynamics.aileron_flag:    
-        training.dCY_ddelta_a    =  np.array([training_subsonic.dCY_ddelta_a[-1]    , training_subsonic.dCY_ddelta_a[0]   ]) 
-        training.dCL_ddelta_a    =  np.array([training_subsonic.dCL_ddelta_a[-1]    , training_subsonic.dCL_ddelta_a[0]   ]) 
-        training.dCN_ddelta_a    =  np.array([training_subsonic.dCN_ddelta_a[-1]    , training_subsonic.dCN_ddelta_a[0]   ])
-        training.dCdrag_ddelta_a =  np.array([training_subsonic.dCdrag_ddelta_a[-1] , training_subsonic.dCdrag_ddelta_a[0] ])
-    # --------------------------------------------------------------------------------------------------------------
-    # Elevator 
-    # -------------------------------------------------------------------------------------------------------------- 
-    if aerodynamics.elevator_flag:                         
-        training.dClift_ddelta_e =  np.array([training_subsonic.dClift_ddelta_e[-1] , training_subsonic.dClift_ddelta_e[0]]) 
-        training.dCM_ddelta_e    =  np.array([training_subsonic.dCM_ddelta_e[-1]    , training_subsonic.dCM_ddelta_e[0]   ]) 
-        training.dCdrag_ddelta_e =  np.array([training_subsonic.dCdrag_ddelta_e[-1] , training_subsonic.dCdrag_ddelta_e[0] ])
-    # --------------------------------------------------------------------------------------------------------------
-    # Rudder 
-    # -------------------------------------------------------------------------------------------------------------- 
-    if aerodynamics.rudder_flag:  
-        training.dCY_ddelta_r    =  np.array([training_subsonic.dCY_ddelta_r[-1]    , training_subsonic.dCY_ddelta_r[0]   ]) 
-        training.dCL_ddelta_r    =  np.array([training_subsonic.dCL_ddelta_r[-1]    , training_subsonic.dCL_ddelta_r[0]   ]) 
-        training.dCN_ddelta_r    =  np.array([training_subsonic.dCN_ddelta_r[-1]    , training_subsonic.dCN_ddelta_r[0]   ])
-        training.dCdrag_ddelta_r =  np.array([training_subsonic.dCdrag_ddelta_r[-1] , training_subsonic.dCdrag_ddelta_r[0] ])            
-    # --------------------------------------------------------------------------------------------------------------
-    # Flap
-    # -------------------------------------------------------------------------------------------------------------- 
-    if aerodynamics.flap_flag:  
-        training.dClift_ddelta_f = np.array([training_subsonic.dClift_ddelta_f[-1] , training_subsonic.dClift_ddelta_f[0]]) 
-        training.dCM_ddelta_f    = np.array([training_subsonic.dCM_ddelta_f[-1]    , training_subsonic.dCM_ddelta_f[0]   ])
-        training.dCdrag_ddelta_f = np.array([training_subsonic.dCdrag_ddelta_f[-1] , training_subsonic.dCdrag_ddelta_f[0] ])
+    # for control surfaces, subtract influence WITHOUT control surface deflected from coefficients WITH control
+    # surface deflected; see control_surface_registry.py for why every type is treated identically here.
+    for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
+        if getattr(aerodynamics, flag):
+            for coeff in ('Clift', 'Cdrag', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN'):
+                key = 'd' + coeff + '_ddelta_' + letter
+                training[key] = np.array([training_subsonic[key][-1], training_supersonic[key][0]])
+    for letter in HIGH_LIFT_LETTERS:
+        for term in HIGH_LIFT_DRAG_TERMS:
+            key = 'high_lift_Cdrag_' + term + '_' + letter
+            if key in training_subsonic and key in training_supersonic:
+                training[key] = np.array([training_subsonic[key][-1], training_supersonic[key][0]])
 
-    # --------------------------------------------------------------------------------------------------------------
-    # Slat
-    # -------------------------------------------------------------------------------------------------------------- 
-    if aerodynamics.slat_flag:  
-        training.dClift_ddelta_s = np.array([training_subsonic.dClift_ddelta_s[-1] , training_subsonic.dClift_ddelta_s[0]]) 
-        training.dCM_ddelta_s    = np.array([training_subsonic.dCM_ddelta_s[-1]    , training_subsonic.dCM_ddelta_s[0]   ])         
-        training.dCdrag_ddelta_s = np.array([training_subsonic.dCdrag_ddelta_s[-1] , training_subsonic.dCdrag_ddelta_s[0] ])
-               
     return training
+
+
+def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference):
+    """
+    Trains the induced-drag increment of each flap and slat as
+    dCDi = p*delta + q*delta^2 + (r0 + r1*delta)*alpha*delta, from VLM runs at two deflections (15, 30 deg)
+    and two angles of attack (0, 5 deg). Trefftz-plane induced drag is a quadratic form in the circulation,
+    which the VLM solves linearly in alpha and delta; the alpha*delta cross term with the wing's own lift
+    dominates at landing incidence and is missed by a zero-incidence derivative. r1 absorbs the departure from
+    a pure quadratic at large deflection. All control surfaces must be undeflected on entry.
+
+    Consistent with Roskam, Airplane Design Part VI (DARcorporation, 2004 printing), Sec. 4.6.2, where induced drag is computed from the
+    total flaps-down lift coefficient and Eq. 4.74 adds only the span-loading term K^2 dCL_flap^2 cos(sweep):
+    on an E175-like wing (flap 0.2-0.7 span, A 8.5, Fig. 4.53 K = 0.20) that build-up is within 7-12% of the
+    VLM induced drag this model reproduces.
+
+    Parameters
+    ----------
+    settings : Data
+        Vortex lattice settings.
+    vehicle : RCAIDE.Vehicle
+        Vehicle with its control surfaces undeflected.
+    Mach : numpy.ndarray
+        Training Mach numbers [-].
+    CDi_reference : numpy.ndarray
+        Undeflected induced drag at zero incidence for each Mach number [-].
+
+    Returns
+    -------
+    training : Data
+        high_lift_Cdrag_<term>_<letter> for each term in HIGH_LIFT_DRAG_TERMS and each flap or slat letter.
+    """
+    training  = Data()
+    high_lift = [(control_surface, letter, deflection_attr) for wing in vehicle.wings for control_surface in wing.control_surfaces
+                 for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface) if letter in HIGH_LIFT_LETTERS]
+    if len(high_lift) == 0:
+        return training
+    alpha_training         = 5.0 * Units.deg
+    delta_a, delta_b       = 15.0 * Units.deg, 30.0 * Units.deg
+    conditions_alpha       = control_surface_conditions(Mach)
+    conditions_alpha.aerodynamics.angles.alpha[:] = alpha_training
+    CDi_alpha              = call_VLM(conditions_alpha,settings,vehicle).CDrag_induced[:,0]
+    for control_surface, letter, deflection_attr in high_lift:
+        increment = {}
+        for delta in (delta_a, delta_b):
+            setattr(control_surface, deflection_attr, delta)
+            increment[delta] = (call_VLM(control_surface_conditions(Mach),settings,vehicle).CDrag_induced[:,0] - CDi_reference,
+                                call_VLM(conditions_alpha,settings,vehicle).CDrag_induced[:,0] - CDi_alpha)
+            setattr(control_surface, deflection_attr, 0)
+        q   = (increment[delta_b][0] / delta_b - increment[delta_a][0] / delta_a) / (delta_b - delta_a)
+        p   = increment[delta_a][0] / delta_a - q * delta_a
+        r_a = (increment[delta_a][1] - increment[delta_a][0]) / (alpha_training * delta_a)
+        r_b = (increment[delta_b][1] - increment[delta_b][0]) / (alpha_training * delta_b)
+        r1  = (r_b - r_a) / (delta_b - delta_a)
+        r0  = r_a - r1 * delta_a
+        for term, value in zip(HIGH_LIFT_DRAG_TERMS, (p, q, r0, r1)):
+            training['high_lift_Cdrag_' + term + '_' + letter] = value
+    return training
+
+
+def control_surface_conditions(Mach):
+    """Zero-incidence conditions, one case per Mach, for control-surface training."""
+    Machs                                  = np.atleast_2d(Mach).T
+    conditions                             = RCAIDE.Framework.Mission.Common.Results()
+    conditions.expand_rows(len(Mach),override=False)
+    conditions.aerodynamics.angles.alpha   = np.ones_like(Machs) *1E-12
+    conditions.aerodynamics.angles.beta    = np.zeros_like(Machs)
+    conditions.freestream.mach_number      = Machs
+    conditions.freestream.velocity         = np.zeros_like(Machs)
+    conditions.static_stability.pitch_rate = np.zeros_like(Machs)
+    conditions.static_stability.roll_rate  = np.zeros_like(Machs)
+    conditions.static_stability.yaw_rate   = np.zeros_like(Machs)
+    return conditions
 
 
 def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_np,Mach,AoA):
@@ -718,6 +631,8 @@ def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_n
 
 def call_VLM(full_conditions,settings,vehicle): 
 
+    # geometry is fixed within this call, so cases at the same Mach share C_mn
+    induced_velocity_cache = {}
     num_cases =  len(full_conditions.aerodynamics.angles.alpha)
     for i in  range(num_cases): 
         conditions                                      = RCAIDE.Framework.Mission.Common.Results() 
@@ -729,7 +644,7 @@ def call_VLM(full_conditions,settings,vehicle):
         conditions.static_stability.roll_rate           = np.atleast_2d(full_conditions.static_stability.roll_rate[i,:])   
         conditions.static_stability.yaw_rate            = np.atleast_2d(full_conditions.static_stability.yaw_rate[i,:])   
 
-        VLM_results         = VLM(conditions,settings,vehicle)         
+        VLM_results         = VLM(conditions,settings,vehicle,induced_velocity_cache)
         if i == 0: 
             RES                 = Data()
             RES.CLift           = VLM_results.CLift
@@ -741,6 +656,8 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CM              = VLM_results.CM
             RES.CN              = VLM_results.CN
             RES.sectional_CLift = VLM_results.sectional_CLift         
+            RES.gamma           = VLM_results.gamma
+            RES.VD              = VLM_results.VD  # full vortex distribution; geometry is the same for every case
             settings.vortex_distribution  = settings.vortex_distribution  
         else: 
             RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift)) 
@@ -752,5 +669,6 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CM              = np.vstack((RES.CM             ,VLM_results.CM))
             RES.CN              = np.vstack((RES.CN             ,VLM_results.CN))
             RES.sectional_CLift = np.vstack((RES.sectional_CLift,VLM_results.sectional_CLift))   
+            RES.gamma           = np.vstack((RES.gamma          ,VLM_results.gamma))
     
     return RES

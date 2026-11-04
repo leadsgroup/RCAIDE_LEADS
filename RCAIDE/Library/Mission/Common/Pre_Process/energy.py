@@ -513,6 +513,17 @@ def resolve_hybridization(segment, topology,seg_i, verbose=False):
             for type_name, sources in source_types.items():
                 if len(sources) > 1:
                     for source in sources:
+                        # Fuel tanks are excluded from the even-split default: unlike
+                        # multiple identical fuel cells/generators/batteries sharing a
+                        # bus (where an even split is the sensible default), fuel
+                        # tanks on the same distributor are frequently sized
+                        # differently, and an even split drives smaller tanks dry
+                        # mid-mission while larger ones barely deplete. Fuel tanks
+                        # instead get a volume-proportional split set during geometry
+                        # Pre_Process (RCAIDE.Library.Methods.Geometry.Planform
+                        # .compute_fuel_volume), which this must not overwrite.
+                        if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                            continue
                         source.power_split_ratio = 1.0 / len(sources)
 
     if verbose and seg_i == 0:

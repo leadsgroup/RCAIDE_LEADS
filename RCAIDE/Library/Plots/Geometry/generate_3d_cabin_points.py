@@ -77,8 +77,12 @@ def generate_3d_wing_cabin_points(wing, n_points, plot_centerline=False):
     z_min                = LOPA[:, 4].min()        # floor Z: lowest seat position used to cut the semi-cylinder
     cabin_factor         = wing.outer_mold_line_cabin_offset_factor
 
-    # Slice the ordered segment list between the two bounding tags (case-insensitive, RCAIDE lowercases tags)
+    # Slice the ordered segment list between the two bounding tags (case-insensitive, RCAIDE lowercases tags).
+    # segments_bounding_cabin defaults to [] on Cabin() and must be set explicitly by vehicle_setup();
+    # skip cabin geometry entirely (return None) rather than crash on an undefined boundary.
     bounding_tags        = list(wing.cabins.values())[0].segments_bounding_cabin
+    if len(bounding_tags) < 2:
+        return None
     all_segs             = list(wing.segments)
     seg_tags             = [s.tag.lower() for s in all_segs]
     i_start              = seg_tags.index(bounding_tags[0].lower())
@@ -213,8 +217,12 @@ def generate_3d_wing_cabin_points(wing, n_points, plot_centerline=False):
 def generate_3d_fuselage_cabin_points(fuselage, n_points, plot_centerline=False):
     cabin_factor  = getattr(fuselage, 'outer_mold_line_cabin_offset_factor', 0.95)
 
-    # Slice the ordered segment list between the two bounding tags (case-insensitive, RCAIDE lowercases tags)
+    # Slice the ordered segment list between the two bounding tags (case-insensitive, RCAIDE lowercases tags).
+    # segments_bounding_cabin defaults to [] on Cabin() and must be set explicitly by vehicle_setup();
+    # skip cabin geometry entirely (return None) rather than crash on an undefined boundary.
     bounding_tags = list(fuselage.cabins.values())[0].segments_bounding_cabin
+    if len(bounding_tags) < 2:
+        return None
     all_segs      = list(fuselage.segments)
     seg_tags      = [s.tag.lower() for s in all_segs]
     i_start       = seg_tags.index(bounding_tags[0].lower())

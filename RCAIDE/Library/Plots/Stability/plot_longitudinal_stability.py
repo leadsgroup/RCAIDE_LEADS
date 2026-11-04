@@ -114,11 +114,15 @@ def plot_longitudinal_stability(results,
     axis_5 = plt.subplot(3,2,5)
     axis_6 = plt.subplot(3,2,6) 
     
-    for i in range(len(results.segments)): 
+    has_elevator = 'elevator' in results.segments[0].conditions.control_surfaces
+    if not has_elevator:
+        import warnings
+        warnings.warn("No elevator found in control_surfaces; skipping elevator deflection plot.")
+
+    for i in range(len(results.segments)):
         time       = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-        c_m        = results.segments[i].conditions.static_stability.coefficients.M[:,0]   
-        SM         = results.segments[i].conditions.static_stability.static_margin[:,0] *100 
-        delta_e    = results.segments[i].conditions.control_surfaces.elevator.deflection[:,0] / Units.deg
+        c_m        = results.segments[i].conditions.static_stability.coefficients.M[:,0]
+        SM         = results.segments[i].conditions.static_stability.static_margin[:,0] *100
         CM_delta_e = results.segments[i].conditions.static_stability.derivatives.CM_delta_e[:,0]
         Cm_alpha   = results.segments[i].conditions.static_stability.derivatives.CM_alpha[:,0]
         CL_alpha   = results.segments[i].conditions.static_stability.derivatives.Clift_alpha[:,0] 
@@ -138,9 +142,11 @@ def plot_longitudinal_stability(results,
         axis_3.set_ylabel(r'Static Margin (%)')
         set_axes(axis_3)  
 
-        axis_4.plot(time,delta_e , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width) 
-        axis_4.set_ylabel(r'Elevator Defl.n')  
-        set_axes(axis_4) 
+        if has_elevator:
+            delta_e = results.segments[i].conditions.control_surfaces.elevator.deflection[:,0] / Units.deg
+            axis_4.plot(time,delta_e , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
+        axis_4.set_ylabel(r'Elevator Defl.n')
+        set_axes(axis_4)
         
         axis_5.plot(time,CM_delta_e , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
         axis_5.set_xlabel('Time (mins)')

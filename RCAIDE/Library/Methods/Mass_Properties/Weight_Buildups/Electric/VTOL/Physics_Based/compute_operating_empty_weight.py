@@ -107,11 +107,12 @@ def compute_operating_empty_weight(vehicle,settings = None):
         #-------------------------------------------------------------------------------  
         payload = compute_payload_weight(vehicle, W_passenger=70.* Units.kg, W_baggage=0 * Units.lbs) 
         
-        weight.seats        = vehicle.number_of_passengers * 15.   * Units.kg
+        num_seats           = vehicle.number_of_seats or vehicle.number_of_passengers
+        weight.seats        = num_seats * 15.            * Units.kg
         weight.passengers   = payload.passengers
         weight.avionics     = 15.                        * Units.kg
         weight.landing_gear = MTOW * 0.02                * Units.kg
-        weight.ECS          = vehicle.number_of_passengers * 7.    * Units.kg
+        weight.ECS          = num_seats * 7.             * Units.kg
 
         # Determine length scale
         length_scale = 1.

@@ -38,7 +38,7 @@ def compute_component_moment_of_inertia(moment_of_inertia_df,component,vehicle,t
     if isinstance(component,Component):
         component.compute_moments_of_inertia(vehicle, center_of_gravity=vehicle_CG)
         update_total_moment_of_inertia(total_MOI,vehicle_CG,component,segment, verbose, moment_of_inertia_df)
-        is_cryo_tank = isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank)
+        is_cryo_tank = isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank) or  isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Pressurized_Tank)
         for key in component.keys():
             item = component[key]
             if isinstance(item,Component.Container):

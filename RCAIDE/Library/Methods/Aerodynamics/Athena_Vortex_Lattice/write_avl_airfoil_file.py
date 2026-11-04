@@ -16,7 +16,7 @@ import os
 # ----------------------------------------------------------------------------------------------------------------------
 #  write_avl_airfoil_file
 # ---------------------------------------------------------------------------------------------------------------------- 
-def write_avl_airfoil_file(rcaide_airfoil_filename):
+def write_avl_airfoil_file(rcaide_airfoil_filename, thickness_multiplier = 1.0):
     """ This function writes the standard airfoil file format from Airfoil tools 
     to avl file format
 
@@ -52,7 +52,7 @@ def write_avl_airfoil_file(rcaide_airfoil_filename):
     airfoil_name = data_block[0].strip()
     
     # import airfoil coordinates 
-    airfoil_geometry_data = import_airfoil_geometry(f_path)
+    airfoil_geometry_data = import_airfoil_geometry(f_path, thickness_multiplier = thickness_multiplier)
     dim = len(airfoil_geometry_data.x_coordinates)
               
     # write file  

@@ -15,8 +15,8 @@ def get_seat_y_coords(cabin,cabin_class,cabin_class_origin):
     ar_w   = cabin_class.seat_arm_rest_width
     a_w    = cabin_class.aisle_width
     
-    # determine number of aisles
-    if n > 7:
+    # determine number of aisles: single aisle up to six abreast, twin aisle above
+    if n <= 6:
         n_a = 1
     else:
         n_a = 2

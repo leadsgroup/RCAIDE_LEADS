@@ -532,6 +532,45 @@ class Data(dict):
         
         return value
         
+    def do_recursive(self,func,other=None):
+        """ Recursively combines matching keys of self and other (a second
+            Data, or None) via func(self_value, other_value), returning a
+            new object of self's own class with the same nested structure.
+
+            Recurses wherever both self and other have a nested Data value at
+            the same key (any Data subclass -- Conditions, plain Data, ...
+            not just self's own class, since a Data structure like mission
+            state.conditions commonly nests different Data subclasses at
+            different levels); every other leaf (arrays, scalars, strings,
+            ...) goes straight to func, which decides what's combinable (e.g.
+            RCAIDE.Framework.Mission.Common.State.append_array vstacks
+            matching rank-2 arrays and otherwise just keeps self's value).
+
+            Assumptions:
+            None
+
+            Source:
+            N/A
+
+            Inputs:
+            func    [callable]  func(self_value, other_value) -> combined_value
+            other   [Data]      second structure to combine against, or None
+
+            Outputs:
+            Data (same class as self)
+
+            Properties Used:
+            None
+        """
+        result = self.__class__()
+        for k,v in self.items():
+            other_v = other[k] if isinstance(other,dict) and k in other else None
+            if isinstance(v,Data) and isinstance(other_v,Data):
+                result[k] = v.do_recursive(func,other_v)
+            else:
+                result[k] = func(v,other_v)
+        return result
+
     def pack_array(self,output='vector'):
         """ maps the data dict to a 1D vector or 2D column array
         

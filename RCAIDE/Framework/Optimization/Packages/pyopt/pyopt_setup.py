@@ -1,8 +1,6 @@
 # pyopt_setup.py
 #
-# Created:  Jul 2015, E. Botero
-# Modified: Feb 2016, M. Vegh
-#           May 2021, E. Botero 
+# Created:  Aug 2026, M. Clarke
 
 # ----------------------------------------------------------------------
 #  Imports
@@ -14,11 +12,13 @@ from RCAIDE.Framework.Optimization.Common import helper_functions as help_fun
 
 
 # ----------------------------------------------------------------------
-#  Pyopt_Solve
-# ---------------------------------------------------------------------- 
-def Pyopt_Solve(problem,solver='SNOPT',FD='single', sense_step=1.0E-6,  nonderivative_line_search=False):
-    """ This converts your RCAIDE Nexus problem into a PyOpt optimization problem and solves it
-        PyOpt has many algorithms, they can be switched out by using the solver input. 
+#  Pyoptsparse_Solve
+# ----------------------------------------------------------------------
+def Pyoptsparse_Solve(problem, solver='IPOPT', FD='single', sense_step=1.0E-6, nonderivative_line_search=False):
+    """ This converts your RCAIDE Nexus problem into a pyoptsparse optimization problem and solves it.
+        Supports IPOPT only. No SNOPT: commercial license despite pyoptsparse
+        itself being open source. CONMIN and SLSQP were both tried and dropped --
+        see the ValueError message below for why.
 
         Assumptions:
         None
@@ -38,26 +38,42 @@ def Pyopt_Solve(problem,solver='SNOPT',FD='single', sense_step=1.0E-6,  nonderiv
 
         Properties Used:
         None
-    """      
-   
+    """
+
     # Have the optimizer call the wrapper
-    mywrap = lambda x:PyOpt_Problem(problem,x)
-   
+    mywrap = lambda x: PyOpt_Problem(problem, x)
+
     inp = problem.optimization_problem.inputs
     obj = problem.optimization_problem.objective
     con = problem.optimization_problem.constraints
-   
+
     if FD == 'parallel':
         from mpi4py import MPI
-        comm = MPI.COMM_WORLD
-        myrank = comm.Get_rank()      
-   
+        comm   = MPI.COMM_WORLD
+        myrank = comm.Get_rank()
+
     # Instantiate the problem and set objective
-    import pyOpt
-    opt_prob = pyOpt.Optimization('RCAIDE',mywrap)
+    try:
+        import pyoptsparse as pyOpt
+    except ImportError:
+        # Not on PyPI under this name (confirmed) -- mdolab distributes it as a
+        # source build only. pip can still build it directly from GitHub given a
+        # working Fortran compiler:
+        #   pip install git+https://github.com/mdolab/pyoptsparse.git
+        # IPOPT additionally needs the native IPOPT library findable via
+        # pkg-config (e.g. `brew install ipopt` on macOS, or
+        # `conda install -c conda-forge ipopt`) plus `pip install cyipopt`.
+        raise ImportError(
+            'pyoptsparse not found. Install it with: '
+            'pip install git+https://github.com/mdolab/pyoptsparse.git '
+            '(requires a working Fortran compiler; IPOPT support additionally '
+            'needs the native IPOPT library + `pip install cyipopt`).'
+        )
+
+    opt_prob = pyOpt.Optimization('RCAIDE', mywrap)
     for ii in range(len(obj)):
-        opt_prob.addObj(obj[ii,0])    
-       
+        opt_prob.addObj(obj[ii,0])
+
     # Set inputs
     nam  = inp[:,0] # Names
     ini  = inp[:,1] # Initials
@@ -65,12 +81,12 @@ def Pyopt_Solve(problem,solver='SNOPT',FD='single', sense_step=1.0E-6,  nonderiv
     bndu = inp[:,3] # Bounds
     scl  = inp[:,4] # Scale
     typ  = inp[:,5] # Type
-   
+
     # Pull out the constraints and scale them
-    bnd_constraints = help_fun.scale_const_bnds(con)
-    scaled_constraints = help_fun.scale_const_values(con,bnd_constraints)
-    x   = ini/scl
-   
+    bnd_constraints     = help_fun.scale_const_bnds(con)
+    scaled_constraints  = help_fun.scale_const_values(con, bnd_constraints)
+    x                   = ini/scl
+
     for ii in range(0,len(inp)):
         lbd = (bndl[ii]/scl[ii])
         ubd = (bndu[ii]/scl[ii])
@@ -78,83 +94,57 @@ def Pyopt_Solve(problem,solver='SNOPT',FD='single', sense_step=1.0E-6,  nonderiv
         vartype = 'c'
         #if typ[ii] == 'integer':
             #vartype = 'i'
-        opt_prob.addVar(nam[ii],vartype,lower=lbd,upper=ubd,value=x[ii])
-       
-    # Setup constraints  
+        opt_prob.addVar(nam[ii], vartype, lower=lbd, upper=ubd, value=x[ii])
+
+    # Setup constraints
     for ii in range(0,len(con)):
         name = con[ii][0]
         edge = scaled_constraints[ii]
-       
-        if con[ii][1]=='<':
-            opt_prob.addCon(name, type='i', upper=edge)
-        elif con[ii][1]=='>':
-            opt_prob.addCon(name, type='i', lower=edge,upper=np.inf)
-        elif con[ii][1]=='=':
-            opt_prob.addCon(name, type='e', equal=edge)
 
-    # Finalize problem statement and run  
+        if con[ii][1] == '<':
+            opt_prob.addCon(name, upper=edge)
+        elif con[ii][1] == '>':
+            opt_prob.addCon(name, lower=edge)
+        elif con[ii][1] == '=':
+            opt_prob.addCon(name, lower=edge, upper=edge)
+
+    # Finalize problem statement and run
     print(opt_prob)
-   
-    if solver == 'SNOPT':
-        import pyOpt.pySNOPT
-        opt = pyOpt.pySNOPT.SNOPT()
-        CD_step = (sense_step**2.)**(1./3.)  #based on SNOPT Manual Recommendations
-        opt.setOption('Function precision', sense_step**2.)
-        opt.setOption('Difference interval', sense_step)
-        opt.setOption('Central difference interval', CD_step)
 
-    elif solver == 'COBYLA':
-        import pyOpt.pyCOBYLA
-        opt = pyOpt.pyCOBYLA.COBYLA() 
-        
-    elif solver == 'SLSQP':
-        import pyOpt.pySLSQP
-        opt = pyOpt.pySLSQP.SLSQP()
-        opt.setOption('MAXIT', 200)
-    elif solver == 'KSOPT':
-        import pyOpt.pyKSOPT
-        opt = pyOpt.pyKSOPT.KSOPT()
-    elif solver == 'ALHSO':
-        import pyOpt.pyALHSO
-        opt = pyOpt.pyALHSO.ALHSO()   
-    elif solver == 'FSQP':
-        import pyOpt.pyFSQP
-        opt = pyOpt.pyFSQP.FSQP()
-    elif solver == 'PSQP':
-        import pyOpt.pyPSQP
-        opt = pyOpt.pyPSQP.PSQP()    
-    elif solver == 'NLPQL':
-        import pyOpt.pyNLPQL
-        opt = pyOpt.pyNLPQL.NLPQL()    
-    elif solver == 'NSGA2':
-        import pyOpt.pyNSGA2
-        opt = pyOpt.pyNSGA2.NSGA2(pll_type='POA') 
-    elif solver == 'MIDACO':
-        import pyOpt.pyMIDACO
-        opt = pyOpt.pyMIDACO.MIDACO(pll_type='POA')     
-    elif solver == 'ALPSO':
-        import pyOpt.pyALPSO
-        #opt = pyOpt.pyALPSO.ALPSO(pll_type='DPM') #this requires DPM, which is a parallel implementation
-        opt = pyOpt.pyALPSO.ALPSO()
-    if nonderivative_line_search==True:
+    if solver == 'IPOPT':
+        opt = pyOpt.IPOPT()
+    else:
+        raise ValueError(
+            f"Unsupported mission_solver.method '{solver}' for the pyopt package. "
+            f"Supported values are 'IPOPT'. (No SNOPT: commercial license "
+            f"despite pyoptsparse itself being open source. CONMIN and SLSQP "
+            f"were both tried and dropped: CONMIN's pyoptsparse wrapper reports "
+            f"no optInform at all and was observed reporting false convergence "
+            f"on RCAIDE's exactly-determined, equality-constrained mission "
+            f"segments; pyoptsparse's own SLSQP ran 3.5-6+ hours without "
+            f"converging on the same case scipy's SLSQP solves in minutes and "
+            f"pyopt's IPOPT solves in seconds, with or without a real "
+            f"objective.)"
+        )
+
+    if nonderivative_line_search == True:
         opt.setOption('Nonderivative linesearch')
     if FD == 'parallel':
-        outputs = opt(opt_prob, sens_type='FD',sens_mode='pgc')
-        
-    elif solver == 'SNOPT' or solver == 'SLSQP':
-        outputs = opt(opt_prob, sens_type='FD', sens_step = sense_step)
-  
+        outputs = opt(opt_prob, sens='FD', sensMode='pgc')
     else:
-        outputs = opt(opt_prob)        
-   
+        # sens must be explicit for every backend, not just SLSQP -- pyoptsparse
+        # 2.x raises "'None' value given for sens" if it's left unset, unlike
+        # older versions that defaulted to FD automatically.
+        outputs = opt(opt_prob, sens='FD', sensStep=sense_step)
+
     return outputs
 
 
 # ----------------------------------------------------------------------
 #  Problem Wrapper
-# ---------------------------------------------------------------------- 
-def PyOpt_Problem(problem,x):
-    """ This wrapper runs the RCAIDE problem and is called by the PyOpt solver.
+# ----------------------------------------------------------------------
+def PyOpt_Problem(problem, xdict):
+    """ This wrapper runs the RCAIDE problem and is called by the pyoptsparse solver.
         Prints the inputs (x) as well as the objective values and constraints.
         If any values produce NaN then a fail flag is thrown.
 
@@ -166,27 +156,36 @@ def PyOpt_Problem(problem,x):
 
         Inputs:
         problem   [nexus()]
-        x         [array]
+        xdict     [dict]
 
         Outputs:
-        obj       [float]
-        cons      [array]
+        funcs     [dict]
         fail      [bool]
 
         Properties Used:
         None
-    """      
-   
+    """
+
+    x = []
+    for key, val in xdict.items():
+        x.append(float(val))
+
     obj   = problem.objective(x)
     const = problem.all_constraints(x).tolist()
     fail  = np.array(np.isnan(obj.tolist()) or np.isnan(np.array(const).any())).astype(int)
 
-       
+    funcs = {}
+    for ii, obj_val in enumerate(obj):
+        funcs[problem.optimization_problem.objective[ii,0]] = obj_val
+
+    for ii, con_val in enumerate(const):
+        funcs[problem.optimization_problem.constraints[ii,0]] = con_val
+
     print('Inputs')
     print(x)
     print('Obj')
     print(obj)
     print('Con')
     print(const)
-   
-    return obj,const,fail
+
+    return funcs, fail

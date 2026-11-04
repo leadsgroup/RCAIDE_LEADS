@@ -42,6 +42,8 @@ def SciPy_Solve(problem,solver='SLSQP', sense_step = 1.4901161193847656e-08, ite
         None
     """
     
+    problem.output_cache     = {}  # never reuse values from an earlier solve of this problem
+    problem.last_requested_x = None
     inp = problem.optimization_problem.inputs
     obj = problem.optimization_problem.objective
     con = problem.optimization_problem.constraints
@@ -113,6 +115,10 @@ def SciPy_Solve(problem,solver='SLSQP', sense_step = 1.4901161193847656e-08, ite
             f"Unsupported mission_solver.method '{solver}'. Supported values "
             f"are 'SLSQP', 'differential_evolution', 'particle_swarm_optimization'."
         )
+
+    # leave the model at the last point the optimizer requested, as without the output cache
+    if problem.last_requested_x is not None:
+        problem.evaluate(problem.last_requested_x)
 
     return outputs
  

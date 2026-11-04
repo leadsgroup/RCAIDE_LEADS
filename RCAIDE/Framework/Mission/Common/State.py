@@ -186,7 +186,10 @@ def append_array(A,B=None):
     """ A stacking operation used by merged to put together data structures
 
         Assumptions:
-        None
+        Only rank-2 arrays are per-control-point data (matches State.
+        expand_rows' own rule); anything else (scalars, None, booleans,
+        rank-3 operator matrices, ...) isn't stackable, so A is kept as-is
+        rather than discarded.
 
         Source:
         N/A
@@ -200,8 +203,8 @@ def append_array(A,B=None):
 
         Properties Used:
         None
-    """       
-    if isinstance(A,np.ndarray) and isinstance(B,np.ndarray):
+    """
+    if isinstance(A,np.ndarray) and A.ndim == 2 and isinstance(B,np.ndarray) and B.ndim == 2:
         return np.vstack([A,B])
     else:
-        return None
+        return A

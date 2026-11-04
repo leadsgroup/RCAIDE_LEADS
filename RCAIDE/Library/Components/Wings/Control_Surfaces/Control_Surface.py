@@ -45,7 +45,12 @@ class Control_Surface(Component):
         
     deflection : float
         Control surface deflection angle, defaults to 0.0
-        
+
+    secondary_deflection : float
+        Second, independent deflection command for compound control surfaces that respond
+        to two trim channels on one physical hinge (e.g. Elevon, Flaperon, Ruddervator).
+        Unused (stays 0.0) for single-channel surfaces. Defaults to 0.0
+
     configuration_type : str
         Type of control surface construction (e.g., 'single_slotted'), 
         defaults to 'single_slotted'
@@ -102,6 +107,7 @@ class Control_Surface(Component):
         self.hinge_fraction        = 0.0
         self.chord_fraction        = 0.0 
         self.sign_duplicate        = 1.0
-        self.deflection            = 0.0  
-        self.configuration_type    = 'single_slotted' 
+        self.deflection            = 0.0
+        self.secondary_deflection  = 0.0
+        self.configuration_type    = 'single_slotted'
         self.gain                  = 1.0 #deflection multiplier used only for AVL

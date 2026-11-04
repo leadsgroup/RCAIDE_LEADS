@@ -79,21 +79,19 @@ def tiltrotor_transition_test(update_regression_values):
     # Extract sample values from computation     
     hover_throttle          = TR_results.segments.vertical_climb.conditions.energy.propulsors['front_port_propulsor'].throttle[1][0]
     cruise_rpm              = TR_results.segments.cruise.conditions.energy.converters.front_port_rotor.rpm[0][0]
+
+    print('Aircraft: Tiltrotor EVTOL')
+    print('Computed values:')
+    print('Hover throttle: ', hover_throttle)
+    print('Cruise RPM: ', cruise_rpm)
       
     tf                   = time.time()
     elapsed_time         = round((tf-ti)/60,2)
-    print('Simulation Time: ' + str(elapsed_time) + ' mins')      
-    
-    #print values for resetting regression
-    show_vals = True
-    if show_vals:
-        data = [ hover_throttle,cruise_rpm ]
-        for val in data:
-            print(val)
+    print('Simulation Time: ' + str(elapsed_time) + ' mins')       
     
     # Truth values
-    hover_throttle_truth    = 0.5938762143449161
-    cruise_rpm_truth        = 399.34883503013737
+    hover_throttle_truth    = 0.5934892938613175
+    cruise_rpm_truth        = 399.5145472088907
     
     # Store errors 
     error = Data() 
@@ -127,18 +125,18 @@ def tiltwing_transition_test(update_regression_values):
     hover_throttle            = TW_results.segments.hover.conditions.energy.propulsors['prop_rotor_propulsor_1'].throttle[1][0]
     vertical_climb_1_throttle = TW_results.segments.vertical_climb.conditions.energy.propulsors['prop_rotor_propulsor_1'].throttle[1][0] 
     vertical_descent_throttle = TW_results.segments.vertical_descent.conditions.energy.propulsors['prop_rotor_propulsor_1'].throttle[1][0] 
-    
-    #print values for resetting regression
-    show_vals = True
-    if show_vals:
-        data = [ hover_throttle,  vertical_climb_1_throttle , vertical_descent_throttle ]
-        for val in data:
-            print(val)
+
+    print('Aircraft: Tiltwing EVTOL')
+    print('Computed values:')
+    print('Hover throttle: ', hover_throttle)
+    print('Vertical climb 1 throttle: ', vertical_climb_1_throttle)
+    print('Vertical descent throttle: ', vertical_descent_throttle)
+     
     
     # Truth values
-    hover_throttle_truth              = 0.7266235772365013
-    vertical_climb_1_throttle_truth   = 0.7367120982209344
-    vertical_descent_throttle_truth   = 0.715027573862491
+    hover_throttle_truth              = 0.7194265956924623
+    vertical_climb_1_throttle_truth   = 0.7300152759744121
+    vertical_descent_throttle_truth   = 0.7083439429383551
     
     # Store errors 
     error = Data() 
@@ -173,31 +171,30 @@ def stopped_rotor_transition_test(update_regression_values):
     lst_throttle       = SR_results.segments.low_speed_transition.conditions.energy.propulsors['lift_propulsor_1'].throttle[1][0] 
     hsct_throttle      = SR_results.segments.high_speed_climbing_transition.conditions.energy.propulsors['lift_propulsor_1'].throttle[1][0] 
     
-    #print values for resetting regression
-    show_vals = True
-    if show_vals:
-        data = [ hover_throttle, lst_throttle , hsct_throttle]
-        for val in data:
-            print(val)
+    print('Aircraft: Stopped Rotor')
+    print('Computed values:')
+    print('Hover throttle: ', hover_throttle)
+    print('Low speed transition throttle: ', lst_throttle)
+    print('High speed climbing transition throttle: ', hsct_throttle) 
     
     # Truth values
-    hover_throttle_truth  = 0.576543563164849
-    lst_throttle_truth    = 0.5212314777442407
-    hsct_throttle_truth   = 0.4142010141170683
+    hover_throttle_truth  = 0.5378614012803635
+    lst_throttle_truth    = 0.5208595949616026
+    hsct_throttle_truth   = 0.4137930404945779
     
     # Store errors 
     error = Data() 
     error.hover_throttle = np.max(np.abs( hover_throttle_truth  - hover_throttle  )/ hover_throttle_truth )
     error.lst_throttle   = np.max(np.abs( lst_throttle_truth    - lst_throttle    )/ lst_throttle_truth   ) 
     error.hsct_throttle  = np.max(np.abs( hsct_throttle_truth   - hsct_throttle   )/ hsct_throttle_truth  )
- 
+
     print('Errors:')
     print(error)
      
     for k,v in list(error.items()):
-        assert(np.abs(v)<1.5e-1)   # lower tolerance due to lose bounds on prop-rotor blade design 
-    return     
- 
+        assert(np.abs(v)<1e-1)   # lower tolerance due to lose bounds on prop-rotor blade design 
+    return  
+
 # ----------------------------------------------------------------------
 #   Define the Vehicle Analyses
 # ----------------------------------------------------------------------
@@ -434,26 +431,31 @@ def TR_mission_setup(analyses):
     segment.air_speed_start                               = 15 * Units['mph']    
     segment.air_speed_end                                 = 35 * Units['mph']     
     segment.acceleration                                  = 0.2
-    
-    
-    segment.state.numerics.mission_solver.type                    = 'optimize' 
-    segment.state.numerics.mission_solver.step_size               = 1E-3 
-    segment.state.numerics.mission_solver.tolerance                = 1E-2
-    segment.state.numerics.mission_solver.objective               = None 
-    
+
+    # square (2 unknowns: throttle, thrust_vector_angle vs 2 residuals:
+    # force_x, force_z) -- root_finder converges in ~35s vs. optimize's
+    # 511.9s SLSQP failure ("Singular matrix C in LSQ subproblem"). The
+    # step_size/tolerance overrides previously here were SLSQP-specific
+    # tuning and don't apply to fsolve, so they're dropped along with the
+    # type change (fsolve uses Numerics.py's tighter defaults instead)
+    segment.state.numerics.mission_solver.type                    = 'root_finder'
+
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  
     segment.flight_dynamics.force_z                       = True     
     
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active                                = True           
+    # define flight controls
+    # bounds needed: unset defaults to -inf/+inf, letting SLSQP diverge
+    segment.assigned_control_variables.throttle.active                                = True
     segment.assigned_control_variables.throttle.assigned_propulsors                   = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
-                                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']] 
-    
-    segment.assigned_control_variables.thrust_vector_angle.active                     = True        
+                                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.throttle.bounds                                = [[0.0, 1.0]]
+
+    segment.assigned_control_variables.thrust_vector_angle.active                     = True
     segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
-                                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]  
-     
+                                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.thrust_vector_angle.bounds                     = [[0.0, 90.0 * Units.degrees]]
+
     mission.append_segment(segment)
     
 
@@ -501,10 +503,11 @@ def TW_mission_setup(analyses ):
     # Vertical Climb 
     # ------------------------------------------------------------------ 
     segment                                                          = Segments.Vertical_Flight.Climb(base_segment)
-    segment.tag                                                      = "Vertical_Climb"   
-    segment.analyses.extend(analyses.vertical_climb)                
-    segment.altitude_start                                           = 0  * Units.ft  
-    segment.altitude_end                                             = 100.  * Units.ft   
+    segment.tag                                                      = "Vertical_Climb"
+    segment.state.numerics.mission_solver.type                       = "root_finder"
+    segment.analyses.extend(analyses.vertical_climb)
+    segment.altitude_start                                           = 0  * Units.ft
+    segment.altitude_end                                             = 100.  * Units.ft
     segment.climb_rate                                               = 300. * Units['ft/min']  
     segment.initial_battery_conditions.state_of_charge               = 1.0
 
@@ -543,8 +546,9 @@ def TW_mission_setup(analyses ):
     # Vertical Descent 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     segment                                                         = Segments.Vertical_Flight.Descent(base_segment)
-    segment.tag                                                     = "Vertical_Descent" 
-    segment.analyses.extend( analyses.vertical_descent)               
+    segment.tag                                                     = "Vertical_Descent"
+    segment.state.numerics.mission_solver.type                      = "root_finder"
+    segment.analyses.extend( analyses.vertical_descent)
     segment.altitude_start                                          = 100.0 * Units.ft   
     segment.altitude_end                                            = 0.   * Units.ft  
     segment.descent_rate                                            = 300. * Units['ft/min']   
@@ -627,8 +631,9 @@ def SR_mission_setup(analyses,vehicle):
     # High-Speed Climbing Transition 
     #------------------------------------------------------------------------------------------------------------------------------------  
     segment                                               = Segments.Climb.Constant_Acceleration_Constant_Pitchrate_Constant_Angle(base_segment)
-    segment.tag                                           = "High_Speed_Climbing_Transition" 
-    segment.analyses.extend( analyses.transition_flight)    
+    segment.tag                                           = "High_Speed_Climbing_Transition"
+    segment.state.numerics.mission_solver.type             = "root_finder"
+    segment.analyses.extend( analyses.transition_flight)
     segment.altitude_start                                = 200.0 * Units.ft   
     segment.altitude_end                                  = 500.0 * Units.ft 
     segment.climb_angle                                   = 3     * Units.degrees   

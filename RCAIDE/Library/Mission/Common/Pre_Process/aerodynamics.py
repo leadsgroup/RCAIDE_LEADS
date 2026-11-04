@@ -73,6 +73,8 @@ def aerodynamics(mission):
                 if last_tag!=  None and 'compute' in mission.segments[last_tag].analyses.aerodynamics.process.keys(): 
                     segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings
                     segment.analyses.aerodynamics.surrogates                          = mission.segments[last_tag].analyses.aerodynamics.surrogates  
+                    if segment.analyses.aerodynamics is not mission.segments[last_tag].analyses.aerodynamics:
+                        segment.analyses.aerodynamics.surrogate_owner                 = mission.segments[last_tag].analyses.aerodynamics
                     segment.analyses.aerodynamics.settings.vortex_distribution        = mission.segments[last_tag].analyses.aerodynamics.settings.vortex_distribution 
                     segment.analyses.aerodynamics.aileron_flag                        = mission.segments[last_tag].analyses.aerodynamics.aileron_flag 
                     segment.analyses.aerodynamics.flap_flag                           = mission.segments[last_tag].analyses.aerodynamics.flap_flag    

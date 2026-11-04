@@ -306,6 +306,8 @@ class Vehicle_Mass_Properties(Components.Mass_Properties):
         self.crew                                   = None
         self.max_fuel                               = None
         self.fuel                                   = 0
+        self.computed_takeoff                       = None
+        self.computed_fuel                          = None
         self.max_zero_fuel                          = None
         self.center_of_gravity                      = [[0.0,0.0,0.0]]
         self.zero_fuel_center_of_gravity            = [[0.0,0.0,0.0]]

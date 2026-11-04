@@ -18,6 +18,11 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.comp
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_transverse_non_integral_tank_volume  import compute_wing_transverse_non_integral_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume            import compute_cryogenic_cylindrical_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_conformal_tank_volume         import compute_cryogenic_conformal_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_performance               import compute_cryogenic_tank_performance
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.append_cryogenic_tank_unknown_and_residual       import append_cryogenic_tank_unknown_and_residual
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.append_cryogenic_tank_conditions                 import append_cryogenic_tank_conditions, append_cryogenic_tank_segment_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions                                     import append_fuel_tank_conditions, append_fuel_tank_segment_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_tank_performance                                   import compute_fuel_tank_performance
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cylinder_center_of_gravity
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia, compute_cuboid_moment_of_inertia
 
@@ -26,30 +31,61 @@ from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_ro
 # ----------------------------------------------------------------------------------------------------------------------
 class Cryogenic_Tank(Non_Integral_Tank):
     """
-    A non-integral cryogenic fuel tank for liquid hydrogen, liquid natural gas,
-    or other cryogenic propellants.
-
-    The user must set ``fuel`` and ``design_inlet_temperature`` for the specific
-    cryogenic propellant being stored.
+    Non-integral tank for liquid hydrogen, liquid natural gas or other cryogenic propellants. The user sets
+    ``fuel`` and ``design_inlet_temperature``.
 
     Attributes
     ----------
     geometry_type : str
-        Tank shape: 'cylindrical', 'conformal', or 'prismatic' (default: 'cylindrical').
-    design_inlet_temperature : float or None
-        Nominal inlet temperature of the cryogen [K] (default: None).
+        'cylindrical' (default), 'conformal' or 'prismatic'.
+    design_inlet_temperature : float
+        Storage temperature of the liquid [K].
     design_altitude : float
-        Design altitude for thermal/structural sizing [m].
+        Altitude for thermal and structural sizing [m].
     design_heat_flux : float
-        Maximum allowable heat leak per unit area [W/m²] (default: 20).
+        Allowable heat leak per unit area used to size the insulation [W/m^2].
     design_total_heat_transfer : float
-        Maximum allowable total heat leak [W] (default: 2000).
+        Allowable total heat leak [W].
     ullage_volume_fraction : float
-        Fraction of internal volume reserved for ullage (default: 0.07).
+        Fraction of the internal volume left as ullage at full load [-].
     safety_factor : float
-        Structural factor of safety (default: 1.6).
-    pressure_factor : float
-        Internal pressure multiplier for sizing (default: 5).
+        Structural factor of safety on yield, sigma_vm <= sigma_y / safety_factor (default: 1.6).
+    boil_off_model : str
+        'quasi_steady' (default) solves the two-phase tank model (ullage and liquid mass and temperature)
+        as an ODE within each tank evaluation. 'none' uses the plain fuel tank: fuel leaves only by engine
+        draw, with no boil-off.
+    heater_power_margin : float
+        Multiple of the takeoff pressurant demand the heater is sized to when ``Heater.design_power``
+        is not set (default: 1.5).
+    insulation_heat_leak_margin : float
+        Multiple of the computed heat leak that must stay within ``design_heat_flux`` when sizing the insulation
+        (default: 1.5, assumption).
+    surface_emissivity : float
+        Emissivity of the insulation outer surface for radiative heat gain (default: 0.03, assumption).
+    heater_heat_leak_power_ratio : float
+        Heater power cap as a multiple of the design heat leak, used when neither ``Heater.design_power`` nor a
+        propulsor takeoff chemical power is available (default: 10, assumption).
+    heater_direct_boiloff_fraction : float
+        Fraction of heater power that boils liquid directly; the rest warms the liquid (default: 0.1).
+        This is eta_h of Adler & Martins (2025), Eqs. 13, 17 and 24, tuned on LH2 ground tests (Sec. IV.B).
+        It has not been validated for LNG.
+    pressure_margin : float
+        Pressure above max(P_sat(design_inlet_temperature), operating_pressure_floor) that sets ``design_pressure``,
+        used for wall sizing and as the vent pressure [Pa] (default: 2 bar).
+    operating_pressure_floor : float
+        Lowest absolute operating pressure, kept above ambient so air cannot enter the tank [Pa] (default: 1.2 bar,
+        Winnefeld et al., Energies 11, 105, 2018, Sec. 2; Mangold et al., Energies 15, 2475, 2022, Sec. 3.12).
+    minimum_operating_pressure : float
+        Pressure below which the heater adds boil-off [Pa]. Set to max(P_sat(design_inlet_temperature),
+        operating_pressure_floor) during sizing when not given. Between this pressure and ``design_pressure`` the
+        tank self-pressurizes from heat leak (Adler & Martins 2025, Sec. I). Refuel vapor returns to the ground at
+        this pressure (Mangold et al. 2022, Sec. 2.4.1).
+    pressure_regulation_time_constant : float
+        Response time of the heater and vent regulation [s] (default: 400). Within the range of the heater
+        response constant C_h tuned by Adler & Martins (2025), Sec. IV.B.
+    vent_time_constant : float or None
+        Response time of the relief vent [s] (default: 10). Assumed value approximating a relief valve that holds
+        design_pressure; None uses pressure_regulation_time_constant.
     """
 
     def __defaults__(self):
@@ -66,7 +102,18 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.design_external_pressure       = 0
         self.tank_accesories_weight_factor  = 1.5
         self.safety_factor                  = 1.6
-        self.pressure_factor                = 5
+        self.boil_off_model                 = 'quasi_steady'
+        self.heater_direct_boiloff_fraction = 0.1
+        self.heater_power_margin            = 1.5
+        self.heater_heat_leak_power_ratio   = 10.0
+        self.insulation_heat_leak_margin    = 1.5
+        self.surface_emissivity             = 0.03
+        self.pressure_margin                = 2 * Units.bar
+        self.operating_pressure_floor       = 1.2 * Units.bar
+        self.design_pressure                = None
+        self.minimum_operating_pressure     = None
+        self.pressure_regulation_time_constant = 400.0
+        self.vent_time_constant                = 10.0
 
     def compute_volume(self, wings, fuselages, fuel_tanks):
         """Computes the net fuel volume and cryogenic structure/insulation sizing.
@@ -135,7 +182,7 @@ class Cryogenic_Tank(Non_Integral_Tank):
         elif self.geometry_type == 'conformal' and self.transverse_tank:
             pass
         elif self.geometry_type == 'conformal' and self.transverse_tank is False:
-            thickness = self.inner_structure.thickness + self.insulation_thickness
+            thickness = self.inner_structure.thickness + self.insulation.thickness
             _, _ = compute_cuboid_moment_of_inertia(
                 self,
                 outer_length=self.lengths.external,
@@ -152,3 +199,30 @@ class Cryogenic_Tank(Non_Integral_Tank):
             length = self.lengths.external + self.diameters.external
             _ = compute_cylinder_center_of_gravity(self, length)
         return
+
+    def append_operating_conditions(self, segment):
+        if self.boil_off_model == 'quasi_steady':
+            append_cryogenic_tank_conditions(self, segment)
+        else:
+            # Exactly the 'none' behavior: no boil-off physics at all
+            # (boil_off_flow_rate stays at append_fuel_tank_conditions' own
+            # default of 0), not a simplified estimate.
+            append_fuel_tank_conditions(self, segment)
+        return
+
+    def append_segment_conditions(self, segment):
+        append_fuel_tank_segment_conditions(self, segment)
+        if self.boil_off_model == 'quasi_steady':
+            append_cryogenic_tank_segment_conditions(self, segment)
+        return
+
+    def append_unknowns_and_residuals(self, segment):
+        if self.boil_off_model == 'quasi_steady':
+            append_cryogenic_tank_unknown_and_residual(self, segment)
+        return
+
+    def compute_performance(self, state, network):
+        if self.boil_off_model == 'quasi_steady':
+            return compute_cryogenic_tank_performance(self, state, network)
+        else:
+            return compute_fuel_tank_performance(self, state, network)

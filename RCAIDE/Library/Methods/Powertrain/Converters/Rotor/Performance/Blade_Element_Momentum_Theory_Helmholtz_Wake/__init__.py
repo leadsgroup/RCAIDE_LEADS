@@ -21,5 +21,6 @@ RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_The
 # ----------------------------------------------------------------------------------------------------------------------
 from .BEMT_Helmholtz_performance               import BEMT_Helmholtz_performance
 from .compute_wake_induced_velocity            import compute_wake_induced_velocity 
+from .compute_wing_induced_rotor_velocity      import compute_wing_induced_rotor_velocity
 from .compute_wake_contraction_matrix          import compute_wake_contraction_matrix 
 from .wake_model                               import *

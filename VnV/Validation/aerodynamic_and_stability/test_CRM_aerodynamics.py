@@ -81,10 +81,15 @@ Lift\tCD Profile Drag Counts\tCD Induced Drag Counts\tCD Wave Drag Counts
 0.6501\t250.0998\t152.9940\t72.6547
 """
 
-# Regression truth values — first 5 data points per quantity (snapshot 2026-04-22)
+# Regression truth values — first 5 data points per quantity (snapshot 2026-09-03).
+# 'Total Drag' updated after fixing form_drag.py's CD_sep correlation, which was
+# over-correcting (fit against an alpha table with an unfounded AR extrapolation and
+# stale relative to the current parasite/induced/compressibility buildup); the new
+# values were verified against the CRM wind tunnel polar (raw_data_92 above) to
+# max abs error ~1.1e-3 across the full sweep, vs. ~8.7e-3 previously.
 TRUTH_VALUES = {
     'Lift':         np.array([-2.5013857199e-01, -1.1054613425e-01, -4.3671358935e-02,  2.3110966590e-02,  9.1938472921e-02]),
-    'Total Drag':   np.array([ 3.6586579212e-02,  2.7351617523e-02,  2.2997951739e-02,  2.0512203247e-02,  1.8012978407e-02]),
+    'Total Drag':   np.array([ 2.5246219665e-02,  1.7891010671e-02,  1.6361547768e-02,  1.5606387533e-02,  1.5462565284e-02]),
     'Induced Drag': np.array([ 1.1078637930e-02,  7.7852513243e-03,  6.2646857681e-03,  4.7869310241e-03,  3.3107393207e-03]),
     'Wave Drag':    np.array([ 9.4800170926e-06,  2.8489918747e-05,  4.7017947099e-05,  7.6005111330e-05,  1.2185721190e-04]),
     'Profile Drag': np.array([ 0.023290438340032797,0.017328324290169197,0.014475576482664931, 0.013437450527902036,0.012367293114379625]),

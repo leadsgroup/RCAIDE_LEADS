@@ -204,24 +204,15 @@ def vehicle_setup(redesign_rotors=True) :
     segment.sweeps.quarter_chord              = 0 * Units.degrees  
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)                                 
-        
-
-    elevator                              = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
-    elevator.tag                          = 'elevator'
-    elevator.span_fraction_start          = 0.6
-    elevator.span_fraction_end            = 0.9
-    elevator.deflection                   = 0.0  * Units.deg
-    elevator.chord_fraction               = 0.4
-    wing.append_control_surface(elevator)       
-    
-
-    rudder                                = RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder()
-    rudder.tag                            = 'rudder'
-    rudder.span_fraction_start            = 0.1
-    rudder.span_fraction_end              = 0.5
-    rudder.deflection                     = 0.0  * Units.deg
-    rudder.chord_fraction                 = 0.4
-    wing.append_control_surface(rudder) 
+         
+    ruddervator                           = RCAIDE.Library.Components.Wings.Control_Surfaces.Ruddervator()
+    ruddervator.tag                       = 'ruddervator'
+    ruddervator.span_fraction_start       = 0.1
+    ruddervator.span_fraction_end         = 0.9
+    ruddervator.deflection                = 0.0  * Units.deg
+    ruddervator.secondary_deflection      = 0.0  * Units.deg
+    ruddervator.chord_fraction            = 0.4
+    wing.append_control_surface(ruddervator)
 
     # add to vehicle
     vehicle.append_component(wing)   

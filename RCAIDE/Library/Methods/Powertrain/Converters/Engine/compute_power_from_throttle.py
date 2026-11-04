@@ -22,7 +22,7 @@ def compute_power_from_throttle(engine,conditions):
     ----------
     engine : RCAIDE.Library.Components.Propulsors
         Engine instance with the following attributes:
-            - sea_level_power : float
+            - sealevel_static_power : float
                 Maximum power output at sea level [W]
             - flat_rate_altitude : float
                 Altitude below which power remains constant [m]
@@ -81,7 +81,7 @@ def compute_power_from_throttle(engine,conditions):
     # Unpack
     altitude          = conditions.freestream.altitude
     delta_isa         = conditions.freestream.delta_ISA 
-    PSLS              = engine.sea_level_power  
+    PSLS              = engine.sealevel_static_power
     h_flat            = engine.flat_rate_altitude
     engine_conditions = conditions.energy.converters[engine.tag] 
     omega             = engine_conditions.omega

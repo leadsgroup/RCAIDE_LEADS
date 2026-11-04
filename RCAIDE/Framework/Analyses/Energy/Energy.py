@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports
 from RCAIDE.Framework.Core     import Data
-from RCAIDE.Framework.Analyses import Analysis 
+from RCAIDE.Framework.Analyses import Analysis
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -56,10 +56,13 @@ class Energy(Analysis):
         if isinstance(unknowns,np.ndarray):
             state.unknowns.network.unpack_array(unknowns)
 
-        network.evaluate(state, vehicle)
+        ground_operations = getattr(segment, 'ground_operations', False)
+        network.evaluate(state, vehicle, ground_operations=ground_operations)
+
+        net_electrical_power = state.conditions.energy.net_electrical_power
 
         if 'electrical_power' in state.unknowns.network:
-            state.residuals.network['electrical_power'] = state.conditions.energy.net_electrical_power
+            state.residuals.network['electrical_power'] = net_electrical_power
 
         # Unpack Residuals
         residual_keys = list(state.residuals.network.keys())

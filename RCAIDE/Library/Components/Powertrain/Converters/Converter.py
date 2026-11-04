@@ -42,6 +42,7 @@ class Converter(Component):
         self.identical_converters               = False
         self.efficiency                         = 1.0
         self.provides_domain                    = None
+        self.externally_powered                 = False # True: excluded from vehicle electrical balance during ground_operations
 
     def initialize(self, network):
         return

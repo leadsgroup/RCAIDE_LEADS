@@ -85,7 +85,7 @@ def vehicle_setup():
     main_gear.wheels                         = 4
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 1
-    main_gear.symmetric                      = True
+    main_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_gear)
 
     nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
@@ -323,7 +323,6 @@ def vehicle_setup():
     fuselage.areas.wetted                       = 2 * np.pi * fuselage.width *  fuselage.lengths.total +  2 * np.pi * fuselage.width ** 2
     fuselage.areas.front_projected              =  np.pi * fuselage.width ** 2 
     fuselage.effective_diameter                 = 1.75
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
@@ -441,35 +440,27 @@ def vehicle_setup():
 
     ##  Systems
     avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[2,0,0]]
     net.systems.append(avionics)
 
     flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[7,0,0]]
     net.systems.append(flight_controls)
 
     auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxillary_power_unit.origin       = [[14,0,0]]
     net.systems.append(auxillary_power_unit)
 
     electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[6,0,0]]
     net.systems.append(electrical)
 
     hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[7,0,0]]
     net.systems.append(hydraulics)
 
     environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[6,0,-0.5]]
     net.systems.append(environmental_controls)
 
     instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
-    instruments.origin                = [[6,0,0]]
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[7,0,0]]
     net.systems.append(furnishings)
 
     #-------------------------------------------------------------------------------------------------------------------------
@@ -488,8 +479,7 @@ def vehicle_setup():
     starboard_propulsor.design_mach_number           = 0.27                                              # [-]         Design Mach number
     starboard_propulsor.design_thrust                = 3500.0 * Units.N                                  # [-]         Design Thrust 
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()          
-    starboard_propulsor.gearbox.efficiency           = 0.99   
-    starboard_propulsor.design_power                 = 462334                                          # [-]         Design Gearbox Efficiency
+    starboard_propulsor.gearbox.efficiency           = 0.99
     starboard_propulsor.specific_fuel_consumption_reduction_factor = -3.5
     starboard_propulsor.length                       = 1.5
     starboard_propulsor.diameter                     = 0.45
@@ -547,9 +537,10 @@ def vehicle_setup():
     starboard_propulsor.high_pressure_turbine        = high_pressure_turbine 
         
     # low pressure turbine      
-    low_pressure_turbine                             = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
+    low_pressure_turbine                             = RCAIDE.Library.Components.Powertrain.Converters.Turbine()
     low_pressure_turbine.tag                         ='lpt'
-    low_pressure_turbine.mechanical_efficiency       = 0.99                      
+    low_pressure_turbine.mechanical_efficiency       = 0.99
+    low_pressure_turbine.pressure_ratio              = 0.30419  # targets ~90% propeller / 10% core thrust split
     starboard_propulsor.low_pressure_turbine         = low_pressure_turbine
     
     # core nozzle    

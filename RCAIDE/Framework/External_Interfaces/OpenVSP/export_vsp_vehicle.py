@@ -130,10 +130,10 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
     vsp.SetSetName(fuel_tank_set_ind, 'fuel_tanks')
     vsp.SetSetName(OML_set_ind, 'OML')
     
-    for wing in geometry.wings:       
+    for wing in geometry.wings:
         if verbose:
             print('Writing '+wing.tag+' to OpenVSP Model')
-            area_tags, wing_id = write_vsp_wing(geometry,wing,area_tags, fuel_tank_set_ind, OML_set_ind) 
+        area_tags, wing_id = write_vsp_wing(geometry,wing,area_tags, fuel_tank_set_ind, OML_set_ind)
     
     # ------------------------------------------------------------------------- 
     # Engines

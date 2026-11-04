@@ -110,7 +110,7 @@ class Landing_Gear(Component):
             Implementation of the center of gravity calculation
         """
         
-        if type(self) == RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear():
+        if isinstance(self, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
             length = self.strut_length*self.wheel_clearance_factor 
         else:
             length = self.tire_diameter*self.wheel_clearance_factor 
@@ -127,7 +127,7 @@ class Landing_Gear(Component):
             Reference point coordinates, defaults to [[0, 0, 0]] 
         """
 
-        if type(self) == RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear():
+        if isinstance(self, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
             length = self.strut_length*self.wheel_clearance_factor  
             width  = self.tire_diameter*self.wheel_clearance_factor 
             height = self.tire_diameter*self.wheel_clearance_factor 

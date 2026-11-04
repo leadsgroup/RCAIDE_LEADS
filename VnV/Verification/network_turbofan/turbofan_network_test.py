@@ -100,33 +100,33 @@ def main():
             print(val)
     
     # Truth values
-    takeoff_thrust_truth     = 98694.23114812144
-    ICA_climb_CL_truth       = 1.693265336256579
-    climb_throttle_1_truth   = 0.9241197117704996
-    climb_throttle_2_truth   = 1.2411503510214787
-    climb_throttle_3_truth   = 0.5360979414316488
-    climb_throttle_4_truth   = 0.8894825314486906
-    climb_throttle_5_truth   = 0.8760495577896019
-    climb_throttle_6_truth   = 1.1033082313385048
-    climb_throttle_7_truth   = 1.2260595741940379
-    climb_throttle_8_truth   = 0.49459517925549373
-    climb_throttle_9_truth   = 0.6625057936780271
-    climb_throttle_10_truth  = 0.8494054293755736
-    cruise_CL_1_truth        = 0.6745766970722662
-    cruise_CL_2_truth        = 0.5234891103387709
-    descent_throttle_1_truth = 0.02032424871663233
-    descent_2_CL_truth       = 0.6869531907122751
-    curved_cruise_CL_truth   = 1.2807040532982488
+    takeoff_thrust_truth     = 97347.93566737135
+    ICA_climb_CL_truth       = 1.6903550549084199
+    climb_throttle_1_truth   = 0.9835194820084169
+    climb_throttle_2_truth   = 0.9201928457487474
+    climb_throttle_3_truth   = 0.7435217038411913
+    climb_throttle_4_truth   = 0.8513756889965424
+    climb_throttle_5_truth   = 0.9112136055739666
+    climb_throttle_6_truth   = 0.8953352427670831
+    climb_throttle_7_truth   = 0.9106408196534422
+    climb_throttle_8_truth   = 0.7864481470758513
+    climb_throttle_9_truth   = 0.8608319059190125
+    climb_throttle_10_truth  = 0.8373897858648389
+    cruise_CL_1_truth        = 0.6838218628795647
+    cruise_CL_2_truth        = 0.5287281710523845
+    descent_throttle_1_truth = 0.4005732345284173
+    descent_2_CL_truth       = 0.6986971649701248
+    curved_cruise_CL_truth   = 1.3128113800765597
     descent_throttle_3_truth = 0.1
-    single_pt_CL_1_truth     = 0.2376965850211488
-    single_pt_CL_2_truth     = 0.0008800937573689016
-    cruise_4_CL_truth        = 0.4842625489303602
-    cruise_5_CL_truth        = 0.4842573720342584
-    cruise_6_CL_truth        = 0.3275359929474738
-    cruise_7_CL_truth        = 0.31922921651349095
-    cruise_8_CL_truth        = 0.31188433698363066
-    descent_throttle_4_truth = 0.18282316688390954
-    landing_thrust_truth     = 39880.99351455314
+    single_pt_CL_1_truth     = 0.24459215210939456
+    single_pt_CL_2_truth     = 0.0001859290788933937
+    cruise_4_CL_truth        = 0.4983377874244548
+    cruise_5_CL_truth        = 0.49833377882284946
+    cruise_6_CL_truth        = 0.3387703015655213
+    cruise_7_CL_truth        = 0.33249899199581623
+    cruise_8_CL_truth        = 0.32695754813443617
+    descent_throttle_4_truth = 0.543734051849826
+    landing_thrust_truth     = 4270.067878632428
     
     # Store errors 
     error = Data()
@@ -194,8 +194,8 @@ def main():
     for name, computed, truth in rows:
         print(f"  {name:<22} {computed:>14.8g} {truth:>14.8g} {error[name]:>12.3e}")
     print(divider + '\n')
-     
-    for k,v in list(error.items()): 
+
+    for k,v in list(error.items()):
         assert(np.abs(v)<1e-6)
         
     plot_results(results)
@@ -436,8 +436,9 @@ def mission_setup(analyses):
     segment = Segments.Climb.Constant_Mach_Linear_Altitude(base_segment)
     segment.tag = "climb_6"
     segment.analyses.extend( analyses.base )  
-    segment.altitude_end                                             = 6. * Units.km   
-    segment.mach_number                                              = 0.75   
+    segment.altitude_end                                             = 6. * Units.km
+    segment.distance                                                 = 25. * Units.km  # ~2.3 deg, ~2000 ft/min
+    segment.mach_number                                              = 0.75
                                                            
     # define flight dynamics to model                      
     segment.flight_dynamics.force_x                                  = True  
@@ -456,8 +457,9 @@ def mission_setup(analyses):
     segment = Segments.Climb.Constant_Speed_Linear_Altitude(base_segment)
     segment.tag = "climb_7"
     segment.analyses.extend( analyses.base )  
-    segment.altitude_end                                             = 7.    * Units.km   
-    segment.air_speed                                                = 250.2 * Units.m / Units.s 
+    segment.altitude_end                                             = 7.    * Units.km
+    segment.distance                                                 = 25.   * Units.km  # ~2.3 deg, ~1800 ft/min
+    segment.air_speed                                                = 230.  * Units.m / Units.s
                  
     # define flight dynamics to model              
     segment.flight_dynamics.force_x                                  = True  

@@ -238,7 +238,6 @@ def vehicle_setup():
     fuselage.heights.at_wing_root_quarter_chord = 23. * Units.inches
     fuselage.areas.front_projected              = fuselage.width* fuselage.heights.maximum
     fuselage.effective_diameter                 = 50. * Units.inches
-    fuselage.operational_items.origin           = [[1.8, 0, 0]]
 
     cabin              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
     economy_class      = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
@@ -412,7 +411,7 @@ def vehicle_setup():
                                                      
     # Engine                     
     engine                                     = RCAIDE.Library.Components.Powertrain.Converters.Engine()
-    engine.sea_level_power                     = 180. * Units.horsepower
+    engine.sealevel_static_power                 = 180. * Units.horsepower
     engine.flat_rate_altitude                  = 0.0
     engine.rated_speed                         = 2700. * Units.rpm
     engine.power_specific_fuel_consumption     = 0.52 * Units['lb/hp/hr']

@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_internal_combustion_engine_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_internal_combustion_engine_performance(propulsor, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_internal_combustion_engine_performance(propulsor, state, network=None, center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of an internal combustion engine propulsion system.
     
@@ -101,7 +101,7 @@ def compute_internal_combustion_engine_performance(propulsor, state, center_of_g
     conditions.energy.converters[propeller.tag].omega                         = conditions.energy.converters[engine.tag].omega 
     conditions.energy.converters[propeller.tag].throttle                      = conditions.energy.converters[engine.tag].throttle 
     conditions.energy.converters[propeller.tag].commanded_thrust_vector_angle = conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
-    compute_rotor_performance(propeller,conditions)
+    compute_rotor_performance(propeller,conditions,network is not None and network.wing_on_rotor_coupling)
 
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)
@@ -112,6 +112,7 @@ def compute_internal_combustion_engine_performance(propulsor, state, center_of_g
     
     # Create the outputs
     ice_conditions.fuel_mass_flow_rate       = conditions.energy.converters[engine.tag].fuel_mass_flow_rate  
+    ice_conditions.inputs.power.chemical     = ice_conditions.fuel_mass_flow_rate * engine.fuel_data.lower_heating_value
     stored_results_flag                      = True
     stored_propulsor_tag                     = propulsor.tag  
 

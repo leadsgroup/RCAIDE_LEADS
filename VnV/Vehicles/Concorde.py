@@ -192,13 +192,13 @@ def vehicle_setup():
     aileron.chord_fraction        = 0.22 
     wing.append_control_surface(aileron)
         
-    spoiler                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
-    spoiler.tag                   = 'elevator'
-    spoiler.span_fraction_start   = 0.08
-    spoiler.span_fraction_end     = 0.24
-    spoiler.deflection            = 0.0 * Units.degrees
-    spoiler.chord_fraction        = 0.1
-    wing.append_control_surface(spoiler) 
+    elevator                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
+    elevator.tag                   = 'elevator'
+    elevator.span_fraction_start   = 0.08
+    elevator.span_fraction_end     = 0.24
+    elevator.deflection            = 0.0 * Units.degrees
+    elevator.chord_fraction        = 0.1
+    wing.append_control_surface(elevator) 
     
     # add to vehicle
     vehicle.append_component(wing)
@@ -433,6 +433,9 @@ def vehicle_setup():
     outer_right_turbojet.design_altitude          = 60000.0*Units.ft
     outer_right_turbojet.design_mach_number       = 2.02
     outer_right_turbojet.design_thrust            = 10000. * Units.lbf  
+    outer_right_turbojet.rated_takeoff_thrust     = 31350. * Units.lbf # Olympus 593 Mk 610 dry sea-level static rating, 31,350 lbf (38,050 lbf with reheat;
+                                                    #   GlobalSecurity.org and concordesst.com; some sources give 32,000 lbf dry). With design_thrust
+                                                    #   (Mach 2.02 cruise) also given, the takeoff Tt4 ratio is solved (Mattingly throttle ratio < 1)
     outer_right_turbojet.origin                   = [[43.,5.5,-1.6]] 
     outer_right_turbojet.working_fluid            = RCAIDE.Library.Attributes.Gases.Air()
     
@@ -446,21 +449,21 @@ def vehicle_setup():
     inlet_nozzle.tag                              = 'inlet_nozzle' 
     inlet_nozzle.polytropic_efficiency            = 1.0
     inlet_nozzle.pressure_ratio                   = 1.0
-    inlet_nozzle.pressure_recovery                = 0.94 
+    inlet_nozzle.pressure_recovery                = 0.933 # intake pressure ratio 7.3 at Mach 2.0 (Wikipedia, Olympus 593, ref. [21]) over the isentropic 7.82
     outer_right_turbojet.inlet_nozzle             = inlet_nozzle    
           
     #  Low Pressure Compressor      
     lp_compressor                                 = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     lp_compressor.tag                             = 'low_pressure_compressor' 
     lp_compressor.polytropic_efficiency           = 0.88
-    lp_compressor.pressure_ratio                  = 3.1     
+    lp_compressor.pressure_ratio                  = 2.647 # LP x HP = 11.3 at Mach 2 cruise (Wikipedia, Olympus 593, ref. [21]); LP/HP split assumed
     outer_right_turbojet.low_pressure_compressor  = lp_compressor         
         
     # High Pressure Compressor        
     hp_compressor                                 = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     hp_compressor.tag                             = 'high_pressure_compressor' 
     hp_compressor.polytropic_efficiency           = 0.88
-    hp_compressor.pressure_ratio                  = 5.0  
+    hp_compressor.pressure_ratio                  = 4.269
     outer_right_turbojet.high_pressure_compressor = hp_compressor
  
     # Low Pressure Turbine 
@@ -482,7 +485,7 @@ def vehicle_setup():
     combustor.tag                                 = 'combustor' 
     combustor.efficiency                          = 0.96
     combustor.alphac                              = 1.0     
-    combustor.turbine_inlet_temperature           = 1440.
+    combustor.turbine_inlet_temperature           = 1550. # K, calibrated so cruise airflow (82.8 kg/s) matches the 186 kg/s takeoff airflow at cruise inlet conditions
     combustor.pressure_ratio                      = 0.92
     combustor.fuel_data                           = RCAIDE.Library.Attributes.Propellants.Jet_A()     
     outer_right_turbojet.combustor                = combustor
@@ -492,7 +495,7 @@ def vehicle_setup():
     afterburner.tag                               = 'afterburner' 
     afterburner.efficiency                        = 0.95
     afterburner.alphac                            = 1.0     
-    afterburner.turbine_inlet_temperature         = 1500
+    afterburner.turbine_inlet_temperature         = 1254. # K, calibrated to the 38,050 lbf (169.2 kN) reheat takeoff rating (Jane's, via Wikipedia)
     afterburner.pressure_ratio                    = 1.0
     afterburner.fuel_data                         = RCAIDE.Library.Attributes.Propellants.Jet_A()     
     outer_right_turbojet.afterburner              = afterburner   
@@ -665,17 +668,6 @@ def configs_setup(vehicle):
         propulsor.afterburner_active = True 
     configs.append(config)
 
- 
-    # ------------------------------------------------------------------
-    #   Descent Configuration
-    # ------------------------------------------------------------------
-
-    config                                = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                            = 'descent' 
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg 
-    configs.append(config)
-    
- 
     # ------------------------------------------------------------------
     #   Landing Configuration
     # ------------------------------------------------------------------

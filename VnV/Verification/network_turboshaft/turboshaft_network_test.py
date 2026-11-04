@@ -26,9 +26,9 @@ def main():
     mach               = 0.1  
     P , eta , PSFC = turboshaft_engine_Boeing_502_14(altitude,mach)
      
-    P_truth    = 149662.83366327186
-    eta_truth  = 0.5088849484982797
-    PSFC_truth = 1.3475293781503966e-07
+    P_truth    = 149663.64746737384
+    eta_truth  = 0.5086898612017963
+    PSFC_truth = 1.3464959961558538e-07
     
 
     P_error = np.abs((P  - P_truth)/P_truth)

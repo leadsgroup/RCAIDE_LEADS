@@ -17,7 +17,7 @@ import  numpy as  np
 # Main Wing Weight 
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_main_wing_weight(vehicle, wing, settings):
-    """
+    r"""
     Calculates the wing weight for transport aircraft using Raymer's empirical method.
 
     Parameters

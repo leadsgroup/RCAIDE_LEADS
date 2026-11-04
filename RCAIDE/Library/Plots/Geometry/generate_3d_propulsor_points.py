@@ -115,97 +115,29 @@ def generate_turbofan_geometry(propulsor):
     propulsor_geometry.origin = propulsor.origin
     propulsor_geometry.lengths.total = propulsor.length
 
-    # create generate segments for the fan, core, and nacelle based on the propulsor's dimensions and locations
-    # segments are defined as circular cross-sections with width
-    
-    length_scale   = 11.2
-    diameter_scale = 3 
-    diameter       = propulsor.diameter  
-    
-    # segment 1 is the front of the fan, which is a small circular cross-section
-    segment_1 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_1.width  = 0  
-    segment_1.percent_x_location = 0  
-    propulsor_geometry.segments.append(segment_1)
+    diameter     = propulsor.diameter
+    core_ratio   = propulsor.core_diameter_ratio
+    casing_end   = propulsor.fan_casing_length_ratio
+    casing_end_0 = 3.9/11.2  # casing end of the reference profile below
 
-    # segment 2 is the rear of the fan, which is a circular cross-section with diameter of the cone of the fan blades
-    segment_2 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_2.width  = diameter/diameter_scale * 0.7 
-    segment_2.percent_x_location = 0.9/length_scale 
-    propulsor_geometry.segments.append(segment_2)
+    # fan: (x / length, width / fan diameter) for spinner tip, spinner base, fan face, and casing end
+    fan_profile  = [(0, 0), (0.9/11.2, 0.7/3), (1/11.2, 1.0), (casing_end, 1.0)]
 
+    # core: reference (x / length, width / core inlet diameter) from compressor inlet to nozzle tip,
+    # stretched to start at casing_end so the defaults reproduce the original profile
+    core_profile = [(4.0/11.2, 1.0), (4.7/11.2, 1.0), (5.7/11.2, 0.8), (7.3/11.2, 1.0), (8.7/11.2, 1.9/1.5),
+                    (9.5/11.2, 1.9/1.5), (10.5/11.2, 0.7/1.5), (10.6/11.2, 0.3/1.5), (1.0, 0.0)]
 
-    # segment 3 is the rear of the fan, which is a circular cross-section with diameter of the fan
-    segment_3 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_3.width  = diameter/diameter_scale * 3 
-    segment_3.percent_x_location = 1/length_scale 
-    propulsor_geometry.segments.append(segment_3)
+    stations = [(x, w * diameter) for x, w in fan_profile]
+    for x, w in core_profile:
+        x_stretched = casing_end + (x - casing_end_0) * (1 - casing_end) / (1 - casing_end_0)
+        stations.append((x_stretched, w * core_ratio * diameter))
 
-    # segment 4 is the rear of the fan, which is a circular cross-section with diameter of the fan
-    segment_4 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_4.width  = diameter/diameter_scale * 3 
-    segment_4.percent_x_location = 3.9/length_scale 
-    propulsor_geometry.segments.append(segment_4)
-
-
-    # segment 5 is the rear of the fan, which is a circular cross-section of the compressor entrance 
-    segment_5 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_5.width  = diameter/diameter_scale    * 1.5  
-    segment_5.percent_x_location = 4/length_scale 
-    propulsor_geometry.segments.append(segment_5)
-
-
-    # segment 6 is the rear of the fan, which is a circular cross-section of the compressor entrance 
-    segment_6 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_6.width  = diameter/diameter_scale * 1.5 
-    segment_6.percent_x_location = 4.7/length_scale 
-    propulsor_geometry.segments.append(segment_6)  
-
-    # segment 7 is the rear of the fan, which is a circular cross-section of the combustor entrance
-    segment_7 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_7.width  = diameter/diameter_scale * 1.2 
-    segment_7.percent_x_location = 5.7/length_scale 
-    propulsor_geometry.segments.append(segment_7)
-
-    # segment 8 is the rear of the fan, which is a circular cross-section of the turbine entrance
-    segment_8 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_8.width  = diameter/diameter_scale * 1.5 
-    segment_8.percent_x_location = 7.3/length_scale 
-    propulsor_geometry.segments.append(segment_8)
-
-
-    # segment 9 is the rear of the fan, which is a circular cross-section of the turbine entrance
-    segment_9 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_9.width  = diameter/diameter_scale * 1.9 
-    segment_9.percent_x_location = 8.7/length_scale 
-    propulsor_geometry.segments.append(segment_9)
- 
-
-    # segment 10 is the rear of the fan, which is a circular cross-section of the turbine exit and nozzle entrance
-    segment_10 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_10.width  = diameter/diameter_scale * 1.9 
-    segment_10.percent_x_location = 9.5/length_scale 
-    propulsor_geometry.segments.append(segment_10)
-
-
-    # segment 11 is the rear of the fan, which is a circular cross-section of the turbine exit and nozzle entrance
-    segment_11 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_11.width  = diameter/diameter_scale * 0.7 
-    segment_11.percent_x_location = 10.5/length_scale 
-    propulsor_geometry.segments.append(segment_11)
-
-
-    # segment 12 is the rear of the fan, which is a circular cross-section of the turbine exit and nozzle entrance
-    segment_12 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_12.width  = diameter/diameter_scale * 0.3 
-    segment_12.percent_x_location = 10.6/length_scale 
-    propulsor_geometry.segments.append(segment_12) 
-
-    # segment 12 is the rear of the fan, which is a circular cross-section of the turbine exit and nozzle entrance
-    segment_12 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
-    segment_12.width  = 0 
-    segment_12.percent_x_location = 1 
-    propulsor_geometry.segments.append(segment_12)
+    for x, width in stations:
+        segment = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()
+        segment.width              = width
+        segment.percent_x_location = x
+        propulsor_geometry.segments.append(segment)
 
     return propulsor_geometry
 
