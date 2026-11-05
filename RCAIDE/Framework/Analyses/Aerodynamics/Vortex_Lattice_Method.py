@@ -14,6 +14,7 @@ from .Aerodynamics                                             import Aerodynami
 from RCAIDE.Framework.Analyses.Common.Process_Geometry         import Process_Geometry 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import *   
 from RCAIDE.Framework.Mission.Common                           import Results
+from RCAIDE.Library.Methods.Stability.Common.compute_longitudinal_derivatives import compute_longitudinal_derivatives
 
 # package imports 
 import numpy as np 

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/compute_longitudinal_derivatives.py
+# RCAIDE/Library/Methods/Stability/Common/compute_longitudinal_derivatives.py
 #
 # Created:  Nov 2026, M. Clarke
 

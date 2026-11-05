@@ -8,3 +8,4 @@
 # ----------------------------------------------------------------------------------------------------------------------
 from .compute_dynamic_flight_modes                  import  compute_dynamic_flight_modes
 from .is_wing_borne                 import is_wing_borne
+from .compute_longitudinal_derivatives import compute_longitudinal_derivatives
