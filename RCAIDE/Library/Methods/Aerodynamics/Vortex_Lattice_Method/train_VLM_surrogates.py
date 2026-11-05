@@ -244,6 +244,7 @@ def train_model(aerodynamics,Mach, vehicle):
     
     VLM_results = call_VLM(conditions,settings,clean_wing_vehicle)
     CM_res      = VLM_results.CM  
+    CZ_res      = VLM_results.CZ
     CM_q        = np.reshape(CM_res,(len_Mach,len_q)).T   # - CM_alpha_0    
     CZ_q        = np.reshape(CZ_res,(len_Mach,len_q)).T   # - CZ_alpha_0
 
