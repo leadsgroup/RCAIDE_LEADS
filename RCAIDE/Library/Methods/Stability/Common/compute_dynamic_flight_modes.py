@@ -117,11 +117,10 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
             l_t              = (horizontal_tail.origin[0][0] +horizontal_tail.aerodynamic_center[0]) - vehicle.mass_properties.center_of_gravity[0][0] # disstance from CG to tail AC
             S_t              = horizontal_tail.areas.reference # tail area
             S                = main_wing.areas.reference # wing area
-            l_bar_t          = (horizontal_tail.origin[0][0] +  horizontal_tail.aerodynamic_center[0]) -(main_wing.origin[0][0] +  main_wing.aerodynamic_center[0])  # distance from AC of main wing to tail AC
-            V_H              = ( l_bar_t *S_t ) /(c_ref *S)  # tail volume
+            V_H              = ( l_t *S_t ) /(c_ref *S)  # tail volume
             dEpsilon_dalpha  =  0.3
-            SSD.CZ_alpha_dot =  a_t * dEpsilon_dalpha *  (l_t /u0) *  (S_t / S)
-            SSD.CM_alpha_dot =  -a_t * V_H * dEpsilon_dalpha*  (l_t /u0)
+            SSD.CZ_alpha_dot = -2 * a_t * V_H * dEpsilon_dalpha * np.ones_like(u0)                 # downwash lag, Etkin & Reid (5.5,11)
+            SSD.CM_alpha_dot = -2 * a_t * V_H * (l_t / c_ref) * dEpsilon_dalpha * np.ones_like(u0) # downwash lag, Etkin & Reid (5.5,12)
         else:
             import warnings
             warnings.warn(
@@ -144,7 +143,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         Mw               = 0.5 * rho * u0 * c_ref * S_ref * SSD.CM_alpha  
         Mq               = 0.25 * rho * u0 * c_ref * c_ref * S_ref * SSD.CM_q     
         ZwDot            = 0.25 * rho * c_ref * S_ref * SSD.CZ_alpha_dot  
-        MwDot            = 0.25 * rho * c_ref * S_ref * SSD.CM_alpha_dot  
+        MwDot            = 0.25 * rho * c_ref * c_ref * S_ref * SSD.CM_alpha_dot  
         
         
         ALon[:,0,0] = (Xu / m).T[0]
