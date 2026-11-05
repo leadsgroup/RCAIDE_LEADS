@@ -115,23 +115,16 @@ def build_surrogate(aerodynamics, training, vehicle):
 
     # Use interpolat.interp1d below
     surrogates.CM_zero_lift     = interpolate.interp1d(mach_data, training.CM_zero_lift, kind='linear', bounds_error=False, fill_value='extrapolate')
-    surrogates.dClift_dalpha    = interpolate.interp1d(mach_data, training.dClift_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
-    surrogates.dCX_dalpha       = interpolate.interp1d(mach_data, training.dCX_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
-    surrogates.dCX_du           = interpolate.interp1d(mach_data, training.dCX_du, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
     surrogates.dCY_dbeta        = interpolate.interp1d(mach_data,training.dCY_dbeta, kind='linear', bounds_error=False, fill_value='extrapolate')  
     surrogates.dCY_dr           = interpolate.interp1d(mach_data,training.dCY_dr, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
-    surrogates.dCZ_dalpha       = interpolate.interp1d(mach_data,training.dCZ_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
-    surrogates.dCZ_du           = interpolate.interp1d(mach_data,training.dCZ_du, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dCZ_dq           = interpolate.interp1d(mach_data,training.dCZ_dq, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
     surrogates.dCL_dbeta        = interpolate.interp1d(mach_data,training.dCL_dbeta, kind='linear', bounds_error=False, fill_value='extrapolate')  
     surrogates.dCL_dp           = interpolate.interp1d(mach_data,training.dCL_dp, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dCL_dr           = interpolate.interp1d(mach_data,training.dCL_dr, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
-    surrogates.dCM_dalpha       = interpolate.interp1d(mach_data,training.dCM_dalpha, kind='linear', bounds_error=False, fill_value='extrapolate')      
-    surrogates.dCM_du           = interpolate.interp1d(mach_data,training.dCM_du, kind='linear', bounds_error=False, fill_value='extrapolate')      
     surrogates.dCM_dq           = interpolate.interp1d(mach_data,training.dCM_dq, kind='linear', bounds_error=False, fill_value='extrapolate')      
     
     surrogates.dCN_dbeta        = interpolate.interp1d(mach_data,training.dCN_dbeta, kind='linear', bounds_error=False, fill_value='extrapolate')  
@@ -180,19 +173,12 @@ def no_surrogate(aerodynamics, training, vehicle):
     surrogates.CN_beta                = None    
     surrogates.CM_zero_lift           = None
     
-    surrogates.dClift_dalpha          = None      
-    surrogates.dCX_dalpha             = None      
-    surrogates.dCX_du                 = None      
     surrogates.dCY_dbeta              = None  
     surrogates.dCY_dr                 = None  
-    surrogates.dCZ_dalpha             = None      
-    surrogates.dCZ_du                 = None      
     surrogates.dCZ_dq                 = None      
     surrogates.dCL_dbeta              = None  
     surrogates.dCL_dp                 = None      
     surrogates.dCL_dr                 = None  
-    surrogates.dCM_dalpha             = None      
-    surrogates.dCM_du                 = None      
     surrogates.dCM_dq                 = None      
     surrogates.dCN_dbeta              = None  
     surrogates.dCN_dp                 = None      

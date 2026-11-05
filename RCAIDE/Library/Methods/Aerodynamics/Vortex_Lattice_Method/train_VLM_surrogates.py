@@ -108,14 +108,12 @@ def train_model(aerodynamics,Mach, vehicle):
             control_surface.deflection           = 0 # set all control surfaces to be 0
             control_surface.secondary_deflection = 0
              
-    u              = aerodynamics.training.u
     pitch_rate     = aerodynamics.training.pitch_rate
     roll_rate      = aerodynamics.training.roll_rate
     yaw_rate       = aerodynamics.training.yaw_rate  
     len_Mach       = len(Mach)        
     len_AoA        = len(AoA)  
     len_Beta       = len(Beta)
-    len_u          = len(u)
     len_q          = len(pitch_rate)
     len_p          = len(roll_rate) 
     len_r          = len(yaw_rate) 
@@ -207,27 +205,6 @@ def train_model(aerodynamics,Mach, vehicle):
     CM_beta            =    np.reshape(CM_res,(len_Mach,len_Beta)).T    - CM_alpha_0   
     CN_beta            =    np.reshape(CN_res,(len_Mach,len_Beta)).T    - CN_alpha_0  
  
-    # -------------------------------------------------------      
-    # Velocity u 
-    # -------------------------------------------------------
-    u_s     = np.atleast_2d(np.tile(u, len_Mach).T.flatten()).T 
-    Machs   = np.atleast_2d(np.repeat(Mach,len_u)).T                   
-    conditions                                      = RCAIDE.Framework.Mission.Common.Results()  
-    conditions.aerodynamics.angles.alpha            = np.ones_like(Machs) *1E-12 
-    conditions.aerodynamics.angles.beta             = np.zeros_like(Machs) 
-    conditions.freestream.mach_number               = Machs + u_s/343 
-    conditions.freestream.velocity                  = np.zeros_like(Machs)   
-    conditions.static_stability.pitch_rate          = np.zeros_like(Machs)   
-    conditions.static_stability.roll_rate           = np.zeros_like(Machs)   
-    conditions.static_stability.yaw_rate            = np.zeros_like(Machs)   
-    VLM_results = call_VLM(conditions,settings,clean_wing_vehicle)
-    CX_res    = VLM_results.CX
-    CZ_res    = VLM_results.CZ
-    CM_res    = VLM_results.CM
-    CX_u      = np.reshape(VLM_results.CX,(len_Mach,len_u)).T    - CX_alpha_0   
-    CZ_u      = np.reshape(VLM_results.CZ,(len_Mach,len_u)).T    - CZ_alpha_0   
-    CM_u      = np.reshape(VLM_results.CM,(len_Mach,len_u)).T    - CM_alpha_0  
-                    
     # -------------------------------------------------------               
     # Pitch Rate 
     # -------------------------------------------------------
@@ -312,9 +289,6 @@ def train_model(aerodynamics,Mach, vehicle):
     training.CM_beta                   = CM_beta
     training.CN_beta                   = CN_beta 
         
-    training.CX_u                      = CX_u
-    training.CZ_u                      = CZ_u
-    training.CM_u                      = CM_u
         
     training.CM_q                      = CM_q
     training.CZ_q                      = CZ_q
@@ -330,23 +304,16 @@ def train_model(aerodynamics,Mach, vehicle):
     # STABILITY DERIVATIVES 
     V = np.reshape(conditions.freestream.velocity ,(len_Mach,len_r)).T
     
-    training.dClift_dalpha = (Clift_alpha[0,:] - Clift_alpha[1,:]) / (AoA[0] - AoA[1])       
-    training.dCX_dalpha = (CX_alpha[0,:] - CX_alpha[1,:]) / (AoA[0] - AoA[1])       
-    training.dCX_du     = (CX_u[0,:] - CX_u[1,:]) / (u[0] - u[1])                                     
 
     training.dCY_dbeta  = (CY_beta[0,:] - CY_beta[1,:]) / (Beta[0] - Beta[1])
     training.dCY_dr     = (CY_r[0,:] - CY_r[1,:]) / ((yaw_rate[0]-yaw_rate[1])* b / (2 *V[0,:]))   
 
-    training.dCZ_dalpha = (CZ_alpha[0,:] - CZ_alpha[1,:]) / (AoA[0] - AoA[1])             
-    training.dCZ_du     = (CZ_u[0,:] - CZ_u[1,:]) / (u[0] - u[1])    
     training.dCZ_dq     = (CZ_q[0,:] - CZ_q[1,:]) / ((pitch_rate[0]-pitch_rate[1])* MAC / (2 *V[0,:]))    
     
     training.dCL_dbeta  = (CL_beta[0,:] - CL_beta[1,:]) / (Beta[0] - Beta[1])  
     training.dCL_dp     = (CL_p[0,:] - CL_p[1,:]) / ((roll_rate[0]-roll_rate[1])* b / (2 *V[0,:]))  
     training.dCL_dr     = (CL_r[0,:] - CL_r[1,:]) / ((yaw_rate[0]-yaw_rate[1])* b / (2 *V[0,:]))   
 
-    training.dCM_dalpha = (CM_alpha[0,:] - CM_alpha[1,:]) / (AoA[0] - AoA[1])          
-    training.dCM_du     = (CM_u[0,:] - CM_u[1,:]) / (u[0] - u[1])                                               
     training.dCM_dq     = (CM_q[0,:] - CM_q[1,:]) / ((pitch_rate[0]-pitch_rate[1])* MAC / (2 *V[0,:]))      
             
     training.dCN_dbeta  = (CN_beta[0,:] - CN_beta[1,:]) / (Beta[0] - Beta[1]) 
@@ -405,11 +372,9 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     Returns: 
         None    
     """     
-    AoA            = aerodynamics.training.angle_of_attack                  
     Beta           = aerodynamics.training.sideslip_angle
     training       = Data() 
     training.Mach  = np.array([sub_Mach[-1], sup_Mach[0]])
-    u              = aerodynamics.training.u 
     pitch_rate     = aerodynamics.training.pitch_rate
     roll_rate      = aerodynamics.training.roll_rate
     yaw_rate       = aerodynamics.training.yaw_rate  
@@ -446,9 +411,6 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     # -------------------------------------------------------      
     # Velocity u 
     # -------------------------------------------------------      
-    CX_u        =   np.concatenate((training_subsonic.CX_u[:,-1][:,None]    , training_supersonic.CX_u[:,0][:,None] ), axis = 1)         
-    CZ_u        =   np.concatenate((training_subsonic.CZ_u[:,-1][:,None]    , training_supersonic.CZ_u[:,0][:,None] ), axis = 1)          
-    CM_u        =   np.concatenate((training_subsonic.CM_u[:,-1][:,None]    , training_supersonic.CM_u[:,0][:,None] ), axis = 1)         
              
                     
     # -------------------------------------------------------               
@@ -494,23 +456,16 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     training.CN_beta                   = CN_beta   
 
     # STABILITY DERIVATIVES 
-    training.dClift_dalpha = (Clift_alpha[0,:] - Clift_alpha[1,:]) / (AoA[0] - AoA[1])          
-    training.dCX_dalpha    = (CX_alpha[0,:] - CX_alpha[1,:]) / (AoA[0] - AoA[1])            
-    training.dCX_du        = (CX_u[0,:] - CX_u[1,:]) / (u[0] - u[1])                                 
          
     training.dCY_dbeta  = (CY_beta[0,:] - CY_beta[1,:]) / (Beta[0] - Beta[1])    
     training.dCY_dr     = (CY_r[0,:] - CY_r[1,:]) / (yaw_rate[0]-yaw_rate[1])                     
     
-    training.dCZ_dalpha = (CZ_alpha[0,:] - CZ_alpha[1,:]) / (AoA[0] - AoA[1])             
-    training.dCZ_du     = (CZ_u[0,:] - CZ_u[1,:]) / (u[0] - u[1])                                              
     training.dCZ_dq     = (CZ_q[0,:] - CZ_q[1,:]) / (pitch_rate[0]-pitch_rate[1])    
 
     training.dCL_dbeta  = (CL_beta[0,:] - CL_beta[1,:]) / (Beta[0] - Beta[1])                                                    
     training.dCL_dp     = (CL_p[0,:] - CL_p[1,:]) / (roll_rate[0]-roll_rate[1])                
     training.dCL_dr     = (CL_r[0,:] - CL_r[1,:]) / (yaw_rate[0]-yaw_rate[1])                    
     
-    training.dCM_dalpha = (CM_alpha[0,:] - CM_alpha[1,:]) / (AoA[0] - AoA[1])          
-    training.dCM_du     = (CM_u[0,:] - CM_u[1,:]) / (u[0] - u[1])                                               
     training.dCM_dq     = (CM_q[0,:] - CM_q[1,:]) / (pitch_rate[0]-pitch_rate[1])             
     
     training.dCN_dbeta  = (CN_beta[0,:] - CN_beta[1,:]) / (Beta[0] - Beta[1])                
