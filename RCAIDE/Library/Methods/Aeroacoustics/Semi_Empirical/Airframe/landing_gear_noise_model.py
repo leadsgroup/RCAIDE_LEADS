@@ -56,6 +56,7 @@ def compute_landing_gear_noise(R_val, theta_raw, landing_gear, vehicle, cpt, fre
     References
     ----------
     Guo, Yueping. "A Semi-Empirical Model for Aircraft Landing Gear Noise Prediction." AIAA 2006-2627.
+    Guo, Yueping. "Empirical Prediction of Aircraft Landing Gear Noise." NASA/CR-2005-213780.
     """
 
     noise_params = aeroacoustics_analysis.settings.landing_gear_noise_parameters
@@ -93,7 +94,11 @@ def compute_landing_gear_noise(R_val, theta_raw, landing_gear, vehicle, cpt, fre
     U         = M_local * c0
 
     amb_term = (rho0 * c0**2)**2
-    P_base   = (amb_term * M_local**6) / (R_ft**2)
+    # Common factor of Eq. 5.2: installation directivity (Eq. 7.2) and convective amplification, with the
+    # source moving at the flight Mach number. Atmospheric absorption is applied once in evaluate_aeroacoustics.
+    installation = 1.2 * (1 - 0.9 * np.cos(np.radians(theta_deg))**2)**2
+    convective   = (1 - M * np.cos(np.radians(theta_deg)))**4
+    P_base       = (amb_term * M_local**6 * installation) / (R_ft**2 * convective)
 
     St_L  = freq * l0_L / U
     val_L = P_base * noise_params.Low.beta * S_L * directivity_component(theta_deg, 'Low', noise_params) * normalized_spectrum(St_L, 'Low', noise_params)
@@ -109,6 +114,10 @@ def compute_landing_gear_noise(R_val, theta_raw, landing_gear, vehicle, cpt, fre
         # Incoherent summation of identical gear units (e.g. left/right main gear legs):
         # scaling mean-square pressure by `units` is equivalent to a +10*log10(units) dB adjustment
         val_L, val_M, val_H = val_L * units, val_M * units, val_H * units
+
+    # Eq. 5.2 gives a narrow band spectrum. The 1/3 octave band level integrates it over the band width 0.231 f (Guo Fig. 3)
+    band_width = 0.231 * freq
+    val_L, val_M, val_H = val_L * band_width, val_M * band_width, val_H * band_width
 
     val_total = val_L + val_M + val_H
 

@@ -692,6 +692,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     # combustor inlet (station 3) state and core flow, used by the emissions models
     combustor_inlet_stagnation_temperature = np.full(n, np.nan)
     combustor_inlet_stagnation_pressure    = np.full(n, np.nan)
+    combustor_exit_stagnation_temperature  = np.full(n, np.nan)
     core_mass_flow_rate                    = np.full(n, np.nan)
 
     packed_design_constants = pack_design_constants(design_constants)
@@ -705,6 +706,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * max(throttle[i], floor_fraction[i])
+        combustor_exit_stagnation_temperature[i] = combustor_exit_temperature
         try:
             result = solve_turbofan_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
@@ -842,6 +844,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     combustor_conditions                                = converters[turbofan.combustor.tag]
     combustor_conditions.inputs.stagnation_temperature  = combustor_inlet_stagnation_temperature.reshape(-1,1)
     combustor_conditions.inputs.stagnation_pressure     = combustor_inlet_stagnation_pressure.reshape(-1,1)
+    combustor_conditions.outputs.stagnation_temperature = combustor_exit_stagnation_temperature.reshape(-1,1)
     combustor_conditions.outputs.fuel_to_air_ratio      = fuel_to_air_ratio_out.reshape(-1,1)
 
     fan_conditions                                = converters[turbofan.fan.tag]

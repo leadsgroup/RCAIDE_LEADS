@@ -57,6 +57,9 @@ def compute_jet_noise(microphone_locations, turbofan, cpt, segment, frequencies,
     # Ambient speed of sound at each control point
     c_0 = segment.state.conditions.freestream.speed_of_sound[cpt_idx]
 
+    # Flight speed at each control point, used for the forward flight effect
+    V_0 = segment.state.conditions.freestream.velocity[cpt_idx]
+
     # 2. Aerodynamic Flow Model (Section 4.1.1)
 
     # Area calculations
@@ -95,18 +98,18 @@ def compute_jet_noise(microphone_locations, turbofan, cpt, segment, frequencies,
 
     # --- Component A: Secondary Jet Shear Layer ---
     St_s = freqs * Ds / Vs
-    base_spl_s = empirical_single_jet_spl(Vs, Ds, St_s, c_0, theta_rad)
+    base_spl_s = empirical_single_jet_spl(Vs, Ds, St_s, c_0, theta_rad, V_0)
     Fu = 1.0 / (1.0 + (f1_s / freqs)**2)
     SPL_s = base_spl_s + 10.0 * np.log10(Fu)
 
     # --- Component B: Effective Jet (Interaction Zone) ---
     St_e = freqs * De / Vp
-    base_spl_e = empirical_single_jet_spl(Vp, De, St_e, c_0, theta_rad)
+    base_spl_e = empirical_single_jet_spl(Vp, De, St_e, c_0, theta_rad, V_0)
     SPL_e = base_spl_e - 7.0
 
     # --- Component C: Fully Mixed Jet ---
     St_m = freqs * Dm / Vm
-    base_spl_m = empirical_single_jet_spl(Vm, Dm, St_m, c_0, theta_rad)
+    base_spl_m = empirical_single_jet_spl(Vm, Dm, St_m, c_0, theta_rad, V_0)
     Fd = 1.0 / (1.0 + (freqs / f1_m)**2)
     SPL_m = base_spl_m + 10.0 * np.log10(Fd)
 
@@ -121,13 +124,20 @@ def compute_jet_noise(microphone_locations, turbofan, cpt, segment, frequencies,
     jet_noise.SPL_1_3_spectrum = np.expand_dims(SPL_total, axis=0)
     return jet_noise
 
-def empirical_single_jet_spl(V, D, St, c_0, theta_rad):
+def empirical_single_jet_spl(V, D, St, c_0, theta_rad, V_0):
     """
     Tuned empirical spectral shape for a single jet with directivity.
     """
     St_peak = 0.65
     shape_factor = (St / St_peak)**1.2 / (1.0 + (St / St_peak)**2.0)
-    OASPL = 140.0 + 80.0 * np.log10(V / c_0) + 20.0 * np.log10(D)
+
+    # The bands share the overall level: OASPL is the energy sum of the bands, so the shape sums to one
+    shape_factor = shape_factor / np.sum(shape_factor, axis=1, keepdims=True)
+
+    # Forward flight: the jet scales on its velocity relative to the moving air. This simple form is
+    # known to over-predict the reduction in the forward arc (Ffowcs Williams relative velocity scaling).
+    V_relative = np.maximum(V - V_0, 1.0)
+    OASPL = 140.0 + 80.0 * np.log10(V_relative / c_0) + 20.0 * np.log10(D)
     
     # Empirical directivity index (DI) mimicking a jet noise plume
     peak_theta = np.radians(180.0)

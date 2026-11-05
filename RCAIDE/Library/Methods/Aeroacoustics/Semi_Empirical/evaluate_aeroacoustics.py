@@ -184,16 +184,14 @@ def evaluate_aeroacoustics(segment, settings, vehicle):
         for propulsor in network.propulsors:
                 if not (propulsor.active and (isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet))):
                     continue 
-                #pressure_ratio = propulsor.fan.pressure_ratio * propulsor.low_pressure_compressor.pressure_ratio * propulsor.high_pressure_compressor.pressure_ratio
-                
                 if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan): 
                     fan_noise = compute_fan_noise(R_val, theta_col, propulsor, None, cpt_arr, segment, frequency)
                     component_spectra.append(fan_noise.SPL_1_3_spectrum[0])
 
-                #to fix core noise combustor tag error
-
-                #core_noise = compute_core_noise(R_val, theta_col, propulsor, pressure_ratio, cpt_arr, segment, frequency)
-                #component_spectra.append(core_noise.SPL_1_3_spectrum[0])
+                    # the core correlation needs the combustor diameter, which not every vehicle defines yet
+                    if propulsor.combustor.diameter > 0:
+                        core_noise = compute_core_noise(R_val, theta_col, propulsor, cpt_arr, segment, frequency)
+                        component_spectra.append(core_noise.SPL_1_3_spectrum[0])
 
                 jet_noise = compute_jet_noise(mic_locations, propulsor, cpt_arr, segment, frequency, 0)
                 component_spectra.append(jet_noise.SPL_1_3_spectrum[0])

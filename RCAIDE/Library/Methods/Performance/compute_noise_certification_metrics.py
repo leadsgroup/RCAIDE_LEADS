@@ -55,7 +55,7 @@ def compute_noise_certification_metrics(approach_mission  = None,
         noise_analysis.settings.microphone_min_y                       = 1E-6   
         noise_analysis.settings.microphone_max_y                       = 1800
         noise_analysis.settings.microphone_min_x                       = -2000 + 1E-6  
-        noise_analysis.settings.microphone_max_x                       = 6000
+        noise_analysis.settings.microphone_max_x                       = 8000
     
     # evaluate both missions
     approach_results = approach_mission.evaluate() 
@@ -94,15 +94,22 @@ def compute_noise_certification_metrics(approach_mission  = None,
     
     )
     
+    # certification points: 6500 m from brake release on the centerline and 450 m to the side (14 CFR Part 36),
+    # interpolated from the microphone grid
+    mic_x             = np.linspace(takeoff_noise_data.microphone_locations[:,:,0].min(), takeoff_noise_data.microphone_locations[:,:,0].max(), cert_EPNL_max.shape[0])
+    mic_y             = np.linspace(takeoff_noise_data.microphone_locations[:,:,1].min(), takeoff_noise_data.microphone_locations[:,:,1].max(), cert_EPNL_max.shape[1])
+    flyover_EPNL      = np.interp(6500.0, mic_x, cert_EPNL_max[:, 0])
+    sideline_EPNL     = max(np.interp(450.0, mic_y, cert_EPNL_max[i, :]) for i in range(cert_EPNL_max.shape[0]))
+
     print('Certification Noise')
     print('-----------------------------------------------')
     print('2000 m  Approach Noise   :', round(cert_EPNL_max[0, 0], 2)) 
-    print('6000 m  Flyover Noise    :', round(cert_EPNL_max[-1, 0], 2))
-    print('450  m  Sideline Noise   :', round(max(cert_EPNL_max[:, 2]), 2)) 
+    print('6500 m  Flyover Noise    :', round(flyover_EPNL, 2))
+    print('450  m  Sideline Noise   :', round(sideline_EPNL, 2)) 
     
     noise_data.approach_noise_2000m = cert_EPNL_max[0, 0] 
-    noise_data.flyover_noise_6000m  = cert_EPNL_max[-1, 0] 
-    noise_data.sideline_noise_450m  = max(cert_EPNL_max[:, 2])
+    noise_data.flyover_noise_6000m  = flyover_EPNL 
+    noise_data.sideline_noise_450m  = sideline_EPNL
     
     return noise_data
 

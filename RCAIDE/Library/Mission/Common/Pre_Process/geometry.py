@@ -82,10 +82,6 @@ def geometry(mission):
                     propulsor.active         = propulsor_0.active
                     if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
                         propulsor.afterburner_active          = propulsor_0.afterburner_active
-                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
-                        propulsor.fan.angular_velocity        = propulsor_0.fan.angular_velocity
-                        propulsor.fan_nozzle.exit_velocity    = propulsor_0.fan_nozzle.exit_velocity 
-                        propulsor.core_nozzle.exit_velocity   = propulsor_0.core_nozzle.exit_velocity
                     if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
                         propulsor.rotor.orientation_euler_angles =  propulsor_0.rotor.orientation_euler_angles 
                         propulsor.rotor.blade_pitch_command      =  propulsor_0.rotor.blade_pitch_command

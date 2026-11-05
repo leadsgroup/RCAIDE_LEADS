@@ -21,7 +21,7 @@ interp_C1 = create_interpolator("table_c1")
 interp_C2 = create_interpolator("table_c2")
 interp_C3 = create_interpolator("table_c3")
 
-def compute_core_noise(R_val, theta_engine, turbofan, pr, cpt, segment, frequencies):
+def compute_core_noise(R_val, theta_engine, turbofan, cpt, segment, frequencies):
     """
     Computes turbofan core (combustor) noise for one or more ground receptors.
 
@@ -37,7 +37,7 @@ def compute_core_noise(R_val, theta_engine, turbofan, pr, cpt, segment, frequenc
 
     References
     ----------
-    Enhanced Core Noise Modeling for Turbofan Engines (NASA)
+    Stone, Krejsa and Clark. Enhanced Core Noise Modeling for Turbofan Engines. NASA/CR-2011-217026.
     """
     distance_microphone = np.atleast_1d(R_val).reshape(-1, 1) / Units.feet
     theta_exhaust = np.pi - np.atleast_1d(theta_engine).reshape(-1, 1)
@@ -49,25 +49,23 @@ def compute_core_noise(R_val, theta_engine, turbofan, pr, cpt, segment, frequenc
     # broadcast correctly against the (n_receptor, 1) arrays below either way.
     cpt_idx = np.atleast_1d(cpt)
     converters = segment.state.conditions.energy.converters
-    core_nozzle_out = converters[turbofan.core_nozzle.tag].outputs
+    combustor  = converters[turbofan.combustor.tag]
+    propulsor  = segment.state.conditions.energy.propulsors[turbofan.tag]
 
-    Velocity_primary    = core_nozzle_out.velocity[cpt_idx]
-    Temperature_primary = core_nozzle_out.stagnation_temperature[cpt_idx]
-    Pressure_primary    = core_nozzle_out.stagnation_pressure[cpt_idx]
-    Diameter_primary    = turbofan.core_nozzle.diameter
-    Num_nozzle          = turbofan.combustor.number_of_fuel_nozzle
+    Num_nozzle = turbofan.combustor.number_of_fuel_nozzle
 
     sound_ambient = segment.state.conditions.freestream.speed_of_sound[cpt_idx]
     pressure_amb  = segment.state.conditions.freestream.pressure[cpt_idx]
     temp_amb      = segment.state.conditions.freestream.temperature[cpt_idx]
-    combustor_T_out = segment.state.conditions.energy.converters['combustor'].outputs.static_temperature[cpt_idx]
-    combustor_T_in  = segment.state.conditions.energy.converters['combustor'].inputs.static_temperature[cpt_idx]
-    R_gas, gamma_primary = 287.1, 1.37
-    Cpp = R_gas / (1 - 1/gamma_primary)
-    density_primary = Pressure_primary / (R_gas * Temperature_primary - (0.5 * R_gas * Velocity_primary**2 / Cpp))
+    combustor_T_out = combustor.outputs.stagnation_temperature[cpt_idx]
+    combustor_T_in  = combustor.inputs.stagnation_temperature[cpt_idx]
+    combustor_P_in  = combustor.inputs.stagnation_pressure[cpt_idx]
+
+    # total core flow, fuel and air (Stone, Krejsa and Clark, NASA/CR-2011-217026)
+    core_flow = propulsor.core_mass_flow_rate[cpt_idx] + propulsor.fuel_mass_flow_rate[cpt_idx]
 
     model_inputs = Data(
-        W1 = ((np.pi * (Diameter_primary/2)**2 * Velocity_primary * density_primary) / Units.lbm),
+        W1 = core_flow / Units.lbm,
         T_C_o = combustor_T_out * 1.8,
         T_C_i = combustor_T_in * 1.8,
         P_amb = pressure_amb / Units.psi,
@@ -80,7 +78,7 @@ def compute_core_noise(R_val, theta_engine, turbofan, pr, cpt, segment, frequenc
         c_C_o = (331.3 * (1 + ((combustor_T_out - 273)/273))**0.5) / Units.feet,
         f = freq,
         theta_c = theta_c,
-        pressure_ratio = pr
+        pressure_ratio = combustor_P_in / pressure_amb
     )
 
     core_param_log = calc_core_param(model_inputs.W1, model_inputs.T_C_o, model_inputs.T_C_i, model_inputs.pressure_ratio, model_inputs.T_amb)

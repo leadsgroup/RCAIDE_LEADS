@@ -95,12 +95,11 @@ def flap_noise_model(R_val, theta_flap, control_surface, wing, cpt, frequency, s
         f_source = freq / Delta
         F_f = calc_spectral_shape(f_source, M, l, c0, U, constants.mu0, constants.mu1, constants.mu2)
 
-        # Distance and absorption scaling
+        # Distance scaling. Atmospheric absorption is applied once in evaluate_aeroacoustics.
         length_scale = (cf * l) / ((Delta**2) * (r**2))
-        atmospheric_absorption = np.exp(-constants.alpha_0 * r)
 
         # Combine all to get PSD
-        PSD_component = (rho0**2) * (c0**4) * A_G * A_F * W_M * F_f * (l / c0) * length_scale * atmospheric_absorption
+        PSD_component = (rho0**2) * (c0**4) * A_G * A_F * W_M * F_f * (l / c0) * length_scale
         PSD_total += PSD_component
 
     # Convert total PSD [Pa^2/Hz] to 1/3 octave band SPL [dB]
