@@ -330,7 +330,6 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length                    = 3.95 * Units.meter
     fuselage.heights.at_three_quarters_length             = 3.95 * Units.meter
     fuselage.heights.at_wing_root_quarter_chord           = 3.95 * Units.meter
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
 
     # Segment  

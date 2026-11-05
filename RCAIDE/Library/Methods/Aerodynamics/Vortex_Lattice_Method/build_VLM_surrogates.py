@@ -1,12 +1,15 @@
 # RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/build_VLM_surrogates.py
-#  
+#
+# Created: Aug 2025, M. Clarke
+# Modified: Oct 2026, H. Hussien
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
 from RCAIDE.Framework.Core import  Data
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
 
 # package imports
 from scipy.interpolate   import RegularGridInterpolator
@@ -66,13 +69,15 @@ def build_VLM_surrogates(aerodynamics, vehicle):
     surrogates.subsonic    =  build_surrogate(aerodynamics, training.subsonic, vehicle)
     
     # only build supersonic surrogates if necessary
-    if len(sup_Mach) > 2: 
+    if len(sup_Mach) > 2 and training.supersonic is not None: 
         surrogates.supersonic  =  build_surrogate(aerodynamics, training.supersonic, vehicle)
         surrogates.transonic   =  build_surrogate(aerodynamics, training.transonic, vehicle)
     else: 
         surrogates.supersonic  =  no_surrogate(aerodynamics, training.supersonic, vehicle)
         surrogates.transonic   =  no_surrogate(aerodynamics, training.transonic, vehicle)        
-        
+
+    # supersonic training deferred until a flight condition needs it (see evaluate_surrogate)
+    surrogates.supersonic_pending = len(sup_Mach) > 2 and training.supersonic is None
     return
 
 def build_surrogate(aerodynamics, training, vehicle):
@@ -93,6 +98,12 @@ def build_surrogate(aerodynamics, training, vehicle):
     surrogates.CL_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CL_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)
     surrogates.CN_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CN_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)  
     surrogates.Clift_spanwise     = RegularGridInterpolator((AoA_data, mach_data),training.Clift_spanwise      ,method='linear',    bounds_error=False, fill_value=None)      
+    if 'gamma_alpha' in training: # training data stored before vortex strengths were added has no gamma_alpha
+        surrogates.gamma_alpha    = RegularGridInterpolator((AoA_data, mach_data),training.gamma_alpha         ,method='linear',    bounds_error=False, fill_value=None)      
+        surrogates.VD             = training.VD
+    else:
+        surrogates.gamma_alpha    = None
+        surrogates.VD             = None
 
     surrogates.Clift_beta         = RegularGridInterpolator((Beta_data ,mach_data),training.Clift_beta        ,method = 'linear',   bounds_error=False, fill_value=None)   
     surrogates.Cdrag_induced_beta = RegularGridInterpolator((Beta_data ,mach_data),training.Cdrag_induced_beta,method = 'linear',   bounds_error=False, fill_value=None)    
@@ -136,6 +147,11 @@ def build_surrogate(aerodynamics, training, vehicle):
             for coeff in ('Clift', 'Cdrag', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN'):
                 key = 'd' + coeff + '_ddelta_' + letter
                 surrogates[key] = interpolate.interp1d(mach_data, training[key], kind='linear', bounds_error=False, fill_value='extrapolate')
+    for letter in HIGH_LIFT_LETTERS:
+        for term in HIGH_LIFT_DRAG_TERMS:
+            key = 'high_lift_Cdrag_' + term + '_' + letter
+            if key in training:
+                surrogates[key] = interpolate.interp1d(mach_data, training[key], kind='linear', bounds_error=False, fill_value='extrapolate')
 
     return surrogates
  
@@ -149,6 +165,8 @@ def no_surrogate(aerodynamics, training, vehicle):
     surrogates.Clift_alpha            = None     
     surrogates.Clift_beta             = None
     surrogates.Clift_spanwise         = None
+    surrogates.gamma_alpha            = None
+    surrogates.VD                     = None
     surrogates.Cdrag_induced_alpha    = None     
     surrogates.Cdrag_induced_beta     = None 
     surrogates.CX_alpha               = None    

@@ -35,6 +35,8 @@ def main():
     return 
     
 
+# Stability note: the rigid VLM neutral point (~20.5 m) is 0.4-0.8 m aft of the point giving a 15-25% static margin at the
+# APM aft CG limit (19.10 m, D6-58325-6); aeroelastic and power effects that would move it forward are not modeled.
 def vehicle_setup(): 
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
@@ -75,7 +77,7 @@ def vehicle_setup():
     main_gear.rim_diameter      = 21   *  Units.inches 
     main_gear.tire_width        = 16.5  *  Units.inches 
     main_gear.strut_length      = 1.8  * Units.m
-    main_gear.origin            = [[18,5.72/2,-0.5]]  
+    main_gear.origin = [[19.068, 2.860, -0.5]]  # gear CG at the 19.69 m axle (APM D6-58325-6 Sec. 2.2.11)
     main_gear.wheels            = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
@@ -87,7 +89,7 @@ def vehicle_setup():
     nose_gear.rim_diameter      = 15    *  Units.inches 
     nose_gear.tire_width        = 7.7   *  Units.inches
     nose_gear.strut_length      = 1.8   * Units.m  
-    nose_gear.origin            = [[5,0,-0.5]]  
+    nose_gear.origin = [[3.100, 0.000, -0.5]]  # gear CG at the 4.09 m axle (APM D6-58325-6 Sec. 2.2.11)
     nose_gear.wheels            = 2   
     nose_gear.number_of_gear_types_in_tandem  = 1
     nose_gear.number_of_wheels_in_gear_type  = 2    
@@ -239,17 +241,17 @@ def vehicle_setup():
 
     wing                          = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag                      = 'horizontal_stabilizer'
-    wing.aspect_ratio             = 4.99
+    wing.aspect_ratio             = 6.282
     wing.sweeps.quarter_chord     = 28.2250 * Units.deg  
     wing.thickness_to_chord       = 0.08
-    wing.taper                    = 0.3333  
-    wing.spans.projected          = 14.35 
-    wing.chords.root              = 4.1
-    wing.chords.tip               = 1.4243 
-    wing.chords.mean_aerodynamic  = 8.0 
-    wing.areas.reference          = 41.49
-    wing.areas.exposed            = 59.354     
-    wing.areas.wetted             = 71.81      
+    wing.taper                    = 0.3474  
+    wing.spans.projected          = 14.35     # APM D6-58325-6 Sec. 2.2.11
+    wing.chords.root              = 3.391
+    wing.chords.tip               = 1.178 
+    wing.chords.mean_aerodynamic  = 2.463 
+    wing.areas.reference          = 32.78     # Jenkinson, Simpkin and Rhodes, Civil Jet Aircraft Design (2001)
+    wing.areas.exposed            = 46.89     
+    wing.areas.wetted             = 56.73      
     wing.twists.root              = 0.0 * Units.degrees
     wing.twists.tip               = 0.0 * Units.degrees 
     wing.origin                   = [[33.02,0,1.466]]
@@ -383,7 +385,6 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length                 = 3.74 * Units.meter
     fuselage.heights.at_three_quarters_length          = 3.65 * Units.meter
     fuselage.heights.at_wing_root_quarter_chord        = 3.74 * Units.meter
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
     
 
     # Segment  
@@ -558,35 +559,27 @@ def vehicle_setup():
     # Systems 
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[5.0, 0, 0]]
     net.systems.append(avionics)
 
     flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[30.0, 0, 0]]
     net.systems.append(flight_controls)
 
     auxiliary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxiliary_power_unit.origin       = [[36.5, 0, 0]]
     net.systems.append(auxiliary_power_unit)
 
     electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[18.3, 0, -0.8]]
     net.systems.append(electrical)
 
     hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[28.0, 0, -0.8]]
     net.systems.append(hydraulics)
 
     environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[21.9, 0, -1.0]]
     net.systems.append(environmental_controls)
 
     instruments = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
-    instruments.origin                = [[5.0, 0, 0]]
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[26.0, 0, 0]]
     net.systems.append(furnishings)
 
     #------------------------------------------------------------------------------------------------------------------------- 

@@ -12,10 +12,10 @@ from scipy.optimize import brentq, minimize_scalar
 #  Falls back to minimizing f(x)^2 with minimize_scalar when brentq fails
 #  (no sign change in the bracket, e.g. the root is a tangent zero).
 # ----------------------------------------------------------------------------------------------------------------------
-def _find_root(func, a, b, args=(), xtol=1e-9):
+def find_root(func, a, b, args=(), xtol=1e-9):
     if not (np.isfinite(a) and np.isfinite(b)):
         raise ValueError(
-            f"_find_root: non-finite bracket (a={a}, b={b}) -- a caller-side "
+            f"find_root: non-finite bracket (a={a}, b={b}) -- a caller-side "
             f"state (e.g. an ODE integrator trial value) has already diverged "
             f"to NaN/Inf upstream of this root search."
         )
@@ -31,7 +31,7 @@ def _find_root(func, a, b, args=(), xtol=1e-9):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Bracket a root by geometric expansion of the search interval
 # ----------------------------------------------------------------------------------------------------------------------
-def _bracket_root(func, start=1e-6, factor=10, limit=1e2, args=()):
+def bracket_root(func, start=1e-6, factor=10, limit=1e2, args=()):
     a  = start
     fa = func(a, *args)
     b  = a * factor

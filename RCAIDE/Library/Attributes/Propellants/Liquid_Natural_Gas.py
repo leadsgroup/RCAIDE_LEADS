@@ -14,7 +14,7 @@ from RCAIDE.Framework.Core import Units
 import os
 import numpy as np
 from functools          import lru_cache
-from scipy.interpolate  import interp1d
+from .linear_table_interpolator import linear_table_interpolator, linear_table_set_interpolator
 # ----------------------------------------------------------------------------------------------------------------------
 #  Liquid_Natural_Gas Class
 # ----------------------------------------------------------------------------------------------------------------------
@@ -141,11 +141,11 @@ class Liquid_Natural_Gas(Propellant):
         self.tag             = 'Liquid_Natural_Gas'
         self.cryogenic       = True
         self.reactant        = 'O2'
-        self.density         = 414.2       # [kg/m^3]  saturated liquid at ~111 K
-        self.specific_energy = 48.632e6    # [J/kg]    lower heating value (LHV) 
-        self.energy_density  = 22200.0e6   # [J/m^3]
+        self.density         = 414.2       # kg/m^3, saturated liquid at 111 K
+        self.specific_energy = 48.632e6    # J/kg
+        self.energy_density  = self.density * self.specific_energy  # J/m^3
         self.gravimetric_efficiency = 0.7
-        self.lower_heating_value    = 45e6
+        self.lower_heating_value    = 48.632e6  # J/kg, 20,908 Btu/lb [1]
         self.molecular_weight       = 16.04   # [g/mol] pure methane (CH4) approximation
         self.hydrogen_mass_fraction = 0.251   # [-]    mass fraction of hydrogen content (CH4)
         self.carbon_mass_fraction   = 0.749   # [-]    mass fraction of carbon content (CH4)
@@ -225,7 +225,28 @@ class Liquid_Natural_Gas(Propellant):
         --------
         load_lng_properties
         """
-        return _property_interpolator(prop_name, phase)(T)
+        return property_interpolator(prop_name, phase)(T)
+
+    def cryogen_property_set(self, T, prop_names, phase='liquid'):
+        """
+            Several properties at the same temperature(s) in one call; identical to calling
+            cryogen_properties for each name, with one input conversion and bounds check.
+
+            Parameters
+            ----------
+            T : ndarray
+                Temperature(s) in Kelvin.
+            prop_names : tuple of str
+                Property names, as accepted by cryogen_properties.
+            phase : str
+                Saturation branch, 'liquid' or 'vapor' (default 'liquid').
+
+            Returns
+            -------
+            values : list of ndarray
+                One array per name, in the order given.
+        """
+        return property_set_interpolator(tuple(prop_names), phase)(T)
 
     def saturation_temperature(self, P):
         """
@@ -242,7 +263,23 @@ class Liquid_Natural_Gas(Propellant):
         T_sat : float or ndarray
             Saturation temperature(s) [K].
         """
-        return _saturation_temperature_interpolator()(P)
+        return saturation_temperature_interpolator()(P)
+
+    def saturation_table(self, phase='liquid'):
+        """
+            Raw saturated-property table rows for one phase, as the interpolators use them.
+            Parameters
+            ----------
+            phase : str
+                Saturation branch, 'liquid' or 'vapor' (default 'liquid').
+            Returns
+            -------
+            table : dict
+                Property name -> ndarray over the phase's rows, temperature increasing.
+        """
+        data = load_lng_properties()
+        phase_mask = np.array(data["Phase"]) == phase
+        return {name: np.array(data[name], dtype=float)[phase_mask] for name in data.keys() if name != "Phase"}
 
     def property_table_range(self, phase='liquid'):
         """
@@ -316,17 +353,25 @@ def load_lng_properties():
 
 # Cached: cryogen_properties calls this many times per boil-off RHS evaluation.
 @lru_cache(maxsize=None)
-def _property_interpolator(prop_name, phase):
+def property_interpolator(prop_name, phase):
     data = load_lng_properties()
     phase_mask = np.array(data["Phase"]) == phase
     temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
     props = np.array(data[prop_name], dtype=float)[phase_mask]
-    return interp1d(temps, props, kind="linear", fill_value=None)
+    return linear_table_interpolator(temps, props)
 
 @lru_cache(maxsize=None)
-def _saturation_temperature_interpolator():
+def property_set_interpolator(prop_names, phase):
+    data = load_lng_properties()
+    phase_mask = np.array(data["Phase"]) == phase
+    temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
+    props = np.column_stack([np.array(data[name], dtype=float)[phase_mask] for name in prop_names])
+    return linear_table_set_interpolator(temps, props)
+
+@lru_cache(maxsize=None)
+def saturation_temperature_interpolator():
     data = load_lng_properties()
     phase_mask = np.array(data["Phase"]) == 'liquid'
     temps = np.array(data["Temperature (K)"], dtype=float)[phase_mask]
     pressures = np.array(data["Pressure (MPa)"], dtype=float)[phase_mask]
-    return interp1d(pressures, temps, kind="linear", fill_value=None)
+    return linear_table_interpolator(pressures, temps)

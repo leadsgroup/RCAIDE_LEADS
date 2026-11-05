@@ -22,6 +22,8 @@ import os
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
+# Stability note: the rigid VLM neutral point (~18.4 m) is 0.6-0.9 m aft of the point giving a 15-25% static margin at the
+# APM aft CG limit (16.91 m, APM-1901); aeroelastic and power effects that would move it forward are not modeled.
 def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -33,7 +35,7 @@ def vehicle_setup():
     vehicle.mass_properties.max_takeoff               = 51800. # kg
     vehicle.mass_properties.takeoff                   = 51800. # kg
     vehicle.mass_properties.max_zero_fuel             = 40900. # kg
-    vehicle.mass_properties.max_fuel                  = 13975. # kg
+    vehicle.mass_properties.max_fuel                  = 13100. # kg, APM max usable fuel
     vehicle.mass_properties.max_payload               = 12900. # kg
     vehicle.mass_properties.operating_empty           = 27900  #     
     vehicle.mass_properties.center_of_gravity         = [[16.8, 0, 1.6]]
@@ -83,7 +85,7 @@ def vehicle_setup():
     main_gear.wheels                         = 4   
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 2
-    main_gear.origin                         = [[18, 5.72/2, -0.5]]
+    main_gear.origin                         = [[17.34, 5.94/2, -0.5]]  # gear CG at the 17.96 m main axle, 5.94 m track (APM-1901 Fig. 2.1)
     main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)  
 
@@ -95,7 +97,7 @@ def vehicle_setup():
     nose_gear.wheels                         = 2   
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2   
-    nose_gear.origin                         = [[5, 0, -0.5]]
+    nose_gear.origin                         = [[3.14, 0, -0.5]]  # gear CG at the 4.13 m nose axle (APM-1901 Fig. 2.1)
     vehicle.append_component(nose_gear)
     
 
@@ -119,9 +121,9 @@ def vehicle_setup():
     wing.origin                  = [[13.0,0,-1.]]
     wing.vertical                = False
     wing.xz_plane_symmetric      = True
-    wing.areas.exposed           = 0.80 * wing.areas.wetted
-    wing.twists.root             = 3.0 * Units.degrees
-    wing.twists.tip              = -2.0 * Units.degrees
+    wing.areas.exposed           = 0.80 * wing.areas.wetted    
+    wing.twists.root             = 1.0 * Units.degrees
+    wing.twists.tip              = -1.0 * Units.degrees    
     wing.dynamic_pressure_ratio  = 1.0
      
     ospath                                = os.path.abspath(__file__)
@@ -319,7 +321,6 @@ def vehicle_setup():
     fuselage.areas.front_projected              = np.pi * (fuselage.heights.maximum  / 2) ** 2
     fuselage.effective_diameter                 = 3.18 
     fuselage.differential_pressure              = 10**5 * Units.pascal    # Maximum differential pressure   
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
     
 
     # Segment  
@@ -469,35 +470,27 @@ def vehicle_setup():
      
     ##  Systems   
     avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[4,0,0]]   
     net.systems.append(avionics)
 
     flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[17,0,0]]
     net.systems.append(flight_controls)
 
     auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxillary_power_unit.origin       = [[35,0,0]]
     net.systems.append(auxillary_power_unit)
 
     electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[16,0,0]]
     net.systems.append(electrical)
 
     hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[17,0,0]]
     net.systems.append(hydraulics)
 
     environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[16,0,-0.5]]
     net.systems.append(environmental_controls)
 
     instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
-    instruments.origin                = [[15,0,0]]
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[18,0,0]]
     net.systems.append(furnishings)
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Fuel Distribution Line 
@@ -519,14 +512,14 @@ def vehicle_setup():
     fuel_line.working_fluid                        = RCAIDE.Library.Attributes.Propellants.Jet_A()
 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    #  Fuel Tank & Fuel
+    #  Fuel Tank & Fuel: wing tanks only, spar-bounded (20-61% chord), 13,172 kg vs APM 13,100 kg max usable
     #------------------------------------------------------------------------------------------------------------------------------------   
     inboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
     inboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
     inboard_tank.tag = 'inboard_tank'
     inboard_tank.segments_bounding_tank       = ['root','yehudi']  
-    inboard_tank.segments_percent_chord_start = [0.15  ,0.15 ]
-    inboard_tank.segments_percent_chord_end   = [0.65  ,0.65]
+    inboard_tank.segments_percent_chord_start = [0.20 ,0.20 ]
+    inboard_tank.segments_percent_chord_end   = [0.61 ,0.61 ]
     inboard_tank.assigned_distributors        = [[fuel_line.tag]]
     net.sources.append(inboard_tank)
     
@@ -534,21 +527,10 @@ def vehicle_setup():
     outboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
     outboard_tank.tag = 'outboard_tank'
     outboard_tank.segments_bounding_tank       = ['yehudi', 'section_2']  
-    outboard_tank.segments_percent_chord_start = [0.15 ,0.15 ]
-    outboard_tank.segments_percent_chord_end   = [0.65 ,0.65]
+    outboard_tank.segments_percent_chord_start = [0.20 ,0.20 ]
+    outboard_tank.segments_percent_chord_end   = [0.61 ,0.61 ]
     outboard_tank.assigned_distributors        = [[fuel_line.tag]]
     net.sources.append(outboard_tank)
-
-    fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()  
-    fuel_tank.lengths.external                  = 2 
-    fuel_tank.widths.external                   = 2
-    fuel_tank.geometry_type                     = 'prismatic'   
-    fuel_tank.heights.external                  = 0.25
-    fuel_tank.origin                            = [[15.0,0.0, 0.0]]
-    fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A()
-    fuel_tank.fuel.origin                       = [[15.0,0.0, 0.0]]
-    fuel_tank.assigned_distributors        = [[fuel_line.tag]]
-    net.sources.append(fuel_tank)
     
 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -561,9 +543,7 @@ def vehicle_setup():
     turbofan.diameter                               = 52 *  Units.inches
     turbofan.design_altitude                        = 35000.0*Units.ft
     turbofan.design_mach_number                     = 0.78
-    # sized so the off-design sea-level static thrust matches the CF34-10E6 maximum takeoff rating,
-    # 83.72 kN (EASA TCDS IM.E.021, Issue 06)
-    turbofan.design_thrust                          = 24123.0 * Units.N
+    turbofan.rated_takeoff_thrust                   = 83720. * Units.N # CF34-10E6 maximum takeoff rating, 83.72 kN (EASA TCDS IM.E.021, Issue 06)
     turbofan.origin                                 = [[13.15,4.38,-2.1]]
     turbofan.mass_properties.center_of_gravity      = [[turbofan.length /2,0,0]]
 
@@ -637,7 +617,7 @@ def vehicle_setup():
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.98
     combustor.alphac                               = 1.0     
-    combustor.turbine_inlet_temperature            = 1321  # sets the 35,000 ft / Mach 0.8 cruise SFC to 0.64 lb/lbf/h (GE Aviation CF34-10E datasheet, AE-44029E)
+    combustor.turbine_inlet_temperature            = 1400
     combustor.pressure_ratio                       = 0.95
     combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan.combustor                             = combustor

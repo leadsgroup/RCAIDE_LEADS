@@ -167,7 +167,7 @@ def compute_thrust(turbojet,conditions):
     mdot_core        = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
 
     # Computing the dimensional thrust
-    FD2              = Fsp*a0*mdot_core* turbojet_conditions.throttle
+    FD2              = Fsp*a0*mdot_core* turbojet_conditions.throttle * turbojet.rated_takeoff_temperature_ratio  # throttle is a fraction of the takeoff rating
 
     # Fuel flow rate
     a = np.array([0.])        

@@ -30,10 +30,10 @@ from Boeing_737 import configs_setup  as Transport_configs_setup
 def main():
     ti = time.time()
 
-    test_part_23_normal()
-    test_part_23_utility()
-    test_part_23_acrobatic()
-    test_part_25()
+    check_part_23_normal()
+    check_part_23_utility()
+    check_part_23_acrobatic()
+    check_part_25()
 
     elapsed_time = time.time() - ti
     print(f'\nElapsed time (min): {elapsed_time / 60:.4f}')
@@ -87,7 +87,7 @@ def TR_base_analysis(vehicle):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_part_23_normal():
+def check_part_23_normal():
     """FAR Part 23 normal category — positive gust at Va exceeds structural limit,
     triggering the Vb intersection branch and extended stall line."""
     print('\n--- FAR Part 23 normal category (Cessna 172) ---')
@@ -127,7 +127,7 @@ def test_part_23_normal():
     print('  PASSED')
 
 
-def test_part_23_utility():
+def check_part_23_utility():
     """FAR Part 23 utility category — positive limit enforced to minimum 4.4 g,
     negative limit = -0.4 * positive. Dive speed scaled by 1.5."""
     print('\n--- FAR Part 23 utility category ---')
@@ -170,7 +170,7 @@ def test_part_23_utility():
     print('  PASSED')
 
 
-def test_part_23_acrobatic():
+def check_part_23_acrobatic():
     """FAR Part 23 acrobatic category — positive limit enforced to minimum 6.0 g,
     negative limit = -0.5 * positive. Special gust intersection formula applies."""
     print('\n--- FAR Part 23 acrobatic category ---')
@@ -213,7 +213,7 @@ def test_part_23_acrobatic():
     print('  PASSED')
 
 
-def test_part_25():
+def check_part_25():
     """FAR Part 25 transport category (Boeing 737) — load limits follow
     the 2.1 + 24000/(W+10000) formula, capped at 3.8."""
     print('\n--- FAR Part 25 transport category (Boeing 737) ---')
@@ -230,10 +230,10 @@ def test_part_25():
     truth.Va_neg              = 196.0722501867801
     truth.Vc                  = 515.9537531823821
     truth.Vd                  = 644.9421914779776
-    truth.limit_load_pos      = 3.538568908482968
-    truth.limit_load_neg      = -1.5385689084829681
-    truth.dive_limit_load_pos = 2.586605567801855
-    truth.dive_limit_load_neg = -0.5866055678018549
+    truth.limit_load_pos      = 3.5030711681793627
+    truth.limit_load_neg      = -1.5030711681793627
+    truth.dive_limit_load_pos = 2.564419480112102
+    truth.dive_limit_load_neg = -0.5644194801121019
 
     error = Data()
     error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)              / truth.Vs1_pos

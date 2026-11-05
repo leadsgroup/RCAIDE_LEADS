@@ -102,8 +102,16 @@ def design_turbofan_offdesign_matching(turbofan):
     state = setup_operating_conditions(turbofan, fuel_line, velocity_range=np.array([design_velocity]),
                                         altitude=turbofan.design_altitude, angle_of_attack=0,
                                         temperature_deviation=turbofan.design_isa_deviation)
-    state.conditions.energy.propulsors[turbofan.tag].throttle[:, 0] = 1.0
-    turbofan.compute_performance(state, fuel_line)
+    state.conditions.energy.propulsors[turbofan.tag].throttle[:, 0] = 1.0 / turbofan.rated_takeoff_temperature_ratio  # design point
+
+    # the reference point is read back from the design-point cycle solve, so dispatch through the
+    # analytical cycle even when the turbofan already carries an off-design or surrogate model
+    offdesign_matching, surrogate          = turbofan.offdesign_matching, turbofan.surrogate
+    turbofan.offdesign_matching, turbofan.surrogate = None, None
+    try:
+        turbofan.compute_performance(state, fuel_line)
+    finally:
+        turbofan.offdesign_matching, turbofan.surrogate = offdesign_matching, surrogate
 
     conditions = state.conditions
     converters = conditions.energy.converters

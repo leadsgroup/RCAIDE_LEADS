@@ -18,7 +18,13 @@ import  numpy as  np
 #  Cargo_Bay
 # ----------------------------------------------------------------------------------------------------------------------              
 class Cargo_Bay(Component):
-    """Base class for a cargo bay     
+    """Base class for a cargo bay
+
+    Attributes
+    ----------
+    containerized : bool
+        True if the cargo in this bay is carried in unit load devices (e.g. LD3 containers); the FLOPS
+        weight methods then add the container weight to the operating items. Default is False (bulk).
     """          
     def __defaults__(self):
         """This sets the default power draw.
@@ -44,6 +50,7 @@ class Cargo_Bay(Component):
         self.height        = 1.0 
         self.density       = 0.0 
         self.power_draw    = 0.0
+        self.containerized = False
         
     def compute_center_of_gravity(self,vehicle): 
         """

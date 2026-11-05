@@ -74,10 +74,9 @@ def compute_wing_weight(vehicle, wing, WPOD, fidelity  , settings, num_main_wing
     
     aeroelastic_tailoring_factor = settings.FLOPS.aeroelastic_tailoring_factor
     strut_braced_wing_factor     = settings.FLOPS.strut_braced_wing_factor
-    if settings.advanced_composites: # This considers full or no composite construction
-        composite_utilization_factor = 0.0
-    else:
-        composite_utilization_factor = 1.0
+    composite_utilization_factor = getattr(settings.FLOPS, 'composite_utilization_factor', None)
+    if composite_utilization_factor is None: # full or no composite construction from the advanced_composites flag
+        composite_utilization_factor = 1.0 if settings.advanced_composites else 0.0
     
     if AR <= 5:
         CAYA = 0

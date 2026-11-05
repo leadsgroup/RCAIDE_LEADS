@@ -28,3 +28,5 @@ from .Turbojet_OffDesign_Matching  import OffDesignMatchingError
 from .Turbojet_OffDesign_Matching  import solve_turbojet_offdesign
 from .Turbojet_OffDesign_Matching  import solve_turbojet_offdesign_robust
 from .generate_turbojet_deck import generate_turbojet_deck
+from .build_turbojet_offdesign_matching import build_turbojet_offdesign_matching
+from .size_turbojet_to_rated_takeoff_thrust import size_turbojet_to_rated_takeoff_thrust

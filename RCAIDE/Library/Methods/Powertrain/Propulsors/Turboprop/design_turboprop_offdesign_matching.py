@@ -10,6 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core                                                      import Data
 from RCAIDE.Library.Methods.Powertrain                                          import setup_operating_conditions
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import nozzle_state
 
 # Python package imports
 import numpy as np
@@ -68,13 +69,15 @@ def design_turboprop_offdesign_matching(turboprop):
     separately for the cold/hot sides -- same reasons as `design_turbofan_
     offdesign_matching`, whose docstring covers them in full.
 
-    `reference_point.M9`/`F` are read directly from `turboprop`'s own
-    converged state (`Expansion_Nozzle` output, `turboprop_conditions.
-    thrust`) -- unlike the turbojet case, no self-consistency workaround is
-    needed here: the core nozzle is the same convergent type already
-    validated for `Turbofan`, and the thrust formula is reused from RCAIDE's
-    own `compute_thrust.py` directly rather than re-derived, so both are
-    already consistent with the design point by construction.
+    `reference_point.M9` is the core nozzle exit Mach number the matching
+    solver's own nozzle model gives at the design-point Pt9/P0 (a single
+    hot-section gamma_t), not the `Expansion_Nozzle` output, which uses the
+    gas properties at the nozzle temperature. The free-turbine mass-flow
+    match (Mattingly, Elements of Propulsion, 2006, Eq. 8.52w) is written
+    relative to the reference state, so this makes the design point an
+    exact solution of the matching equations: solving at the design
+    condition returns the design pi_tL/tau_tL. `reference_point.F` is the
+    design-point thrust of the analytical cycle (`turboprop_conditions.thrust`).
 
     References
     ----------
@@ -101,8 +104,14 @@ def design_turboprop_offdesign_matching(turboprop):
     state = setup_operating_conditions(turboprop, fuel_line, velocity_range=np.array([design_velocity]),
                                         altitude=turboprop.design_altitude, angle_of_attack=0,
                                         temperature_deviation=turboprop.design_isa_deviation)
-    state.conditions.energy.propulsors[turboprop.tag].throttle[:, 0] = 1.0
-    turboprop.compute_performance(state)
+    state.conditions.energy.propulsors[turboprop.tag].throttle[:, 0] = 1.0 / turboprop.rated_takeoff_temperature_ratio  # design point
+    # the design point is read back from the analytical cycle, not the matching model itself
+    offdesign_matching           = turboprop.offdesign_matching
+    turboprop.offdesign_matching = None
+    try:
+        turboprop.compute_performance(state)
+    finally:
+        turboprop.offdesign_matching = offdesign_matching
 
     conditions = state.conditions
     converters = conditions.energy.converters
@@ -153,6 +162,8 @@ def design_turboprop_offdesign_matching(turboprop):
     design_constants.eta_prop    = turboprop.propeller.design_efficiency
     design_constants.eta_gearbox = turboprop.gearbox.efficiency
     design_constants.shaft_work_specific_design = float(turboprop.design_shaft_work_specific)
+    design_constants.propeller_disk_area             = np.pi * turboprop.propeller.tip_radius ** 2
+    design_constants.propeller_polytropic_efficiency = float(turboprop.propeller_polytropic_efficiency)
 
     reference_point = Data()
     reference_point.M0  = float(np.ravel(turboprop.design_mach_number)[0])
@@ -161,7 +172,8 @@ def design_turboprop_offdesign_matching(turboprop):
     reference_point.Tt4 = float(np.ravel(combustor_c.outputs.stagnation_temperature)[0])
     reference_point.pi_c, reference_point.tau_c   = pi_c, tau_c
     reference_point.tau_tL, reference_point.pi_tL = tau_tL, pi_tL
-    reference_point.M9  = float(np.ravel(core_nozzle_c.outputs.mach_number)[0])
+    stagnation_to_ambient_pressure_ratio = float(np.ravel(core_nozzle_c.outputs.stagnation_pressure)[0]) / reference_point.P0
+    reference_point.M9  = nozzle_state(stagnation_to_ambient_pressure_ratio, gamma_t)[1]
     reference_point.m0  = float(np.ravel(turboprop_c.core_mass_flow_rate)[0])
     reference_point.F   = float(np.ravel(turboprop_c.thrust)[0])
 

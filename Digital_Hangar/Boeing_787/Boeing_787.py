@@ -54,14 +54,14 @@ def vehicle_setup() :
     vehicle.mass_properties.fuel                      = 57500 *Units.kilogram
     vehicle.mass_properties.max_payload               = 44000
     vehicle.mass_properties.center_of_gravity         = [[27.0, 0, 0]]
-    vehicle.flight_envelope.ultimate_load             = 3.5
+    vehicle.flight_envelope.ultimate_load             = 3.75 # 1.5 x limit load (14 CFR 25.303)
     vehicle.flight_envelope.positive_limit_load       = 2.5  
     vehicle.flight_envelope.negative_limit_load       = 1
     vehicle.flight_envelope.design_mach_number        = 0.85  
     vehicle.flight_envelope.design_cruise_altitude    = 35000.0*Units.feet 
     vehicle.flight_envelope.design_range              = 7305.0 * Units.nmi
     vehicle.reference_area                            = 395.0 * Units['meters**2']    
-    vehicle.number_of_passengers                      = 248 
+    vehicle.number_of_passengers                      = 294 # seats in the cabin layout below
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "long range" 
 
@@ -95,7 +95,7 @@ def vehicle_setup() :
     main_gear.wheels                         = 8
     main_gear.number_of_gear_types_in_tandem = 2
     main_gear.number_of_wheels_in_gear_type  = 2
-    main_gear.origin                         = [[28, 5.335, -1.5]]
+    main_gear.origin = [[27.492, 4.900, -1.5]]  # gear CG at the 28.19 m axle (APM D6-58333 Sec. 2.2.1)
     main_gear.xz_plane_symmetric             = True
     vehicle.append_component(main_gear)
 
@@ -107,7 +107,7 @@ def vehicle_setup() :
     nose_gear.wheels                         = 2
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2
-    nose_gear.origin                         = [[7.0, 0, -1.5]]
+    nose_gear.origin = [[4.488, 0.000, -1.5]]  # gear CG at the 5.41 m axle (APM D6-58333 Sec. 2.2.1)
     vehicle.append_component(nose_gear)
 
 
@@ -129,7 +129,7 @@ def vehicle_setup() :
     wing.areas.reference                  = 392.27 * Units['meters**2']
     wing.areas.wetted                     = 825.0 * Units['meters**2']
     wing.twists.root                      = 4.0 * Units.degrees 
-    wing.twists.tip                       = -2.0 * Units.degrees 
+    wing.twists.tip                       = -1.5 * Units.degrees  # calibrated to the APM payload-range (points C and D within 0.6%); not a published 787 value
     wing.origin                           = [[16.59,0,-0.492]]
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
@@ -400,7 +400,6 @@ def vehicle_setup() :
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
-    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     
     # Segment  
@@ -624,35 +623,27 @@ def vehicle_setup() :
     # Systems 
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[5.0, 0, 0]]
     net.systems.append(avionics)
 
     flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[36.5, 0, 0]]
     net.systems.append(flight_controls)
 
     auxiliary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxiliary_power_unit.origin       = [[70.9, 0, 0]]
     net.systems.append(auxiliary_power_unit)
 
     electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[18.3, 0, -0.8]]
     net.systems.append(electrical)
 
     hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[36.5, 0, -0.8]]
     net.systems.append(hydraulics)
 
     environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[21.9, 0, -1.0]]
     net.systems.append(environmental_controls)
 
     instruments = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
-    instruments.origin                = [[5.0, 0, 0]]
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[36.5, 0, 0]]
     net.systems.append(furnishings)
 
 

@@ -80,6 +80,12 @@ def geometry(mission):
                 for propulsor in network.propulsors:
                     propulsor_0              =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
                     propulsor.active         = propulsor_0.active
+                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+                        propulsor.afterburner_active          = propulsor_0.afterburner_active
+                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
+                        propulsor.fan.angular_velocity        = propulsor_0.fan.angular_velocity
+                        propulsor.fan_nozzle.exit_velocity    = propulsor_0.fan_nozzle.exit_velocity 
+                        propulsor.core_nozzle.exit_velocity   = propulsor_0.core_nozzle.exit_velocity
                     if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
                         propulsor.rotor.orientation_euler_angles =  propulsor_0.rotor.orientation_euler_angles 
                         propulsor.rotor.blade_pitch_command      =  propulsor_0.rotor.blade_pitch_command
@@ -128,17 +134,26 @@ def geometry_preprocess_routine(analyses):
         landing_gear.wheels = landing_gear.number_of_gear_types_in_tandem * landing_gear.number_of_wheels_in_gear_type * (symm + 1) 
     
     # ================================================================================================================================================
-    # update wing properties 
+    # update wing properties
     # ================================================================================================================================================
-    for wing in vehicle.wings:  
+    main_wing_chord = None
+    for wing in vehicle.wings:
         # --------------------------------------------------------------------------------------------------------------------
         #  Blended Wing Body
         # --------------------------------------------------------------------------------------------------------------------
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):            
-            # compute planform properties 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            # compute planform properties
             wing_planform(wing)
             compute_layout_of_passenger_accommodations(wing)
-            
+            main_wing_chord = wing.chords.mean_aerodynamic
+
+            # the centre-body root chord is the body axis, so a twisted centreline only offsets the angle of attack
+            root_twist = wing.segments[list(wing.segments.keys())[0]].twist if len(wing.segments) > 0 else wing.twists.root
+            if abs(root_twist) > 1e-6:
+                print(f'Warning: {wing.tag} centreline twist is {root_twist / Units.degrees:.2f} deg. A blended wing body has no fuselage, '
+                      f'so its root chord is the body axis; this twist tilts the body and offsets the angle of attack. '
+                      f'Twist the other sections relative to the root chord instead.')
+
             # update reference properties 
             if settings.overwrite_reference:
                 vehicle.reference_area = wing.areas.reference
@@ -162,12 +177,14 @@ def geometry_preprocess_routine(analyses):
         # All other wing surfaces
         # --------------------------------------------------------------------------------------------------------------------
         else: 
-            wing_planform(wing)                   
+            wing_planform(wing)
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+                main_wing_chord = wing.chords.mean_aerodynamic
             if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing) and settings.overwrite_reference:
                 vehicle.reference_area = wing.areas.reference
                 vehicle.LEMAC          = wing.LEMAC 
              
-        # reference chord 
+        # reference chord fallback when no main wing is defined
         vehicle.reference_chord  = np.maximum(vehicle.reference_chord , wing.chords.mean_aerodynamic)
         
         # reference span 
@@ -177,7 +194,11 @@ def geometry_preprocess_routine(analyses):
         vehicle.length = np.maximum(vehicle.length, wing.chords.root)                         
         
         # max cross sectional area 
-        sectional_area +=  wing.areas.front_projected  
+        sectional_area +=  wing.areas.front_projected
+
+    # reference chord is the main wing MAC, not the largest MAC of any lifting surface
+    if main_wing_chord is not None:
+        vehicle.reference_chord = main_wing_chord
 
     for network in  vehicle.networks: 
         for propulsor in network.propulsors:  

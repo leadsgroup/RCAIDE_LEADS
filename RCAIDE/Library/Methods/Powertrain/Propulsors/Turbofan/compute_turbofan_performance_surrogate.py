@@ -50,7 +50,7 @@ def compute_turbofan_performance_surrogate(turbofan, state, network=None, center
                else 9.80665 * np.ones_like(mach)
     isa_dev  = conditions.freestream.delta_ISA[:, 0] if hasattr(conditions.freestream, 'delta_ISA') \
                else np.zeros_like(mach)
-    throttle    = turbofan_conditions.throttle[:, 0]
+    throttle    = turbofan_conditions.throttle[:, 0] * turbofan.rated_takeoff_temperature_ratio  # takeoff-rating fraction to design-point fraction
     rating_code = turbofan_conditions.rating_code
 
     # target_SLS_thrust_N left at query()'s default -- design_thrust is cruise thrust, not SLS

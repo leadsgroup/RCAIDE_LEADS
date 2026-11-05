@@ -100,13 +100,14 @@ def evaluate_CRN_emissions_no_surrogate(segment,settings,vehicle):
     Soot_total  = 0 * state.ones_row(1)
     total_gCO2e = 0 * state.ones_row(1)
 
-    if segment.state.initials is not None:
+    if segment.state.initials:
         initial_cumulative_gCO2e = segment.state.initials.conditions.emissions.cumulative_gCO2e[-1]
     else:
         initial_cumulative_gCO2e = 0.0
 
 
     for network in vehicle.networks:
+        reference = None
         for p_i ,  propulsor in enumerate(network.propulsors):
             if propulsor.active == True:
                 if (type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
@@ -166,7 +167,8 @@ def evaluate_CRN_emissions_no_surrogate(segment,settings,vehicle):
                     combustor_SZ_joint_EI_H2O  = np.zeros((n_cp,joint_zones)) # [kg/kg_fuel]
                     combustor_SZ_joint_EI_NOx  = np.zeros((n_cp,joint_zones)) # [kg/kg_fuel]
 
-                    if network.propulsors.identical_propulsors == True and p_i != 0:
+                    # reuse the combustor results of the last propulsor solved on its own when allowed
+                    if network.reuses_results(propulsor, reference):
                         EI_CO2_comb = EI_CO2_prev
                         EI_CO_comb  = EI_CO_prev
                         EI_H2O_comb = EI_H2O_prev
@@ -202,6 +204,7 @@ def evaluate_CRN_emissions_no_surrogate(segment,settings,vehicle):
                         combustor_SZ_joint_EI_NOx  = combustor_SZ_joint_EI_NOx_prev
 
                     else:
+                        reference = propulsor
                         for t_idx in range(n_cp):
                             # Call cantera
                             results = evaluate_cantera(combustor,T[t_idx,0],P[t_idx,0],mdot[t_idx,0],FAR[t_idx,0])
@@ -463,7 +466,7 @@ def evaluate_CRN_emissions_surrogate(segment,settings,vehicle):
     Soot_total  = 0 * state.ones_row(1)
     total_gCO2e = 0 * state.ones_row(1)
 
-    if segment.state.initials is not None:
+    if segment.state.initials:
         initial_cumulative_gCO2e = segment.state.initials.conditions.emissions.cumulative_gCO2e[-1]
     else:
         initial_cumulative_gCO2e = 0.0

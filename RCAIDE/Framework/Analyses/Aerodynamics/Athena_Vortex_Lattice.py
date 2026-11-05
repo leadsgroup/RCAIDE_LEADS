@@ -106,6 +106,7 @@ class Athena_Vortex_Lattice(Aerodynamics):
         self.training.angle_of_attack               = np.array([-2.,0., 2.,5., 7., 10.])*Units.degrees
         self.training.Mach                          = np.array([0.05,0.15,0.25, 0.45,0.65,0.85])  
         self.training_file                          = None 
+        self.training_deflections                   = Data()
 
         self.current_status                         = Data()        
         self.current_status.batch_index             = 0

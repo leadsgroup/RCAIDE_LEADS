@@ -238,7 +238,6 @@ def vehicle_setup():
     fuselage.heights.at_wing_root_quarter_chord = 23. * Units.inches
     fuselage.areas.front_projected              = fuselage.width* fuselage.heights.maximum
     fuselage.effective_diameter                 = 50. * Units.inches
-    fuselage.operational_items.origin           = [[1.8, 0, 0]]
 
     cabin              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
     economy_class      = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 

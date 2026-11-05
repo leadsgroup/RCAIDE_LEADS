@@ -45,6 +45,18 @@ class Fan(Converter):
         Number of fan blades. Default is 0.
 
 
+    design_angular_velocity : float
+        Rotational speed of the fan at the design point [rad/s]. Default is 3000 rpm.
+
+    rated_angular_velocity : float
+        Rotational speed of the fan at the sea-level static maximum takeoff rating, i.e. the
+        engine's 100% N1 speed [rad/s]. When set (> 0), design_turbofan derives
+        design_angular_velocity from it. Default is 0.0.
+
+    design_total_temperature_rise : float
+        Total temperature rise across the fan at the design point [K], set by design_turbofan.
+        Default is 0.0.
+
     Notes
     -----
     The Fan class models the compression and energy addition process in a fan stage.

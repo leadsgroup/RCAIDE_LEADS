@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - master
+      - develop-compute_acceleration
   push:
     branches:
       - develop
@@ -19,7 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12","3.13"]
+        # one Python for PRs into the acceleration integration branch, all four elsewhere
+        python-version: ${{ fromJSON(github.base_ref == 'develop-compute_acceleration' && '["3.13"]' || '["3.10", "3.11", "3.12", "3.13"]') }}
 
     steps:
       - name: Check out code

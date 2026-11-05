@@ -149,6 +149,12 @@ def compute_systems_weight(vehicle):
     FPAREA      = XL * WF
     NPASS       = vehicle.number_of_seats or vehicle.number_of_passengers
     WAPU        = 54 * FPAREA ** 0.3 + 5.4 * NPASS ** 0.9  # apu weight
+
+    # APUs left to be computed share the APU group estimate; user-set APU masses are kept as given
+    APUs          = [system for network in vehicle.networks for system in network.systems
+                     if isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit)]
+    computed_APUs = [apu for apu in APUs if apu.mass_properties.mass == 0 or apu.mass_properties.calculated_flag]
+    WAPU_each     = WAPU / len(computed_APUs) if computed_APUs else 0.0
     if NPASS >= 150:
         NFLCR = 3  # number of flight crew
     else:
@@ -164,7 +170,7 @@ def compute_systems_weight(vehicle):
             (1. + 0.044 * NFLCR + 0.0015 * NPASS)  # electrical system weight
     DESRNG  = vehicle.flight_envelope.design_range / Units.nmi
     WAVONC  = 15.8 * DESRNG ** 0.1 * NFLCR ** 0.7 * FPAREA ** 0.43  # avionics weight
-    XLP     = 0.8 * XL
+    XLP     = 0.6085 * XL * np.arctan(XL / 59.0) ** 1.1  # FLOPS passenger compartment length [ft] (NASA Aviary flops_based geometry)
     DF      = ref_fuselage.heights.maximum / Units.ft # D stands for depth
     WFURN   = 127 * NFLCR + 112 * NPF + 78 * NPB + 44 * NPE \
                 + 2.6 * XLP * (WF + DF) * NFUSE  # furnishing weight
@@ -183,7 +189,7 @@ def compute_systems_weight(vehicle):
                 elif isinstance(system, Systems.Flight_Controls):
                     system.mass_properties.mass = WSC * Units.lbs
                 elif isinstance(system, Systems.Auxiliary_Power_Unit):
-                    system.mass_properties.mass = WAPU * Units.lbs
+                    system.mass_properties.mass = WAPU_each * Units.lbs
                 elif isinstance(system, Systems.Electrical):
                     system.mass_properties.mass = WELEC * Units.lbs
                 elif isinstance(system, Systems.Hydraulics):
@@ -200,8 +206,6 @@ def compute_systems_weight(vehicle):
                     WAVONC = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Flight_Controls):
                     WSC    = system.mass_properties.mass / Units.lbs
-                elif isinstance(system, Systems.Auxiliary_Power_Unit):
-                    WAPU   += system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Electrical):
                     WELEC  = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Hydraulics):
@@ -215,6 +219,8 @@ def compute_systems_weight(vehicle):
                     WIN    = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Water_Tank):
                     W_water_tank = system.mass_properties.mass / Units.lbs
+
+    WAPU = sum(apu.mass_properties.mass for apu in APUs) / Units.lbs
 
     output                     = Data()
     output.W_flight_control    = WSC * Units.lbs

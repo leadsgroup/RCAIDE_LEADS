@@ -79,7 +79,7 @@ def update_moments_of_inertia(state,vehicle):
     MOI_Izx   = np.zeros((N,1))
     MOI_Izy   = np.zeros((N,1))
     MOI_Izz   = np.zeros((N,1))
-    for item in conditions.weights.components.mass.keys():
+    for item in conditions.weights.components.moments_of_inertia_Ixx.keys():
         MOI_Ixx  += conditions.weights.components.moments_of_inertia_Ixx[item]
         MOI_Ixy  += conditions.weights.components.moments_of_inertia_Ixy[item]
         MOI_Ixz  += conditions.weights.components.moments_of_inertia_Ixz[item]
@@ -118,7 +118,11 @@ def update_fuel_tank_moment_of_inertia(fuel_tank,state):
     I_fuel_local      = M_fuel[:,:, None]  * np.array(MOI_fuel_non_dim)[None,:,:]
     
     # moment arm 
-    s       = np.array(center_of_gravity) - conditions.weights.components.global_center_of_gravity[fuel_tag]
+    if fuel_tag in conditions.weights.components.global_center_of_gravity:
+        fuel_CG = conditions.weights.components.global_center_of_gravity[fuel_tag]
+    else:
+        fuel_CG = np.array(fuel_tank.fuel.mass_properties.center_of_gravity) + np.array(fuel_tank.fuel.origin)
+    s       = np.array(center_of_gravity) - fuel_CG
     term_1  = np.repeat(np.repeat(np.vecdot(s, s)[:,None, None],3, axis=2), 3, axis=1)
     term_2 = np.repeat(np.array(np.identity(3))[None,:,:],N, axis=0)
     term_3  = np.multiply.outer(s, s)[:, :, 0, :]

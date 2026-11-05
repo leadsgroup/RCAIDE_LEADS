@@ -4,5 +4,5 @@
 Shared helpers used by more than one fuel-tank type's sizing/performance methods.
 """
 
-from .find_root        import _find_root, _bracket_root
-from .solve_insulation import _solve_insulation
+from .find_root        import find_root, bracket_root
+from .solve_insulation import solve_insulation
