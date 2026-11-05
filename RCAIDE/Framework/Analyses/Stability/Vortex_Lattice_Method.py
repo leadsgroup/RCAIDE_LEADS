@@ -73,7 +73,7 @@ class Vortex_Lattice_Method(Stability):
         self.training                                               = Data()  
         self.training.angle_of_attack                               = np.array([-5., -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45., 75.]) * Units.deg 
         self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])      
-        self.training.reference_angle_perturbation                  = 2 * Units.deg   # assumption: inside the linear lift range, clear of the noisy VLM solution at exactly zero incidence
+        self.training.reference_angle_perturbation                  = 2 * Units.deg
                       
         self.training.subsonic                                      = None
         self.training.supersonic                                    = None
