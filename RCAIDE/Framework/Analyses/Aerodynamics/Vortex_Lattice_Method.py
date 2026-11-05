@@ -151,6 +151,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         compute.drag.form                                           = Common.Drag.form_drag   
         compute.drag.trim                                           = Common.Drag.trim_drag 
         compute.drag.total                                          = Common.Drag.total_drag
+        compute.longitudinal_derivatives                            = compute_longitudinal_derivatives
         self.process.compute                                        = compute
         
 

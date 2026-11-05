@@ -125,10 +125,10 @@ def main():
     roll_subsistence_time_constant = DS.LatModes.rollSubsistenceTimeConstant[0,0]
     spiral_time_double_half        = DS.LatModes.spiralTimeDoubleHalf[0,0]
 
-    phugoid_freq_true                   = 0.04012404634564719
-    phugoid_damping_true                = 0.03160427335130626
-    short_period_freq_true              = 0.7213302074401841
-    short_period_damping_true           = 0.7703443513451584
+    phugoid_freq_true                   = 0.03994064011553723
+    phugoid_damping_true                = 0.10081229983305097
+    short_period_freq_true              = 0.7106199191949506
+    short_period_damping_true           = 0.7800679437641673
     dutch_roll_freq_true                = 0.4687927516365537
     dutch_roll_damping_true             = 0.13516792153841606
     roll_subsistence_time_constant_true = 0.08683263915220102

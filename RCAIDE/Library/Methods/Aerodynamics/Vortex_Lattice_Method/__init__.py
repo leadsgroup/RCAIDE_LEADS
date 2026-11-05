@@ -18,3 +18,4 @@ from .train_VLM_surrogates                      import train_VLM_surrogates, tra
 from .VLM                                       import VLM
 from .evaluate_VLM                              import *
 from .compute_zero_lift_moment                  import compute_zero_lift_moment
+from .compute_longitudinal_derivatives          import compute_longitudinal_derivatives
