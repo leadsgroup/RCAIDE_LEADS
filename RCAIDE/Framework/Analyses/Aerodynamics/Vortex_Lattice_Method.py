@@ -15,6 +15,7 @@ from RCAIDE.Framework.Analyses.Common.Process_Geometry         import Process_Ge
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import *   
 from RCAIDE.Framework.Mission.Common                           import Results
 from RCAIDE.Library.Methods.Stability.Common.compute_longitudinal_derivatives import compute_longitudinal_derivatives
+from RCAIDE.Library.Methods.Stability.Common.compute_lateral_derivatives import compute_lateral_derivatives
 
 # package imports 
 import numpy as np 
@@ -152,6 +153,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         compute.drag.trim                                           = Common.Drag.trim_drag 
         compute.drag.total                                          = Common.Drag.total_drag
         compute.longitudinal_derivatives                            = compute_longitudinal_derivatives
+        compute.lateral_derivatives                                 = compute_lateral_derivatives
         self.process.compute                                        = compute
         
 
