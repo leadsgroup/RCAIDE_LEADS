@@ -263,7 +263,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     TANB   = TNL *(1. - XIB) + TNT *XIB
 
     # cumsum GANT loop if KTOP > 0 (don't actually need KTOP with vectorized arrays and np.roll)
-    GFX    = VD.chord_lengths
+    GFX    = 1 /CHORD
     GANT   = strip_cumsum(GFX*GAMMA, chord_breaks[0], RNMAX[LE_ind].reshape(dim_1,dim_2)[0]  )
     GANT   = np.roll(GANT,1)
     GANT[LE_ind] = 0

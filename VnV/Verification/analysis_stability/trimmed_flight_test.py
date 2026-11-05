@@ -59,9 +59,9 @@ def main():
     cruise_elevator       = results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
     cruise_aileron        = results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
     cruise_rudder         = results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
-    cruise_elevator_true  = -4.041311953783479
-    cruise_aileron_true   = -4.911415406052416
-    cruise_rudder_true    = 9.767671296989503
+    cruise_elevator_true  = -4.041961374946349
+    cruise_aileron_true   = -6.182366578790323
+    cruise_rudder_true    = 10.080918426489632
     print('Cruise elevator:', cruise_elevator, 'aileron:', cruise_aileron, 'rudder:', cruise_rudder)
     assert np.abs((cruise_elevator - cruise_elevator_true) / cruise_elevator_true) < 5e-3
     assert np.abs((cruise_aileron  - cruise_aileron_true)  / cruise_aileron_true)  < 5e-3
@@ -71,7 +71,7 @@ def main():
     # Cruise 2 segment (2-DOF longitudinal only)
     # ------------------------------------------------------------------
     cruise2_throttle       = results.segments.cruise_2.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    cruise2_throttle_true  = 0.4555407173829329
+    cruise2_throttle_true  = 0.4555407038779655
     print('Cruise 2 throttle:', cruise2_throttle)
     assert np.abs((cruise2_throttle - cruise2_throttle_true) / cruise2_throttle_true) < 5e-3
 
@@ -79,7 +79,7 @@ def main():
     # Cruise 3 segment (6-DOF with sideslip = 10 deg)
     # ------------------------------------------------------------------
     cruise3_throttle       = results.segments.cruise_3.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    cruise3_throttle_true  = 0.5265176504887689
+    cruise3_throttle_true  = 0.5277641805177367
     print('Cruise 3 throttle:', cruise3_throttle)
     assert np.abs((cruise3_throttle - cruise3_throttle_true) / cruise3_throttle_true) < 5e-3
 
@@ -89,9 +89,9 @@ def main():
     cw_elevator       = results.segments.cruise_crosswind.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
     cw_aileron        = results.segments.cruise_crosswind.conditions.control_surfaces.aileron.deflection[0,0]  / Units.deg
     cw_rudder         = results.segments.cruise_crosswind.conditions.control_surfaces.rudder.deflection[0,0]   / Units.deg
-    cw_elevator_true  = -4.042914579870736
-    cw_aileron_true   = -4.910976183428169
-    cw_rudder_true    = 9.767865386484551
+    cw_elevator_true  = -4.042934538959202
+    cw_aileron_true   = -6.1820957396062655
+    cw_rudder_true    = 10.081045285633023
     print('Crosswind elevator:', cw_elevator, 'aileron:', cw_aileron, 'rudder:', cw_rudder)
     assert np.abs((cw_elevator - cw_elevator_true) / cw_elevator_true) < 5e-3
     assert np.abs((cw_aileron  - cw_aileron_true)  / cw_aileron_true)  < 5e-3
@@ -104,7 +104,7 @@ def main():
     fs_elevator       = results.segments.cruise_free_sideslip.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
     fs_aileron        = results.segments.cruise_free_sideslip.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
     fs_rudder         = results.segments.cruise_free_sideslip.conditions.control_surfaces.rudder.deflection[0,0]  / Units.deg
-    fs_elevator_true  = -4.040172349759927
+    fs_elevator_true  = -4.040171698936464
     print('Free sideslip beta:', fs_sideslip, 'elevator:', fs_elevator, 'rudder:', fs_rudder, 'aileron:', fs_aileron)
     # symmetric trim: zero to solver noise (~1e-6 deg)
     assert np.abs(fs_sideslip) < 1e-5
@@ -125,14 +125,14 @@ def main():
     roll_subsistence_time_constant = DS.LatModes.rollSubsistenceTimeConstant[0,0]
     spiral_time_double_half        = DS.LatModes.spiralTimeDoubleHalf[0,0]
 
-    phugoid_freq_true                   = 0.0378800315566877
-    phugoid_damping_true                = 0.09991383433494651
-    short_period_freq_true              = 0.7492401153321889
-    short_period_damping_true           = 0.763968281009665
-    dutch_roll_freq_true                = 0.4071263889686947
-    dutch_roll_damping_true             = 0.1829269470089613
-    roll_subsistence_time_constant_true = 0.08647203711936728
-    spiral_time_double_half_true        = 105.23028646726293
+    phugoid_freq_true                   = 0.03787953084895515
+    phugoid_damping_true                = 0.1001584273151714
+    short_period_freq_true              = 0.749234468352523
+    short_period_damping_true           = 0.763983932251441
+    dutch_roll_freq_true                = 0.4201910505406779
+    dutch_roll_damping_true             = 0.1738952474021521
+    roll_subsistence_time_constant_true = 0.08636535663704256
+    spiral_time_double_half_true        = 261.6424316291102
 
     print('Phugoid freq (Hz):', phugoid_freq, 'damping:', phugoid_damping)
     print('Short period freq (Hz):', short_period_freq, 'damping:', short_period_damping)
