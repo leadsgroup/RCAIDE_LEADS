@@ -129,10 +129,10 @@ def main():
     phugoid_damping_true                = 0.03160427335130626
     short_period_freq_true              = 0.7213302074401841
     short_period_damping_true           = 0.7703443513451584
-    dutch_roll_freq_true                = 0.4694955813127509
-    dutch_roll_damping_true             = 0.1333552953579769
-    roll_subsistence_time_constant_true = 0.08686174319808002
-    spiral_time_double_half_true        = 269.99172105561354
+    dutch_roll_freq_true                = 0.4687927516365537
+    dutch_roll_damping_true             = 0.13516792153841606
+    roll_subsistence_time_constant_true = 0.08683263915220102
+    spiral_time_double_half_true        = 270.1605947269673
 
     print('Phugoid freq (Hz):', phugoid_freq, 'damping:', phugoid_damping)
     print('Short period freq (Hz):', short_period_freq, 'damping:', short_period_damping)

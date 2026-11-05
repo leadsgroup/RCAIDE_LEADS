@@ -222,8 +222,8 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         modI = np.zeros((n_cpts,2,2)) 
 
         R[:,0, 0]  = np.cos(AoA[:, 0])
-        R[:,0, 1]  = - np.sin(AoA[:, 0])
-        R[:,1, 0]  = np.sin( AoA[:, 0])
+        R[:,0, 1]  =   np.sin(AoA[:, 0])
+        R[:,1, 0]  = - np.sin(AoA[:, 0])
         R[:,1, 1]  = np.cos(AoA[:, 0])
          
         modI[:,0, 0]    = Ixx[:, 0]
@@ -231,7 +231,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         modI[:,1, 0]    = Izx[:, 0]
         modI[:,1, 1]    = Izz[:, 0]
                                
-        INew      = R * modI * np.transpose(R, axes = (0,2,1))
+        INew      = R @ modI @ np.transpose(R, axes = (0,2,1))   # Etkin & Reid (B.12,1), rotation -alpha about y
         IxxStab   =  INew[:,0,0]
         IxzStab   = -INew[:,0,1]
         IzzStab   =  INew[:,1,1]
