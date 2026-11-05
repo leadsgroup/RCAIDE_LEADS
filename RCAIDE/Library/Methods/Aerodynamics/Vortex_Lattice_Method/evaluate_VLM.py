@@ -431,9 +431,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.Clift_p = (VLM_results.CLift        - flight_baseline['Clift'])        / (p_hat)
     conditions.static_stability.derivatives.Cdrag_p = (VLM_results.CDrag_induced - flight_baseline['Cdrag']) / (p_hat)
     conditions.static_stability.derivatives.CX_p    = (VLM_results.CX           - flight_baseline['CX'])            / (p_hat)
-    # CN_p carries a sign flip the other 7 perturbations in this function don't -- preserved
-    # exactly as it was (not investigated here; out of scope for this refactor).
-    assign_moment_derivatives(conditions, 'p', VLM_results, flight_baseline, p_hat, negate_CN=True)
+    assign_moment_derivatives(conditions, 'p', VLM_results, flight_baseline, p_hat)
 
     # ---------------------------------------------------------------------------------------------------      
     # Pitch Rate (q) Purtubation
@@ -511,7 +509,7 @@ def apply_drag_corrections(state, settings, vehicle):
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.trim_drag(state,settings,vehicle)
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.total_drag(state,settings,vehicle)
 
-def assign_moment_derivatives(conditions, suffix, VLM_results, baseline_coefficients, denom, negate_CN=False):
+def assign_moment_derivatives(conditions, suffix, VLM_results, baseline_coefficients, denom):
     """Computes and stores the CY/CZ/CL/CM/CN stability derivatives for one perturbation
     (suffix e.g. 'beta', 'p', 'u') -- the part of every perturbation block in
     evaluate_no_surrogate() that's identical regardless of perturbation type: always the
@@ -523,8 +521,7 @@ def assign_moment_derivatives(conditions, suffix, VLM_results, baseline_coeffici
     d['CZ_' + suffix] = (VLM_results.CZ - baseline_coefficients['CZ']) / denom
     d['CL_' + suffix] = (VLM_results.CL - baseline_coefficients['CL']) / denom
     d['CM_' + suffix] = (VLM_results.CM - baseline_coefficients['CM']) / denom
-    cn = (VLM_results.CN - baseline_coefficients['CN']) / denom
-    d['CN_' + suffix] = -cn if negate_CN else cn
+    d['CN_' + suffix] = (VLM_results.CN - baseline_coefficients['CN']) / denom
 
 def create_conditions(n_cpts,altitude,g,V,MAC,energy_conditions):
     

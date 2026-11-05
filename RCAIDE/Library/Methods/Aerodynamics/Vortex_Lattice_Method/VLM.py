@@ -12,7 +12,7 @@
 from RCAIDE.Framework.Core import Data
 from .compute_wing_induced_velocity      import compute_wing_induced_velocity
 from .generate_vortex_distribution       import generate_vortex_distribution
-from .compute_RHS_matrix                 import compute_RHS_matrix
+from .compute_RHS_matrix                 import compute_RHS_matrix, rotation_in_VORLAX_axes
 
 from scipy.integrate import trapezoid
 import scipy.linalg
@@ -137,10 +137,8 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     len_mach = len(mach)
 
     # VORLAX's angles are all degrees-to-radians via DTR; RCAIDE's are radians/Units.degrees throughout.
-    PSI       = conditions.aerodynamics.angles.beta
+    PSI, ROLLQ, YAWQ = rotation_in_VORLAX_axes(conditions)
     PITCHQ    = conditions.static_stability.pitch_rate
-    ROLLQ     = conditions.static_stability.roll_rate
-    YAWQ      = conditions.static_stability.yaw_rate
     VINF      = conditions.freestream.velocity
 
     #freestream 0 velocity safeguard
@@ -443,7 +441,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     results.CX                = CX_for
     results.CY                = CY_for
     results.CZ                = -CZ_for
-    results.CL                = CL_mom
+    results.CL                = -CL_mom
     results.CM                = CM_mom
     results.CN                = -CN_mom
     results.spanwise_stations = Y

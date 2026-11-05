@@ -398,7 +398,7 @@ def sideslip_and_rate_derivatives(aerodynamics, Mach, settings, vehicle):
     derivatives.dCM_dq    = difference('CM', 2) / d_q_hat
     derivatives.dCY_dp    = difference('CY', 4) / d_p_hat
     derivatives.dCL_dp    = difference('CL', 4) / d_p_hat
-    derivatives.dCN_dp    = -difference('CN', 4) / d_p_hat
+    derivatives.dCN_dp    = difference('CN', 4) / d_p_hat
     derivatives.dCY_dr    = difference('CY', 6) / d_r_hat
     derivatives.dCL_dr    = difference('CL', 6) / d_r_hat
     derivatives.dCN_dr    = difference('CN', 6) / d_r_hat
