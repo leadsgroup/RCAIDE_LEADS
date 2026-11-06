@@ -31,7 +31,7 @@ RCAIDE.Library.Methods.Geometry.Airfoil
  
 from .                                    import Design
 from .                                    import Performance
-from .append_rotor_conditions             import append_rotor_conditions
+from .append_rotor_conditions             import append_rotor_conditions, rotor_conditions_schema
 from .compute_rotor_performance           import compute_rotor_performance
 from .compute_rotor_wake_induced_velocity import compute_rotor_wake_induced_velocity
 from .compute_rotor_to_rotor_interaction      import compute_rotor_to_rotor_interaction

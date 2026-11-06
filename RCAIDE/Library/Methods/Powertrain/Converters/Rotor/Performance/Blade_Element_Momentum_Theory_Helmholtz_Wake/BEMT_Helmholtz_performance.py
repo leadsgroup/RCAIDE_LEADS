@@ -17,7 +17,7 @@ import  numpy as  np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  BEMT_Helmholtz_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def BEMT_Helmholtz_performance(rotor, conditions, wing_on_rotor_coupling=False):
+def BEMT_Helmholtz_performance(rotor, conditions, wing_vortex_distribution=None):
     """
     Analyzes a general rotor given geometry and operating conditions using
     Blade Element Momentum Theory with a Helmholtz Vortex Wake Prescription.
@@ -93,6 +93,8 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_on_rotor_coupling=False):
                         - design_flag : bool
                             Flag indicating design condition
     
+    wing_vortex_distribution : Data, optional
+        VLM mesh whose induced velocities enter the rotor disc (wing-on-rotor coupling); None omits them
     Returns
     -------
     None
@@ -274,9 +276,10 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_on_rotor_coupling=False):
         ur += rotor.radial_velocities_2d
 
     # Include velocities induced by the wing at the rotor disc
-    if wing_on_rotor_coupling and 'VD' in conditions.aerodynamics:
+    # (vortex strengths are NaN until the segment's first aerodynamics evaluation)
+    if wing_vortex_distribution is not None and 'gamma' in conditions.aerodynamics and np.all(np.isfinite(conditions.aerodynamics.gamma)):
         use_2d_analysis           = True
-        ua_wing, ut_wing, ur_wing = compute_wing_induced_rotor_velocity(rotor, conditions, T_body2thrust, r_dim_2d, psi_2d)
+        ua_wing, ut_wing, ur_wing = compute_wing_induced_rotor_velocity(rotor, conditions, wing_vortex_distribution, T_body2thrust, r_dim_2d, psi_2d)
 
         ua += ua_wing
         ut += ut_wing
@@ -483,7 +486,8 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_on_rotor_coupling=False):
     thrust_prop_frame[:,0] = thrust[:,0]
     thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)
      
-    conditions.energy.converters[rotor.tag]  = Data( 
+    # write into the rotor's conditions, keeping fields set by its propulsor and reusing memory
+    conditions.energy.converters.copy_values({rotor.tag: Data( 
                 torque                            = torque,
                 thrust                            = thrust_vector,  
                 power                             = power, 
@@ -543,6 +547,6 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_on_rotor_coupling=False):
                 blade_pitch_command               = pitch_c,
                 commanded_thrust_vector_angle     = commanded_TV, 
                 figure_of_merit                   = FoM, 
-        )  
+        )})
 
     return 

@@ -74,7 +74,7 @@ def read_results(avl_object, vehicle):
             case_res.aerodynamics.total_drag_coefficient                    = float(lines[24][10:20].strip())
             case_res.aerodynamics.viscous_drag_coefficient                  = float(lines[25][10:20].strip())
             case_res.aerodynamics.induced_drag_coefficient                  = float(lines[25][32:42].strip())
-            case_res.aerodynamics.oswald_efficiency                         = float(lines[27][32:42].strip())
+            case_res.aerodynamics.span_efficiency                           = float(lines[27][32:42].strip())
                
             case_res.stability.alpha_derivatives.lift_curve_slope           = float(lines[36+num_ctrl][24:34].strip()) # CL_a
             case_res.stability.alpha_derivatives.side_force_derivative      = float(lines[37+num_ctrl][24:34].strip()) # CY_a

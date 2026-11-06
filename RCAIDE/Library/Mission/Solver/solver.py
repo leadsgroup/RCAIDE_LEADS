@@ -2,6 +2,7 @@
 #
 #
 # Created:  Jul 2023, M. Clarke  
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -12,6 +13,7 @@ from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
 from RCAIDE.Framework.Optimization.Packages.pyopt import pyopt_setup
 from RCAIDE.Framework.Optimization.Common  import Nexus
 from RCAIDE.Framework.Analyses.Process            import Process
+from RCAIDE.Framework.Mission.Common.Segment_Layout import Segment_Layout
 
 import scipy
 import scipy.optimize
@@ -54,7 +56,8 @@ def converge(segment):
         return
 
     if numerics.mission_solver.type  == "optimize":
-        problem  = add_mission_variables(segment)
+        segment.process.initialize.expand_state(segment)
+        problem  = add_mission_variables(segment, Segment_Layout(segment.state))
         package  = getattr(numerics.mission_solver, 'package', 'scipy')
 
         # Comment suppression of console window output.  
@@ -115,9 +118,8 @@ def converge(segment):
                 sys.stdout = sys.__stdout__
 
     elif numerics.mission_solver.type  == "root_finder":
-        unknowns = segment.state.unknowns.mission.pack_array() 
-        if segment.state.numerics.network_solver.type is None:
-            unknowns = np.concatenate([unknowns, segment.state.unknowns.network.pack_array()])
+        layout   = Segment_Layout(segment.state)
+        unknowns = layout.buffer[solver_slices(layout, segment.state.numerics.network_solver.type is None)[0]].copy()
 
 
         if segment.state.number_of_mission_unknowns != segment.state.number_of_mission_residuals:
@@ -128,10 +130,10 @@ def converge(segment):
         else:
             # scale unknowns/residuals to O(1) before fsolve -- see magnitude_scale
             unknown_scale  = magnitude_scale(unknowns)
-            residual_scale = magnitude_scale(iterate_root_finder(unknowns, segment))
+            residual_scale = magnitude_scale(iterate_root_finder(unknowns, segment, layout))
 
             def scaled_iterate(x_scaled):
-                return iterate_root_finder(x_scaled * unknown_scale, segment) / residual_scale
+                return iterate_root_finder(x_scaled * unknown_scale, segment, layout) / residual_scale
 
             x_scaled,infodict,ier,error_message = scipy.optimize.fsolve(scaled_iterate,
                                                  unknowns / unknown_scale,
@@ -190,9 +192,8 @@ def segment_soft_max_power(segment, sharpness=30.0):
     return float(peak + np.log(np.sum(np.exp(p * (power - peak)))) / p)
 
 
-def iterate_root_finder(unknowns, segment):
-    
-    """Runs one iteration of all analyses for the mission.
+def iterate_root_finder(unknowns, segment, layout):
+    """Residuals of the segment at the given unknowns, written to and read from the segment's layout.
 
     Assumptions:
     fsolve has no native bounds support, unlike the "optimize"/SLSQP
@@ -205,53 +206,55 @@ def iterate_root_finder(unknowns, segment):
     N/A
 
     Inputs:
-    state.unknowns.mission                [Data]
+    unknowns                      [array]
     segment.process.iterate       [Data]
+    layout                        [Segment_Layout]
 
     Outputs:
-    residuals                     [Unitless]
+    residuals                     [array]
 
     Properties Used:
     N/A
     """
-    if isinstance(unknowns, np.ndarray):
-        lower = segment.state.unknowns_lower_bounds.mission.pack_array()
-        upper = segment.state.unknowns_upper_bounds.mission.pack_array()
-        if segment.state.numerics.network_solver.type is None:
-            lower = np.concatenate([lower, segment.state.unknowns_lower_bounds.network.pack_array()])
-            upper = np.concatenate([upper, segment.state.unknowns_upper_bounds.network.pack_array()])
-        unknowns = np.clip(unknowns, lower, upper)
+    network = segment.state.numerics.network_solver.type is None
+    lower   = segment.state.unknowns_lower_bounds.mission.pack_array()
+    upper   = segment.state.unknowns_upper_bounds.mission.pack_array()
+    if network:
+        lower = np.concatenate([lower, segment.state.unknowns_lower_bounds.network.pack_array()])
+        upper = np.concatenate([upper, segment.state.unknowns_upper_bounds.network.pack_array()])
 
-        mission_vec = segment.state.unknowns.mission.pack_array()
-        mission_len = mission_vec.size
-        segment.state.unknowns.mission.unpack_array(unknowns[:mission_len])
-        if segment.state.numerics.network_solver.type is None:
-            network_vec = segment.state.unknowns.network.pack_array()
-            network_len = network_vec.size
-            segment.state.unknowns.network.unpack_array(
-                unknowns[mission_len:mission_len + network_len]
-            )
-    else:
-        segment.state.unknowns.mission = unknowns
-        if segment.state.numerics.network_solver.type is None:
-            segment.state.unknowns.network = unknowns
+    unknown_slice, residual_slice = solver_slices(layout, network)
+    layout.buffer[unknown_slice]  = np.clip(unknowns, lower, upper)
+    iterate_in_layout(segment, layout)
+    return layout.buffer[residual_slice].copy()
 
+
+def iterate_in_layout(segment, layout):
+    """One process.iterate; the solver writes unknowns to and reads residuals from the layout, so either one
+    rebound to a new array instead of written in place is an error rather than a silently stale value."""
     segment.process.iterate(segment)
-
-    residuals = segment.state.residuals.mission.pack_array()
-    if segment.state.numerics.network_solver.type is None:
-        residuals = np.concatenate([
-            residuals,
-            segment.state.residuals.network.pack_array(),
-        ])
-
-    return residuals
+    rebound = layout.verify(segment.state, group="unknowns") + layout.verify(segment.state, group="residuals")
+    if rebound:
+        raise RuntimeError(f"{', '.join(rebound)} rebound to a new array during iterate; unknowns and residuals "
+                           f"must be written in place, e.g. residual[...] = value")
 
 
+def solver_slices(layout, network):
+    """Slices of layout.buffer holding the solver's unknowns and residuals: the mission group, then the network
+    group when the network is solved with the mission."""
+    groups = ("mission", "network") if network else ("mission",)
+    out    = []
+    for kind in ("unknowns", "residuals"):
+        parts = [layout.slices[kind + "." + g] for g in groups if kind + "." + g in layout.slices]
+        if len(parts) == 2 and parts[0].stop != parts[1].start:
+            raise ValueError(f"{kind}.mission and {kind}.network are not adjacent in the segment layout")
+        out.append(slice(parts[0].start, parts[-1].stop) if parts else slice(0, 0))
+    return out
 
-def add_mission_variables(segment):
-    """Make a pretty table view of the problem with objective and constraints at the current inputs for the dummy solver
-    
+
+def add_mission_variables(segment, layout):
+    """Sets up the segment's converge as an optimization problem whose inputs are its unknowns and whose
+    equality constraints are its residuals, both held in the segment's layout.
 
         Assumptions:
         N/A
@@ -260,111 +263,61 @@ def add_mission_variables(segment):
         N/A
 
         Inputs:
-        x                  [vector]
+        segment            [Data]
+        layout             [Segment_Layout]
 
         Outputs:
-        input              [array]
-        const_table        [array]
+        nexus              [Segment_Problem]
 
         Properties Used:
         None
-    """             
-    # -------------------------------------------------------------------------------------------
-    # Step 1: Optimization framework
-    # -------------------------------------------------------------------------------------------
-    nexus                        = Nexus()
-    optimization_problem         = Data() 
-    segment.process.initialize.expand_state(segment)
+    """
+    nexus                        = Segment_Problem()
+    optimization_problem         = Data()
 
-    ground_seg_flag =  (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Landing) or\
-                       (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Takeoff) or \
-                       (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Ground)  
     single_pt_seg = (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude) or\
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_AVL_Trimmed) or \
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion) or \
-                    (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Throttle)  
-    
-    input_count   = 0
+                    (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Throttle)
+    network = segment.state.numerics.network_solver.type is None and not single_pt_seg
+    unknown_slice, residual_slice = solver_slices(layout, network)
+    len_inputs    = unknown_slice.stop - unknown_slice.start
+    len_residuals = residual_slice.stop - residual_slice.start
 
-    # -------------------------------------------------------------------------------------------      
-    # get keys from mission and network unknowns 
     # -------------------------------------------------------------------------------------------
-    # unknown kets 
-    unknown_keys       = list(segment.state.unknowns.mission.keys())  
-    net_unknown_keys   = list(segment.state.unknowns.network.keys())  
-    residual_keys      = list(segment.state.residuals.mission.keys())  
-    net_residual_keys  = list(segment.state.residuals.network.keys())
-    
-    # remove tag
-    unknown_keys.remove('tag')
-    net_unknown_keys.remove('tag')
-    residual_keys.remove('tag')
-    net_residual_keys.remove('tag')
-
-    # -------------------------------------------------------------------------------------------   
-    # determine dimension of optimization problem
+    # bounds of the mission unknowns, then of the network unknowns if solved together
     # -------------------------------------------------------------------------------------------
-    if ground_seg_flag: 
-        n_points      = segment.state.numerics.number_of_control_points
-        len_inputs    = n_points
-        len_residuals = n_points
-        if segment.state.numerics.network_solver.type is None:
-            len_inputs     += n_points * segment.state.number_of_network_unknowns
-            len_residuals  += n_points * segment.state.number_of_network_residuals            
-    elif single_pt_seg:
-        n_points      = 1
-        len_inputs    = segment.state.number_of_mission_unknowns 
-        len_residuals = segment.state.number_of_mission_residuals 
-    else:
-        n_points      = segment.state.numerics.number_of_control_points  
-        len_inputs    = n_points * segment.state.number_of_mission_unknowns   
-        len_residuals = n_points * segment.state.number_of_mission_residuals
-        if segment.state.numerics.network_solver.type is None:
-            len_inputs     += n_points * segment.state.number_of_network_unknowns
-            len_residuals  += n_points * segment.state.number_of_network_residuals   
-        
-    # -------------------------------------------------------------------------------------------
-    # get unknowns assicated with the mission solver
-    # -------------------------------------------------------------------------------------------         
-    full_unkn_vals        = Data()
     full_upper_bound_vals = Data()
     full_lower_bound_vals = Data()
-    for unkn in unknown_keys: 
-        full_unkn_vals[unkn]        = segment.state.unknowns.mission[unkn]
-        full_lower_bound_vals[unkn] = np.atleast_2d(segment.state.unknowns_lower_bounds.mission[unkn])
-        full_upper_bound_vals[unkn] = np.atleast_2d(segment.state.unknowns_upper_bounds.mission[unkn])    
-    
-    # -------------------------------------------------------------------------------------------    
-    # get unknowns from network if solver is coupled 
+    groups = ("mission", "network") if network else ("mission",)
+    for group in groups:
+        for unkn in segment.state.unknowns[group].keys():
+            if unkn == 'tag':
+                continue
+            full_lower_bound_vals[unkn] = np.atleast_2d(segment.state.unknowns_lower_bounds[group][unkn])
+            full_upper_bound_vals[unkn] = np.atleast_2d(segment.state.unknowns_upper_bounds[group][unkn])
+
     # -------------------------------------------------------------------------------------------
-    if segment.state.numerics.network_solver.type is None and (single_pt_seg != True):
-        for unkn in net_unknown_keys: 
-            full_unkn_vals[unkn]        = segment.state.unknowns.network[unkn]
-            full_lower_bound_vals[unkn] = np.atleast_2d(segment.state.unknowns_lower_bounds.network[unkn])
-            full_upper_bound_vals[unkn] = np.atleast_2d(segment.state.unknowns_upper_bounds.network[unkn]) 
-        
-    # -------------------------------------------------------------------------------------------            
-    # Construct inputs nexus format  : [Variable_###, initial, -np.inf, np.inf , scaling, Units.less] 
+    # Construct inputs nexus format  : [Variable_###, initial, -np.inf, np.inf , scaling, Units.less]
     # -------------------------------------------------------------------------------------------
-    initial_values    = full_unkn_vals.pack_array()
+    initial_values    = layout.buffer[unknown_slice].copy()
     input_len_strings = np.tile('Variable_', len_inputs)
     input_numbers     = np.linspace(1,len_inputs,len_inputs,dtype=np.int16)
-    input_names       = np.char.add(input_len_strings,np.array(input_numbers+input_count).astype(str))
+    input_names       = np.char.add(input_len_strings,np.array(input_numbers).astype(str))
     lower_bounds      = full_lower_bound_vals.pack_array()
     upper_bounds      = full_upper_bound_vals.pack_array()
     units             = np.broadcast_to(Units.less,(len_inputs,))
     new_inputs        = np.reshape(np.tile(np.atleast_2d(np.array([None,None,None,None,None,None])),len_inputs), (-1, 6))
-    
-    # scaling factor for optimizer 
+
+    # scaling factor for optimizer
     factor = np.ceil(np.log10(abs(initial_values)))
     factor[np.isinf(factor)] = 0
     scale  = 10 ** (factor)
-    
-    # Step 2.4 Add in the inputs 
-    new_inputs[:,0]     = input_names   
-    new_inputs[:,1]     = initial_values 
-    new_inputs[:,2]     = lower_bounds   
-    new_inputs[:,3]     = upper_bounds  
+
+    new_inputs[:,0]     = input_names
+    new_inputs[:,1]     = initial_values
+    new_inputs[:,2]     = lower_bounds
+    new_inputs[:,3]     = upper_bounds
     new_inputs[:,4]     = scale
     new_inputs[:,5]     = units
     optimization_problem.inputs = np.array(new_inputs,dtype=object)
@@ -372,11 +325,8 @@ def add_mission_variables(segment):
     # -------------------------------------------------------------------------------------------
     # Construct constraints nexus format: equality constraints, scaled per-residual (see magnitude_scale)
     # -------------------------------------------------------------------------------------------
-    segment.process.iterate(segment)
-    initial_residuals = segment.state.residuals.mission.pack_array()
-    if segment.state.numerics.network_solver.type is None and not single_pt_seg:
-        initial_residuals = np.concatenate([initial_residuals, segment.state.residuals.network.pack_array()])
-    residual_scale = magnitude_scale(initial_residuals)
+    iterate_in_layout(segment, layout)
+    residual_scale = magnitude_scale(layout.buffer[residual_slice].copy())
 
     new_con = np.reshape(np.tile(np.atleast_2d(np.array([None,None,None,None,None])),len_residuals), (-1, 5))
     con_len_strings = np.tile('Residual_', len_residuals)
@@ -385,7 +335,6 @@ def add_mission_variables(segment):
     equals          = np.broadcast_to('=',(len_residuals,))
     zeros           = np.zeros(len_residuals)
 
-    # Step 3.2 Add in the new constraints
     new_con[:,0]    = con_names
     new_con[:,1]    = equals
     new_con[:,2]    = zeros
@@ -393,130 +342,53 @@ def add_mission_variables(segment):
     new_con[:,4]    = 1*Units.less
     optimization_problem.constraints =  np.array(new_con,dtype=object)
 
-    # -------------------------------------------------------------------------------------------      
-    # Construct Aliases nexus format 
-    # -------------------------------------------------------------------------------------------  
-    # Step 4.1: Setup the aliases for the inputs
-    basic_string_con = Data()
-    input_string = []
-    input_string_network = []
-
-    if ground_seg_flag:       
-        output_numbers = np.linspace(0,n_points-2,n_points-1,dtype=np.int16)
-        basic_string_con[unknown_keys[1]] = np.tile('segment.state.unknowns.mission.'+unknown_keys[1]+'[', n_points-1)
-        input_string.append(np.char.add(basic_string_con[unknown_keys[1]],np.array(output_numbers).astype(str)))  
-        output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16) 
-        if segment.state.numerics.network_solver.type is None:
-            for unkn in net_unknown_keys:  
-                basic_string_con[unkn] = np.tile('segment.state.unknowns.network.'+unkn+'[', n_points)
-                input_string_network.append(np.char.add(basic_string_con[unkn],np.array(output_numbers).astype(str)))   
-            input_string = np.hstack((input_string[0],np.ravel(input_string_network))) 
-        input_string        = np.char.add(input_string, np.tile(']',len_inputs-1))
-        input_aliases       = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
-        input_aliases[:,0]  = input_names
-        input_aliases[0,1]  = 'segment.state.unknowns.mission.'+unknown_keys[0] 
-        input_aliases[1:,1] = input_string 
-        
-    elif single_pt_seg:  
-        for unkn in unknown_keys:
-            basic_string_con[unkn] = np.tile('segment.state.unknowns.mission.'+unkn+'[', n_points)
-            input_string.append(np.char.add(basic_string_con[unkn],np.array([0]).astype(str)))
-        input_string       = np.ravel(input_string).astype(str)
-        input_string       = np.char.add(input_string, np.tile(']',len_inputs))
-        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2))
-        input_aliases[:,0] = input_names
-        input_aliases[:,1] = input_string
-    else:  
-        output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16) 
-        for unkn in unknown_keys:
-            basic_string_con[unkn] = np.tile('segment.state.unknowns.mission.'+unkn+'[', n_points)
-            input_string.append(np.char.add(basic_string_con[unkn],np.array(output_numbers).astype(str)))
-        
-        if segment.state.numerics.network_solver.type is None:
-            for unkn in net_unknown_keys:
-                basic_string_con[unkn] = np.tile('segment.state.unknowns.network.'+unkn+'[', n_points)
-                input_string_network.append(np.char.add(basic_string_con[unkn],np.array(output_numbers).astype(str)))
-            input_string = np.hstack((np.ravel(input_string),np.ravel(input_string_network))).astype(str)
-        else:
-            input_string = np.ravel(input_string).astype(str)
-        input_string       = np.char.add(input_string, np.tile(']',len_inputs))
-        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
-        input_aliases[:,0] = input_names
-        input_aliases[:,1] = input_string
-    
-    # Step 4.2: Setup the aliases for the residuals. 
-    def pack_aliases(container_path, count):
-        """Build 'container_path[i]' strings for i in 0..count-1."""
-        base = np.tile(container_path + '[', count)
-        return np.char.add(np.char.add(base, np.arange(count, dtype=np.int16).astype(str)), ']')
-
-    if ground_seg_flag:
-        # Ground segments have two mission residual fields in pack_array order: 
-        all_res = pack_aliases('segment.state.residuals.mission.pack_array()', n_points)
-
-        if segment.state.numerics.network_solver.type is None:
-            n_n_res = n_points * segment.state.number_of_network_residuals
-            res_n   = pack_aliases('segment.state.residuals.network.pack_array()', n_n_res)
-            all_res = np.concatenate([all_res, res_n])
-
-    elif single_pt_seg:
-        # Single-point: one control point per residual; no network coupling.
-        all_res = pack_aliases('segment.state.residuals.mission.pack_array()', len_residuals)
-
-    else:
-        # General multi-point segments (climb, cruise, descent, …).
-        n_m_res = n_points * segment.state.number_of_mission_residuals
-        res_m   = pack_aliases('segment.state.residuals.mission.pack_array()', n_m_res)
-
-        if segment.state.numerics.network_solver.type is None:
-            n_n_res = n_points * segment.state.number_of_network_residuals
-            res_n   = pack_aliases('segment.state.residuals.network.pack_array()', n_n_res)
-            all_res = np.concatenate([res_m, res_n])
-        else:
-            all_res = res_m
-
-    residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None, None))), len_residuals), (-1, 2))
-    residual_aliases[:,0] = con_names
-    residual_aliases[:,1] = all_res
-        
-    # Step 4.3: Append Aliases
-    aliases = []
-    for ii in range(len_inputs):
-        aliases.append(input_aliases[ii].tolist())
-    for jj in range(len_residuals):   
-        aliases.append(residual_aliases[jj].tolist())
-    
-    # Step 5: Objective function 
+    # -------------------------------------------------------------------------------------------
+    # Objective function
+    # -------------------------------------------------------------------------------------------
     if segment.state.numerics.mission_solver.objective == None:
-        aliases.append([ 'nothing'                   , 'postprocess.nothing'])
         optimization_problem.objective = np.array([ [  'nothing'  ,  1   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "energy":
         obj_scale = magnitude_scale(np.atleast_1d(segment_energy_consumed(segment)))[0]
-        aliases.append([ 'energy_consumed'          , 'postprocess.energy_consumed'])
         optimization_problem.objective = np.array([ [  'energy_consumed'  ,  obj_scale   ,    1*Units.less]  ],dtype=object)
     elif segment.state.numerics.mission_solver.objective == "power":
         obj_scale = magnitude_scale(np.atleast_1d(segment_soft_max_power(segment)))[0]
-        aliases.append([ 'maximum_power'          , 'postprocess.maximum_power'])
         optimization_problem.objective = np.array([ [  'maximum_power'  ,  obj_scale   ,    1*Units.less]  ],dtype=object)
     else:
         raise Exception('undefined objective function')
-    
-    # append aliases
-    optimization_problem.aliases = aliases
 
-    # Step 7: Append segment
-    nexus.segment = segment
-
-    # Step 8: Append procedure
-    nexus.procedure = iterate_segment()
-
-    # Step 9: Append post-process
-    nexus.postprocess = Data()
-
-    # Step 10: Append optimization problem
-    nexus.optimization_problem   = optimization_problem
+    nexus.segment              = segment
+    nexus.layout               = layout
+    nexus.unknown_slice        = unknown_slice
+    nexus.residual_slice       = residual_slice
+    nexus.residual_index       = {name: i for i, name in enumerate(con_names)}
+    nexus.procedure            = iterate_segment()
+    nexus.postprocess          = Data()
+    nexus.optimization_problem = optimization_problem
 
     return nexus
+
+
+class Segment_Problem(Nexus):
+    """Nexus for one segment's converge: inputs are written to the unknowns slice of the segment's layout and
+    residual constraints are read from its residuals slice, in place of string aliases."""
+
+    def __defaults__(self):
+        self.segment        = None
+        self.layout         = None
+        self.unknown_slice  = None
+        self.residual_slice = None
+        self.residual_index = {}
+        self.postprocess    = Data()
+
+    def set_inputs(self, inputs, converted_values):
+        self.layout.buffer[self.unknown_slice] = converted_values
+
+    def output_values(self, outputs):
+        residuals = self.layout.buffer[self.residual_slice]
+        names     = np.array(outputs)[:, 0]
+        return np.array([residuals[self.residual_index[n]] if n in self.residual_index else self.postprocess[n]
+                         for n in names], dtype=float)
+
 
 def iterate_segment(): 
     procedure                           = Process()  
@@ -527,27 +399,7 @@ def iterate_segment():
     return procedure
     
 def iterate_optimizer(nexus):
-    segment = nexus.segment
-
-    unknowns = segment.state.unknowns.pack_array()
-    if isinstance(unknowns, np.ndarray):
-        mission_vec = segment.state.unknowns.mission.pack_array()
-        mission_len = mission_vec.size
-        segment.state.unknowns.mission.unpack_array(unknowns[:mission_len])
-        if segment.state.numerics.network_solver.type is None:
-            network_vec = segment.state.unknowns.network.pack_array()
-            network_len = network_vec.size
-            segment.state.unknowns.network.unpack_array(
-                unknowns[mission_len:mission_len + network_len]
-            )
-    else:
-        segment.state.unknowns.mission = unknowns
-        if segment.state.numerics.network_solver.type is None:
-            segment.state.unknowns.network = unknowns
-    segment.process.iterate(segment)
-
-    residuals = segment.state.residuals.pack_array()    
-    nexus.residuals =  residuals
+    iterate_in_layout(nexus.segment, nexus.layout)
     return nexus
 
 

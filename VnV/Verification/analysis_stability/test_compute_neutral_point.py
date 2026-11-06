@@ -30,11 +30,9 @@ def e190():
 
 
 def neutral_point(vehicle, fuselage_correction=True):
-    stability          = Data()
-    stability.settings = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method().settings
+    analysis           = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()
+    stability          = Data(settings=analysis.settings, training=analysis.training)
     stability.settings.fuselage_correction = fuselage_correction
-    stability.training = Data()
-    stability.training.angle_of_attack = np.array([-2., 0., 1., 3.]) * Units.deg
     stability.training.Mach            = np.array([0.3])
     compute_neutral_point(stability, vehicle)
     return vehicle.neutral_point

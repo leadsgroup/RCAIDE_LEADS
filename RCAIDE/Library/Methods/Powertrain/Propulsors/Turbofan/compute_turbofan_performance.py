@@ -24,7 +24,6 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Ma
     solve_turbofan_offdesign_robust, OffDesignMatchingError)
 
 import  numpy as  np
-from copy import  deepcopy
 from scipy.interpolate import RegularGridInterpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -456,9 +455,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
                 exit_velocity                       = fan_nozzle_conditions.outputs.velocity
                 )
                 
-    noise_conditions.fan_nozzle                      = fan_nozzle_res
-    noise_conditions.core_nozzle                     = core_nozzle_res
-    noise_conditions.fan                             = fan_res
+    noise_conditions.copy_values({'fan_nozzle': fan_nozzle_res, 'core_nozzle': core_nozzle_res, 'fan': fan_res})
     stored_results_flag                              = True
     stored_propulsor_tag                             = turbofan.tag  
     
@@ -517,19 +514,16 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
     fan_nozzle_0                = network.propulsors[stored_propulsor_tag].fan_nozzle 
     
-    # deep copy results 
-    conditions.energy.propulsors[turbofan.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.aeroacoustics.propulsors[turbofan.tag]          = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
-    conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
-    conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            )
-    conditions.energy.converters[fan.tag]                      = deepcopy(conditions.energy.converters[fan_0.tag]                     )
-    conditions.energy.converters[low_pressure_compressor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.tag] )
-    conditions.energy.converters[high_pressure_compressor.tag] = deepcopy(conditions.energy.converters[high_pressure_compressor_0.tag])
-    conditions.energy.converters[combustor.tag]                = deepcopy(conditions.energy.converters[combustor_0.tag]               )
-    conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
-    conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
-    conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
-    conditions.energy.converters[fan_nozzle.tag]               = deepcopy(conditions.energy.converters[fan_nozzle_0.tag]              )
+    # copy the stored turbofan's results into this one's, reusing its memory
+    conditions.energy.propulsors[turbofan.tag].copy_values(conditions.energy.propulsors[stored_propulsor_tag])
+    conditions.aeroacoustics.propulsors[turbofan.tag].copy_values(conditions.aeroacoustics.propulsors[stored_propulsor_tag])
+    for component, component_0 in ((ram, ram_0), (inlet_nozzle, inlet_nozzle_0), (fan, fan_0),
+                                    (low_pressure_compressor, low_pressure_compressor_0),
+                                    (high_pressure_compressor, high_pressure_compressor_0), (combustor, combustor_0),
+                                    (low_pressure_turbine, low_pressure_turbine_0),
+                                    (high_pressure_turbine, high_pressure_turbine_0), (core_nozzle, core_nozzle_0),
+                                    (fan_nozzle, fan_nozzle_0)):
+        conditions.energy.converters[component.tag].copy_values(conditions.energy.converters[component_0.tag])
     
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
@@ -541,21 +535,18 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     moment             = np.cross(moment_vector,thrust_vector)    
    
     conditions.energy.propulsors[turbofan.tag].outputs.moment = moment
-    conditions.energy.propulsors[turbofan.tag].fuel_mass_flow_rate = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate    
-    conditions.energy.propulsors[turbofan.tag].outputs.power.propulsive   = conditions.energy.propulsors[stored_propulsor_tag].outputs.power.propulsive
-    conditions.energy.propulsors[turbofan.tag].inputs.power.chemical      = conditions.energy.propulsors[stored_propulsor_tag].inputs.power.chemical    
     
     
     idm   = turbofan.integrated_drive_motor
     idm_0 = network.propulsors[stored_propulsor_tag].integrated_drive_motor
     if idm != None and  len(state.numerics.time.differentiate) > 0:
-        conditions.energy.converters[idm.tag] = deepcopy(conditions.energy.converters[idm_0.tag])
+        conditions.energy.converters[idm.tag].copy_values(conditions.energy.converters[idm_0.tag])
         conditions.energy.propulsors[turbofan.tag].inputs.power.electrical = conditions.energy.converters[idm.tag].inputs.power.electrical
 
     idg   = turbofan.integrated_drive_generator
     idg_0 = network.propulsors[stored_propulsor_tag].integrated_drive_generator
     if idg != None and len(state.numerics.time.differentiate) > 0:
-        conditions.energy.converters[idg.tag] = deepcopy(conditions.energy.converters[idg_0.tag])
+        conditions.energy.converters[idg.tag].copy_values(conditions.energy.converters[idg_0.tag])
         conditions.energy.propulsors[turbofan.tag].outputs.power.electrical = conditions.energy.converters[idg.tag].outputs.power.electrical
 
 
@@ -804,25 +795,25 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
 
     # noise_conditions schema match -- real values at points the live solver handled,
     # NaN at any point routed to idle_fallback (no station data there either)
-    noise_conditions.core_nozzle = Data(
+    noise_conditions.copy_values({'core_nozzle': Data(
         exit_static_temperature      = core_nozzle_exit_static_temperature.reshape(-1,1),
         exit_static_pressure         = core_nozzle_exit_static_pressure.reshape(-1,1),
         exit_stagnation_temperature  = core_nozzle_exit_stagnation_temperature.reshape(-1,1),
         exit_stagnation_pressure     = core_nozzle_exit_stagnation_pressure.reshape(-1,1),
         exit_velocity                = core_nozzle_exit_velocity.reshape(-1,1),
-    )
-    noise_conditions.fan_nozzle = Data(
+    )})
+    noise_conditions.copy_values({'fan_nozzle': Data(
         exit_static_temperature      = fan_nozzle_exit_static_temperature.reshape(-1,1),
         exit_static_pressure         = fan_nozzle_exit_static_pressure.reshape(-1,1),
         exit_stagnation_temperature  = fan_nozzle_exit_stagnation_temperature.reshape(-1,1),
         exit_stagnation_pressure     = fan_nozzle_exit_stagnation_pressure.reshape(-1,1),
         exit_velocity                = fan_nozzle_exit_velocity.reshape(-1,1),
-    )
+    )})
     # fan total temperature rise (fan inlet Tt2 = T0*tau_r) sets the fan angular velocity
     fan_inlet_stagnation_temperature  = tau_r_out * static_temperature
     fan_exit_stagnation_temperature   = fan_inlet_stagnation_temperature * tau_f_alone_out
     fan_angular_velocity              = compute_fan_angular_velocity(turbofan.fan, fan_exit_stagnation_temperature - fan_inlet_stagnation_temperature)
-    noise_conditions.fan = Data(angular_velocity = fan_angular_velocity.reshape(-1,1))
+    noise_conditions.copy_values({'fan': Data(angular_velocity = fan_angular_velocity.reshape(-1,1))})
 
     # component station states, in the same conditions the analytical cycle populates, so that
     # downstream consumers (e.g. the aeroacoustic engine noise models) read one location

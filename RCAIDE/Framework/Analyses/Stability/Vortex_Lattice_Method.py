@@ -64,9 +64,8 @@ class Vortex_Lattice_Method(Stability):
         self.settings.model_fuselage                                = True 
         self.settings.fuselage_correction                           = True
         self.settings.spanwise_cosine_spacing                       = True
-        self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
-        self.settings.horizontal_tail_dynamic_pressure_ratio        = 0.90  # q_h/q at the horizontal tail, Raymer typical value (Eq. 16.6)
+        self.settings.horizontal_tail_dynamic_pressure_ratio        = 0.90
         self.settings.use_VORLAX_matrix_calculation                 = False
         self.settings.floating_point_precision                      = np.float32 
         
@@ -74,6 +73,7 @@ class Vortex_Lattice_Method(Stability):
         self.training                                               = Data()  
         self.training.angle_of_attack                               = np.array([-5., -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45., 75.]) * Units.deg 
         self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])      
+        self.training.reference_angle_perturbation                  = 2 * Units.deg
                       
         self.training.subsonic                                      = None
         self.training.supersonic                                    = None

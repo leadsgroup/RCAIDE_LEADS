@@ -75,4 +75,4 @@ def ground(segment):
     conditions = segment.state.conditions
     conditions.frames.inertial.velocity_vector[1:,0] = ground_velocity[:,0]
     conditions.frames.inertial.velocity_vector[0,0]  = v0
-    conditions.frames.inertial.time[:,0]             = times[:,0]
+    conditions.frames.inertial.time                  = times

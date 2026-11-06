@@ -104,10 +104,10 @@ def check_part_23_normal():
     truth.Va_neg              = 66.23060508967755
     truth.Vc                  = 126.33084642567567
     truth.Vd                  = 176.86318499594594
-    truth.limit_load_pos      = 3.9899834399932685
-    truth.limit_load_neg      = -1.9899834399932685
+    truth.limit_load_pos      = 3.98645603779499
+    truth.limit_load_neg      = -1.9864560377949907
     truth.dive_limit_load_pos = 3.8
-    truth.dive_limit_load_neg = -1.0929884079952883
+    truth.dive_limit_load_neg = -1.0905192264564931
 
     error = Data()
     error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)            / truth.Vs1_pos
@@ -148,9 +148,9 @@ def check_part_23_utility():
     truth.Vc                  = 126.33084642567567
     truth.Vd                  = 189.49626963851352
     truth.limit_load_pos      = 4.4
-    truth.limit_load_neg      = -1.9899834399932685
+    truth.limit_load_neg      = -1.9864560377949907
     truth.dive_limit_load_pos = 4.4
-    truth.dive_limit_load_neg = -1.2424875799949517
+    truth.dive_limit_load_neg = -1.2398420283462426
 
     error = Data()
     error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)              / truth.Vs1_pos
@@ -193,7 +193,7 @@ def check_part_23_acrobatic():
     truth.limit_load_pos      = 6.0
     truth.limit_load_neg      = -3.0
     truth.dive_limit_load_pos = 6.0
-    truth.dive_limit_load_neg = -1.527895090176128
+    truth.dive_limit_load_neg = -1.5249128319539471
 
     error = Data()
     error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)              / truth.Vs1_pos
@@ -230,10 +230,10 @@ def check_part_25():
     truth.Va_neg              = 196.0722501867801
     truth.Vc                  = 515.9537531823821
     truth.Vd                  = 644.9421914779776
-    truth.limit_load_pos      = 3.5030711681793627
-    truth.limit_load_neg      = -1.5030711681793627
-    truth.dive_limit_load_pos = 2.564419480112102
-    truth.dive_limit_load_neg = -0.5644194801121019
+    truth.limit_load_pos      = 3.4907879975813416
+    truth.limit_load_neg      = -1.5
+    truth.dive_limit_load_pos = 2.5567424984883385
+    truth.dive_limit_load_neg = -0.5567424984883385
 
     error = Data()
     error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)              / truth.Vs1_pos

@@ -304,7 +304,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     port_propulsor.ducted_fan                  = ducted_fan_3
     motor_3                                    = deepcopy(motor)
     motor_3.origin                             = [[2., -2.5, 0.95]]      
-    port_propulsor.motor                       = motor_2    
+    port_propulsor.motor                       = motor_3    
     # append propulsor to network
     net.propulsors.append(port_propulsor)     
 

@@ -74,7 +74,7 @@ def compute_neutral_point(stability, vehicle):
     settings       = deepcopy(stability.settings)
     if settings.fuselage_correction:
         settings.model_fuselage = False
-    AoA            = np.array([stability.training.angle_of_attack[2],stability.training.angle_of_attack[3]])
+    AoA            = np.array([1, -1]) * stability.training.reference_angle_perturbation   # slopes about zero incidence
     Mach           = np.array([stability.training.Mach[0]])
 
     conditions                                      = RCAIDE.Framework.Mission.Common.Results()

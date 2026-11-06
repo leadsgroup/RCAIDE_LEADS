@@ -64,7 +64,7 @@ class Converter(Component):
         converter_conditions.outputs.power.hydraulic[:,0]  = 0.0
         converter_conditions.outputs.power.thermal[:,0]    = 0.0
 
-    def reuse_stored_data(self, state, network, stored_conveter_tag):
+    def reuse_stored_data(self, state, network, stored_converter_tag):
         """Copies another identical converter's inputs/outputs onto this one.
 
         Generic fallback for identical_converters=True: subclasses with internal
@@ -72,7 +72,7 @@ class Converter(Component):
         override this with their own version; this one is sufficient for converters
         whose conditions are just the standard inputs/outputs.power.* fields.
         """
-        stored_conditions = state.conditions.energy.converters[stored_conveter_tag]
+        stored_conditions = state.conditions.energy.converters[stored_converter_tag]
         converter_conditions = state.conditions.energy.converters[self.tag]
 
         for power_type in stored_conditions.inputs.power.keys():

@@ -99,7 +99,7 @@ class Results(Conditions):
         self.frames.body.moment_vector                                         = ones_3col * 0
         self.frames.body.velocity_vector                                       = ones_3col * 0
         self.frames.body.total_moment_vector                                  = ones_3col * 0 
-        self.frames.body.transform_to_inertial                                 = np.empty([0,0,0])
+        self.frames.body.transform_to_inertial                                 = np.zeros([1,3,3])
                                                                                
         # wind frame conditions                                                
         self.frames.wind                                                       = Conditions()
@@ -111,14 +111,15 @@ class Results(Conditions):
         self.frames.wind.angular_acceleration_vector                           = ones_3col * 0
         self.frames.wind.total_force_vector                                    = ones_3col * 0
         self.frames.wind.total_moment_vector                                   = ones_3col * 0
-        self.frames.wind.transform_to_inertial                                 = np.empty([0,0,0]) 
+        self.frames.wind.transform_to_inertial                                 = np.zeros([1,3,3])
+        self.frames.wind.transform_to_body                                     = np.zeros([1,3,3])
                                                                                
         # planet frame conditions                                              
         self.frames.planet                                                     = Conditions()
         self.frames.planet.start_time                                          = None
         self.frames.planet.latitude                                            = ones_1col * 0
         self.frames.planet.longitude                                           = ones_1col * 0
-        self.frames.planet.true_course                                         = ones_1col * 0
+        self.frames.planet.true_course                                         = np.zeros([1,3,3])
         self.frames.planet.true_heading                                        = ones_1col * 0
 
         # ----------------------------------------------------------------------------------------------------------------------         
@@ -135,6 +136,11 @@ class Results(Conditions):
         self.freestream.density                                                = ones_1col * 0
         self.freestream.speed_of_sound                                         = ones_1col * 0
         self.freestream.dynamic_viscosity                                      = ones_1col * 0
+        self.freestream.kinematic_viscosity                                    = ones_1col * 0
+        self.freestream.thermal_conductivity                                   = ones_1col * 0
+        self.freestream.prandtl_number                                         = ones_1col * 0
+        self.freestream.constant_pressure_specific_heat                        = ones_1col * 0
+        self.freestream.specific_heat                                          = ones_1col * 0
         self.freestream.altitude                                               = ones_1col * 0
         self.freestream.gravity                                                = ones_1col * 0
         self.freestream.reynolds_number                                        = ones_1col * 0
@@ -154,11 +160,6 @@ class Results(Conditions):
                                                                                
         # aerodynamic coefficients                                             
         self.aerodynamics.coefficients                                         = Conditions()
-        self.aerodynamics.coefficients.lift                                    = ones_1col * 0
-        self.aerodynamics.coefficients.drag                                    = ones_1col * 0     
-                                                                               
-        # aerodynamic coefficients                                             
-        self.aerodynamics.coefficients                                         = Conditions()
         self.aerodynamics.coefficients.differential_surface_pressure           = None
         self.aerodynamics.coefficients.lift                                    = Conditions()
         self.aerodynamics.coefficients.lift.total                              = ones_1col * 0   
@@ -169,6 +170,7 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag.total                              = ones_1col * 0   
         self.aerodynamics.coefficients.drag.parasite                           = Conditions()
         self.aerodynamics.coefficients.drag.miscellaneous                      = Conditions()
+        self.aerodynamics.coefficients.drag.miscellaneous.total                = ones_1col * 0
         self.aerodynamics.coefficients.drag.compressible                       = Conditions() 
         self.aerodynamics.coefficients.drag.compressible.total                 = ones_1col * 0  
         self.aerodynamics.coefficients.drag.compressible.wave                  = Conditions() 
@@ -179,7 +181,8 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag.induced.total                      = ones_1col * 0   
         self.aerodynamics.coefficients.drag.induced.viscous                    = ones_1col * 0 
         self.aerodynamics.coefficients.drag.induced.inviscid                   = ones_1col * 0 
-        self.aerodynamics.coefficients.drag.induced.efficiency_factor          = ones_1col * 0 
+        self.aerodynamics.coefficients.drag.induced.span_efficiency            = ones_1col * 0
+        self.aerodynamics.coefficients.drag.induced.oswald_efficiency_factor   = ones_1col * 0
         self.aerodynamics.coefficients.drag.cooling                            = Conditions()
         self.aerodynamics.coefficients.drag.cooling.total                      = ones_1col * 0
         self.aerodynamics.coefficients.drag.wave                               = Conditions()
@@ -193,7 +196,6 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag.windmilling.total                  = ones_1col * 0
         self.aerodynamics.coefficients.drag.asymmetry_trim                     = Conditions()
         self.aerodynamics.coefficients.drag.asymmetry_trim.total               = ones_1col * 0  
-        self.aerodynamics.oswald_efficiency                                    = ones_1col * 0 
  
         # ----------------------------------------------------------------------------------------------------------------------
         # Control Surfaces 
@@ -210,7 +212,6 @@ class Results(Conditions):
         self.control_surfaces.aileron.static_stability.coefficients.Z          = ones_1col * 0         
         self.control_surfaces.aileron.static_stability.coefficients.L          = ones_1col * 0         
         self.control_surfaces.aileron.static_stability.coefficients.M          = ones_1col * 0         
-        self.control_surfaces.aileron.static_stability.coefficients.M_0        = ones_1col * 0        
         self.control_surfaces.aileron.static_stability.coefficients.N          = ones_1col * 0           
         self.control_surfaces.aileron.static_stability.coefficients.e          = ones_1col * 0
         
@@ -333,6 +334,7 @@ class Results(Conditions):
         self.static_stability.coefficients.Z                                   = ones_1col * 0
         self.static_stability.coefficients.L                                   = ones_1col * 0
         self.static_stability.coefficients.M                                   = ones_1col * 0
+        self.static_stability.coefficients.M_zero_lift                         = ones_1col * 0
         self.static_stability.coefficients.N                                   = ones_1col * 0 
         self.static_stability.coefficients.roll                                = ones_1col * 0
         self.static_stability.coefficients.pitch                               = ones_1col * 0
@@ -341,6 +343,8 @@ class Results(Conditions):
         self.static_stability.derivatives                                      = Conditions()
                                                                                
         # stability axis                                                       
+        self.static_stability.derivatives.Cdrag_alpha                          = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_u                              = ones_1col * 0
         self.static_stability.derivatives.Clift_alpha                          = ones_1col * 0
         self.static_stability.derivatives.Clift_beta                           = ones_1col * 0
         self.static_stability.derivatives.Clift_delta_a                        = ones_1col * 0
@@ -555,6 +559,10 @@ class Results(Conditions):
         self.energy.total_moment_vector                       = ones_3col * 0 
         self.energy.fuel_consumption                          = ones_1col * 0      
         self.energy.cumulative_fuel_consumption               = ones_1col * 0
+        self.energy.net_electrical_power                      = ones_1col * 0
+        self.energy.net_thermal_power                         = ones_1col * 0
+        self.energy.net_hydraulic_power                       = ones_1col * 0
+        self.energy.net_chemical_power                        = ones_1col * 0
         self.energy.inputs                                    = Conditions()
         self.energy.inputs.power                              = Conditions()  
         self.energy.inputs.power.propulsive                   = ones_1col * 0 

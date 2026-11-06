@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
   
 import RCAIDE
-from RCAIDE.Framework.Core                    import Data, Units
+from RCAIDE.Framework.Core                    import Units
 
 # package imports
 import numpy as np
@@ -163,6 +163,6 @@ def miscellaneous_drag(state,settings,geometry):
     total_miscellaneous_drag = miscellaneous_drag + landing_gear_drag
         
     # Store results 
-    conditions.aerodynamics.coefficients.drag.miscellaneous = Data(  total  = total_miscellaneous_drag)
+    conditions.aerodynamics.coefficients.drag.miscellaneous.total = total_miscellaneous_drag
     return  
     

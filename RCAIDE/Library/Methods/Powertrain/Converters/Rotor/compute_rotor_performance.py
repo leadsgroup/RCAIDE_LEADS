@@ -12,7 +12,7 @@ import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Elem
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_rotor_performance(rotor, conditions, wing_on_rotor_coupling=False):
+def compute_rotor_performance(rotor, conditions, wing_vortex_distribution=None):
     """
     Analyzes a general rotor given geometry and operating conditions.
     
@@ -65,6 +65,8 @@ def compute_rotor_performance(rotor, conditions, wing_on_rotor_coupling=False):
                             - throttle : array_like
                                 Throttle setting [0-1]
     
+    wing_vortex_distribution : Data, optional
+        VLM mesh whose induced velocities enter the rotor disc (wing-on-rotor coupling); None omits them
     Returns
     -------
     None
@@ -103,7 +105,7 @@ def compute_rotor_performance(rotor, conditions, wing_on_rotor_coupling=False):
     
     if rotor.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake': 
 
-        BEMT_Helmholtz_performance(rotor,conditions,wing_on_rotor_coupling)
+        BEMT_Helmholtz_performance(rotor,conditions,wing_vortex_distribution)
                       
     elif rotor.fidelity == 'Actuator_Disk_Theory': 
 
