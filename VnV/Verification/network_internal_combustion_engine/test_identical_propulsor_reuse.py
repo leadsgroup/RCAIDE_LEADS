@@ -5,15 +5,74 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+import os
+import sys
 from copy import deepcopy
 
 import numpy as np
-import pytest
 
+import RCAIDE.Library.Components.Powertrain.Propulsors as Propulsors
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Vehicles"))
 import ICE_test
 import ICE_constant_speed_test
 from Cessna_172 import vehicle_setup, configs_setup
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  main
+# ----------------------------------------------------------------------------------------------------------------------
+def main():
+    # With identical_propulsors, a second engine reuses the first engine's results instead of computing its own.
+    # This adds a second engine to the Cessna 172 and checks both piston engine types.
+    for engine_type in ["ICE", "constant_speed_ICE"]:
+        check_reused_results_equal_the_stored_engine(engine_type)
+        check_reuse_matches_computing_each_engine(engine_type)
+    return
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Checks
+# ----------------------------------------------------------------------------------------------------------------------
+def check_reused_results_equal_the_stored_engine(engine_type):
+    # record which engines call reuse_stored_data during the mission
+    propulsor_class = Propulsors.Internal_Combustion_Engine if engine_type == "ICE" else Propulsors.Constant_Speed_Internal_Combustion_Engine
+    original_reuse  = propulsor_class.reuse_stored_data
+    calls           = []
+
+    def recording_reuse(self, *args, **kwargs):
+        calls.append(self.tag)
+        return original_reuse(self, *args, **kwargs)
+
+    propulsor_class.reuse_stored_data = recording_reuse
+    try:
+        conditions, first, second = fly(engine_type, identical=True)
+    finally:
+        propulsor_class.reuse_stored_data = original_reuse
+
+    # only the second engine reuses
+    assert calls and set(calls) == {second.tag}
+
+    # the second engine, its engine core and its propeller hold the same values in their own memory
+    for container, first_tag, second_tag in ((conditions.energy.propulsors, first.tag, second.tag),
+                                             (conditions.energy.converters, first.engine.tag, second.engine.tag),
+                                             (conditions.energy.converters, first.propeller.tag, second.propeller.tag)):
+        stored, reused = leaves(container[first_tag]), leaves(container[second_tag])
+        assert set(stored) == set(reused)
+        for path in stored:
+            assert not np.shares_memory(stored[path], reused[path]), path
+            if path != "outputs.moment":   # the moment depends on each engine's position
+                assert np.array_equal(stored[path], reused[path], equal_nan=True), path
+    return
+
+
+def check_reuse_matches_computing_each_engine(engine_type):
+    # with reuse off the second engine has its own unknowns, so the two runs agree to the solver tolerance (1e-6)
+    reused,   _, second = fly(engine_type, identical=True)
+    computed, _, _      = fly(engine_type, identical=False)
+    for path in ("weights.vehicle.mass_rate", "frames.inertial.position_vector", "frames.body.total_force_vector"):
+        assert np.allclose(reused.deep_get(path), computed.deep_get(path), rtol=1e-5, atol=1e-8), path
+    assert np.allclose(reused.energy.converters[second.engine.tag].power.propulsive,
+                       computed.energy.converters[second.engine.tag].power.propulsive, rtol=1e-5)
+    return
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Helpers
@@ -45,49 +104,17 @@ def fly(engine_type, identical):
     return mission.evaluate().segments.cruise.state.conditions, first, second
 
 
-def leaves(D, prefix=""):
-    """path -> array for every numpy array leaf of a nested Data."""
+def leaves(tree, prefix=""):
+    """path -> array for every numpy array in a nested Data."""
     out = {}
-    for k, v in D.items():
-        path = f"{prefix}.{k}" if prefix else k
-        if isinstance(v, dict):
-            out.update(leaves(v, path))
-        elif isinstance(v, np.ndarray):
-            out[path] = v
+    for key, value in tree.items():
+        path = f"{prefix}.{key}" if prefix else key
+        if isinstance(value, dict):
+            out.update(leaves(value, path))
+        elif isinstance(value, np.ndarray):
+            out[path] = value
     return out
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  Tests
-# ----------------------------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("engine_type", ["ICE", "constant_speed_ICE"])
-def test_reused_results_equal_the_stored_engine(engine_type, monkeypatch):
-    calls = []
-    import RCAIDE.Library.Components.Powertrain.Propulsors as Propulsors
-    cls   = Propulsors.Internal_Combustion_Engine if engine_type == "ICE" else Propulsors.Constant_Speed_Internal_Combustion_Engine
-    reuse = cls.reuse_stored_data
-    monkeypatch.setattr(cls, "reuse_stored_data", lambda self, *a, **k: calls.append(self.tag) or reuse(self, *a, **k))
-
-    conditions, first, second = fly(engine_type, identical=True)
-    assert calls and set(calls) == {second.tag}
-
-    for container, a, b in ((conditions.energy.propulsors, first.tag, second.tag),
-                            (conditions.energy.converters, first.engine.tag, second.engine.tag),
-                            (conditions.energy.converters, first.propeller.tag, second.propeller.tag)):
-        stored, reused = leaves(container[a]), leaves(container[b])
-        assert set(stored) == set(reused)
-        for path in stored:
-            assert not np.shares_memory(stored[path], reused[path]), path
-            if path != "outputs.moment":                                   # depends on each engine's position
-                assert np.array_equal(stored[path], reused[path], equal_nan=True), path
-
-
-@pytest.mark.parametrize("engine_type", ["ICE", "constant_speed_ICE"])
-def test_reuse_matches_computing_each_engine(engine_type):
-    # with reuse off the second engine has its own unknowns, so the two runs agree to the solver tolerance (1e-6)
-    reused,   _, second = fly(engine_type, identical=True)
-    computed, _, _      = fly(engine_type, identical=False)
-    for path in ("weights.vehicle.mass_rate", "frames.inertial.position_vector", "frames.body.total_force_vector"):
-        assert np.allclose(reused.deep_get(path), computed.deep_get(path), rtol=1e-5, atol=1e-8), path
-    assert np.allclose(reused.energy.converters[second.engine.tag].power.propulsive,
-                       computed.energy.converters[second.engine.tag].power.propulsive, rtol=1e-5)
+if __name__ == '__main__':
+    main()

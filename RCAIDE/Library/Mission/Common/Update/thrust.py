@@ -39,4 +39,4 @@ def thrust(segment):
         I = segment.state.numerics.time.integrate         
         conditions.energy.fuel_consumption        = np.dot(I,conditions.weights.vehicle.mass_rate)
         offset = segment.state.initials.conditions.energy.cumulative_fuel_consumption[-1] if segment.state.initials else 0.
-        conditions.energy.cumulative_fuel_consumption = conditions.energy.fuel_consumption + offset   # fuel_consumption stays this segment's
+        conditions.energy.cumulative_fuel_consumption = conditions.energy.fuel_consumption + offset
