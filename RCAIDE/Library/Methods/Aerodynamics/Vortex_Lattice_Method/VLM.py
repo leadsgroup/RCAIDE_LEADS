@@ -167,6 +167,12 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
         mach_2d   = conditions.freestream.mach_number*cos_sweep
         results   = converge_section_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,cos_sweep**2,1/cos_sweep,1/cos_sweep)
 
+    elif settings.crossflow_fidelity == '2.5D_chordwise':
+        # New method: the 2.5D section's chordwise load is imposed on each strip through its camber
+        cos_sweep = np.cos(compute_strip_sweep(VD,0.25))
+        mach_2d   = conditions.freestream.mach_number*cos_sweep
+        results   = converge_chordwise_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,cos_sweep**2,1/cos_sweep,1/cos_sweep)
+
     elif settings.crossflow_fidelity == '2.75D':
         # 2.5D plus the local sweep of a tapered wing along the chord (Lock and Bridgewater 1967, Eq. 3)
         sweep     = compute_strip_sweep(VD,0.25)
@@ -276,6 +282,70 @@ def compute_anderson_update(delta_history,residual_history,relaxation):
     return delta + relaxation*residual - (d_delta + relaxation*d_residual)@gamma
 
 
+def compute_section_lift_slope(settings,mach_2d,thickness_scale):
+    """Linear section lift slope: from the section solver if given, otherwise thin-airfoil theory (Chaparro et al. 2016, Eq. 1)."""
+    if settings.section_lift_slope_model is not None:
+        return settings.section_lift_slope_model(mach_2d,thickness_scale)
+    return 2*np.pi/np.sqrt(1 - mach_2d**2)
+
+
+def compute_panel_section_load(x,delta_cp,n_panels):
+    """Mean section pressure jump over equal chordwise panels."""
+    edges    = np.linspace(0.,1.,n_panels + 1)
+    integral = np.concatenate(([0.],np.cumsum(0.5*(delta_cp[1:] + delta_cp[:-1])*np.diff(x))))
+    return np.diff(np.interp(edges,x,integral))*n_panels
+
+
+def converge_chordwise_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,lift_scale,incidence_scale,thickness_scale):
+    """Converge strip lift with the uniform correction, then impose the section's chordwise load through the panel camber."""
+    if len(conditions.freestream.mach_number) != 1:
+        raise ValueError("crossflow_fidelity '" + settings.crossflow_fidelity + "' solves one case at a time")
+    if induced_velocity_cache is None:
+        induced_velocity_cache = {}
+
+    uniform     = converge_section_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,lift_scale,incidence_scale,thickness_scale)
+    cl_alpha_2d = compute_section_lift_slope(settings,mach_2d,thickness_scale)
+    alpha_2d    = uniform.sectional_CLift/(lift_scale*cl_alpha_2d) - incidence_scale*uniform.sectional_delta_alpha
+    section     = settings.section_lift_model(alpha_2d,mach_2d,thickness_scale)
+
+    baseline  = VLM_function(VD,conditions,settings,geometry,induced_velocity_cache,return_system=True)
+    A         = baseline.system_matrix
+    RHS       = baseline.system_rhs
+    cos_alpha = np.cos(conditions.aerodynamics.angles.alpha[0,0])
+
+    # Pressure jump and circulation are proportional on each panel
+    gamma_per_cp = baseline.gamma[0]/baseline.CP[0]
+    LE           = np.nonzero(VD.leading_edge_indices[0])[0]
+    n_chord      = VD.panels_per_strip[0,LE].astype(int)
+
+    # Target load on the corrected strips: the section's chordwise shape at the converged strip lift
+    gamma_target = np.zeros_like(RHS)
+    is_wing      = np.zeros_like(RHS,dtype=bool)
+    for strip in np.nonzero(section.corrected)[0]:
+        panels = np.arange(LE[strip],LE[strip] + n_chord[strip])
+        load   = compute_panel_section_load(section.x[0][strip],section.delta_cp[0][strip],n_chord[strip])
+        if abs(np.mean(load)) > 1e-8:
+            load = load*uniform.sectional_CLift[0,strip]/np.mean(load)
+        gamma_target[panels] = load*gamma_per_cp[panels]
+        is_wing[panels]      = True
+
+    # Other surfaces keep the flow tangency; corrected strips take the camber that gives their target load
+    gamma = gamma_target.copy()
+    other = ~is_wing
+    if np.any(other):
+        gamma[other] = np.linalg.solve(A[np.ix_(other,other)],RHS[other] - A[np.ix_(other,is_wing)]@gamma_target[is_wing])
+    panel_delta_alpha          = np.zeros_like(RHS)
+    panel_delta_alpha[is_wing] = (A[is_wing]@gamma - RHS[is_wing])/cos_alpha
+
+    results = VLM_function(VD,conditions,settings,geometry,induced_velocity_cache,panel_delta_alpha=panel_delta_alpha[None])
+    results.sectional_delta_alpha = uniform.sectional_delta_alpha
+    results.panel_delta_alpha     = panel_delta_alpha[None]
+    results.section_iterations    = uniform.section_iterations
+    results.section_residual      = uniform.section_residual
+    results.section_converged     = uniform.section_converged
+    return results
+
+
 def converge_section_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,lift_scale,incidence_scale,thickness_scale,taper=None):
     """Find the strip incidence correction that matches the VLM sectional lift to settings.section_lift_model."""
     section_lift_model = settings.section_lift_model
@@ -289,7 +359,7 @@ def converge_section_correction(VD,conditions,settings,geometry,induced_velocity
         induced_velocity_cache = {}
 
     mach             = conditions.freestream.mach_number
-    cl_alpha_2d      = 2*np.pi/np.sqrt(1 - mach_2d**2) # Chaparro et al. 2016, Eq. 1
+    cl_alpha_2d      = compute_section_lift_slope(settings,mach_2d,thickness_scale)
     results          = VLM_function(VD,conditions,settings,geometry,induced_velocity_cache)
     delta_alpha      = np.zeros_like(results.sectional_CLift,dtype=np.float64)
     n_cases,n_strips = delta_alpha.shape
@@ -347,7 +417,7 @@ def converge_section_correction(VD,conditions,settings,geometry,induced_velocity
     return best_results
 
 
-def VLM_function(VD,conditions,settings,geometry,induced_velocity_cache,delta_alpha=None):
+def VLM_function(VD,conditions,settings,geometry,induced_velocity_cache,delta_alpha=None,panel_delta_alpha=None,return_system=False):
 
     S_ref = geometry.reference_area
     c_ref = geometry.reference_chord
@@ -414,6 +484,8 @@ def VLM_function(VD,conditions,settings,geometry,induced_velocity_cache,delta_al
     if delta_alpha is not None:
         panels_per_strip = VD.panels_per_strip[0,VD.leading_edge_indices[0]].astype(int)
         RHS             += np.cos(aoa)*np.repeat(delta_alpha,panels_per_strip,axis=1)
+    if panel_delta_alpha is not None:
+        RHS             += np.cos(aoa)*panel_delta_alpha
 
     # Build induced velocity matrix, C_mn
     mach_key = mach.tobytes()
@@ -681,6 +753,9 @@ def VLM_function(VD,conditions,settings,geometry,induced_velocity_cache,delta_al
     results.sectional_CLift   = Clift_y
     results.CP                = np.array(CP    , dtype=settings.floating_point_precision )
     results.gamma             = np.array(GAMMA , dtype=settings.floating_point_precision )
+    if return_system:
+        results.system_matrix = A[0]
+        results.system_rhs    = RHS[0]
     results.V_distribution    = rhs.V_distribution
     results.V_x               = rhs.Vx_ind_total
     results.V_z               = rhs.Vz_ind_total

@@ -69,8 +69,9 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.settings.number_of_fuselage_spanwise_vortices          = 4
         self.settings.number_of_fuselage_chordwise_vortices         = 10 
         self.settings.model_fuselage                                = False 
-        self.settings.crossflow_fidelity                            = '1D'  #['1D', '2D', '2.5D', '2.75D','2.75D_with_taper_correction','Karman-Tsien','full_3D_correction']
+        self.settings.crossflow_fidelity                            = '1D'  #['1D', '2D', '2.5D', '2.5D_chordwise', '2.75D','2.75D_with_taper_correction','Karman-Tsien','full_3D_correction']
         self.settings.section_lift_model                            = None  # function(alpha_2d, mach_2d, thickness_scale) returning Data with cl (cases, strips); x and delta_cp per strip for '2.75D'; x, cp_upper, cp_lower, y_upper, y_lower per strip with taper correction
+        self.settings.section_lift_slope_model                      = None  # function(mach_2d, thickness_scale) returning the linear section lift slope; thin-airfoil theory if None
         self.settings.section_correction_tolerance                  = 1e-3  # maximum sectional lift error, assumption; TSFOIL cl scatters by up to 4.4e-4 on the ONERA M6
         self.settings.section_correction_relaxation                 = 0.5   # assumption, tuned on the ONERA M6
         self.settings.section_correction_history                    = 5     # previous iterations kept by Anderson acceleration, assumption

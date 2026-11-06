@@ -225,6 +225,54 @@ def test_normal_mach_matches_freestream_at_zero_cp():
     assert compute_normal_mach(np.array([0.0]), 0.7)[0] == pytest.approx(0.7)
 
 
+def chordwise_section(alpha_2d, mach_2d, thickness_scale):
+    # Flat-plate load, normalized to the thin-airfoil lift, on every strip
+    n_cases, n_strips = alpha_2d.shape
+    x        = np.linspace(0.0, 1.0, 801)
+    shape    = np.sqrt((1 - x[1:]) / x[1:])
+    shape    = np.concatenate(([shape[0]], shape)) * 2 / np.pi
+    section  = thin_airfoil(alpha_2d, mach_2d, thickness_scale)
+    section.x         = [[x for strip in range(n_strips)]]
+    section.delta_cp  = [[section.cl[0, strip] * shape for strip in range(n_strips)]]
+    section.corrected = np.ones(n_strips, dtype=bool)
+    return section
+
+
+def test_chordwise_method_imposes_the_section_load():
+    settings = build_settings('2.5D_chordwise', chordwise_section)
+    results  = VLM(build_conditions(3.0), settings, build_vehicle())
+    assert results.section_converged
+    # Each strip's panel load has the flat-plate shape: fixed ratio between its first and last panels
+    panels = results.CP[0, :4]
+    edges  = np.linspace(0.0, 1.0, 5)
+    x      = np.linspace(0.0, 1.0, 801)
+    shape  = np.sqrt((1 - x[1:]) / x[1:])
+    shape  = np.concatenate(([shape[0]], shape))
+    integral = np.concatenate(([0.0], np.cumsum(0.5 * (shape[1:] + shape[:-1]) * np.diff(x))))
+    expected = np.diff(np.interp(edges, x, integral))
+    assert panels / panels.sum() == pytest.approx(expected / expected.sum(), rel=1e-3)
+
+
+def test_chordwise_method_keeps_the_uniform_strip_lift():
+    uniform   = VLM(build_conditions(3.0), build_settings('2.5D', chordwise_section), build_vehicle())
+    chordwise = VLM(build_conditions(3.0), build_settings('2.5D_chordwise', chordwise_section), build_vehicle())
+    assert chordwise.sectional_CLift == pytest.approx(uniform.sectional_CLift, rel=1e-3)
+
+
+def test_lift_slope_model_replaces_thin_airfoil_slope():
+    # A section slope equal to the section model's own gives zero correction at any Mach
+    def steep_section(alpha_2d, mach_2d, thickness_scale):
+        return Data(cl = 1.2 * thin_airfoil(alpha_2d, mach_2d, thickness_scale).cl)
+    def steep_slope(mach_2d, thickness_scale):
+        return 1.2 * 2 * np.pi / np.sqrt(1 - mach_2d**2)
+    settings = build_settings('2.5D', steep_section)
+    settings.section_lift_slope_model = steep_slope
+    baseline = VLM(build_conditions(3.0), build_settings('1D'), build_vehicle())
+    results  = VLM(build_conditions(3.0), settings, build_vehicle())
+    assert results.section_iterations == 0
+    assert np.allclose(results.sectional_CLift, baseline.sectional_CLift, rtol=1e-10, atol=1e-10)
+
+
 @pytest.mark.parametrize("fidelity", ['Karman-Tsien', 'full_3D_correction'])
 def test_unbuilt_fidelities_raise(fidelity):
     with pytest.raises(NotImplementedError):
