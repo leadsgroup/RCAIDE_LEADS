@@ -59,10 +59,6 @@ dependencies = [
 # Dynamic version configuration
 dynamic = ["version"]
 
-# Automatic differentiation (pip install RCAIDE[ad]); optional so RCAIDE still installs where no torch wheel exists
-[project.optional-dependencies]
-ad = ["torch"]
-
 [tool.setuptools]
 package-dir = {"" = "."}
 
