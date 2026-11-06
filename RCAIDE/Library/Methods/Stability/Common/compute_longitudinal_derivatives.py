@@ -6,7 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Library.Methods.Stability.Common.is_wing_borne import is_wing_borne
+from RCAIDE.Library.Methods.Stability.Common.lift_carries_weight import lift_carries_weight
 
 import numpy as np
 
@@ -79,4 +79,4 @@ def thrust_coefficient_derivative(conditions, vehicle):
             C_T    = np.divide(conditions.energy.propulsors[propulsor.tag].outputs.thrust[:, 0:1], q_S,
                                out=np.zeros_like(q_S), where=q_S > 0)
             C_T_u  = C_T_u - (2 if isinstance(propulsor, jets) else 3) * C_T
-    return np.where(is_wing_borne(conditions, vehicle), C_T_u, 0.)
+    return np.where(lift_carries_weight(conditions, vehicle), C_T_u, 0.)

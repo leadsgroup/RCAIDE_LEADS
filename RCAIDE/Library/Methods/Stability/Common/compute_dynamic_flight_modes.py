@@ -9,7 +9,7 @@
 
 # RCAIDE imports
 import RCAIDE 
-from RCAIDE.Library.Methods.Stability.Common.is_wing_borne import is_wing_borne
+from RCAIDE.Library.Methods.Stability.Common.lift_carries_weight import lift_carries_weight
 
 # python imports 
 import numpy as np 
@@ -341,15 +341,15 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         DS.pMax = min(min(np.sqrt(-Mw * u0 / (Izz - Ixx))), min(np.sqrt(-Nv * u0 / (Iyy - Ixx)))) 
         
         # the modes only apply where the wing carries the vehicle
-        wing_borne = is_wing_borne(conditions, vehicle)[:, 0]
-        if not np.all(wing_borne):
+        supported = lift_carries_weight(conditions, vehicle)[:, 0]
+        if not np.all(supported):
             import warnings
             warnings.warn("compute_dynamic_flight_modes: rotor-borne control points; their dynamic modes are NaN.")
             for mode in (phugoidFreqHz, phugoidDamping, phugoidTimeDoubleHalf, shortPeriodFreqHz, shortPeriodDamping,
                          shortPeriodTimeDoubleHalf, dutchRollFreqHz, dutchRollDamping, dutchRollTimeDoubleHalf,
                          dutchRoll_mode_real, rollSubsistenceFreqHz, rollSubsistenceTimeConstant, rollSubsistenceDamping,
                          spiralFreqHz, spiralTimeDoubleHalf, spiralDamping):
-                mode[~wing_borne] = np.nan
+                mode[~supported] = np.nan
 
         # -----------------------------------------------------------------------------------------------------------------------  
         # Store Results
