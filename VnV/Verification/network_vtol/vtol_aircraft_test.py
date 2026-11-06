@@ -61,8 +61,27 @@ def main():
 
 def tiltrotor_transition_test(update_regression_values): 
          
-    vehicle  = TR_vehicle_setup(redesign_rotors=update_regression_values)  
-        
+    vehicle  = TR_vehicle_setup(redesign_rotors=update_regression_values)
+
+    # ------------------------------------------------------------------
+    #  FIDELITY / COUPLING TOGGLE -- uncomment exactly ONE block below
+    # ------------------------------------------------------------------
+    # --- BEMT ---
+    for propulsor in vehicle.networks.electric.propulsors:
+        propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
+
+    # --- LL uncoupled ---
+    # for propulsor in vehicle.networks.electric.propulsors:
+    #     propulsor.rotor.fidelity = 'Lifting_Line_Theory'
+    # vehicle.networks.electric.wing_on_rotor_coupling  = False
+    # vehicle.networks.electric.rotor_on_rotor_coupling = False
+
+    # --- LL coupled ---
+    # for propulsor in vehicle.networks.electric.propulsors:
+    #     propulsor.rotor.fidelity = 'Lifting_Line_Theory'
+    # vehicle.networks.electric.wing_on_rotor_coupling  = True
+    # vehicle.networks.electric.rotor_on_rotor_coupling = True
+
     # Set up configs
     configs  = TR_configs_setup(vehicle)
     
@@ -76,33 +95,42 @@ def tiltrotor_transition_test(update_regression_values):
     ti                   = time.time()       
     TR_results = missions.base_mission.evaluate()  
     
-    # Extract sample values from computation     
+    # Extract sample values from computation
     hover_throttle          = TR_results.segments.vertical_climb.conditions.energy.propulsors['front_port_propulsor'].throttle[1][0]
     cruise_rpm              = TR_results.segments.cruise.conditions.energy.converters.front_port_rotor.rpm[0][0]
+    transition_throttle    = TR_results.segments.departure_transition_1.conditions.energy.propulsors['front_port_propulsor'].throttle[-1][0]
+    transition_tva          = TR_results.segments.departure_transition_1.conditions.energy.propulsors['front_port_propulsor'].commanded_thrust_vector_angle[-1][0]
 
     print('Aircraft: Tiltrotor EVTOL')
     print('Computed values:')
     print('Hover throttle: ', hover_throttle)
+    print('departure_transition_1 throttle: ', transition_throttle)
+    print('departure_transition_1 thrust_vector_angle (rad): ', transition_tva)
     print('Cruise RPM: ', cruise_rpm)
-      
+
     tf                   = time.time()
     elapsed_time         = round((tf-ti)/60,2)
-    print('Simulation Time: ' + str(elapsed_time) + ' mins')       
-    
-    # Truth values
-    hover_throttle_truth    = 0.5934892938613175
-    cruise_rpm_truth        = 399.5145472088907
-    
-    # Store errors 
-    error = Data() 
-    error.hover_throttle  = np.max(np.abs( hover_throttle_truth - hover_throttle )/ hover_throttle_truth )
-    error.cruise_rpm      = np.max(np.abs( cruise_rpm_truth - cruise_rpm  )/ cruise_rpm_truth )
-    
+    print('Simulation Time: ' + str(elapsed_time) + ' mins')
+
+    # Truth values -- baselined against the full 3-segment mission
+    # (Vertical_Climb -> departure_transition_1 -> cruise), BEMT fidelity
+    hover_throttle_truth       = 0.4652824222207641
+    transition_throttle_truth = 0.449939078418756
+    transition_tva_truth      = 0.03841861419222897
+    cruise_rpm_truth          = 601.0023312618267
+
+    # Store errors
+    error = Data()
+    error.hover_throttle       = np.max(np.abs( hover_throttle_truth       - hover_throttle       )/ hover_throttle_truth )
+    error.transition_throttle = np.max(np.abs( transition_throttle_truth  - transition_throttle  )/ transition_throttle_truth )
+    error.transition_tva      = np.max(np.abs( transition_tva_truth       - transition_tva        )/ transition_tva_truth )
+    error.cruise_rpm           = np.max(np.abs( cruise_rpm_truth           - cruise_rpm            )/ cruise_rpm_truth )
+
     print('Errors:')
     print(error)
-      
+
     for k,v in list(error.items()):
-        assert(np.abs(v)<1e-1)  
+        assert(np.abs(v)<1e-1)
     return
  
 
@@ -399,37 +427,40 @@ def TR_mission_setup(analyses):
     
     # ------------------------------------------------------------------
     #   First Climb Segment: Constant Speed, Constant Rate
-    # ------------------------------------------------------------------ 
+    # ------------------------------------------------------------------
     segment                                            = Segments.Vertical_Flight.Climb(base_segment)
-    segment.tag                                        = "Vertical_Climb"   
-    segment.analyses.extend(analyses.vertical_flight) 
-    segment.altitude_start                             = 0.0  * Units.ft  
-    segment.altitude_end                               = 50.  * Units.ft   
-    segment.climb_rate                                 = 300. * Units['ft/min'] 
+    segment.tag                                        = "Vertical_Climb"
+    segment.analyses.extend(analyses.vertical_flight)
+    segment.altitude_start                             = 0.0  * Units.ft
+    segment.altitude_end                               = 50.  * Units.ft
+    segment.climb_rate                                 = 300. * Units['ft/min']
     segment.initial_battery_conditions.state_of_charge = 1.0
-    segment.true_course                                = 0   * Units.degree  
-    segment.state.numerics.mission_solver.type = 'root_finder' 
+    segment.true_course                                = 0   * Units.degree
+    segment.state.numerics.mission_solver.type = 'root_finder'
 
-    # define flight dynamics to model  
-    segment.flight_dynamics.force_z                    = True 
+    # define flight dynamics to model
+    segment.flight_dynamics.force_z                    = True
 
-    # define flight controls  
-    segment.assigned_control_variables.throttle.active               = True           
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
-                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']] 
+                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.8]]
-    
-    mission.append_segment(segment)   
- 
-    
+
+    mission.append_segment(segment)
+
+
     # ------------------------------------------------------------------
     #  First Transition Segment
-    # ------------------------------------------------------------------ 
+    # ------------------------------------------------------------------
     segment                                               = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base_segment)
-    segment.tag                                           = "departure_transition_1"  
-    segment.analyses.extend( analyses.transition_setting_1)      
-    segment.air_speed_start                               = 15 * Units['mph']    
-    segment.air_speed_end                                 = 35 * Units['mph']     
+    segment.tag                                           = "departure_transition_1"
+    segment.analyses.extend( analyses.transition_setting_1)
+    # explicit altitude (matches Vertical_Climb's altitude_end) -- keeps this segment
+    # well-posed whether or not Vertical_Climb precedes it
+    segment.altitude                                      = 50 * Units.ft
+    segment.air_speed_start                               = 15 * Units['mph']
+    segment.air_speed_end                                 = 35 * Units['mph']
     segment.acceleration                                  = 0.2
 
     # square (2 unknowns: throttle, thrust_vector_angle vs 2 residuals:
@@ -439,52 +470,61 @@ def TR_mission_setup(analyses):
     # tuning and don't apply to fsolve, so they're dropped along with the
     # type change (fsolve uses Numerics.py's tighter defaults instead)
     segment.state.numerics.mission_solver.type                    = 'root_finder'
+    # default max_evaluations (200) hits "maxfev" before converging on this segment;
+    # 600 was the value found to work when this was debugged earlier
+    segment.state.numerics.mission_solver.max_evaluations         = 600
 
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                       = True  
-    segment.flight_dynamics.force_z                       = True     
-    
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
     # define flight controls
     # bounds needed: unset defaults to -inf/+inf, letting SLSQP diverge
     segment.assigned_control_variables.throttle.active                                = True
     segment.assigned_control_variables.throttle.assigned_propulsors                   = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
                                                                                           'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
     segment.assigned_control_variables.throttle.bounds                                = [[0.0, 1.0]]
+    # warm start near the known BEMT-converged value (~0.4499) -- the unset default of
+    # 0.5 is close enough on its own, but thrust_vector_angle's default (below) isn't
+    segment.assigned_control_variables.throttle.initial_guess_values                  = [[0.45]]
 
     segment.assigned_control_variables.thrust_vector_angle.active                     = True
     segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
                                                                                           'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
     segment.assigned_control_variables.thrust_vector_angle.bounds                     = [[0.0, 90.0 * Units.degrees]]
+    # unset default guess is 0.5 rad (~28.6deg); the known-converged value is ~0.0384 rad
+    # (~2.2deg) -- that gap is what made fsolve stall ("not making good progress")
+    segment.assigned_control_variables.thrust_vector_angle.initial_guess_values       = [[2.5 * Units.degrees]]
 
     mission.append_segment(segment)
-    
+
 
     # ------------------------------------------------------------------
-    #  First Transition Segment
-    # ------------------------------------------------------------------ 
+    #  Cruise Segment
+    # ------------------------------------------------------------------
     segment                                               = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag                                           = "cruise"  
-    segment.analyses.extend( analyses.cruise)      
-    segment.air_speed                                     = 150 * Units['mph']   
-    segment.altitude                                      = 1000 *  Units.feet 
+    segment.tag                                           = "cruise"
+    segment.analyses.extend( analyses.cruise)
+    segment.air_speed                                     = 150 * Units['mph']
+    segment.altitude                                      = 1000 *  Units.feet
     segment.throttle                                      = 0.33197
-  
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                       = True  
-    segment.flight_dynamics.force_z                       = True     
-    
-    # define flight controls                                       
-    segment.assigned_control_variables.pitch_angle                   
-    segment.assigned_control_variables.pitch_angle.active             = True                
-           
-    segment.assigned_control_variables.blade_pitch_command.active                     = True        
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    # define flight controls
+    segment.assigned_control_variables.pitch_angle
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    segment.assigned_control_variables.blade_pitch_command.active                     = True
     segment.assigned_control_variables.blade_pitch_command.assigned_rotors            =  [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
                                                                                            'outboard_starboard_rotor', 'rear_port_rotor','rear_starboard_rotor']]
 
-    mission.append_segment(segment)    
-        
-    
-    return mission 
+    mission.append_segment(segment)
+
+
+    return mission
 
 
 def TW_mission_setup(analyses ): 
