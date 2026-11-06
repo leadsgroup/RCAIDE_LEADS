@@ -164,7 +164,11 @@ def compute_unit_normal(VD):
 
     unit_normal = (cross.T / np.linalg.norm(cross,axis=1)).T
 
-     # adjust Z values, no values should point down, flip vectors if so
-    unit_normal[unit_normal[:,2]<0,:] = -unit_normal[unit_normal[:,2]<0,:]
+    # same normal as the influence matrix and forces in VLM: (0, -sin(phi), cos(phi)), phi = arctan(dz/dy)
+    dy   = VD.YBC - VD.YAC
+    dz   = VD.ZBC - VD.ZAC
+    side = np.where(dy < 0, -1.0, 1.0)
+    flip = unit_normal[:,2]*side*dy - unit_normal[:,1]*side*dz < 0
+    unit_normal[flip,:] = -unit_normal[flip,:]
 
     return unit_normal

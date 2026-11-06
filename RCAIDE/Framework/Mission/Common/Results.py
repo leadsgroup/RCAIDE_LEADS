@@ -343,6 +343,8 @@ class Results(Conditions):
         self.static_stability.derivatives                                      = Conditions()
                                                                                
         # stability axis                                                       
+        self.static_stability.derivatives.Cdrag_alpha                          = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_u                              = ones_1col * 0
         self.static_stability.derivatives.Clift_alpha                          = ones_1col * 0
         self.static_stability.derivatives.Clift_beta                           = ones_1col * 0
         self.static_stability.derivatives.Clift_delta_a                        = ones_1col * 0

@@ -14,6 +14,8 @@ from .Aerodynamics                                             import Aerodynami
 from RCAIDE.Framework.Analyses.Common.Process_Geometry         import Process_Geometry 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import *   
 from RCAIDE.Framework.Mission.Common                           import Results
+from RCAIDE.Library.Methods.Stability.Common.compute_longitudinal_derivatives import compute_longitudinal_derivatives
+from RCAIDE.Library.Methods.Stability.Common.compute_lateral_derivatives import compute_lateral_derivatives
 
 # package imports 
 import numpy as np 
@@ -92,7 +94,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.altitude                                      = 0
         self.training.speed_of_sound                                = 343 
         self.training.angle_purtubation                             = 10 * Units.deg          
-        self.training.reference_angle_perturbation                  = 2 * Units.deg   # assumption: inside the linear lift range, clear of the noisy VLM solution at exactly zero incidence
+        self.training.reference_angle_perturbation                  = 2 * Units.deg
         self.training.speed_purtubation                             = 5  
         self.training.rate_purtubation                              = 0.05 * Units.deg / Units.sec   # 0.05 * Units.deg / Units.sec   
         self.training.control_surface_purtubation                   = 10 * Units.deg          
@@ -102,7 +104,6 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.rudder_deflection                             = np.array([10  , 1E-3 ]) * Units.deg
         self.training.flap_deflection                               = np.array([10  , 1E-3 ]) * Units.deg 
         self.training.slat_deflection                               = np.array([10  , 1E-3 ]) * Units.deg                      
-        self.training.u                                             = np.array([10 , 5 ])  * Units.m / Units.sec 
         self.training.v                                             = np.array([10 , 5 ])  * Units.m / Units.sec 
         self.training.w                                             = np.array([10 , 5 ])  * Units.m / Units.sec   
         self.training.pitch_rate                                    = np.array([0.05 ,1E-20 ])  * Units.deg / Units.sec
@@ -151,6 +152,8 @@ class Vortex_Lattice_Method(Aerodynamics):
         compute.drag.form                                           = Common.Drag.form_drag   
         compute.drag.trim                                           = Common.Drag.trim_drag 
         compute.drag.total                                          = Common.Drag.total_drag
+        compute.longitudinal_derivatives                            = compute_longitudinal_derivatives
+        compute.lateral_derivatives                                 = compute_lateral_derivatives
         self.process.compute                                        = compute
         
 

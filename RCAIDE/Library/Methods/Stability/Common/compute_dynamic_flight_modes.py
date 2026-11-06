@@ -9,6 +9,7 @@
 
 # RCAIDE imports
 import RCAIDE 
+from RCAIDE.Library.Methods.Stability.Common.is_wing_borne import is_wing_borne
 
 # python imports 
 import numpy as np 
@@ -116,12 +117,10 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         if has_separate_tail:
             l_t              = (horizontal_tail.origin[0][0] +horizontal_tail.aerodynamic_center[0]) - vehicle.mass_properties.center_of_gravity[0][0] # disstance from CG to tail AC
             S_t              = horizontal_tail.areas.reference # tail area
-            S                = main_wing.areas.reference # wing area
-            l_bar_t          = (horizontal_tail.origin[0][0] +  horizontal_tail.aerodynamic_center[0]) -(main_wing.origin[0][0] +  main_wing.aerodynamic_center[0])  # distance from AC of main wing to tail AC
-            V_H              = ( l_bar_t *S_t ) /(c_ref *S)  # tail volume
+            V_H              = ( l_t *S_t ) /(c_ref *S_ref)  # tail volume
             dEpsilon_dalpha  =  0.3
-            SSD.CZ_alpha_dot =  a_t * dEpsilon_dalpha *  (l_t /u0) *  (S_t / S)
-            SSD.CM_alpha_dot =  -a_t * V_H * dEpsilon_dalpha*  (l_t /u0)
+            SSD.CZ_alpha_dot = -2 * a_t * V_H * dEpsilon_dalpha * np.ones_like(u0)                 # downwash lag, Etkin & Reid (5.5,11)
+            SSD.CM_alpha_dot = -2 * a_t * V_H * (l_t / c_ref) * dEpsilon_dalpha * np.ones_like(u0) # downwash lag, Etkin & Reid (5.5,12)
         else:
             import warnings
             warnings.warn(
@@ -144,7 +143,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         Mw               = 0.5 * rho * u0 * c_ref * S_ref * SSD.CM_alpha  
         Mq               = 0.25 * rho * u0 * c_ref * c_ref * S_ref * SSD.CM_q     
         ZwDot            = 0.25 * rho * c_ref * S_ref * SSD.CZ_alpha_dot  
-        MwDot            = 0.25 * rho * c_ref * S_ref * SSD.CM_alpha_dot  
+        MwDot            = 0.25 * rho * c_ref * c_ref * S_ref * SSD.CM_alpha_dot  
         
         
         ALon[:,0,0] = (Xu / m).T[0]
@@ -211,8 +210,9 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
             shortPeriodFreqHz            = np.atleast_2d(abs(LonModes[Ind, shortPeriodInd]) / (2 * np.pi)).T
             shortPeriodDamping           = np.atleast_2d(np.sqrt(1/ (1 + (LonModes[Ind, shortPeriodInd].imag/LonModes[Ind,shortPeriodInd].real)**2 ))).T
             shortPeriodTimeDoubleHalf    = np.log(2) / abs(2 * np.pi * shortPeriodFreqHz * shortPeriodDamping)
-        except:
-            pass
+        except Exception as error:
+            import warnings
+            warnings.warn("compute_dynamic_flight_modes: longitudinal modes not found: " + str(error))
         
         ## Build lateral EOM A Matrix (stability axis)
         ALat = np.zeros((n_cpts,4,4))
@@ -223,8 +223,8 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         modI = np.zeros((n_cpts,2,2)) 
 
         R[:,0, 0]  = np.cos(AoA[:, 0])
-        R[:,0, 1]  = - np.sin(AoA[:, 0])
-        R[:,1, 0]  = np.sin( AoA[:, 0])
+        R[:,0, 1]  =   np.sin(AoA[:, 0])
+        R[:,1, 0]  = - np.sin(AoA[:, 0])
         R[:,1, 1]  = np.cos(AoA[:, 0])
          
         modI[:,0, 0]    = Ixx[:, 0]
@@ -232,7 +232,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         modI[:,1, 0]    = Izx[:, 0]
         modI[:,1, 1]    = Izz[:, 0]
                                
-        INew      = R * modI * np.transpose(R, axes = (0,2,1))
+        INew      = R @ modI @ np.transpose(R, axes = (0,2,1))   # Etkin & Reid (B.12,1), rotation -alpha about y
         IxxStab   =  INew[:,0,0]
         IxzStab   = -INew[:,0,1]
         IzzStab   =  INew[:,1,1]
@@ -332,13 +332,25 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
             spiralFreqHz                = np.atleast_2d(abs(remaining_modes[Ind,spiralInd]) / 2 / np.pi).T
             spiralDamping               = np.atleast_2d(- np.sign(remaining_modes[Ind,spiralInd].real)).T
             spiralTimeDoubleHalf        = np.log(2) / abs(2 * np.pi * spiralFreqHz  * spiralDamping)
-        except:
-            pass 
+        except Exception as error:
+            import warnings
+            warnings.warn("compute_dynamic_flight_modes: lateral modes not found: " + str(error))
         
         # Inertial coupling susceptibility
         # See Etkin & Reid pg. 118 
         DS.pMax = min(min(np.sqrt(-Mw * u0 / (Izz - Ixx))), min(np.sqrt(-Nv * u0 / (Iyy - Ixx)))) 
         
+        # the modes only apply where the wing carries the vehicle
+        wing_borne = is_wing_borne(conditions, vehicle)[:, 0]
+        if not np.all(wing_borne):
+            import warnings
+            warnings.warn("compute_dynamic_flight_modes: rotor-borne control points; their dynamic modes are NaN.")
+            for mode in (phugoidFreqHz, phugoidDamping, phugoidTimeDoubleHalf, shortPeriodFreqHz, shortPeriodDamping,
+                         shortPeriodTimeDoubleHalf, dutchRollFreqHz, dutchRollDamping, dutchRollTimeDoubleHalf,
+                         dutchRoll_mode_real, rollSubsistenceFreqHz, rollSubsistenceTimeConstant, rollSubsistenceDamping,
+                         spiralFreqHz, spiralTimeDoubleHalf, spiralDamping):
+                mode[~wing_borne] = np.nan
+
         # -----------------------------------------------------------------------------------------------------------------------  
         # Store Results
         # ------------------------------------------------------------------------------------------------------------------------  
