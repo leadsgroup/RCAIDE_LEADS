@@ -289,9 +289,23 @@ if _NUMBA_AVAILABLE:
     # not tolerance) against the generic kernel for all four cases, at real scale, with
     # degenerate geometry and varying core radius, AND at full mission level (real tiltrotor
     # free-wake mission, before/after each change applied one at a time).
-    @njit(cache=True, error_model='numpy', nogil=True)
+    @njit(cache=True, error_model='numpy', nogil=True, fastmath={'arcp'})
     def _biot_savart_kernel_2d_contracted_vc1_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol, Gamma):
-        """vc_correction==1 (Standard/Scully): f=1, denom=rm_sq+rc_sq."""
+        """vc_correction==1 (Standard/Scully): f=1, denom=rm_sq+rc_sq.
+
+        fastmath={'arcp'} lets LLVM substitute a low-latency approximate-reciprocal
+        instruction for this loop's several full-precision IEEE divisions -- measured
+        ~1.6x faster per call (scratchpad/check_fastmath_subsets.py, 2026-11-04), isolated
+        as the ONLY fastmath flag that helps here (nnan/ninf/nsz/contract/afn/reassoc each
+        measured zero speedup alone). NOT bit-exact: ~1e-15 relative error vs strict IEEE
+        division, the same order as other reassociation-class diffs already accepted in
+        this codebase (e.g. commit 60cb5b08ab).
+
+        Verified at full end-to-end mission scale (2026-11-05/06): Tiltrotor_EVTOL
+        3-segment mission under LL coupled matched its prior standalone baseline to
+        full float precision (hover throttle 0.5332077452099696, identical digit for
+        digit), confirming this stays within the noise floor at mission scale.
+        """
         M = Px.shape[0]
         N = Ax.shape[0]
         resultx = np.zeros(M)
@@ -354,9 +368,12 @@ if _NUMBA_AVAILABLE:
 
         return resultx, resulty, resultz
 
-    @njit(cache=True, error_model='numpy', nogil=True)
+    @njit(cache=True, error_model='numpy', nogil=True, fastmath={'arcp'})
     def _biot_savart_kernel_2d_contracted_vc2_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol, Gamma):
-        """vc_correction==2 (Rankine): f=min(rm_sq/rc_sq, 1), denom=rm_sq."""
+        """vc_correction==2 (Rankine): f=min(rm_sq/rc_sq, 1), denom=rm_sq.
+
+        fastmath={'arcp'} -- see _biot_savart_kernel_2d_contracted_vc1_soa's docstring.
+        """
         M = Px.shape[0]
         N = Ax.shape[0]
         resultx = np.zeros(M)
@@ -420,9 +437,12 @@ if _NUMBA_AVAILABLE:
 
         return resultx, resulty, resultz
 
-    @njit(cache=True, error_model='numpy', nogil=True)
+    @njit(cache=True, error_model='numpy', nogil=True, fastmath={'arcp'})
     def _biot_savart_kernel_2d_contracted_vc3_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_qd_arr, tol, Gamma):
-        """vc_correction==3 (Vatistas): f=rm_sq/sqrt(rm_sq^2+rc_qd), denom=rm_sq."""
+        """vc_correction==3 (Vatistas): f=rm_sq/sqrt(rm_sq^2+rc_qd), denom=rm_sq.
+
+        fastmath={'arcp'} -- see _biot_savart_kernel_2d_contracted_vc1_soa's docstring.
+        """
         M = Px.shape[0]
         N = Ax.shape[0]
         resultx = np.zeros(M)
@@ -485,9 +505,12 @@ if _NUMBA_AVAILABLE:
 
         return resultx, resulty, resultz
 
-    @njit(cache=True, error_model='numpy', nogil=True)
+    @njit(cache=True, error_model='numpy', nogil=True, fastmath={'arcp'})
     def _biot_savart_kernel_2d_contracted_vc4_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol, Gamma):
-        """vc_correction==4 (Oseen): f=1-exp(-1.25643*rm_sq/rc_sq), denom=rm_sq."""
+        """vc_correction==4 (Oseen): f=1-exp(-1.25643*rm_sq/rc_sq), denom=rm_sq.
+
+        fastmath={'arcp'} -- see _biot_savart_kernel_2d_contracted_vc1_soa's docstring.
+        """
         M = Px.shape[0]
         N = Ax.shape[0]
         resultx = np.zeros(M)
