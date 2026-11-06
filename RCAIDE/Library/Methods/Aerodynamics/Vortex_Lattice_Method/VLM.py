@@ -17,6 +17,7 @@ from .compute_RHS_matrix                 import compute_RHS_matrix
 from scipy.integrate import trapezoid
 import scipy.linalg
 import numpy as np
+import warnings
 # ----------------------------------------------------------------------
 #  Vortex Lattice
 # ----------------------------------------------------------------------
@@ -150,71 +151,203 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     settings.vortex_distribution.Y_SW                     = VD.Y_SW
 
 
-    tolerance = 1e-6
-    error     = 1 
     if settings.crossflow_fidelity == '1D': 
         results = VLM_function(VD,conditions,settings,geometry,induced_velocity_cache)
 
     elif settings.crossflow_fidelity == '2D': 
-        # run VLM
-
-        # Update RHS matrix 
-
-        # Run VLM with 1D crossflow fidelity
-        while error > tolerance:
-            # Compute induced velocities and update RHS 
-
-            pass
-                 
+        # Streamwise sections at the sweep-corrected Mach number (Chaparro et al. 2016, Eq. 1-2)
+        cos_sweep = np.cos(compute_strip_sweep(VD,0.5))
+        mach_2d   = conditions.freestream.mach_number*cos_sweep
+        unity     = np.ones_like(mach_2d)
+        results   = converge_section_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,unity,unity,unity)
     
     elif settings.crossflow_fidelity == '2.5D':
-        # run VLM
+        # Equivalent section of an infinite swept wing at the quarter-chord sweep (Lock and Bridgewater 1967, Eq. 1 and Section 3)
+        cos_sweep = np.cos(compute_strip_sweep(VD,0.25))
+        mach_2d   = conditions.freestream.mach_number*cos_sweep
+        results   = converge_section_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,cos_sweep**2,1/cos_sweep,1/cos_sweep)
 
-        # Update RHS matrix 
-
-        # Run VLM with 1D crossflow fidelity
-        while error > tolerance:
-            # Compute induced velocities and update RHS 
-            pass
-                 
     elif settings.crossflow_fidelity == '2.75D':
-        # run VLM
-
-        # Update RHS matrix 
-
-        # Run VLM with 1D crossflow fidelity
-        while error > tolerance:
-            # Compute induced velocities and update RHS 
-            pass
-                 
+        # 2.5D plus the local sweep of a tapered wing along the chord (Lock and Bridgewater 1967, Eq. 3)
+        sweep     = compute_strip_sweep(VD,0.25)
+        cos_sweep = np.cos(sweep)
+        mach_2d   = conditions.freestream.mach_number*cos_sweep
+        taper     = Data(curvature = False, sweep = sweep, tan_leading_edge = np.tan(compute_strip_sweep(VD,0.)), tan_trailing_edge = np.tan(compute_strip_sweep(VD,1.)))
+        results   = converge_section_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,cos_sweep**2,1/cos_sweep,1/cos_sweep,taper)
 
     elif settings.crossflow_fidelity == '2.75D_with_taper_correction':
-        # run VLM
+        # 2.75D with the surface curvature of a conical wing (Lock's method as given by Xu et al. 2022, Eq. 5-14)
+        sweep     = compute_strip_sweep(VD,0.25)
+        cos_sweep = np.cos(sweep)
+        mach_2d   = conditions.freestream.mach_number*cos_sweep
+        taper     = Data(curvature = True, sweep = sweep, tan_leading_edge = np.tan(compute_strip_sweep(VD,0.)), tan_trailing_edge = np.tan(compute_strip_sweep(VD,1.)))
+        results   = converge_section_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,cos_sweep**2,1/cos_sweep,1/cos_sweep,taper)
 
-        # Update RHS matrix 
-
-        # Run VLM with 1D crossflow fidelity
-        while error > tolerance:
-            # Compute induced velocities and update RHS 
-            pass
-                 
     elif settings.crossflow_fidelity == 'Karman-Tsien':
-        # run VLM
+        # Subsonic regions of the 2.75D transformation (Xu, Han and Song 2022)
+        raise NotImplementedError("crossflow_fidelity 'Karman-Tsien' is not built yet")
 
-        # Update RHS matrix 
+    elif settings.crossflow_fidelity == 'full_3D_correction':
+        raise NotImplementedError("crossflow_fidelity 'full_3D_correction' is not built yet")
 
-        # Run VLM with 1D crossflow fidelity
-        while error > tolerance:
-            # Compute induced velocities and update RHS 
-            pass
-                 
     else:
         raise ValueError("Invalid crossflow_fidelity setting")
 
     return results 
 
 
-def VLM_function(VD,conditions,settings,geometry,induced_velocity_cache): 
+def compute_strip_sweep(VD,chord_fraction):
+    """Sweep of the line at a chord fraction on each strip, from its panel corners [rad]."""
+    LE = np.nonzero(VD.leading_edge_indices[0])[0]
+    TE = LE + VD.panels_per_strip[0,LE].astype(int) - 1
+    x_inboard  = (1 - chord_fraction)*VD.XA1[:,LE] + chord_fraction*VD.XA2[:,TE]
+    x_outboard = (1 - chord_fraction)*VD.XB1[:,LE] + chord_fraction*VD.XB2[:,TE]
+    ds = np.sqrt((VD.YB1[:,LE] - VD.YA1[:,LE])**2 + (VD.ZB1[:,LE] - VD.ZA1[:,LE])**2)
+    return np.arctan(np.abs(x_outboard - x_inboard)/ds)
+
+
+def compute_taper_lift_factor(x,delta_cp,mach,sweep,tan_leading_edge,tan_trailing_edge):
+    """Lift of a tapered wing section relative to its yawed wing; the (F-1) term of Lock and Bridgewater 1967 Eq. 3 cancels between surfaces."""
+    tan_local = tan_leading_edge - x*(tan_leading_edge - tan_trailing_edge)
+    cos2_mean = np.cos(sweep)**2
+    F         = ((1 + 0.2*mach**2/(1 + tan_local**2))/(1 + 0.2*mach**2*cos2_mean))**3.5
+
+    # Lock and Bridgewater take F = 1 where the local sweep is below the mean sweep
+    F[tan_local < np.tan(sweep)] = 1.
+    yawed_lift = trapezoid(delta_cp,x)
+    if abs(yawed_lift) < 1e-8:
+        return 1.
+    return trapezoid(F*delta_cp,x)/yawed_lift
+
+
+def compute_normal_mach(cp_2d,mach_2d):
+    """Local normal Mach number from a section pressure distribution (Xu et al. 2022, Eq. 2)."""
+    pressure_term = np.maximum(1 + 0.7*mach_2d**2*cp_2d,1e-6)**(2/7)
+    return np.sqrt(np.maximum(((1 + 0.2*mach_2d**2)/pressure_term - 1)/0.2,0.))
+
+
+def compute_conical_surface_cp(x,y,normal_mach,mach,tan_leading_edge,tan_trailing_edge):
+    """Surface pressure on a conical wing from the normal Mach number (Xu et al. 2022, Eq. 7, 11-14)."""
+    z_0 = 1/(tan_leading_edge - tan_trailing_edge)
+    x_0 = z_0*tan_leading_edge
+
+    # Angle around the cone apex along the surface; g in Eq. 7 is taken as the surface shape f
+    x_mid  = 0.5*(x[1:] + x[:-1])
+    y_mid  = 0.5*(y[1:] + y[:-1])
+    d_xi   = z_0*np.sqrt(np.diff(x)**2 + np.diff(y)**2)/((x_0 - x_mid)**2 + z_0**2 + y_mid**2)
+
+    # Velocities are scaled by the freestream velocity
+    def rate(u_2,M_n):
+        return np.sqrt(M_n**2*(1/mach**2 + 0.2*(1 - u_2**2))/(1 + 0.2*M_n**2))
+
+    u_2    = np.zeros_like(x)
+    u_2[0] = -tan_leading_edge/np.sqrt(1 + tan_leading_edge**2)
+    for i in range(len(d_xi)):
+        predictor = u_2[i] + d_xi[i]*rate(u_2[i],normal_mach[i])
+        u_2[i+1]  = u_2[i] + 0.5*d_xi[i]*(rate(u_2[i],normal_mach[i]) + rate(predictor,normal_mach[i+1]))
+    u_1 = rate(u_2,normal_mach)
+
+    # Eq. 14 prints the normal Mach number; the isentropic relation and Eq. 12 use the freestream value
+    return ((1 + 0.2*mach**2*(1 - u_1**2 - u_2**2))**3.5 - 1)/(0.7*mach**2)
+
+
+def compute_curvature_lift_factor(section,case,strip,mach,mach_2d,sweep,tan_leading_edge,tan_trailing_edge):
+    """Lift of a conical wing section relative to its yawed wing, using Lock's method with curvature."""
+    x          = section.x[case][strip]
+    cp_upper   = section.cp_upper[case][strip]
+    cp_lower   = section.cp_lower[case][strip]
+    yawed_lift = np.cos(sweep)**2*trapezoid(cp_lower - cp_upper,x)
+    if abs(yawed_lift) < 1e-8 or tan_leading_edge - tan_trailing_edge < 1e-6:
+        return 1.
+    upper = compute_conical_surface_cp(x,section.y_upper[case][strip],compute_normal_mach(cp_upper,mach_2d),mach,tan_leading_edge,tan_trailing_edge)
+    lower = compute_conical_surface_cp(x,section.y_lower[case][strip],compute_normal_mach(cp_lower,mach_2d),mach,tan_leading_edge,tan_trailing_edge)
+    return trapezoid(lower - upper,x)/yawed_lift
+
+
+def compute_anderson_update(delta_history,residual_history,relaxation):
+    """Next correction from recent corrections and scaled residuals (Anderson 1965; Walker and Ni 2011)."""
+    delta    = delta_history[-1]
+    residual = residual_history[-1]
+    if len(residual_history) == 1:
+        return delta + relaxation*residual
+    d_delta    = np.diff(np.array(delta_history),axis=0).T
+    d_residual = np.diff(np.array(residual_history),axis=0).T
+    gamma      = np.linalg.lstsq(d_residual,residual,rcond=None)[0]
+    return delta + relaxation*residual - (d_delta + relaxation*d_residual)@gamma
+
+
+def converge_section_correction(VD,conditions,settings,geometry,induced_velocity_cache,mach_2d,lift_scale,incidence_scale,thickness_scale,taper=None):
+    """Find the strip incidence correction that matches the VLM sectional lift to settings.section_lift_model."""
+    section_lift_model = settings.section_lift_model
+    if section_lift_model is None:
+        raise ValueError("crossflow_fidelity '" + settings.crossflow_fidelity + "' requires settings.section_lift_model")
+    if np.any(mach_2d >= 1):
+        raise ValueError("Section correction requires a subsonic sweep-corrected Mach number")
+
+    # Reuse the influence matrix and its factorization between iterations
+    if induced_velocity_cache is None:
+        induced_velocity_cache = {}
+
+    mach             = conditions.freestream.mach_number
+    cl_alpha_2d      = 2*np.pi/np.sqrt(1 - mach_2d**2) # Chaparro et al. 2016, Eq. 1
+    results          = VLM_function(VD,conditions,settings,geometry,induced_velocity_cache)
+    delta_alpha      = np.zeros_like(results.sectional_CLift,dtype=np.float64)
+    n_cases,n_strips = delta_alpha.shape
+    delta_history    = [[] for case in range(n_cases)]
+    residual_history = [[] for case in range(n_cases)]
+    best_error       = np.inf
+
+    for iteration in range(settings.section_correction_max_iterations):
+        cl_vlm   = results.sectional_CLift
+
+        # Model input is the section incidence above zero lift; the model adds its own zero-lift angle
+        alpha_2d = cl_vlm/(lift_scale*cl_alpha_2d) - incidence_scale*delta_alpha
+        section  = section_lift_model(alpha_2d,mach_2d,thickness_scale)
+        target   = lift_scale*section.cl
+
+        if taper is not None:
+            for case in range(n_cases):
+                for strip in range(n_strips):
+                    if taper.curvature:
+                        target[case,strip] *= compute_curvature_lift_factor(section,case,strip,mach[case,0],mach_2d[case,strip],taper.sweep[case,strip],taper.tan_leading_edge[case,strip],taper.tan_trailing_edge[case,strip])
+                    else:
+                        target[case,strip] *= compute_taper_lift_factor(section.x[case][strip],section.delta_cp[case][strip],mach[case,0],taper.sweep[case,strip],taper.tan_leading_edge[case,strip],taper.tan_trailing_edge[case,strip])
+
+        residual = target - cl_vlm
+        error    = np.max(np.abs(residual),axis=1)
+
+        if np.any(np.isnan(error)):
+            raise RuntimeError("Section correction failed: the section model returned NaN")
+
+        # Keep the best solution; a section model with a small lift jump has no exact solution near it
+        if np.max(error) < best_error:
+            best_error                    = np.max(error)
+            best_results                  = results
+            best_results.sectional_delta_alpha = delta_alpha.copy()
+            best_results.section_iterations    = iteration
+            best_results.section_residual      = best_error
+
+        if np.all(error < settings.section_correction_tolerance):
+            best_results.section_converged = True
+            return best_results
+
+        # Update only the cases that have not converged
+        scaled_residual = residual/(lift_scale*incidence_scale*cl_alpha_2d)
+        for case in np.nonzero(error >= settings.section_correction_tolerance)[0]:
+            delta_history[case].append(delta_alpha[case].copy())
+            residual_history[case].append(scaled_residual[case])
+            delta_history[case]    = delta_history[case][-(settings.section_correction_history + 1):]
+            residual_history[case] = residual_history[case][-(settings.section_correction_history + 1):]
+            delta_alpha[case]      = compute_anderson_update(delta_history[case],residual_history[case],settings.section_correction_relaxation)
+
+        results = VLM_function(VD,conditions,settings,geometry,induced_velocity_cache,delta_alpha)
+
+    warnings.warn("Section correction stopped at maximum sectional lift error " + str(best_error) + ", above the tolerance")
+    best_results.section_converged = False
+    return best_results
+
+
+def VLM_function(VD,conditions,settings,geometry,induced_velocity_cache,delta_alpha=None):
 
     S_ref = geometry.reference_area
     c_ref = geometry.reference_chord
@@ -276,6 +409,11 @@ def VLM_function(VD,conditions,settings,geometry,induced_velocity_cache):
     rhs     = compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry)
     RHS     = rhs.RHS*1 # this matches numpy=1.26 in terms of dimension
     ONSET   = rhs.ONSET*1
+
+    # Sectional incidence correction [rad]
+    if delta_alpha is not None:
+        panels_per_strip = VD.panels_per_strip[0,VD.leading_edge_indices[0]].astype(int)
+        RHS             += np.cos(aoa)*np.repeat(delta_alpha,panels_per_strip,axis=1)
 
     # Build induced velocity matrix, C_mn
     mach_key = mach.tobytes()

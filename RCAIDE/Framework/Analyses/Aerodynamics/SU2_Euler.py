@@ -129,10 +129,9 @@ class SU2_Euler(Aerodynamics):
         self.process.compute                                        = compute
         
 
-    def initialize(self):
+    def initialize(self, vehicle):
         use_surrogate   = self.settings.use_surrogate   
         # If we are using the surrogate
-        vehicle = self.vehicle
         if use_surrogate == True: 
             #  training data
             if not os.path.exists(self.filename):
