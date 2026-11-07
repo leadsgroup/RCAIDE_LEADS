@@ -37,6 +37,7 @@ modules = [
     'Verification/aircraft_performance/V_n_diagram_test.py', 
     'Verification/atmosphere/atmosphere.py',
     'Verification/atmosphere/constant_temperature.py',
+    'Verification/analysis_aerostructures/test_spar_cutouts.py',
     'Verification/analysis_emissions/emissions_test.py',  
     'Verification/analysis_emissions/LTO_Emissions.py',   
     'Verification/analysis_aeroacoustics/digital_elevation_test.py',  

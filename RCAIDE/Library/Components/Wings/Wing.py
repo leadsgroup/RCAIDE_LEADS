@@ -224,6 +224,7 @@ class Wing(Component):
         self.structural.stringer_smeared_thickness  = 0.00376
         self.structural.rib_spacing                 = 0.6 # in Meters - space between two ribs
         self.structural.rib_thickness               = 0.004
+        self.structural.spar_cutouts                = [] # circular spar web holes, each Data(spar, percent_span_location, diameter, bay_length); used only when the aerostructures setting spar_cutouts is True
 
     def append_segment(self, segment):
         """

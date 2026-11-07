@@ -54,6 +54,8 @@ class Aerostructures(Analysis):
         # 'decoupled' (default): rigid-wing loads only, today's behavior unchanged.
         # 'coupled': iterate VLM<->FEA to convergence at every training sample.
         self.settings.aeroelastic_coupling  = 'decoupled'
+        # True: apply each wing's structural.spar_cutouts (circular spar web holes) to its section properties.
+        self.settings.spar_cutouts          = False
         
     def evaluate(self,state, vehicle):
         """The default evaluate function.

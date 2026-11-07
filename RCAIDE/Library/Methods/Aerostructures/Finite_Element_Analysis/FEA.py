@@ -157,7 +157,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             Rho  = wing.structural.material.density       
             
             # Pass the VD_struct object to your properties calculator
-            A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr = compute_wingbox_properties(wing, VD_structural_wing)
+            A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr = compute_wingbox_properties(wing, VD_structural_wing, settings.spar_cutouts)
 
             # Verification-only: override the aero load with a uniform pressure.
             if getattr(settings, 'verification_pressure', None) is not None:
