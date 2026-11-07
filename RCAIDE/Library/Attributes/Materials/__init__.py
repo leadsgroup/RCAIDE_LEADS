@@ -27,6 +27,7 @@ from .Acrylic                               import Acrylic
 from .Aluminum                              import Aluminum
 from .Aluminum_2024_Alloy                   import Aluminum_2024_Alloy
 from .Aluminum_2219_Alloy                   import Aluminum_2219_Alloy
+from .Aluminum_2219                         import Aluminum_2219
 from .Aluminum_6061_Alloy                   import Aluminum_6061_Alloy
 from .Aluminum_7075_Alloy                   import Aluminum_7075_Alloy
 from .Bidirectional_Carbon_Fiber            import Bidirectional_Carbon_Fiber
