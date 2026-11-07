@@ -224,7 +224,12 @@ def iterate_root_finder(unknowns, segment, layout):
         upper = np.concatenate([upper, segment.state.unknowns_upper_bounds.network.pack_array()])
 
     unknown_slice, residual_slice = solver_slices(layout, network)
-    layout.buffer[unknown_slice]  = np.clip(unknowns, lower, upper)
+    return segment_residual(np.clip(unknowns, lower, upper), segment, layout, unknown_slice, residual_slice)
+
+
+def segment_residual(unknowns, segment, layout, unknown_slice, residual_slice):
+    """Residuals of the segment at the given unknowns, the one residual evaluation both solver paths use."""
+    layout.buffer[unknown_slice] = unknowns
     iterate_in_layout(segment, layout)
     return layout.buffer[residual_slice].copy()
 
@@ -369,8 +374,8 @@ def add_mission_variables(segment, layout):
 
 
 class Segment_Problem(Nexus):
-    """Nexus for one segment's converge: inputs are written to the unknowns slice of the segment's layout and
-    residual constraints are read from its residuals slice, in place of string aliases."""
+    """Nexus for one segment's converge: inputs are evaluated by segment_residual and the residual constraints are
+    read from its result, in place of string aliases."""
 
     def __defaults__(self):
         self.segment        = None
@@ -379,14 +384,15 @@ class Segment_Problem(Nexus):
         self.residual_slice = None
         self.residual_index = {}
         self.postprocess    = Data()
+        self.unknowns       = None
+        self.residuals      = None
 
     def set_inputs(self, inputs, converted_values):
-        self.layout.buffer[self.unknown_slice] = converted_values
+        self.unknowns = converted_values
 
     def output_values(self, outputs):
-        residuals = self.layout.buffer[self.residual_slice]
-        names     = np.array(outputs)[:, 0]
-        return np.array([residuals[self.residual_index[n]] if n in self.residual_index else self.postprocess[n]
+        names = np.array(outputs)[:, 0]
+        return np.array([self.residuals[self.residual_index[n]] if n in self.residual_index else self.postprocess[n]
                          for n in names], dtype=float)
 
 
@@ -399,7 +405,7 @@ def iterate_segment():
     return procedure
     
 def iterate_optimizer(nexus):
-    iterate_in_layout(nexus.segment, nexus.layout)
+    nexus.residuals = segment_residual(nexus.unknowns, nexus.segment, nexus.layout, nexus.unknown_slice, nexus.residual_slice)
     return nexus
 
 
