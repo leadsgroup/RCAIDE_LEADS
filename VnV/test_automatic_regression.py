@@ -46,6 +46,7 @@ modules = [
     'Verification/analysis_stability/untrimmed_flight_test.py', 
     'Verification/analysis_stability/test_lateral_derivative_signs.py',
     'Verification/analysis_stability/test_lift_carries_weight.py',
+    'Verification/analysis_stability/test_crosswind_sideslip.py',
     'Verification/analysis_weights/operating_empty_weight_test.py',
     'Verification/analysis_weights/cg_and_moi_test.py',
     'Verification/geometry/airfoil_import_test.py',

@@ -8,6 +8,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # Package imports  
+from RCAIDE.Library.Mission.Common.Unpack_Unknowns.orientation import sideslip_angle
 import numpy as np
  
 # ----------------------------------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ def unpack_pitch_angle(segment):
         segment.state.conditions.frames.body.inertial_rotations[:,0] = segment.bank_angle
     
     # Sideslip Angle  
-    segment.state.conditions.frames.wind.body_rotations[:,2] = segment.sideslip_angle
+    segment.state.conditions.frames.wind.body_rotations[:,2] = sideslip_angle(segment)
        
     # Heading Angle  
     segment.state.conditions.frames.body.inertial_rotations[:,2] =  segment.state.conditions.frames.planet.true_heading[:,0]     
