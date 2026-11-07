@@ -16,7 +16,7 @@ def unknowns(segment):
     for network in segment.analyses.vehicle.networks:
         if 'throttle' in segment:
             for propulsor in network.propulsors:
-                segment.state.conditions.energy.propulsors[propulsor.tag].throttle[:,0] = segment.throttle
+                segment.state.conditions.energy.propulsors[propulsor.tag].throttle = segment.throttle * segment.state.ones_row(1)
 
         if ACV_T.active:
             for i in range(len(ACV_T.assigned_propulsors)):

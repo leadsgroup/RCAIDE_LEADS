@@ -18,6 +18,8 @@ import numpy as np
 from copy import deepcopy 
 import os
 
+# Stability note: the rigid VLM neutral point (~20.5 m) is 0.4-0.8 m aft of the point giving a 15-25% static margin at the
+# APM aft CG limit (19.10 m, D6-58325-6); aeroelastic and power effects that would move it forward are not modeled.
 def vehicle_setup(): 
 
     # ------------------------------------------------------------------
@@ -30,7 +32,7 @@ def vehicle_setup():
     # ################################################# Vehicle-level Properties #################################################   
     vehicle.mass_properties.max_takeoff               = 79000 * Units.kilogram    
     vehicle.mass_properties.takeoff                   = 79000 * Units.kilogram   
-    vehicle.mass_properties.max_fuel                  = 72000.0 * Units.lbs  
+    vehicle.mass_properties.max_fuel                  = 26837 * Units.kilogram
     vehicle.mass_properties.max_payload               = 21000.  * Units.kilogram  
     vehicle.mass_properties.payload                   = 0.5*vehicle.mass_properties.max_payload
     vehicle.mass_properties.fuel                      = 0.5*vehicle.mass_properties.max_fuel
@@ -61,7 +63,7 @@ def vehicle_setup():
     main_gear.rim_diameter      = 21   *  Units.inches 
     main_gear.tire_width        = 16.5  *  Units.inches 
     main_gear.strut_length      = 1.8  * Units.m
-    main_gear.origin            = [[18,5.72/2,-0.5]]  
+    main_gear.origin            = [[19.07,5.72/2,-0.5]]  # gear CG at the 19.69 m main axle (APM D6-58325-6 Sec. 2.2.11)
     main_gear.wheels            = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type  = 2  
@@ -73,7 +75,7 @@ def vehicle_setup():
     nose_gear.rim_diameter      = 15    *  Units.inches 
     nose_gear.tire_width        = 7.75  *  Units.inches 
     nose_gear.strut_length      = 1.8   * Units.m  
-    nose_gear.origin            = [[5,0,-0.5]]  
+    nose_gear.origin            = [[3.09,0,-0.5]]  # gear CG at the 4.09 m nose axle (APM D6-58325-6 Sec. 2.2.11)
     nose_gear.wheels            = 2   
     nose_gear.number_of_gear_types_in_tandem  = 1
     nose_gear.number_of_wheels_in_gear_type  = 2    
@@ -203,17 +205,17 @@ def vehicle_setup():
 
     wing     = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag = 'horizontal_stabilizer'
-    wing.aspect_ratio            = 4.99
+    wing.aspect_ratio            = 6.282
     wing.sweeps.quarter_chord    = 28.2250 * Units.deg  
     wing.thickness_to_chord      = 0.08
-    wing.taper                   = 0.3333  
-    wing.spans.projected         = 14.35 
-    wing.chords.root             = 4.1
-    wing.chords.tip              = 1.4243 
-    wing.chords.mean_aerodynamic = 8.0 
-    wing.areas.reference         = 41.49
-    wing.areas.exposed           = 59.354    # Exposed area of the horizontal tail
-    wing.areas.wetted            = 71.81     # Wetted area of the horizontal tail
+    wing.taper                   = 0.3474  
+    wing.spans.projected         = 14.35     # APM D6-58325-6 Sec. 2.2.11
+    wing.chords.root             = 3.391
+    wing.chords.tip              = 1.178 
+    wing.chords.mean_aerodynamic = 2.463 
+    wing.areas.reference         = 32.78     # Jenkinson, Simpkin and Rhodes, Civil Jet Aircraft Design (2001)
+    wing.areas.exposed           = 46.89     # Exposed area of the horizontal tail
+    wing.areas.wetted            = 56.73     # Wetted area of the horizontal tail
     wing.twists.root             = 0.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees 
     wing.origin                  = [[33.02,0,1.466]]
@@ -527,13 +529,14 @@ def vehicle_setup():
     turbofan.diameter                              = 1.5494
     turbofan.design_altitude                       = 35000.0*Units.ft
     turbofan.design_mach_number                    = 0.78   
-    turbofan.design_thrust                         = 35000.0* Units.N 
+    turbofan.rated_takeoff_thrust                  = 116990. * Units.N # CFM56-7B26 takeoff rating, 11699 daN (EASA TCDS E.004, Issue 07)
                 
     # fan                   
     fan                                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
     fan.tag                                        = 'fan'
     fan.polytropic_efficiency                      = 0.93
     fan.pressure_ratio                             = 1.7   
+    fan.rated_angular_velocity                     = 5175.0 * Units.rpm # CFM56-7B 100% N1 (EASA TCDS E.004, Issue 07: 5382 rpm = 104%)
     turbofan.fan                                   = fan        
                    
     # working fluid                   
@@ -582,7 +585,7 @@ def vehicle_setup():
     combustor.tag                                  = 'Comb'
     combustor.efficiency                           = 0.99 
     combustor.alphac                               = 1.0     
-    combustor.turbine_inlet_temperature            = 1600
+    combustor.turbine_inlet_temperature            = 1450
     combustor.pressure_ratio                       = 0.95
     combustor.air_mass_flow_rate_take_off          = 40      
     combustor.air_data                             = RCAIDE.Library.Attributes.Gases.Air() 
@@ -670,32 +673,28 @@ def vehicle_setup():
     ##  Systems
     ##-------------------------------------------------------------------------------------------------------------------------
     avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[4,0,0]]
     net.systems.append(avionics)
 
     flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[28,0,0]]
     net.systems.append(flight_controls)
 
     auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxillary_power_unit.origin       = [[35,0,0]]
     net.systems.append(auxillary_power_unit)
 
     electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
-    electrical.origin                 = [[36,0,0]]
     net.systems.append(electrical)
 
     hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[30,0,0]]
     net.systems.append(hydraulics)
 
     environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
-    environmental_controls.origin     = [[36,0,0]]
     net.systems.append(environmental_controls)
 
     instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
-    instruments.origin                = [[30,0,0]]
     net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    net.systems.append(furnishings)
 
     # Append energy network to aircraft
     vehicle.append_energy_network(net)

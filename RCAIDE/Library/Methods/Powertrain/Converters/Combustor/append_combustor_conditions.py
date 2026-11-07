@@ -4,6 +4,7 @@
 # Created:  Jun 2024, M. Clarke  
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+import numpy as np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_combustor_conditions
@@ -60,4 +61,10 @@ def append_combustor_conditions(combustor, segment):
     segment.state.conditions.energy.converters[combustor.tag].inputs                    = Conditions() 
     segment.state.conditions.energy.converters[combustor.tag].inputs.nondim_mass_ratio  = ones_row(1)
     segment.state.conditions.energy.converters[combustor.tag].outputs                   = Conditions()
+    conditions = segment.state.conditions.energy.converters[combustor.tag]
+    rows       = ones_row(1).shape[0]
+    for node in (conditions.inputs, conditions.outputs):   # station states, NaN until computed
+        node.stagnation_temperature = np.full((rows, 1), np.nan)
+        node.stagnation_pressure    = np.full((rows, 1), np.nan)
+    conditions.outputs.fuel_to_air_ratio = np.full((rows, 1), np.nan)
     return 

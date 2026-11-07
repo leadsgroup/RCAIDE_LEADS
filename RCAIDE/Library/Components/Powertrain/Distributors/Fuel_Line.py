@@ -76,7 +76,7 @@ class Fuel_Line(Distributor):
         self.pipe                                 = Data()
         self.pipe.surface_roughness               = 0.015
         self.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
-        self.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+        self.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_316()
         self.pipe.flexible_material_ratio         = 0.25
         self.pipe.diameters                       = Data()
         self.pipe.diameters.external              = 0.625 *  Units.inches 
@@ -88,7 +88,7 @@ class Fuel_Line(Distributor):
         self.pipe.k_factors.pipe_exit             = 1.0 
         self.insulation                           = Data()
         self.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Aluminum() 
-        self.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+        self.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_316() 
         self.insulation.flexible_material_ratio   = 0.25
         self.insulation.diameters                 = Data()
         self.insulation.diameters.external        = 0.0

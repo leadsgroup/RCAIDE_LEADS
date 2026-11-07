@@ -98,18 +98,23 @@ class Physics_Based_Frequency_Domain(Aeroacoustics):
         total_SPL_dBA          = np.ones((ctrl_pts,N_hemisphere_mics))*1E-16 
         total_SPL_spectra      = np.ones((ctrl_pts,N_hemisphere_mics,dim_cf))*1E-16  
          
-        # iterate through sources and iteratively add rotor noise
-        rotor_tag = None
-        i = 0
+        # iterate through sources and iteratively add rotor noise; rotors of propulsors that reuse another
+        # propulsor's results also reuse its blade loading
+        Rotor = RCAIDE.Library.Components.Powertrain.Converters.Rotor
         for network in vehicle.networks:
+            reference = None
             for propulsor in network.propulsors:
                 if propulsor.active == True:
-                    for sub_tag , sub_item in  propulsor.items():
-                        if isinstance(sub_item, RCAIDE.Library.Components.Powertrain.Converters.Rotor): 
-                            rotor_tag         = compute_rotor_noise(microphone_locations,sub_item,segment,settings, rotor_index = i, previous_rotor_tag= rotor_tag, identical_propulsors=propulsor.identical_propulsors)
-                            total_SPL_dBA     = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],conditions.aeroacoustics.converters[sub_item.tag].SPL_dBA[:,None,:]),axis =1),sum_axis=1)
-                            total_SPL_spectra = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,:],conditions.aeroacoustics.converters[sub_item.tag].SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
-                            i += 1
+                    reuse            = network.reuses_results(propulsor, reference)
+                    rotors           = [item for item in propulsor.values() if isinstance(item, Rotor)]
+                    reference_rotors = [item for item in reference.values() if isinstance(item, Rotor)] if reuse else []
+                    for k, rotor in enumerate(rotors):
+                        reference_rotor_tag = reference_rotors[k].tag if reuse else None
+                        compute_rotor_noise(microphone_locations,rotor,segment,settings, reference_rotor_tag = reference_rotor_tag)
+                        total_SPL_dBA     = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],conditions.aeroacoustics.converters[rotor.tag].SPL_dBA[:,None,:]),axis =1),sum_axis=1)
+                        total_SPL_spectra = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,:],conditions.aeroacoustics.converters[rotor.tag].SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
+                    if not reuse:
+                        reference = propulsor
                         
         conditions.aeroacoustics.hemisphere_SPL_dBA              = (total_SPL_dBA) *  (1 - settings.noise_reduction_factors.SPL_dbA)
         conditions.aeroacoustics.hemisphere_SPL_1_3_spectrum_dBA = (total_SPL_spectra) * (1 - settings.noise_reduction_factors.SPL_dbA) 

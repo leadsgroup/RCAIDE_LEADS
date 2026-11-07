@@ -164,7 +164,6 @@ def get_conditions():
 
 def get_settings():
     settings = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method().settings  
-    settings.propeller_wake_model            = None
     settings.spanwise_cosine_spacing         = False 
     settings.leading_edge_suction_multiplier = 1. 
     settings.discretize_control_surfaces     = True

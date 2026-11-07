@@ -12,13 +12,12 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Engine import compute_power_fr
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import  compute_rotor_performance
 
 # pacakge imports  
-from copy import deepcopy
 import numpy as np  
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_internal_combustion_engine_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_internal_combustion_engine_performance(propulsor, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_internal_combustion_engine_performance(propulsor, state, network=None, center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of an internal combustion engine propulsion system.
     
@@ -101,7 +100,7 @@ def compute_internal_combustion_engine_performance(propulsor, state, center_of_g
     conditions.energy.converters[propeller.tag].omega                         = conditions.energy.converters[engine.tag].omega 
     conditions.energy.converters[propeller.tag].throttle                      = conditions.energy.converters[engine.tag].throttle 
     conditions.energy.converters[propeller.tag].commanded_thrust_vector_angle = conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle
-    compute_rotor_performance(propeller,conditions)
+    compute_rotor_performance(propeller,conditions,None if network is None else network.wing_vortex_distribution(state))
 
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)
@@ -112,6 +111,7 @@ def compute_internal_combustion_engine_performance(propulsor, state, center_of_g
     
     # Create the outputs
     ice_conditions.fuel_mass_flow_rate       = conditions.energy.converters[engine.tag].fuel_mass_flow_rate  
+    ice_conditions.inputs.power.chemical     = ice_conditions.fuel_mass_flow_rate * engine.fuel_data.lower_heating_value
     stored_results_flag                      = True
     stored_propulsor_tag                     = propulsor.tag  
 
@@ -119,17 +119,9 @@ def compute_internal_combustion_engine_performance(propulsor, state, center_of_g
     ice_conditions.outputs.thrust      = conditions.energy.converters[propeller.tag].thrust
     ice_conditions.outputs.moment      = moment
 
-    # currently, no hybridization
+    # no hybridization: the other outputs.power fields stay at their allocated zeros
     ice_conditions.outputs.power.propulsive       = conditions.energy.converters[propeller.tag].power
-    ice_conditions.outputs.power.mechanical       = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.electrical       = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.chemical         = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.pneumatic        = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.hydraulic        = 0.0 * state.ones_row(1)
-    ice_conditions.outputs.power.thermal          = 0.0 * state.ones_row(1)
 
-    stored_results_flag            = True
-    stored_propulsor_tag           = propulsor.tag
 
     return ice_conditions.inputs, ice_conditions.outputs, stored_results_flag, stored_propulsor_tag
 
@@ -165,11 +157,10 @@ def reuse_stored_internal_combustion_engine_data(propulsor,state,network,stored_
     engine_0     = network.propulsors[stored_propulsor_tag].engine
     propeller_0  = network.propulsors[stored_propulsor_tag].propeller  
     
-    # deepcopy results 
-    conditions.energy.propulsors[propulsor.tag]     = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.energy.converters[engine.tag]        = deepcopy(conditions.energy.converters[engine_0.tag])
-    conditions.energy.converters[propeller.tag]     = deepcopy(conditions.energy.converters[propeller_0.tag])
-   
+    # copy the stored propulsor's results, reusing memory
+    conditions.energy.propulsors[propulsor.tag].copy_values(conditions.energy.propulsors[stored_propulsor_tag])
+    conditions.energy.converters[engine.tag].copy_values(conditions.energy.converters[engine_0.tag])
+    conditions.energy.converters[propeller.tag].copy_values(conditions.energy.converters[propeller_0.tag])
     # compoment
     thrust_vector           = conditions.energy.converters[propeller.tag].thrust
     power                   = conditions.energy.converters[propeller.tag].power
@@ -180,7 +171,6 @@ def reuse_stored_internal_combustion_engine_data(propulsor,state,network,stored_
     moment                  =  np.cross(moment_vector,thrust_vector)
 
     # pack
-    conditions.energy.converters[propeller.tag].moment            = moment
     conditions.energy.propulsors[propulsor.tag].outputs.thrust    = thrust_vector
     conditions.energy.propulsors[propulsor.tag].outputs.moment    = moment
     conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive = power

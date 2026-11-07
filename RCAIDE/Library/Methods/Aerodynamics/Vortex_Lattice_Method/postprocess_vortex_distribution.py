@@ -62,8 +62,8 @@ def postprocess_vortex_distribution(VD, settings):
     panel_sweeps[VD.YA1 > VD.YB1] = -panel_sweeps[VD.YA1 > VD.YB1]
     VD.leading_edge_sweeps =  panel_sweeps[LE_ind] 
 
-    # Chord widths
-    Del_Y =  VD.XB1-VD.XA1 
+    # Strip widths: projected spanwise extent of each strip (A inboard, B outboard; abs for the mirrored half)
+    Del_Y =  np.abs(VD.YB1-VD.YA1)
     VD.chord_widths  = Del_Y[LE_ind]  
     
     # Compute strip-wise values
@@ -72,7 +72,8 @@ def postprocess_vortex_distribution(VD, settings):
     TE_X           = X2c[TE_ind]
     TE_Z           = Z2c[TE_ind]
     tan_incidence  = np.repeat((LE_Z-TE_Z)/(LE_X-TE_X), strip_n_cw) # ZETA  in vorlax
-    chord_adjusted = np.repeat(np.sqrt((TE_X-LE_X)**2 + (TE_Z-LE_Z)**2), strip_n_cw) # CHORD in vorlax
+    strip_chords   = np.sqrt((TE_X-LE_X)**2 + (TE_Z-LE_Z)**2)
+    chord_adjusted = np.repeat(strip_chords, strip_n_cw) # CHORD in vorlax
     
     XC_TE_wings  = np.repeat(VD.XC [TE_ind], strip_n_cw)
     YC_TE_wings  = np.repeat(VD.YC [TE_ind], strip_n_cw)
@@ -92,7 +93,8 @@ def postprocess_vortex_distribution(VD, settings):
     VD.SLE                     = SLE
     VD.D                       = D         
     VD.tangent_incidence_angle = tan_incidence
-    VD.chord_lengths           = np.atleast_2d(chord_adjusted)
+    VD.chord_lengths           = np.atleast_2d(chord_adjusted)   # per panel
+    VD.strip_chord_lengths     = strip_chords                    # per spanwise strip
     VD.Y_SW                    = Y_SW
     
     VD.XC_TE  = XC_TE_wings
@@ -162,7 +164,11 @@ def compute_unit_normal(VD):
 
     unit_normal = (cross.T / np.linalg.norm(cross,axis=1)).T
 
-     # adjust Z values, no values should point down, flip vectors if so
-    unit_normal[unit_normal[:,2]<0,:] = -unit_normal[unit_normal[:,2]<0,:]
+    # same normal as the influence matrix and forces in VLM: (0, -sin(phi), cos(phi)), phi = arctan(dz/dy)
+    dy   = VD.YBC - VD.YAC
+    dz   = VD.ZBC - VD.ZAC
+    side = np.where(dy < 0, -1.0, 1.0)
+    flip = unit_normal[:,2]*side*dy - unit_normal[:,1]*side*dz < 0
+    unit_normal[flip,:] = -unit_normal[flip,:]
 
     return unit_normal

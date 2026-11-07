@@ -110,7 +110,7 @@ def plot_battery_module_conditions(results,
     ax_power.set_ylabel('Power (W)')
     ax_voltage.set_ylabel('Voltage (V)')
     ax_voltage.set_xlabel('Time (min)')
-    ax_temp.set_ylabel(r'Temperature ($\degree$C)')
+    ax_temp.set_ylabel('Temperature (K)')
     ax_temp.set_xlabel('Time (min)')
 
     for ax in axes.flat:

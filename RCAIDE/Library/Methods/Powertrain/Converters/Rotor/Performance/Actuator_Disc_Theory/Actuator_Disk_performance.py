@@ -202,14 +202,15 @@ def Actuator_Disk_performance(rotor, conditions):
     A                     = np.pi*(R**2 - rotor.hub_radius**2)
     FoM                   = thrust*np.sqrt(thrust/(2*rho*A))/power  
       
-    conditions.energy.converters[rotor.tag]   = Data( 
+    # write into the rotor's conditions, keeping fields set by its propulsor and reusing memory
+    conditions.energy.converters.copy_values({rotor.tag: Data( 
             thrust                            = thrust_vector,  
             power                             = power,
             rpm                               = omega/Units.rpm,
             omega                             = omega,
             power_coefficient                 = Cp, 
             thrust_coefficient                = Ct,
-            torque_coefficient                = Cq,  
+            torque_coefficient                = Cq * np.ones_like(torque),  
             speed_of_sound                    = conditions.freestream.speed_of_sound,
             density                           = conditions.freestream.density,
             tip_mach                          = omega * R / conditions.freestream.speed_of_sound, 
@@ -223,6 +224,6 @@ def Actuator_Disk_performance(rotor, conditions):
             thrust_per_blade                  = thrust/B, 
             torque_per_blade                  = torque/B, 
             commanded_thrust_vector_angle     = commanded_TV,  
-            figure_of_merit                   = FoM,) 
+            figure_of_merit                   = FoM,)})
 
     return  

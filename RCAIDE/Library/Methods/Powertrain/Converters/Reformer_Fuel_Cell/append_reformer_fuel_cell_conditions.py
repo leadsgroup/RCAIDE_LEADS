@@ -3,6 +3,7 @@
 # Created:  Aug 2026, RCAIDE Team
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_conditions import append_converter_power_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  append_reformer_fuel_cell_conditions
@@ -10,7 +11,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 def append_reformer_fuel_cell_conditions(reformer_fuel_cell,segment):
     """
     Initializes and appends operating conditions data structures for a reformer/fuel-cell
-    composite to the energy conditions structure.
+    system to the energy conditions structure.
 
     Parameters
     ----------
@@ -26,40 +27,15 @@ def append_reformer_fuel_cell_conditions(reformer_fuel_cell,segment):
 
     Notes
     -----
-    This function initializes the condition structure for the reformer/fuel-cell
-    composite and its subcomponents (reformer and fuel_cell) with zero values, then
-    calls the respective append_operating_conditions methods for each subcomponent.
+    This function initializes the power conditions and fuel mass flow rate of the
+    reformer/fuel-cell system with zero values.
 
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Reformer_Fuel_Cell.compute_reformer_fuel_cell_performance
     """
 
-    ones_row    = segment.state.ones_row
-
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag]                          = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs                   = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].fuel_mass_flow_rate       = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs                  = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power             = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power            = Conditions()
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.propulsive  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.mechanical  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.electrical  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.chemical    = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.pneumatic   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.hydraulic   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].inputs.power.thermal     = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.propulsive = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.mechanical = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.electrical = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.chemical   = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.pneumatic  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.hydraulic  = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[reformer_fuel_cell.tag].outputs.power.thermal    = 0 * ones_row(1)
-
-    reformer  = reformer_fuel_cell.reformer
-    fuel_cell = reformer_fuel_cell.fuel_cell
-    reformer.append_operating_conditions(segment)
-    fuel_cell.append_operating_conditions(segment)
+    ones_row  = segment.state.ones_row
+    rfc_conditions = append_converter_power_conditions(reformer_fuel_cell, segment)
+    rfc_conditions.fuel_mass_flow_rate = 0. * ones_row(1)
     return

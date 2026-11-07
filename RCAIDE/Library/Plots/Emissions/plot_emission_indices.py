@@ -92,9 +92,14 @@ def plot_emission_indices(results,
 
     axis_1 = plt.subplot(1, 1, 1)
 
-    for i, seg in enumerate(results.segments):
-        t      = seg.conditions.frames.inertial.time[:, 0] / Units.min
+    first_plotted = False
+    for seg in results.segments:
         seg_ei = seg.conditions.emissions.index
+        if not hasattr(seg_ei, 'CO2'):
+            # ground segment (e.g. Dormancy, Refuel): no fuel burn, index undefined
+            continue
+
+        t      = seg.conditions.frames.inertial.time[:, 0] / Units.min
         data_map = {
             'CO2': seg_ei.CO2[:, 0],
             'CO' : seg_ei.CO[:, 0],
@@ -109,7 +114,8 @@ def plot_emission_indices(results,
                             marker=ei_markers[species],
                             markersize=ps.marker_size,
                             linewidth=ps.line_width,
-                            label=species_labels[species] if i == 0 else None)
+                            label=species_labels[species] if not first_plotted else None)
+        first_plotted = True
 
     axis_1.set_ylabel(r'Emission Index (g/kg fuel)')
     axis_1.set_xlabel(r'Time (mins)')

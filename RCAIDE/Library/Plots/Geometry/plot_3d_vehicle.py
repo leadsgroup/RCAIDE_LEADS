@@ -11,7 +11,7 @@ from RCAIDE.Library.Components   import Component
 from RCAIDE.Library.Plots.Geometry.generate_3d_wing_points      import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
-from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points, generate_vtk_object
+from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points, generate_vtk_object, generate_capped_vtk_object
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_3d_lopa_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_torus_points     import generate_3d_torus_points
@@ -336,7 +336,7 @@ def plot_3d_vehicle(vehicle,
                         if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank) and fuel_tank.geometry_type == 'conformal' and fuel_tank.transverse_tank:
                             seg_bounds = fuel_tank.transverse_tank_chord_bounds
                             GEOM       = generate_aft_integral_wing_tank_points(wing, 5, seg_bounds, fuel_tank)
-                            plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=fuel_tank_rgb_color, opacity=fuel_tank_opacity)
+                            plotter.add_mesh(generate_capped_vtk_object(GEOM.PTS), color=fuel_tank_rgb_color, opacity=fuel_tank_opacity)
                         elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank) and fuel_tank.geometry_type == 'conformal':
                             seg_bounds = fuel_tank.segments_bounding_tank
                             GEOM       = generate_integral_wing_tank_points(wing, number_of_airfoil_points, seg_bounds, fuel_tank)

@@ -81,8 +81,9 @@ def weights(segment):
         segment.state.conditions.weights.vehicle.moments_of_inertia_Izz[0,:]       = segment.state.initials.conditions.weights.vehicle.moments_of_inertia_Izz[-1,0]
       
         for tag,item in segment.state.initials.conditions.weights.components.mass.items():
-            if segment.analyses.weights.settings.run_center_of_gravity_analysis:  
+            if segment.analyses.weights.settings.run_center_of_gravity_analysis or segment.analyses.weights.settings.run_moments_of_inertia_analysis:
                 segment.state.conditions.weights.components.mass[tag][:,0]                         = segment.state.initials.conditions.weights.components.mass[tag][-1,0] 
+            if segment.analyses.weights.settings.run_center_of_gravity_analysis:
                 segment.state.conditions.weights.components.global_center_of_gravity[tag][:,0]     = segment.state.initials.conditions.weights.components.global_center_of_gravity[tag][-1,0]  
             if segment.analyses.weights.settings.run_moments_of_inertia_analysis:
                 segment.state.conditions.weights.components.moments_of_inertia_Ixx[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Ixx[tag][-1,0]

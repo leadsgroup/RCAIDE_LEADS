@@ -1,6 +1,7 @@
 # RCAIDE/Framework/Networks/Network.py 
 #
 # Created:  Mar 2025, M.Clarke
+# Modified: Sep 2026, M.Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Imports
@@ -11,6 +12,7 @@ from RCAIDE.Framework.Mission.Common     import Residuals, Conditions
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns 
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import * 
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_to_rotor_interaction import compute_rotor_to_rotor_interaction
 from RCAIDE.Library.Components import Component
 
 # python imports 
@@ -43,6 +45,13 @@ class Network(Component):
 
     reverse_thrust : bool
         Flag to enable reverse thrust computation. Default is False.
+
+    wing_on_rotor_coupling : bool
+        Couples the rotors and the wings in both directions: the rotor slipstream acts on the wing
+        vortex lattice and the wing-induced velocity acts at the rotor disc. Default is False.
+
+    rotor_on_rotor_coupling : bool
+        Solves the electric rotors together with their mutual wake interaction. Default is False.
 
     propulsors : Container
         Collection of propulsor components (turbofans, rotors, etc.).
@@ -134,6 +143,8 @@ class Network(Component):
         """
         self.tag                                 = 'network'
         self.reverse_thrust                      = False
+        self.wing_on_rotor_coupling              = False
+        self.rotor_on_rotor_coupling             = False
         self.propulsors                          = Container()
         self.converters                          = Container()
         self.nacelles                            = Container()
@@ -142,10 +153,19 @@ class Network(Component):
         self.sources                             = Container()
         self.systems                             = Container()
          
+    def reuses_results(self, propulsor, reference):
+        """ True when propulsor can reuse the results, unknowns and residuals of reference, the last propulsor solved on its own """
+        return (reference is not None and propulsor.identical_propulsors
+                and not (self.wing_on_rotor_coupling or self.rotor_on_rotor_coupling)
+                and propulsor.assigned_distributors == reference.assigned_distributors)
 
-    def evaluate(network,state,vehicle):
+    def wing_vortex_distribution(self, state):
+        """ VLM mesh whose induced velocities enter the rotor discs when wing_on_rotor_coupling is on, else None """
+        return state.context.config.vortex_distribution if self.wing_on_rotor_coupling else None
+
+    def evaluate(network,state,vehicle,ground_operations=False):
         """ Computes the performance of the network.
-        
+
             Notes
             -----
             * Power balance uses the sign convention: 
@@ -157,7 +177,6 @@ class Network(Component):
         conditions        = state.conditions
         propulsors        = network.propulsors
         converters        = network.converters  
-        nacelles          = network.nacelles
         distributors      = network.distributors
         sources           = network.sources
         systems           = network.systems
@@ -171,15 +190,23 @@ class Network(Component):
         net_hydraulic_power     = 0. * state.ones_row(1)
  
         # ----------------------------------------------------------
-        # Propulsors
+        # Propulsors (off during stationary ground operations, e.g. dormancy and refuel, which run on ground power)
         # ----------------------------------------------------------
+        if network.rotor_on_rotor_coupling and not ground_operations:
+            # electric rotors are solved together; other propulsors solve their own rotor with the coupling
+            rotors = []
+            for propulsor in propulsors:
+                if propulsor.active and isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
+                    propulsor.compute_drive(state,network)
+                    rotors.append(propulsor.rotor)
+            compute_rotor_to_rotor_interaction(rotors,conditions,network.wing_vortex_distribution(state))
+            
         stored_results_flag  = False
         stored_propulsor_tag = None
         for propulsor in propulsors:
-            if propulsor.active: 
-                same_group = (stored_results_flag == True and
-                              propulsor.assigned_distributors == propulsors[stored_propulsor_tag].assigned_distributors)
-                if propulsor.identical_propulsors == False or not same_group:
+            if propulsor.active and not ground_operations:
+                reference = propulsors[stored_propulsor_tag] if stored_results_flag else None
+                if not network.reuses_results(propulsor, reference):
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network,center_of_gravity=center_of_gravity)
                 else:
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
@@ -244,7 +271,10 @@ class Network(Component):
         # ----------------------------------------------------------                
         stored_results_flag   = False
         stored_converter_tag  = None
-        for converter in converters:
+        # heaters last, so their tank solve sees the fuel drawn by every other converter
+        is_heater = [isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) for converter in converters]
+        ordered   = [c for c, h in zip(converters, is_heater) if not h] + [c for c, h in zip(converters, is_heater) if h]
+        for converter in ordered:
             if converter.active:
                 same_group = (stored_results_flag == True and
                               converter.assigned_distributors == converters[stored_converter_tag].assigned_distributors)
@@ -252,21 +282,23 @@ class Network(Component):
                     converter.reverse_mode_computation = True
                     inputs, outputs, stored_results_flag, stored_converter_tag = converter.compute_performance(state,network)
                 else:
-                    inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_converter_tag)
+                    inputs, outputs = converter.reuse_stored_data(state,network,stored_converter_tag=stored_converter_tag)
                 total_mdot             += state.conditions.energy.converters[converter.tag].fuel_mass_flow_rate
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                externally_powered_now  = ground_operations and converter.externally_powered
+                if not externally_powered_now:
+                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)       
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)  
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
 
                 for input_power_type in inputs.power.keys():
-                    state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type] 
+                    state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type]
 
                 for output_power_type in outputs.power.keys():
-                    state.conditions.energy.outputs.power[output_power_type] += outputs.power[output_power_type] 
-                
+                    state.conditions.energy.outputs.power[output_power_type] += outputs.power[output_power_type]
+
                 # compute losses for assigned distributors
-                if converter.assigned_distributors != None:
+                if converter.assigned_distributors != None and not externally_powered_now:
                     for distributor_tag in converter.assigned_distributors[0]:
                         distributor = network.distributors[distributor_tag]
                         if not isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Pump):
@@ -279,13 +311,20 @@ class Network(Component):
         # Sources 
         # ----------------------------------------------------------
         stored_results_flag  = False
-        for source in sources: 
-            if source.active:    
-                inputs, outputs, _, _  = source.compute_performance(state,network)   
+        for source in sources:
+            if source.active:
+                inputs, outputs, _, _  = source.compute_performance(state,network)
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
+                source_conditions = state.conditions.energy.sources[source.tag]
+                if 'refuel_mass_flow_rate' in source_conditions:
+                    total_mdot -= source_conditions.refuel_mass_flow_rate
+                if 'vent_rate' in source_conditions:
+                    total_mdot += source_conditions.vent_rate
+                if 'refuel_return_rate' in source_conditions:
+                    total_mdot += source_conditions.refuel_return_rate
 
                 if source.assigned_distributors != None:
                     for distributor_tag in source.assigned_distributors[0]:
@@ -359,12 +398,11 @@ class Network(Component):
          
         unknowns(segment)
         for network in segment.analyses.vehicle.networks:
-            reference_distributors = None
-            for p_i, propulsor in enumerate(network.propulsors):
-                if propulsor.active:
-                    if propulsor.identical_propulsors == False or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
-                        propulsor.unpack_unknowns(segment)
-                        reference_distributors = propulsor.assigned_distributors
+            reference = None
+            for propulsor in network.propulsors:
+                if propulsor.active and not network.reuses_results(propulsor, reference):
+                    propulsor.unpack_unknowns(segment)
+                    reference = propulsor
             reference_source_distributors = None
             for source in network.sources:
                 if source.active:
@@ -401,12 +439,11 @@ class Network(Component):
            N/A
        """         
         for network in segment.analyses.vehicle.networks:
-            reference_distributors = None
-            for p_i, propulsor in enumerate(network.propulsors):
-                if propulsor.active:
-                    if propulsor.identical_propulsors == False or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
-                        propulsor.pack_residuals(segment)
-                        reference_distributors = propulsor.assigned_distributors
+            reference = None
+            for propulsor in network.propulsors:
+                if propulsor.active and not network.reuses_results(propulsor, reference):
+                    propulsor.pack_residuals(segment)
+                    reference = propulsor
             reference_source_distributors = None
             for source in network.sources:
                 if source.active:

@@ -71,8 +71,8 @@ def lithium_air_battery_test(Ereq,Preq):
         
 def aluminum_air_battery_test(Ereq,Preq): 
     battery_al_air                 = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Aluminum_Air()
-    test_size_module_from_energy_and_power(battery_al_air, Ereq, Preq)
-    test_mass_gain(battery_al_air, Preq)
+    check_size_module_from_energy_and_power(battery_al_air, Ereq, Preq)
+    check_mass_gain(battery_al_air, Preq)
     
     aluminum_mass  =  find_aluminum_mass(battery_al_air, Ereq)
     water_mass     =  find_water_mass(battery_al_air, Ereq)
@@ -82,7 +82,7 @@ def aluminum_air_battery_test(Ereq,Preq):
 def lithium_sulphur_battery_test(Ereq,Preq):   
     battery_li_s                   = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Sulfur()
     specific_energy_guess          = 400*Units.Wh/Units.kg 
-    test_find_ragone_properties(specific_energy_guess,battery_li_s, Ereq,Preq) 
+    check_find_ragone_properties(specific_energy_guess,battery_li_s, Ereq,Preq) 
     plot_battery_ragone_diagram(battery_li_s,   save_filename =  'lithium_sulfur')     
     return 
 
@@ -302,7 +302,7 @@ def missions_setup(mission):
  
     return missions  
 
-def test_mass_gain(battery,power):
+def check_mass_gain(battery,power):
     print(battery)
     mass_gain       =find_total_mass_gain(battery)
     print('mass_gain      = ', mass_gain)
@@ -310,12 +310,12 @@ def test_mass_gain(battery,power):
     print('mass_gain_rate = ', mdot)
     return
 
-def test_size_module_from_energy_and_power(battery,energy,power):
+def check_size_module_from_energy_and_power(battery,energy,power):
     size_module_from_energy_and_power(battery, energy, power) 
     print(battery)
     return
 
-def test_find_ragone_properties(specific_energy,battery,energy,power):
+def check_find_ragone_properties(specific_energy,battery,energy,power):
     find_ragone_properties( specific_energy, battery, energy,power)
     print(battery)
     print('specific_energy (Wh/kg) = ',battery.specific_energy/(Units.Wh/Units.kg))

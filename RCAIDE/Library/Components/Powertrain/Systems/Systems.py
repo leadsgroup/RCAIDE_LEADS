@@ -10,6 +10,7 @@ from RCAIDE.Library.Components import Component
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_system_segment_conditions
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_system_center_of_gravity import compute_system_center_of_gravity
 # ----------------------------------------------------------------------------------------------------------------------
 # System
 # ----------------------------------------------------------------------------------------------------------------------            
@@ -112,6 +113,13 @@ class Systems(Component):
         inputs, outputs = compute_systems_power_draw(self, state, vehicle)
         return inputs, outputs, False, None
     
+    def compute_center_of_gravity(self, vehicle):
+        """
+        Places the system at its generic location when its origin is not defined.
+        """
+        compute_system_center_of_gravity(self, vehicle)
+        return
+
     def initialize(self, network):
         return
     

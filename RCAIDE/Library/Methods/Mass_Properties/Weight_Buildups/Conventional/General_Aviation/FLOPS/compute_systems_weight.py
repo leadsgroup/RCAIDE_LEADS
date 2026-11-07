@@ -192,7 +192,7 @@ def compute_systems_weight(vehicle):
             XL  = fuselage.lengths.total / Units.ft
             WF  = fuselage.width / Units.ft
     FPAREA      = XL * WF
-    NPASS       = vehicle.number_of_passengers
+    NPASS       = vehicle.number_of_seats or vehicle.number_of_passengers
 
     
     NFLCR = 1 
@@ -213,7 +213,7 @@ def compute_systems_weight(vehicle):
 
     XLP     = 0.25 * XL # Assumption that pax cabin is 25% of fuselage length
     DF      = ref_fuselage.heights.maximum / Units.ft # D stands for depth
-    WFURN   = 127 * NFLCR +  44 * vehicle.number_of_passengers \
+    WFURN   = 127 * NFLCR +  44 * NPASS \
                 + 2.6 * XLP * (WF + DF) * NFUSE  # furnishing weight
 
     WAC     = (3.2 * (FPAREA * DF) ** 0.6 + 9 * NPASS ** 0.83) * VMAX + 0.075 * WAVONC  # ac weight

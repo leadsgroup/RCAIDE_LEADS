@@ -11,7 +11,9 @@ methods are used across a variety of analyses (VLM, AVL, etc.).
 
 from .parasite_drag_wing                        import parasite_drag_wing
 from .parasite_drag_pylon                       import parasite_drag_pylon
+from .compute_flap_profile_drag                 import compute_flap_profile_drag
 from .parasite_total                            import parasite_total
+from .append_drag_conditions                    import append_drag_conditions, parasite_drag_components
 from .induced_drag                              import induced_drag
 from .parasite_drag_fuselage                    import parasite_drag_fuselage
 from .compressibility_drag                      import compressibility_drag

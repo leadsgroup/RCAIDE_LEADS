@@ -432,7 +432,7 @@ def vehicle_setup() :
     turbofan1.bypass_ratio                         = 8.         
     turbofan1.design_altitude                      = 40000*Units.ft             
     turbofan1.design_mach_number                   = 0.78                      
-    turbofan1.design_thrust                        = 34000.0
+    turbofan1.rated_takeoff_thrust                 = 40900. * Units.lbf # representative engine: PW2040 takeoff rating, 40,900 lbf (FAA TCDS E17NE, Rev. 13)
     turbofan1.wing_mounted                         = False
     # working fluid                   
     turbofan1.working_fluid                        = RCAIDE.Library.Attributes.Gases.Air() 
@@ -586,6 +586,7 @@ def vehicle_setup() :
     fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
     fuel_tank_2.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_2.segments_percent_chord_end             = [0.55,0.55]
+    fuel_tank_2.packs_after_tank                       = 'tank_1l_1r'
     fuel_tank_2.assigned_distributors = [[fuel_line.tag]]
     net.sources.append(fuel_tank_2)
 
@@ -602,6 +603,7 @@ def vehicle_setup() :
     fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
     fuel_tank_3.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_3.segments_percent_chord_end             = [0.55,0.55]
+    fuel_tank_3.packs_after_tank                       = 'tank_2l_2r'
     fuel_tank_3.assigned_distributors = [[fuel_line.tag]]
     net.sources.append(fuel_tank_3)
 
@@ -735,6 +737,26 @@ def vehicle_setup() :
     reserve_pump.distributor_split                = 0
     net.converters.append(reserve_pump)
 
+    #-------------------------------------------------------------------------------------------------------------------------
+    #  HEATERS (draw electrical power off electrical_line for each tank's pressure-builder heater duty,
+    #  already computed by that tank's own quasi-steady boil-off physics -- see compute_heater_performance)
+    #-------------------------------------------------------------------------------------------------------------------------
+    for tank_tag in ['tank_1l_1r', 'tank_2l_2r', 'tank_3l_3r']:
+        tank_heater                        = RCAIDE.Library.Components.Powertrain.Converters.Heater()
+        tank_heater.tag                    = tank_tag + '_heater'
+        tank_heater.assigned_tank          = tank_tag
+        tank_heater.assigned_distributors  = [[electrical_line.tag]]
+        tank_heater.identical_converters   = False
+        net.converters.append(tank_heater)
+
+    if rotor_burst_bound >= cabin_bound:
+        aft_tank_heater                       = RCAIDE.Library.Components.Powertrain.Converters.Heater()
+        aft_tank_heater.tag                   = 'aft_tank_heater'
+        aft_tank_heater.assigned_tank         = 'aft_tank'
+        aft_tank_heater.assigned_distributors = [[electrical_line.tag]]
+        aft_tank_heater.identical_converters  = False
+        net.converters.append(aft_tank_heater)
+
     #------------------------------------------------------------------------------------------------------------------------------------
     # Append fuel line and electrical buses to network
     net.distributors.append(fuel_line)
@@ -769,12 +791,23 @@ def configs_setup(vehicle):
 
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'cruise'
-    configs.append(config) 
+    configs.append(config)
 
+    # ------------------------------------------------------------------
+    #   Dormancy / Refuel Configuration (stationary, ground ops)
+    # ------------------------------------------------------------------
+
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'dormancy'
+    configs.append(config)
+
+    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag = 'refuel'
+    configs.append(config)
 
     # ------------------------------------------------------------------
     #   Initialize Configurations
-    # ------------------------------------------------------------------ 
+    # ------------------------------------------------------------------
     config = RCAIDE.Library.Components.Configs.Config(vehicle)
     config.tag = 'idle' 
     config.networks.fuel.propulsors['propulsor_1'].combustor.fuel_data.emission_indices.NOx      = 4.85 /1000

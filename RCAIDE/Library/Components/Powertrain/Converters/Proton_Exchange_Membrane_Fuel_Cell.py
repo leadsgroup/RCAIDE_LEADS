@@ -168,6 +168,6 @@ class Proton_Exchange_Membrane_Fuel_Cell(Generic_Fuel_Cell_Stack):
         append_fuel_cell_conditions(self, segment)
         return
 
-    def reuse_stored_data(self, state, network, stored_conveter_tag):
-        inputs, outputs = reuse_stored_fuel_cell_data(self, state, network, stored_conveter_tag)
+    def reuse_stored_data(self, state, network, stored_converter_tag):
+        inputs, outputs = reuse_stored_fuel_cell_data(self, state, network, stored_converter_tag)
         return inputs, outputs

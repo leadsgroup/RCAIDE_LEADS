@@ -827,7 +827,6 @@
     "diameter": 0.0,
     "length": 0.0,
     "height": 0.0,
-    "active_crypgenic_tanks_tanks": null,
     "electronic_speed_controller": {
         "tag": "prop_rotor_esc_1",
         "mass_properties": {
@@ -983,9 +982,10 @@
         "assigned_converters": null,
         "assigned_modulators": null,
         "assigned_distributors": null,
-        "identical_converters": true,
+        "identical_converters": false,
         "efficiency": 1.0,
         "provides_domain": null,
+        "externally_powered": false,
         "number_of_blades": 5,
         "tip_radius": 1.425,
         "hub_radius": 0.17099999999999999,
@@ -14823,7 +14823,8 @@
                 },
                 "prev": null,
                 "next": null,
-                "number_of_points": 201
+                "number_of_points": 201,
+                "thickness_multiplier": 1.0
             }
         },
         "airfoil_polar_stations": [
@@ -15010,9 +15011,10 @@
         "assigned_converters": null,
         "assigned_modulators": null,
         "assigned_distributors": null,
-        "identical_converters": true,
+        "identical_converters": false,
         "efficiency": 0.98,
         "provides_domain": null,
+        "externally_powered": false,
         "diameter": 0.0,
         "length": 0.0,
         "gearbox": {

@@ -62,6 +62,7 @@ class Electric_VTOL(Weights):
         self.settings.FLOPS.fidelity                       = 'Simple' 
         self.settings.FLOPS.aeroelastic_tailoring_factor   = 0.   # Aeroelastic tailoring factor [0 no aeroelastic tailoring, 1 maximum aeroelastic tailoring] 
         self.settings.FLOPS.strut_braced_wing_factor       = 0.   # Wing strut bracing factor [0 for no struts, 1 for struts]
+        self.settings.FLOPS.composite_utilization_factor   = None # Wing composite utilization factor [0 no composites, 1 maximum composites]; None uses advanced_composites
         
         # EVTOL settings factor
         self.settings.miscelleneous_weight_factor          = 1.1 

@@ -25,16 +25,11 @@ class Vortex_Lattice_Method(Stability):
      Stall effects are negligible 
  
      Source:
-     N/A
+     Gilruth and White, NACA Report 711 (1941), for the fuselage pitching moment
  
-     Inputs:
-     None
- 
-     Outputs:
-     None
- 
-     Properties Used:
-     N/A 
+     Settings:
+     fuselage_correction: True computes the neutral point from the wings and tails without
+     fuselage panels plus the fuselage moment of NACA Report 711; False keeps the fuselage panels
     """      
     
     def __defaults__(self):
@@ -62,15 +57,15 @@ class Vortex_Lattice_Method(Stability):
                    
         # correction factors  
         self.settings.use_surrogate                                 = True  
-        self.settings.propeller_wake_model                          = False
         self.settings.number_of_spanwise_vortices                   = 30
         self.settings.number_of_chordwise_vortices                  = 15
         self.settings.number_of_fuselage_spanwise_vortices          = 4
         self.settings.number_of_fuselage_chordwise_vortices         = 10 
         self.settings.model_fuselage                                = True 
+        self.settings.fuselage_correction                           = True
         self.settings.spanwise_cosine_spacing                       = True
-        self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
+        self.settings.horizontal_tail_dynamic_pressure_ratio        = 0.90
         self.settings.use_VORLAX_matrix_calculation                 = False
         self.settings.floating_point_precision                      = np.float32 
         
@@ -78,6 +73,7 @@ class Vortex_Lattice_Method(Stability):
         self.training                                               = Data()  
         self.training.angle_of_attack                               = np.array([-5., -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45., 75.]) * Units.deg 
         self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])      
+        self.training.reference_angle_perturbation                  = 2 * Units.deg
                       
         self.training.subsonic                                      = None
         self.training.supersonic                                    = None

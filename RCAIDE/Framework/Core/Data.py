@@ -672,7 +672,8 @@ class Data(dict):
             M - either a 1D vector or 2D column array
             
             Outputs:
-            a reference to self, updates self in place
+            a reference to self, updates self in place; a writeable float array of the
+            same shape is written into, so views of it (e.g. a Segment_Layout) stay bound
     
             Properties Used:
             N/A    
@@ -693,6 +694,13 @@ class Data(dict):
         
         # counter for unpacking
         _index = [0]
+
+        # write into the existing array where possible, otherwise rebind to a copy
+        def store(D, k, v, value):
+            if isinstance(v, array_type) and v.dtype.kind == 'f' and v.flags.writeable and v.shape == np.shape(value):
+                v[...] = value
+            else:
+                D[k] = np.copy(value) if isinstance(value, array_type) else value
         
         # the unpacking function
         def do_unpack(D):
@@ -717,7 +725,7 @@ class Data(dict):
                 # scalars
                 elif rank == 0:
                     if vector:
-                        D[k] = M[index]
+                        store(D, k, v, M[index])
                         index += 1
                     else:#array
                         continue
@@ -727,20 +735,20 @@ class Data(dict):
                 elif rank == 1:
                     n = len(v)
                     if vector:
-                        D[k][:] = M[index:(index+n)]
+                        store(D, k, v, M[index:(index+n)])
                         index += n
                     else:#array
-                        D[k][:] = M[:,index]
+                        store(D, k, v, M[:,index])
                         index += 1
                     
                 # 2d arrays
                 elif rank == 2:
                     n,m = v.shape
                     if vector:
-                        D[k][:,:] = np.reshape( M[index:(index+(n*m))] ,[n,m], order='F')
+                        store(D, k, v, np.reshape( M[index:(index+(n*m))] ,[n,m], order='F'))
                         index += n*m 
                     else:#array
-                        D[k][:,:] = M[:,index:(index+m)]
+                        store(D, k, v, M[:,index:(index+m)])
                         index += m
                 
                 #: switch rank
@@ -756,4 +764,35 @@ class Data(dict):
         if not M.shape[-1] == _index[0]: warn('did not unpack all values',RuntimeWarning)
          
         # done!
-        return self      
+        return self
+
+    def copy_values(self, source):
+        """ copies the values of another data structure into this one, reusing memory
+
+            Assumptions:
+            A float array already here with the same shape as source's is written into; anything else
+            (missing keys, other shapes or types) is set to a deep copy. Keys only in self are kept.
+
+            Source:
+            N/A
+
+            Inputs:
+            source - Data with the values to copy
+
+            Outputs:
+            a reference to self, updated in place
+
+            Properties Used:
+            N/A
+        """
+        from copy import deepcopy
+        for k, v in source.items():
+            old = dict.get(self, k)
+            if isinstance(v, dict) and isinstance(old, Data):
+                old.copy_values(v)
+            elif isinstance(v, array_type) and isinstance(old, array_type) and v.dtype.kind == 'f' \
+                    and old.dtype.kind == 'f' and old.flags.writeable and old.shape == v.shape:
+                old[...] = v
+            else:
+                self[k] = deepcopy(v)
+        return self

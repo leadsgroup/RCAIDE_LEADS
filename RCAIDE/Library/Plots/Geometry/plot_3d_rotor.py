@@ -293,6 +293,36 @@ def generate_vtk_object(pts):
     return pv.PolyData(X, faces.ravel())
 
 
+def generate_capped_vtk_object(pts):
+    """Convert a GEOM.PTS array to a pv.PolyData quad mesh with the first and
+    last rings capped by a polygon face.
+
+    Use this instead of generate_vtk_object for prismatic shapes (e.g. the
+    aft BWB fuel tank) whose end cross-sections do not taper to a point, so
+    the lateral-only mesh from generate_vtk_object would leave both ends
+    open.
+    """
+    n_r, n_a = pts.shape[0], pts.shape[1]
+    n = n_a * (n_r - 1)
+    X     = pts.reshape(n_r * n_a, 3).astype(float)
+    cells = write_azimuthal_cell_values(X, n, n_a).astype(int)
+    faces = np.empty((n, 5), dtype=int)
+    faces[:, 0] = 4
+    faces[:, 1:] = cells
+
+    # rings close on themselves with a duplicated first point; drop it before capping
+    n_cap = n_a - 1 if np.allclose(pts[0, 0], pts[0, -1]) else n_a
+    first_ring = np.arange(n_cap)
+    last_ring  = np.arange(n_a * (n_r - 1), n_a * (n_r - 1) + n_cap)
+    # reverse the first ring's winding so both caps face outward
+    cap_faces = np.concatenate((
+        [n_cap], first_ring[::-1],
+        [n_cap], last_ring,
+    ))
+
+    return pv.PolyData(X, np.concatenate((faces.ravel(), cap_faces)))
+
+
 def write_azimuthal_cell_values(f, n_cells, n_a):
     rlap = 0
     adjacent_cells = np.zeros((n_cells, 4))

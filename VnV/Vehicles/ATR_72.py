@@ -38,7 +38,6 @@ def vehicle_setup():
     vehicle.mass_properties.max_zero_fuel             = 20000 
     vehicle.mass_properties.cargo                     = 7850
     vehicle.mass_properties.center_of_gravity         = [[0,0,0]] # Unknown 
-    vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]] # Unknown 
     vehicle.mass_properties.max_fuel                  = 5000
     vehicle.mass_properties.max_payload               = 7000
     vehicle.mass_properties.payload                   = 5000
@@ -64,15 +63,16 @@ def vehicle_setup():
 
     # ################################################# Landing Gear #############################################################    
     
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 34  *  Units.inches 
-    main_gear.rim_diameter                   = 16  *  Units.inches 
-    main_gear.tire_width                     = 10  *  Units.inches 
-    main_gear.strut_length                   = 1 *  Units.meter 
-    main_gear.wheels                         = 4   
-    main_gear.number_of_gear_types_in_tandem = 1
-    main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.xz_plane_symmetric             = True
+    main_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter                   = 30   *  Units.inches
+    main_gear.rim_diameter                    = 14   *  Units.inches
+    main_gear.tire_width                      = 9.75 *  Units.inches
+    main_gear.strut_length                    = 1 *  Units.meter 
+    main_gear.wheels                          = 4   
+    main_gear.number_of_gear_types_in_tandem  = 1
+    main_gear.number_of_wheels_in_gear_type   = 2  
+    main_gear.origin                          = [[12.08, 2.05, -0.5]]  # gear CG at the 12.50 m main axle (APM AC-ATR Fig. 2.2.5)
+    main_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_gear)  
 
     nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -83,6 +83,7 @@ def vehicle_setup():
     nose_gear.wheels                          = 2   
     nose_gear.number_of_gear_types_in_tandem  = 1
     nose_gear.number_of_wheels_in_gear_type   = 2    
+    nose_gear.origin                          = [[1.18,0,-0.5]]  # gear CG at the 1.728 m nose axle (APM AC-ATR Fig. 2.2.5)
     vehicle.append_component(nose_gear)
  
     # ################################################# Wings #############################################################   
@@ -104,8 +105,8 @@ def vehicle_setup():
     wing.chords.mean_aerodynamic          = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 )/( 1 + wing.taper )) 
     wing.areas.exposed                    = 2 * wing.areas.reference
     wing.areas.wetted                     = 2 * wing.areas.reference  
-    wing.origin                           = [[11.52756129,0,2.009316366]]  
-    wing.aerodynamic_center               = [11.52756129 + 0.25*wing.chords.root ,0,2.009316366]  
+    wing.origin                           = [[11.08,0,2.009316366]]  
+    wing.aerodynamic_center               = [11.08 + 0.25*wing.chords.root ,0,2.009316366]  
     wing.vertical                         = False   
     wing.xz_plane_symmetric               = True  
     wing.dynamic_pressure_ratio           = 1.0 
@@ -150,13 +151,13 @@ def vehicle_setup():
     # ------------------------------------------------------------------ 
     wing                         = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag                     = 'horizontal_stabilizer'  
-    wing.spans.projected         = 3.61*2 
-    wing.areas.reference         = 15.2 
+    wing.spans.projected         = 7.31  # APM AC-ATR Fig. 2.2.5
+    wing.areas.reference         = 11.73  # APM AC-ATR Fig. 2.2.5
     wing.aspect_ratio            = (wing.spans.projected**2) /  wing.areas.reference
     wing.sweeps.leading_edge     = 11.56*Units.degrees  
     wing.thickness_to_chord      = 0.15  
-    wing.chords.root             = 2.078645129 
-    wing.chords.tip              = 0.953457347 
+    wing.chords.root             = 2.200130 
+    wing.chords.tip              = 1.009180 
     wing.total_length            = wing.chords.root  
     wing.taper                   = wing.chords.tip/wing.chords.root  
     wing.chords.mean_aerodynamic = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 )/( 1 + wing.taper ))
@@ -485,11 +486,11 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop()    
     starboard_propulsor.tag                          = 'starboard_propulsor'  
-    starboard_propulsor.origin                       = [[ 9.559106394 ,4.219315295, 1.616135105]]
+    starboard_propulsor.origin                       = [[ 9.111545 ,4.219315295, 1.616135105]]
     starboard_propulsor.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()               
     starboard_propulsor.gearbox.efficiency           = 0.99                                             
-    starboard_propulsor.design_thrust                = 15000.0 * Units.N 
-    starboard_propulsor.design_altitude              = 25000*Units.ft                                
+    starboard_propulsor.rated_takeoff_power          = 2051 * Units.kW # PW127M maximum take-off power, EASA TCDS IM.E.041
+    starboard_propulsor.design_altitude              = 25000*Units.ft
     starboard_propulsor.design_freestream_velocity   = 270 * Units.kts
     starboard_propulsor.length                       = 2.0
     starboard_propulsor.diameter                     = 0.60
@@ -499,12 +500,11 @@ def vehicle_setup():
     propeller.tag                                    = 'starboard_propulsor_propeller' 
     propeller.origin                                 = [[9.1,4.219315295, 1.616135105 ]]
     propeller.active                                 = True          
-    propeller.tip_radius                             = 2.8/2
+    propeller.tip_radius                             = 3.93/2 # Hamilton Standard 568F, ATR 72-600 factsheet
     propeller.hub_radius                             = 0.1 
-    propeller.number_of_blades                       = 3   
+    propeller.number_of_blades                       = 6   
     propeller.design_efficiency                      = 0.83      
-    propeller.design_angular_velocity                = 3000.0 * Units.rpm        
-    propeller.design_thrust                          = starboard_propulsor.design_thrust              
+    propeller.design_angular_velocity                = 1200.0 * Units.rpm # 100% NP; PW127M maximum output shaft speed 1212 rpm, EASA TCDS IM.E.041
     propeller.design_altitude                        = starboard_propulsor.design_altitude                                        
     propeller.design_freestream_velocity             = starboard_propulsor.design_freestream_velocity                                                               
     starboard_propulsor.propeller                    = propeller     
@@ -547,6 +547,7 @@ def vehicle_setup():
     low_pressure_turbine                             = RCAIDE.Library.Components.Powertrain.Converters.Turbine()   
     low_pressure_turbine.tag                         ='lpt'
     low_pressure_turbine.mechanical_efficiency       = 0.99                      
+    low_pressure_turbine.pressure_ratio              = 0.24552  # targets ~90% propeller / 10% core thrust split
     starboard_propulsor.low_pressure_turbine         = low_pressure_turbine
     
     # core nozzle    
@@ -566,7 +567,7 @@ def vehicle_setup():
     nacelle.length                              = 5
     nacelle.diameter                            = 0.85 
     nacelle.areas.wetted                        = 1.0   
-    nacelle.origin                              = [[8.941625295,4.219315295, 1.616135105 ]]
+    nacelle.origin                              = [[8.494064,4.219315295, 1.616135105 ]]
     nacelle.flow_through                        = False     
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
@@ -641,9 +642,9 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------      
     port_propulsor                                  = deepcopy(starboard_propulsor) 
     port_propulsor.tag                              = 'port_propulsor' 
-    port_propulsor.origin                           = [[ 9.559106394 ,-4.219315295, 1.616135105]]  # change origin 
+    port_propulsor.origin                           = [[ 9.111545 ,-4.219315295, 1.616135105]]  # change origin 
     port_propulsor.nacelle.tag                      = 'port_propulsor_nacelle' 
-    port_propulsor.nacelle.origin                   = [[8.941625295,-4.219315295, 1.616135105 ]]
+    port_propulsor.nacelle.origin                   = [[8.494064,-4.219315295, 1.616135105 ]]
     port_propulsor.propeller.tag                    = 'port_propulsor_propeller' 
     port_propulsor.propeller.origin                 = [[9.1,-4.219315295, 1.616135105 ]]
          
@@ -671,7 +672,15 @@ def vehicle_setup():
     port_propulsor.assigned_distributors      = [[fuel_line.tag]]
     net.distributors.append(fuel_line)
 
-    # Append energy network to aircraft 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    #  Systems
+    #------------------------------------------------------------------------------------------------------------------------------------
+    Systems = RCAIDE.Library.Components.Powertrain.Systems
+    for system in [Systems.Avionics(), Systems.Flight_Controls(), Systems.Electrical(), Systems.Hydraulics(),
+                   Systems.Environmental_Controls(), Systems.Instruments(), Systems.Furnishings()]:
+        net.systems.append(system)
+
+    # Append energy network to aircraft
     vehicle.append_energy_network(net)     
 
     return vehicle

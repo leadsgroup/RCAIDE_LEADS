@@ -190,13 +190,9 @@ def T0(a):
     cos = np.cos(a)
     sin = np.sin(a)
                   
-    T = new_tensor(a)
-    
-    T[:,1,1] = cos
-    T[:,1,2] = sin
-    T[:,2,1] = -sin
-    T[:,2,2] = cos
-    
+    zero = np.zeros_like(cos)
+    one  = np.ones_like(cos)
+    T    = np.stack([ one, zero, zero, zero,  cos,  sin, zero, -sin,  cos], axis=-1).reshape(-1,3,3)
     return T
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -228,13 +224,9 @@ def T1(a):
     cos = np.cos(a)
     sin = np.sin(a)     
     
-    T = new_tensor(a)
-    
-    T[:,0,0] = cos
-    T[:,0,2] = -sin
-    T[:,2,0] = sin
-    T[:,2,2] = cos
-    
+    zero = np.zeros_like(cos)
+    one  = np.ones_like(cos)
+    T    = np.stack([ cos, zero, -sin, zero,  one, zero,  sin, zero,  cos], axis=-1).reshape(-1,3,3)
     return T
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -266,13 +258,9 @@ def T2(a):
     cos = np.cos(a)
     sin = np.sin(a)     
     
-    T = new_tensor(a)
-    
-    T[:,0,0] = cos
-    T[:,0,1] = sin
-    T[:,1,0] = -sin
-    T[:,1,1] = cos
-        
+    zero = np.zeros_like(cos)
+    one  = np.ones_like(cos)
+    T    = np.stack([ cos,  sin, zero, -sin,  cos, zero, zero, zero,  one], axis=-1).reshape(-1,3,3)
     return T
 
 # ----------------------------------------------------------------------------------------------------------------------

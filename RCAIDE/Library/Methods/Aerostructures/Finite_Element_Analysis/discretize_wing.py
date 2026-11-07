@@ -400,7 +400,7 @@ def deform_vortex_distribution(VD, geometry, structural_results, ti=0):
     # generate_vortex_distribution() (unlike generate_aircraft_vortex_distribution())
     # wraps every field with a leading condition-batch dimension, e.g. XAH is
     # shape (n_conditions, N) not (N,). This function is only ever called with a
-    # single-condition VD (one row at a time, matching how call_solvers uses it),
+    # single-condition VD (one row at a time, matching how call_VLM uses it),
     # so we work on the flat [0] row and re-wrap into that same (1,N) convention
     # for whatever VLM()'s downstream code expects.
     assert VD.XAH.shape[0] == 1, "deform_vortex_distribution expects a single-condition VD"
@@ -458,15 +458,10 @@ def deform_vortex_distribution(VD, geometry, structural_results, ti=0):
 
         vd_idx += 2 if wing.xz_plane_symmetric else 1
 
-    # normals/panel_areas depend only on the (now deformed) panel corners --
-    # compute_panel_area/compute_unit_normal only read XA1/XA2/XB1/XB2, so a
-    # minimal flat proxy is enough; must run on flat arrays, not the (1,N) form.
-    flat_corners = Data(XA1=flat['XA1'], YA1=flat['YA1'], ZA1=flat['ZA1'],
-                         XA2=flat['XA2'], YA2=flat['YA2'], ZA2=flat['ZA2'],
-                         XB1=flat['XB1'], YB1=flat['YB1'], ZB1=flat['ZB1'],
-                         XB2=flat['XB2'], YB2=flat['YB2'], ZB2=flat['ZB2'])
-    VD_new.panel_areas = np.atleast_2d(compute_panel_area(flat_corners))
-    VD_new.normals     = compute_unit_normal(flat_corners)[None, :, :]
+    # normals/panel_areas from the deformed point sets (corners and strip-edge points), on flat arrays not the (1,N) form
+    flat_points        = Data(flat)
+    VD_new.panel_areas = np.atleast_2d(compute_panel_area(flat_points))
+    VD_new.normals     = compute_unit_normal(flat_points)[None, :, :]
 
     # re-wrap into the (1,N) condition-batch convention generate_vortex_distribution uses
     for prefix_tuple in [RAW_GRID] + A_FAMILY + B_FAMILY + C_FAMILY:

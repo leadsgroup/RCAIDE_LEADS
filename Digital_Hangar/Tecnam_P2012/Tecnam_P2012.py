@@ -306,7 +306,6 @@ def vehicle_setup():
     fuselage.areas.wetted                       = 52.94 * Units.meter**2.
     fuselage.areas.front_projected              = 2.72 * Units.meter**2.
     fuselage.effective_diameter                 = 1.760 * Units.meter
-    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
@@ -514,7 +513,7 @@ def vehicle_setup():
 
     # Engine                     
     engine                                     = RCAIDE.Library.Components.Powertrain.Converters.Engine()
-    engine.sea_level_power                     = 375. * Units.horsepower 
+    engine.sealevel_static_power                 = 375. * Units.horsepower
     engine.rated_speed                         = 3350. * Units.rpm 
     engine.power_specific_fuel_consumption     = 0.40  * Units['lb/hp/hr'] # This is a very rough estimate
     engine.origin                              = [[3.75,2.25,1.15]]

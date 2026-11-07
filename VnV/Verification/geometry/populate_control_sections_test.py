@@ -27,16 +27,16 @@ SEG_LOCS = [0.0, 0.3, 0.7, 1.0]
 def main():
     ti = time.time()
 
-    test_case_6_contained()
-    test_case_7_ends_at_boundary()
-    test_case_8_and_1_straddles_boundary()
-    test_case_1_starts_before_prev()
-    test_case_2_ends_at_current()
-    test_case_3_spans_full_segment()
-    test_case_4_starts_at_prev()
-    test_case_5_full_segment_match()
-    test_else_no_overlap()
-    test_multiple_control_surfaces()
+    check_case_6_contained()
+    check_case_7_ends_at_boundary()
+    check_case_8_and_1_straddles_boundary()
+    check_case_1_starts_before_prev()
+    check_case_2_ends_at_current()
+    check_case_3_spans_full_segment()
+    check_case_4_starts_at_prev()
+    check_case_5_full_segment_match()
+    check_else_no_overlap()
+    check_multiple_control_surfaces()
 
     elapsed_time = time.time() - ti
     print(f'\nElapsed time (min): {elapsed_time / 60:.4f}')
@@ -73,7 +73,7 @@ def get_cs(seg, idx=0):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Individual case tests
 # ----------------------------------------------------------------------------------------------------------------------
-def test_case_6_contained():
+def check_case_6_contained():
     """Case 6: sf[0] > prev AND sf[1] < current — CS entirely within sec2."""
     print('\n--- Case 6: CS entirely within sec2 [0.3, 0.7] ---')
     wing = build_wing(SEG_LOCS, [make_aileron('cs6', 0.35, 0.65)])
@@ -91,7 +91,7 @@ def test_case_6_contained():
     print('  PASSED')
 
 
-def test_case_7_ends_at_boundary():
+def check_case_7_ends_at_boundary():
     """Case 7: sf[0] > prev AND sf[1] == current — CS ends exactly at the sec2 boundary."""
     print('\n--- Case 7: CS ends exactly at sec2 boundary (0.7) ---')
     wing = build_wing(SEG_LOCS, [make_aileron('cs7', 0.35, 0.70)])
@@ -109,7 +109,7 @@ def test_case_7_ends_at_boundary():
     print('  PASSED')
 
 
-def test_case_8_and_1_straddles_boundary():
+def check_case_8_and_1_straddles_boundary():
     """Case 8: sf[0] within segment, sf[1] extends beyond current — clips to [sf[0], current].
     Case 1: sf[0] before prev, sf[1] within segment — clips to [prev, sf[1]].
     Both fire when a CS straddles a segment boundary."""
@@ -136,7 +136,7 @@ def test_case_8_and_1_straddles_boundary():
     print('  PASSED')
 
 
-def test_case_1_starts_before_prev():
+def check_case_1_starts_before_prev():
     """Case 1 isolated: CS starts before prev, ends strictly within (prev, current)."""
     print('\n--- Case 1: CS starts before sec1, ends within sec2 ---')
     cs_span = 1.0
@@ -161,7 +161,7 @@ def test_case_1_starts_before_prev():
     print('  PASSED')
 
 
-def test_case_2_ends_at_current():
+def check_case_2_ends_at_current():
     """Case 2: sf[0] < prev AND sf[1] == current — clips to [prev, current]."""
     print('\n--- Case 2: CS starts before sec1, ends exactly at sec2 boundary ---')
     cs_span = 1.0
@@ -181,7 +181,7 @@ def test_case_2_ends_at_current():
     print('  PASSED')
 
 
-def test_case_3_spans_full_segment():
+def check_case_3_spans_full_segment():
     """Case 3: sf[0] < prev AND sf[1] > current — clips to full [prev, current]."""
     print('\n--- Case 3: CS overflows both ends of sec2 ---')
     cs_span = 1.0
@@ -201,7 +201,7 @@ def test_case_3_spans_full_segment():
     print('  PASSED')
 
 
-def test_case_4_starts_at_prev():
+def check_case_4_starts_at_prev():
     """Case 4: sf[0] == prev AND sf[1] < current — CS starts exactly at segment start."""
     print('\n--- Case 4: CS starts at sec2 lower boundary, ends within sec2 ---')
     cs_span = 1.0
@@ -221,7 +221,7 @@ def test_case_4_starts_at_prev():
     print('  PASSED')
 
 
-def test_case_5_full_segment_match():
+def check_case_5_full_segment_match():
     """Case 5: sf[0] == prev AND sf[1] == current — CS matches segment exactly."""
     print('\n--- Case 5: CS matches sec2 span exactly ---')
     sf = (0.30, 0.70)
@@ -240,7 +240,7 @@ def test_case_5_full_segment_match():
     print('  PASSED')
 
 
-def test_else_no_overlap():
+def check_else_no_overlap():
     """else: CS bounds lie entirely outside a segment — no assignment to that segment."""
     print('\n--- else: sec1 and tip receive no CS when CS is contained in sec2 ---')
     # cs [0.35, 0.65] falls in sec2 only; sec1 and tip get else (no overlap)
@@ -255,7 +255,7 @@ def test_else_no_overlap():
     print('  PASSED')
 
 
-def test_multiple_control_surfaces():
+def check_multiple_control_surfaces():
     """Verify multiple control surfaces are independently distributed to the correct segments."""
     print('\n--- Multiple CS: flap on sec2, aileron spanning sec2+tip ---')
     flap    = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()

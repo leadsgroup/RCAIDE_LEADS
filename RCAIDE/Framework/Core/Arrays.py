@@ -78,6 +78,8 @@ def atleast_2d(A,oned_as='row'):
         if not isinstance(A,(list,tuple)):
             A = [A]
         A = np.array(A)
+    elif A.ndim == 0:
+        A = A.reshape(1)   # a rank-0 array is a scalar, as above
         
     # check rank
     if A.ndim < 2:

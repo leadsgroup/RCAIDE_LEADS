@@ -10,7 +10,8 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry 
+from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry,energy
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.set_vehicle_fuel_mass import set_vehicle_fuel_mass
  
 # Pacakge imports 
 import numpy as np  
@@ -19,7 +20,7 @@ import os,sys
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05):  
+def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05, reserve_segment_tags=None):  
     """
     Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.
     
@@ -33,6 +34,9 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     fuel_reserve_percentage : float, optional
         Fraction of maximum fuel to be reserved (not used for range)
         Default: 0.0
+    reserve_segment_tags : list of str, optional
+        Tags of reserve segments whose fuel is burned but whose distance is excluded from range
+        Default: None
     plot_diagram : bool, optional
         Flag to generate payload-range plots
         Default: True
@@ -110,6 +114,9 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         if segment.analyses.stability != None: 
             segment.analyses.stability.settings.compute_neutral_point = False
 
+    # size powertrain components (e.g. batteries) first, as the mission does, so their mass is in the OEW
+    energy(mission)
+
     # run preliminary mass properties analyss 
     mass_properties(mission) 
    
@@ -117,13 +124,14 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     vehicle = mission.segments[initial_segment].analyses.vehicle 
     for network in vehicle.networks:
         if type(network) == RCAIDE.Framework.Networks.Fuel:  
-            payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage) 
+            payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage,reserve_segment_tags) 
         else:
             payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag)
     
-    # delete aerodynamic surrogates 
-    file_name = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), segment.analyses.vehicle.tag + "_" + segment.analyses.aerodynamics.tag + "_aero_training_data.pkl")
-    os.remove(file_name) 
+    # delete the aerodynamic surrogates written by the segments that trained them
+    for file_name in {getattr(segment.analyses.aerodynamics, 'filename', None) for segment in mission.segments if segment.analyses.aerodynamics is not None}:
+        if file_name and os.path.exists(file_name):
+            os.remove(file_name)
 
     print("\n============== Payload Range Report ==============\n")            
     try:
@@ -156,7 +164,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     print("\n===============================\n")
     return payload_range 
              
-def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage): 
+def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage,reserve_segment_tags=None): 
     """Calculates and plots the payload range diagram for a fuel-bases aircraft by modifying the
     cruise segment range and weights of the aicraft .
 
@@ -171,10 +179,14 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             mission             data structure for mission                   [-] 
             cruise_segment_tag  string of cruise segment                     [string]
             fuel_reserve_percentage            reserve fuel                                 [unitless] 
+            reserve_segment_tags  tags of segments excluded from range       [list of str]
             
         Outputs: 
             payload_range       data structure of payload range properties   [m/s]
     """ 
+    if reserve_segment_tags is None:
+        reserve_segment_tags = []
+
     # unpack
     mass = vehicle.mass_properties
     if not mass.max_payload:
@@ -238,18 +250,21 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         # Define takeoff weight
         mission.segments[0].analyses.vehicle.mass_properties.takeoff  = TOW[i]
         mission.segments[0].analyses.vehicle.mass_properties.payload  = PLD[i]
-        mission.segments[0].analyses.vehicle.mass_properties.fuel     = FUEL[i]
+
+        # Load each configuration's tanks with this point's fuel so tank conditions match the takeoff weight
+        for mission_segment in mission.segments:
+            set_vehicle_fuel_mass(mission_segment.analyses.vehicle, FUEL[i])
 
 
         # Evaluate mission with current TOW
         results = mission.evaluate()
         segment = results.segments[cruise_segment_tag]
 
-        for segment in  mission.segments:
-            segment.analyses.aerodynamics.settings.reuse_training_data = True
+        for mission_segment in  mission.segments:
+            mission_segment.analyses.aerodynamics.settings.reuse_training_data = True
             # Neutral point is now computed — disable recomputation for speed
-            if segment.analyses.stability != None: 
-                segment.analyses.stability.settings.compute_neutral_point = False
+            if mission_segment.analyses.stability != None: 
+                mission_segment.analyses.stability.settings.compute_neutral_point = False
         
         
         # Distance convergency in order to have total fuel equal to target fuel 
@@ -260,6 +275,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         tol     = 1.    # fuel convergency tolerance
         err     = 9999. # error to be minimized
         iter    = 0     # iteration count
+        previous_dist, previous_missing = None, None
 
         while abs(err) > tol and iter < maxIter:
             iter = iter + 1
@@ -276,11 +292,17 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             CruiseDist = np.diff( segment.conditions.frames.inertial.position_vector[[0,-1],0] )[0]        # Distance [m]
             CruiseFuel = segment.conditions.weights.vehicle.mass[0,0] - segment.conditions.weights.vehicle.mass[-1,0]    # [kg]
             
-            # Current specific range (m/kg)
-            CruiseSR    = CruiseDist / CruiseFuel        # [m/kg]
-
-            # Estimated distance that will result in total fuel burn = target fuel
-            DeltaDist  =  CruiseSR *  missingFuel
+            # Distance step that zeroes the missing fuel: from the cruise's specific range on the first iteration,
+            # then a secant update on the last two (distance, missing fuel) pairs
+            slope = None
+            if previous_dist is not None and CruiseDist != previous_dist:
+                slope = (missingFuel - previous_missing) / (CruiseDist - previous_dist)   # [kg/m], negative
+            if slope is not None and slope < 0:
+                DeltaDist = -missingFuel / slope
+            else:
+                CruiseSR  = CruiseDist / CruiseFuel        # [m/kg]
+                DeltaDist = CruiseSR * missingFuel
+            previous_dist, previous_missing = CruiseDist, missingFuel
             mission.segments[cruise_segment_tag].distance = (CruiseDist + DeltaDist)
 
             # running mission with new distance
@@ -296,7 +318,10 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         if (CruiseDist + DeltaDist) <=0: # This raise exception can be reworked but it is good to have this here
             raise Exception('Negative Cruise distance not enough fuel for fixed portions of flight (To -> Climb)')
         # Allocating resulting range in ouput array.
-        R[i] =  results.segments[-1].conditions.frames.inertial.position_vector[-1,0]
+        reserve_distance = 0.
+        for tag in reserve_segment_tags:
+            reserve_distance += np.diff(results.segments[tag].conditions.frames.inertial.position_vector[[0,-1],0])[0]
+        R[i] =  results.segments[-1].conditions.frames.inertial.position_vector[-1,0] - reserve_distance
         
     # Inserting point (0,0) in output arrays
     R.insert(0,0)

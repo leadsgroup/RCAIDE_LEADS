@@ -9,8 +9,8 @@
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt
-from scipy.spatial import ConvexHull
-from shapely.geometry import Polygon
+from scipy.spatial import ConvexHull, QhullError
+from shapely.geometry import Polygon, LineString, box
 import matplotlib.cm as cm
 from scipy.interpolate import griddata
 import matplotlib.tri as tri
@@ -31,7 +31,8 @@ def plot_load_diagram(results,
                       x_axis_upper_limit        = None,
                       y_axis_lower_limit        = None,
                       y_axis_upper_limit        = None,
-                      show_component_vectors    = False, 
+                      show_component_vectors    = False,
+                      color_map                 = 'coolwarm_r',
                       width                     = 11,
                       height                    = 7):
     """
@@ -105,73 +106,49 @@ def plot_load_diagram(results,
     fig.set_size_inches(width,height)
     axis = fig.add_subplot(1,1,1)
 
-    # ------------------------------------------------------------------------
-    # Stability Contours
-    # ------------------------------------------------------------------------
-    CG_LEMAC       = results.trim_results.CG_percent_of_LEMAC_location*100
-    SM             = results.trim_results.static_margin*100
+    # neutral point in %MAC; static margin depends only on CG position, SM = NP - CG
     SM_levels      = np.linspace(static_margin_lower_limit*100, static_margin_upper_limit*100, static_margin_resolution)
+    NP_percent_MAC = np.mean(results.trim_results.static_margin + results.trim_results.CG_percent_of_LEMAC_location)*100
 
-    # extend contour grid vertically so it covers the full hull range
-    mass_grid      = results.trim_results.mass
-    mass_min       = mass_grid.min()
-    mass_max       = mass_grid.max()
-    pad_lo         = mass_min - 0.1 * (mass_max - mass_min)
-    pad_hi         = mass_max + 0.1 * (mass_max - mass_min)
-    CG_LEMAC       = np.vstack([CG_LEMAC[0:1, :], CG_LEMAC, CG_LEMAC[-1:, :]])
-    SM             = np.vstack([SM[0:1, :],        SM,        SM[-1:, :]])
-    mass_grid      = np.vstack([np.full_like(mass_grid[0:1, :], pad_lo), mass_grid, np.full_like(mass_grid[-1:, :], pad_hi)])
-
-    CS             = axis.contourf(CG_LEMAC, mass_grid, SM, levels = SM_levels, cmap='coolwarm_r', extend='both', alpha = 0.5)
-    CS2            = axis.contour(CG_LEMAC, mass_grid, SM, levels = SM_levels,  colors='black', extend='both')
-    cbar           = fig.colorbar(CS, ax=axis)
-    axis.clabel(CS2, fontsize=10)
-    cbar.ax.set_ylabel('Static Margin', rotation =  90)        
-    
     # ------------------------------------------------------------------------    
     # load diamonds 
     # ------------------------------------------------------------------------
-    # cumulative load vector diamond 
-    points =  np.hstack((  100*np.atleast_2d(results.loading_results.CG_percent_of_LEMAC_location.flatten()).T,  np.atleast_2d(results.loading_results.mass.flatten()).T ))  
-    hull = ConvexHull(points) 
-    hull_points = points[hull.vertices] 
-    polygon = Polygon(hull_points)  
-    x_hull, y_hull = polygon.exterior.xy
-    
-    # fuel vector diamond 
-    points =  np.hstack((  100*np.atleast_2d(results.loading_results.CG_percent_of_LEMAC_location[:,0,0,:].flatten()).T,  np.atleast_2d(results.loading_results.mass[:,0,0,:].flatten()).T ))  
-    hull = ConvexHull(points) 
-    hull_points = points[hull.vertices] 
-    polygon = Polygon(hull_points)  
-    x_hull_f, y_hull_f = polygon.exterior.xy
-     
-    # passenger vector diamond      
-    points =  np.hstack((  100*np.atleast_2d(results.loading_results.CG_percent_of_LEMAC_location[:,:,0,0].flatten()).T,  np.atleast_2d(results.loading_results.mass[:,:,0,0].flatten()).T ))  
-    hull = ConvexHull(points) 
-    hull_points = points[hull.vertices] 
-    polygon = Polygon(hull_points)  
-    x_hull_p, y_hull_p = polygon.exterior.xy
-
-    # cargo vector diamond      
-    points =  np.hstack((  100*np.atleast_2d(results.loading_results.CG_percent_of_LEMAC_location[:,0,:,0].flatten()).T,  np.atleast_2d(results.loading_results.mass[:,0,:,0].flatten()).T ))  
-    hull = ConvexHull(points) 
-    hull_points = points[hull.vertices] 
-    polygon = Polygon(hull_points)  
-    x_hull_c, y_hull_c = polygon.exterior.xy    
+    # cumulative, fuel, passenger and cargo load vector diamonds, clipped at MTOW
+    CG_LEMAC_load = 100*results.loading_results.CG_percent_of_LEMAC_location
+    mass_load     = results.loading_results.mass
+    x_hull  , y_hull   = compute_loading_hull(CG_LEMAC_load, mass_load, results.MTOW)
+    x_hull_f, y_hull_f = compute_loading_hull(CG_LEMAC_load[:,0,0,:], mass_load[:,0,0,:], results.MTOW)
+    x_hull_p, y_hull_p = compute_loading_hull(CG_LEMAC_load[:,:,0,0], mass_load[:,:,0,0], results.MTOW)
+    x_hull_c, y_hull_c = compute_loading_hull(CG_LEMAC_load[:,0,:,0], mass_load[:,0,:,0], results.MTOW)
 
     # ------------------------------------------------------------------------    
     # PLot Bounds 
     # ------------------------------------------------------------------------
     x_bound     = max(x_hull) - min(x_hull)
     if x_axis_lower_limit == None: 
-        x_axis_lower_limit = min(x_hull) - x_bound / 2
+        x_axis_lower_limit = min(x_hull) - 0.1 * x_bound
     if x_axis_upper_limit == None: 
-        x_axis_upper_limit = max(x_hull) + x_bound / 2
+        x_axis_upper_limit = max(x_hull) + 0.1 * x_bound
+    y_bound     = results.MTOW - min(y_hull)
     if y_axis_lower_limit == None:
-        y_axis_lower_limit =  min(y_hull)
+        y_axis_lower_limit =  min(y_hull) - 0.05 * y_bound
     if y_axis_upper_limit == None:
-        y_axis_upper_limit =  max(y_hull)
-    
+        y_axis_upper_limit =  results.MTOW + 0.05 * y_bound
+
+    # ------------------------------------------------------------------------
+    # Stability Contours over the full plot area
+    # ------------------------------------------------------------------------
+    CG_grid, mass_grid = np.meshgrid(np.linspace(x_axis_lower_limit, x_axis_upper_limit, 200),
+                                     np.linspace(y_axis_lower_limit, y_axis_upper_limit, 2))
+    SM             = NP_percent_MAC - CG_grid
+    CS             = axis.contourf(CG_grid, mass_grid, SM, levels = SM_levels, cmap=color_map, extend='both', alpha = 0.5)
+    CS2            = axis.contour(CG_grid, mass_grid, SM, levels = SM_levels,  colors='black', extend='both')
+    cbar           = fig.colorbar(CS, ax=axis, format='%.0f')
+    y_label        = 0.5 * (y_axis_lower_limit + y_axis_upper_limit)
+    label_points   = [(NP_percent_MAC - level, y_label) for level in CS2.levels[::2] if x_axis_lower_limit < NP_percent_MAC - level < x_axis_upper_limit]
+    axis.clabel(CS2, fontsize=10, fmt='%.0f%%', manual=label_points, inline=True)
+    cbar.ax.set_ylabel('Static Margin (%)', rotation =  90)
+
     # ------------------------------------------------------------------------    
     # Maximum Takeoff Weight line
     # ------------------------------------------------------------------------
@@ -206,7 +183,7 @@ def plot_load_diagram(results,
     # ------------------------------------------------------------------------     
     axis.set_xlim(x_axis_lower_limit, x_axis_upper_limit) 
     axis.set_ylim(y_axis_lower_limit, y_axis_upper_limit)
-    axis.legend(loc='upper right')
+    axis.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False)
     axis.set_xlabel(r'$X_{CG}$/LEMAC (%)')
     axis.set_ylabel('Mass (kg)') 
     plt.grid(False) 
@@ -216,3 +193,20 @@ def plot_load_diagram(results,
         plt.savefig(save_filename + file_type)       
                                   
     return
+
+def compute_loading_hull(CG_LEMAC, mass, max_mass):
+    """Outline of a set of loading points clipped at max_mass; a line through them when they span no area (e.g. no cargo bays)."""
+    points = np.column_stack((CG_LEMAC.flatten(), mass.flatten()))
+    limit  = box(points[:,0].min() - 1, points[:,1].min() - 1, points[:,0].max() + 1, max_mass)
+    try:
+        hull = ConvexHull(points)
+    except QhullError:
+        order   = np.lexsort((points[:,0], points[:,1]))
+        clipped = LineString(points[order]).intersection(limit) if len(np.unique(points, axis=0)) > 1 else None
+        if clipped is None or clipped.is_empty or clipped.geom_type != 'LineString':
+            keep = points[order][points[order][:,1] <= max_mass]
+            return keep[:,0], keep[:,1]
+        x_line, y_line = clipped.xy
+        return np.array(x_line), np.array(y_line)
+    x_hull, y_hull = Polygon(points[hull.vertices]).intersection(limit).exterior.xy
+    return np.array(x_hull), np.array(y_hull)

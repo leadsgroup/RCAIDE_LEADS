@@ -114,22 +114,23 @@ class Untrimmed(Segment):
         
         # Update Conditions
         iterate.conditions = Process()
-        iterate.conditions.differentials         = Common.Update.differentials_time
-        iterate.conditions.orientations          = Common.Update.orientations
-        iterate.conditions.acceleration          = skip 
-        iterate.conditions.angular_acceleration  = skip 
-        iterate.conditions.altitude              = Common.Update.altitude
-        iterate.conditions.atmosphere            = Common.Update.atmosphere
-        iterate.conditions.gravity               = Common.Update.gravity
-        iterate.conditions.freestream            = Common.Update.freestream
-        iterate.conditions.network               = Common.Update.network
-        iterate.conditions.thrust                = Common.Update.thrust
-        iterate.conditions.aerodynamics          = Common.Update.aerodynamics
-        iterate.conditions.stability             = Common.Update.stability
-        iterate.conditions.weights               = Common.Update.weights
-        iterate.conditions.forces                = Common.Update.forces
-        iterate.conditions.moments               = Common.Update.moments
-        iterate.conditions.planet_position       = skip
+        iterate.conditions.differentials            = Common.Update.differentials_time
+        iterate.conditions.orientations             = Common.Update.orientations
+        iterate.conditions.acceleration             = skip
+        iterate.conditions.angular_acceleration     = skip
+        iterate.conditions.altitude                 = Common.Update.altitude
+        iterate.conditions.atmosphere               = Common.Update.atmosphere
+        iterate.conditions.gravity                  = Common.Update.gravity
+        iterate.conditions.freestream               = Common.Update.freestream
+        iterate.conditions.network                  = Common.Update.network
+        iterate.conditions.thrust                   = Common.Update.thrust
+        iterate.conditions.aerodynamics             = Common.Update.aerodynamics
+        iterate.conditions.aero_propulsion_coupling = Common.Update.aero_propulsion_coupling
+        iterate.conditions.stability                = Common.Update.stability
+        iterate.conditions.weights                  = Common.Update.weights
+        iterate.conditions.forces                   = Common.Update.forces
+        iterate.conditions.moments                  = Common.Update.moments
+        iterate.conditions.planet_position          = skip
 
         # Solve Residuals 
         iterate.unknowns.mission.controls                = Common.Unpack_Unknowns.control_surfaces

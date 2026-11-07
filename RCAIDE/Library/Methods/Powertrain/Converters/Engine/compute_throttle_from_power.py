@@ -5,9 +5,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
- # RCAIDE imports 
-import RCAIDE
-from RCAIDE.Framework.Core                                         import Units
+ # RCAIDE imports
+from RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_power_available import compute_power_available
 
 # package imports
 import numpy as np 
@@ -23,7 +22,7 @@ def compute_throttle_from_power(engine,conditions):
     ----------
     engine : RCAIDE.Library.Components.Propulsors
         Engine instance with the following attributes:
-            - sea_level_power : float
+            - sealevel_static_power : float
                 Maximum power output at sea level [W]
             - flat_rate_altitude : float
                 Altitude below which power remains constant [m]
@@ -76,7 +75,8 @@ def compute_throttle_from_power(engine,conditions):
     References
     ----------
     [1] Gudmundsson, S. (2014). General Aviation Aircraft Design: Applied Methods and Procedures. Butterworth-Heinemann.
-    [2] Gagg and Ferrar
+    [2] Gagg, R., and Farrar, E. (1934). Altitude Performance of Aircraft Engines Equipped with Gear-Driven
+        Superchargers. SAE Technical Paper 340096. https://doi.org/10.4271/340096
 
     See Also
     --------
@@ -90,32 +90,17 @@ def compute_throttle_from_power(engine,conditions):
     
     # Unpack engine operating conditions 
     engine_conditions = conditions.energy.converters[engine.tag] 
-    PSLS              = engine.sea_level_power
-    h_flat            = engine.flat_rate_altitude
-    P                 = engine_conditions.power.propulsive*1.0
+    P                 = engine_conditions.power.propulsive
     PSFC              = engine.power_specific_fuel_consumption
-    
-    altitude_virtual = altitude - h_flat        
-    altitude_virtual[altitude_virtual<0.] = 0.   
-    atmo             = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmo_values_0    = atmo.compute_values(0,0) 
-    rho0             = atmo_values_0.density[0,0] 
-    atmo_values      = atmo.compute_values(altitude_virtual,delta_isa) 
-    rho              = atmo_values.density 
-
-    #Compute density ratio 
-    sigma        = rho / rho0 
-    Pavailable   = PSLS * (sigma - 0.117) / 0.883        
-    Pavailable[h_flat > altitude] = PSLS 
+    Pavailable        = compute_power_available(engine, altitude, delta_isa)
  
     # Compute throttle 
     throttle = P/Pavailable 
-    P[P<0.] = 0. 
+    P        = np.maximum(P, 0.) 
 
     # Compute fuel flow rate
-    SFC             = PSFC* Units['lb/hp/hr']
     a               = np.zeros_like(altitude)
-    m_dot_fuel      = np.fmax(P*SFC,a)
+    m_dot_fuel      = np.fmax(P*PSFC,a)
     
     # Store outputs 
     engine_conditions.power_specific_fuel_consumption = PSFC

@@ -135,5 +135,5 @@ def parasite_drag_pylon(state,settings,geometry):
                         compressibility_factor    = pylon_compr_fact   ,
                         reynolds_factor           = pylon_rey_fact   ,
                         form_factor               = pylon_FF   , )
-                    drag.parasite[ nacelle.tag + '_pylon'] = pylon_result 
+                    drag.parasite.copy_values({nacelle.tag + '_pylon': pylon_result})
     return 

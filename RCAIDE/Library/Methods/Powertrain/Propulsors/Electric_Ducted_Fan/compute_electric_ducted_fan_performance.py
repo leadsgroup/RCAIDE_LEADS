@@ -13,8 +13,6 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_
 
 # pacakge imports  
 import numpy as np 
-from copy import deepcopy
-
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_electric_ducted_fan_performance
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -144,12 +142,6 @@ def compute_electric_ducted_fan_performance(propulsor, state, center_of_gravity=
     EDF_conditions.outputs.moment      = moment
 
     EDF_conditions.outputs.power.propulsive               = conditions.energy.converters[ducted_fan.tag].power
-    EDF_conditions.outputs.power.mechanical               = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.electrical               = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.chemical                 = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.pneumatic                = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.hydraulic                = 0.0 * state.ones_row(1)
-    EDF_conditions.outputs.power.thermal                  = 0.0 * state.ones_row(1)
 
     return EDF_conditions.inputs, EDF_conditions.outputs, stored_results_flag, stored_propulsor_tag
                 
@@ -188,21 +180,17 @@ def reuse_stored_electric_ducted_fan_data(propulsor,state,network,stored_propuls
     ducted_fan_0               = network.propulsors[stored_propulsor_tag].ducted_fan 
     esc_0                      = network.propulsors[stored_propulsor_tag].electronic_speed_controller 
     
-    # deep copy results 
-    conditions.energy.converters[motor.tag]        = deepcopy(conditions.energy.converters[motor_0.tag])
-    conditions.energy.converters[ducted_fan.tag]   = deepcopy(conditions.energy.converters[ducted_fan_0.tag])
-    conditions.energy.modulators[esc.tag]          = deepcopy(conditions.energy.modulators[esc_0.tag])
-  
-    # compute moment
+    # copy the stored propulsor's results, its own and its components', reusing memory
+    conditions.energy.propulsors[propulsor.tag].copy_values(conditions.energy.propulsors[stored_propulsor_tag])
+    conditions.energy.converters[motor.tag].copy_values(conditions.energy.converters[motor_0.tag])
+    conditions.energy.converters[ducted_fan.tag].copy_values(conditions.energy.converters[ducted_fan_0.tag])
+    conditions.energy.modulators[esc.tag].copy_values(conditions.energy.modulators[esc_0.tag])
+
+    # the moment depends on this propulsor's position
     thrust_vector           = conditions.energy.converters[ducted_fan.tag].thrust
     moment_vector           = 0*state.ones_row(3)
     moment_vector[:,0]      = ducted_fan.origin[0][0]  -  center_of_gravity[0][0]
     moment_vector[:,1]      = ducted_fan.origin[0][1]  -  center_of_gravity[0][1]
     moment_vector[:,2]      = ducted_fan.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, thrust_vector)
-
-    # pack results
-    conditions.energy.converters[ducted_fan.tag].moment            = moment
-    conditions.energy.propulsors[propulsor.tag].outputs.thrust     = thrust_vector
-    conditions.energy.propulsors[propulsor.tag].outputs.moment     = moment
+    conditions.energy.propulsors[propulsor.tag].outputs.moment = np.cross(moment_vector, thrust_vector)
     return conditions.energy.propulsors[propulsor.tag].inputs, conditions.energy.propulsors[propulsor.tag].outputs

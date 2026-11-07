@@ -33,6 +33,13 @@ class Evaluate(Segment):
         (psi). 1 = all battery, 0 = all fuel cell. Required for Hybrid
         networks; auto-set for Fuel (0), Electric (1), and Fuel_Cell (0)
         networks if left as None.
+
+    ground_operations : bool
+        True for stationary ground segments (e.g. Ground.Dormancy) where
+        thermal/pressure-regulation loads (tank heaters) are assumed to be
+        met by an external ground power unit rather than the aircraft's own
+        generators -- see RCAIDE.Framework.Analyses.Energy.Energy.evaluate.
+        False (default) for every flight segment.
     """
     
     def __defaults__(self):
@@ -66,6 +73,7 @@ class Evaluate(Segment):
         self.bank_angle                                        = 0.0
         self.hybrid_power_split_ratio                          = None
         self.battery_fuel_cell_power_split_ratio               = None
+        self.ground_operations                                 = False
         self.initial_battery_conditions                        = Data()
         self.initial_battery_conditions.state_of_charge        = 1.0
         self.initial_battery_conditions.cell_temperature       = None
@@ -112,23 +120,24 @@ class Evaluate(Segment):
         
         # Update Conditions
         iterate.conditions = Process()
-        iterate.conditions.differentials         = Common.Update.differentials_time
-        iterate.conditions.orientations          = Common.Update.orientations
-        iterate.conditions.acceleration          = Common.Update.acceleration
-        iterate.conditions.angular_acceleration  = Common.Update.angular_acceleration
-        iterate.conditions.altitude              = Common.Update.altitude
-        iterate.conditions.atmosphere            = Common.Update.atmosphere
-        iterate.conditions.gravity               = Common.Update.gravity
-        iterate.conditions.freestream            = Common.Update.freestream
-        iterate.conditions.network               = Common.Update.network
-        iterate.conditions.thrust                = Common.Update.thrust
-        iterate.conditions.aerodynamics          = Common.Update.aerodynamics
-        iterate.conditions.aerostructures        = Common.Update.aerostructures
-        iterate.conditions.weights               = Common.Update.weights
-        iterate.conditions.stability             = Common.Update.stability
-        iterate.conditions.forces                = Common.Update.forces
-        iterate.conditions.moments               = Common.Update.moments
-        iterate.conditions.planet_position       = Common.Update.planet_position
+        iterate.conditions.differentials            = Common.Update.differentials_time
+        iterate.conditions.orientations             = Common.Update.orientations
+        iterate.conditions.acceleration             = Common.Update.acceleration
+        iterate.conditions.angular_acceleration     = Common.Update.angular_acceleration
+        iterate.conditions.altitude                 = Common.Update.altitude
+        iterate.conditions.atmosphere               = Common.Update.atmosphere
+        iterate.conditions.gravity                  = Common.Update.gravity
+        iterate.conditions.freestream               = Common.Update.freestream
+        iterate.conditions.network                  = Common.Update.network
+        iterate.conditions.thrust                   = Common.Update.thrust
+        iterate.conditions.aerodynamics             = Common.Update.aerodynamics
+        iterate.conditions.aero_propulsion_coupling = Common.Update.aero_propulsion_coupling
+        iterate.conditions.aerostructures           = Common.Update.aerostructures
+        iterate.conditions.weights                  = Common.Update.weights
+        iterate.conditions.stability                = Common.Update.stability
+        iterate.conditions.forces                   = Common.Update.forces
+        iterate.conditions.moments                  = Common.Update.moments
+        iterate.conditions.planet_position          = Common.Update.planet_position
 
         # Solve Residuals
         iterate.residuals                  = Process()

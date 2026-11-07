@@ -73,7 +73,9 @@ def aerodynamics(mission):
                 if last_tag!=  None and 'compute' in mission.segments[last_tag].analyses.aerodynamics.process.keys(): 
                     segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings
                     segment.analyses.aerodynamics.surrogates                          = mission.segments[last_tag].analyses.aerodynamics.surrogates  
-                    segment.analyses.aerodynamics.settings.vortex_distribution        = mission.segments[last_tag].analyses.aerodynamics.settings.vortex_distribution 
+                    segment.analyses.aerodynamics.vortex_distribution                 = mission.segments[last_tag].analyses.aerodynamics.vortex_distribution
+                    if segment.analyses.aerodynamics is not mission.segments[last_tag].analyses.aerodynamics:
+                        segment.analyses.aerodynamics.surrogate_owner                 = mission.segments[last_tag].analyses.aerodynamics
                     segment.analyses.aerodynamics.aileron_flag                        = mission.segments[last_tag].analyses.aerodynamics.aileron_flag 
                     segment.analyses.aerodynamics.flap_flag                           = mission.segments[last_tag].analyses.aerodynamics.flap_flag    
                     segment.analyses.aerodynamics.rudder_flag                         = mission.segments[last_tag].analyses.aerodynamics.rudder_flag  
@@ -86,4 +88,5 @@ def aerodynamics(mission):
                     segment.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), segment.analyses.vehicle.tag +"_" + segment.analyses.aerodynamics.tag +"_aero_training_data.pkl")
                     segment.analyses.aerodynamics.initialize(segment.analyses.vehicle,aerostructural_analyses = segment.analyses.aerostructures) 
                     last_tag = tag 
+                segment.analyses.aerodynamics.append_operating_conditions(segment)
     return 

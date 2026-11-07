@@ -80,7 +80,7 @@ def differentials_dimensionless(segment):
     # pack
     numerics.dimensionless.control_points = x
     numerics.dimensionless.differentiate  = D
-    numerics.dimensionless.integrate      = I    
-    
+    numerics.dimensionless.integrate      = I
+
     return
  

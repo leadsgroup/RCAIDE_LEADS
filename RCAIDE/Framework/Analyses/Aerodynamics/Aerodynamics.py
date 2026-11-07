@@ -10,6 +10,7 @@
 # RCAIDE imports   
 from RCAIDE.Framework.Core     import Data
 from RCAIDE.Framework.Analyses import Analysis  
+from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import append_drag_conditions
 
 # package imports 
 import numpy as np
@@ -50,8 +51,9 @@ class Aerodynamics(Analysis):
         self.settings.maximum_lift_coefficient                           = np.inf 
         self.settings.fuselage_lift_correction                           = 1.20
         self.settings.trim_drag_correction_factor                        = 1.02
-        self.settings.wing_parasite_drag_form_factor                     = 1.1  
-        self.settings.fuselage_parasite_drag_form_factor                 = 2.5  
+        self.settings.wing_parasite_drag_form_factor                     = 1.1
+        self.settings.fuselage_parasite_drag_form_factor                 = 2.5
+        self.settings.nacelle_parasite_drag_form_factor                  = 1.0
         self.settings.drag_reduction_factors                             = Data()
         self.settings.drag_reduction_factors.parasite_drag               = 0.0  # Reduction factors are proportional (.1 is a 10% drag reduction)
         self.settings.drag_reduction_factors.induced_drag                = 0.0  # Reduction factors are proportional (.1 is a 10% drag reduction)
@@ -61,7 +63,6 @@ class Aerodynamics(Analysis):
         self.settings.drag_coefficient_increment                         = 0.0   
         self.settings.recalculate_total_wetted_area                      = False
         self.settings.oswald_efficiency_factor                           = None
-        self.settings.span_efficiency                                    = None
         self.settings.store_training_data                                = False
         self.settings.reuse_training_data                                = False
         self.settings.use_surrogate                                      = True  
@@ -75,8 +76,8 @@ class Aerodynamics(Analysis):
         self.settings.supersonic.fuselage_parasite_drag_begin_blend_mach = 0.91
         self.settings.supersonic.fuselage_parasite_drag_end_blend_mach   = 0.99        
      
+        self.vortex_distribution                                         = None
         self.stability_derivatives                                       = Data()   
-        self.stability_derivatives.M_0                                   = None
         self.stability_derivatives.Clift_alpha                           = None
         self.stability_derivatives.CX_alpha                              = None
         self.stability_derivatives.CX_u                                  = None
@@ -214,6 +215,12 @@ class Aerodynamics(Analysis):
         
         return results
     
+    def append_operating_conditions(self, segment):
+        """Allocates the segment's aerodynamic outputs before it is solved and gives it the analysis's mesh."""
+        append_drag_conditions(segment, segment.analyses.vehicle)
+        segment.state.context.config.vortex_distribution = self.vortex_distribution
+        return
+
     def post_process(self):
         """The default post processing function.
 

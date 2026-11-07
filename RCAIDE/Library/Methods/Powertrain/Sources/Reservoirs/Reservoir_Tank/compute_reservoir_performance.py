@@ -6,6 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
+from RCAIDE.Framework.Core.Physical_Constants import STEFAN_BOLTZMANN
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -59,7 +60,7 @@ def compute_reservoir_performance(reservoir,coolant_line,state,network):
 
     reservoir_conditions = state.conditions.energy.distributors[coolant_line.tag][reservoir.tag]
     R[0] = T_coolant_scaled[0,0] - reservoir_conditions.coolant_temperature[0,0] / T_scale
-    state.residuals.network[key] = R
+    state.residuals.network[key][:, 0] = R
 
     reservoir_conditions.coolant_temperature[1:,0] = T_coolant_unkn[1:,0]
 
@@ -74,12 +75,11 @@ def compute_reservoir_heat_loss_to_environment(reservoir,T_reservoir,T_ambient):
     conductivity   = reservoir.material.conductivity
     emissivity_res = reservoir.material.emissivity
 
-    sigma          = 5.69e-8  # Stefan Boltzmann Constant
     h              = 1000.    # [W/m^2-K]
     emissivity_air = 0.9
 
     dQ_dt_cond = conductivity * A_surface * (T_reservoir - T_ambient) / thickness
     dQ_dt_conv = h * A_surface * (T_reservoir - T_ambient)
-    dQ_dt_rad  = sigma * A_surface * ((emissivity_res * T_reservoir**4) - (emissivity_air * T_ambient**4))
+    dQ_dt_rad  = STEFAN_BOLTZMANN * A_surface * ((emissivity_res * T_reservoir**4) - (emissivity_air * T_ambient**4))
 
     return dQ_dt_cond + dQ_dt_conv + dQ_dt_rad

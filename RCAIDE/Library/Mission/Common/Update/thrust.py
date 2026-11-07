@@ -27,8 +27,8 @@ def thrust(segment):
 
     # pack conditions
     conditions = segment.state.conditions
-    conditions.frames.body.total_force_vector       = conditions.energy.total_force_vector
-    conditions.frames.body.total_moment_vector      = conditions.energy.total_moment_vector 
+    conditions.frames.body.total_force_vector[...]  = conditions.energy.total_force_vector
+    conditions.frames.body.total_moment_vector[...] = conditions.energy.total_moment_vector 
     
     if type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude or\
         type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_AVL_Trimmed or \
@@ -38,6 +38,5 @@ def thrust(segment):
     else: 
         I = segment.state.numerics.time.integrate         
         conditions.energy.fuel_consumption        = np.dot(I,conditions.weights.vehicle.mass_rate)
-        conditions.energy.cumulative_fuel_consumption =  conditions.energy.fuel_consumption
-        if segment.state.initials:  
-            conditions.energy.cumulative_fuel_consumption += segment.state.initials.conditions.energy.cumulative_fuel_consumption[-1]
+        offset = segment.state.initials.conditions.energy.cumulative_fuel_consumption[-1] if segment.state.initials else 0.
+        conditions.energy.cumulative_fuel_consumption = conditions.energy.fuel_consumption + offset

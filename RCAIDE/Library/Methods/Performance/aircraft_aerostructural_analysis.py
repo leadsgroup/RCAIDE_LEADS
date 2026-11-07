@@ -208,7 +208,7 @@ def aircraft_aerostructural_analysis(analyses                         = None,
         # run aerostructures analyses
         FEA_results = FEA(conditions,
                           VLM_results,
-                          analyses.aerodynamics.settings.vortex_distribution,
+                          VLM_results.VD,
                           analyses.aerostructures.settings,analyses.vehicle)
         FEA_results.lift_coefficient = VLM_results.CLift
 

@@ -91,7 +91,7 @@ def plot_pressure_coefficient_distribution(results,
     RCAIDE.Library.Plots.Aerodynamics.plot_aerodynamic_coefficients : Overall coefficient plots
     """
      
-    VD = results.vortex_distribution
+    VD = results.vortex_distribution   # one geometry row: the mesh does not change with the flight condition
     CP = results.aerodynamics.coefficients.differential_surface_pressure
 
     n_cw  = VD.n_cw
@@ -102,8 +102,8 @@ def plot_pressure_coefficient_distribution(results,
         figure_name  = r'$\Delta$ $C_P$ Surface Distribution_' + str(ti + 1)
         fig          = plt.figure(figure_name)
         axes         = plt.subplot(1, 1, 1)
-        x_max        = max(VD.XC[ti]) + 2
-        y_max        = max(VD.YC[ti]) + 2
+        x_max        = max(VD.XC[0]) + 2
+        y_max        = max(VD.YC[0]) + 2
         axes.set_ylim(x_max, 0)
         axes.set_xlim(-y_max, y_max)
         fig_w        = 10.0
@@ -117,12 +117,12 @@ def plot_pressure_coefficient_distribution(results,
         fig.suptitle(figure_title, fontsize=16)
 
         for i in range(VD.n_w[0][0]):
-            n_pts   = (n_sw[ti, i] + 1) * (n_cw[ti, i] + 1)
-            xc_pts  = VD.X[ti, i * n_pts:(i + 1) * n_pts]
-            x_pts   = np.reshape(np.atleast_2d(VD.XC[ti, b_pts[i]:b_pts[i + 1]]).T, (n_sw[ti, i], -1))
-            y_pts   = np.reshape(np.atleast_2d(VD.YC[ti, b_pts[i]:b_pts[i + 1]]).T, (n_sw[ti, i], -1))
-            z_pts   = np.reshape(np.atleast_2d(CP[ti,  b_pts[i]:b_pts[i + 1]]).T,   (n_sw[ti, i], -1))
-            x_pts_p = x_pts * ((n_cw[ti, i] + 1) / n_cw[ti, i]) - x_pts[0, 0] * ((n_cw[ti, i] + 1) / n_cw[ti, i]) + xc_pts[0]
+            n_pts   = (n_sw[0, i] + 1) * (n_cw[0, i] + 1)
+            xc_pts  = VD.X[0, i * n_pts:(i + 1) * n_pts]
+            x_pts   = np.reshape(np.atleast_2d(VD.XC[0, b_pts[i]:b_pts[i + 1]]).T, (n_sw[0, i], -1))
+            y_pts   = np.reshape(np.atleast_2d(VD.YC[0, b_pts[i]:b_pts[i + 1]]).T, (n_sw[0, i], -1))
+            z_pts   = np.reshape(np.atleast_2d(CP[ti,  b_pts[i]:b_pts[i + 1]]).T,   (n_sw[0, i], -1))
+            x_pts_p = x_pts * ((n_cw[0, i] + 1) / n_cw[0, i]) - x_pts[0, 0] * ((n_cw[0, i] + 1) / n_cw[0, i]) + xc_pts[0]
             norm    = TwoSlopeNorm(vmin=minimum_Cp, vcenter=0, vmax=maximum_Cp)
             levels  = np.linspace(minimum_Cp, maximum_Cp, discretization)
             CS      = axes.contourf(y_pts, x_pts_p, z_pts, levels=levels, cmap='coolwarm', norm=norm, extend='both')
