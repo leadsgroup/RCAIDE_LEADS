@@ -7,8 +7,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
 
+from RCAIDE.Framework.Core                import Data
 from RCAIDE.Framework.Mission.Common      import State, Segment_Layout
-from RCAIDE.Library.Mission.Solver.solver import Segment_Problem, solver_slices
+from RCAIDE.Library.Mission.Solver.solver import Segment_Problem, iterate_optimizer, solver_slices
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  main
@@ -53,12 +54,18 @@ def check_segment_problem_reads_and_writes_the_layout(N):
     problem.residual_index               = {f"Residual_{i + 1}": i for i in range(2 * N)}
     problem.postprocess.nothing          = 0
 
+    # a stand-in for one iterate, which writes the residuals in place
+    def iterate(segment):
+        segment.state.residuals.network.torque[...] = 7.0
+
+    problem.segment = Data(state=state, process=Data(iterate=iterate))
+
     # the optimizer's inputs reach the unknowns in the state
     problem.set_inputs(None, np.arange(2.0 * N))
+    iterate_optimizer(problem)
     assert np.array_equal(state.unknowns.network.rpm[:, 0], np.arange(N, 2.0 * N))
 
     # the optimizer's constraints come from the residuals in the state
-    state.residuals.network.torque[...] = 7.0
     values = problem.output_values([["Residual_1", "=", 0], [f"Residual_{2 * N}", "=", 0], ["nothing", 1, 1]])
     assert np.array_equal(values, [-1.0, 7.0, 0.0])
     return

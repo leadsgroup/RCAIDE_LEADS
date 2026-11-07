@@ -112,18 +112,6 @@ def orientation(segment):
         segment.state.conditions.frames.body.inertial_rotations[:,0] = -segment.bank_angle
     segment.state.conditions.frames.body.inertial_rotations[:,2] =  segment.state.conditions.frames.planet.true_heading[:,0]
 
-    # Sideslip Angle
-    if ctrls.sideslip_angle.active:
-        # beta is a free solver unknown -- solver finds the trimmed sideslip
-        segment.state.conditions.frames.wind.body_rotations[:,2] = segment.state.unknowns.mission.sideslip_angle[:,0]
-    elif segment.crosswind_speed != 0.0:
-        # beta computed kinematically from crosswind speed (crab/slip approach)
-        beta = np.arcsin(np.clip(segment.crosswind_speed / segment.air_speed, -1.0, 1.0))
-        segment.state.conditions.frames.wind.body_rotations[:,2] = beta
-    else:
-        # beta prescribed directly on the segment (legacy behaviour)
-        segment.state.conditions.frames.wind.body_rotations[:,2] = segment.sideslip_angle
-
     # Velocity Control
     if ctrls.velocity.active:
         segment.state.conditions.frames.inertial.velocity_vector[:,0] = segment.state.unknowns.mission.velocity[:,0]
@@ -131,8 +119,19 @@ def orientation(segment):
     # Altitude Control
     if ctrls.altitude.active:
         segment.state.conditions.frames.inertial.position_vector[:,2] = -segment.state.unknowns.mission.altitude[:,0]
-        
-    return 
-            
-            
-            
+
+    # Sideslip Angle, after velocity control because a crosswind uses the airspeed at each control point
+    segment.state.conditions.frames.wind.body_rotations[:,2] = sideslip_angle(segment)
+
+    return
+
+
+def sideslip_angle(segment):
+    """Sideslip angle at each control point: a solver unknown, or from a crosswind, or prescribed on the segment."""
+    if segment.assigned_control_variables.sideslip_angle.active:
+        return segment.state.unknowns.mission.sideslip_angle[:,0]
+    if segment.crosswind_speed != 0.0:
+        # beta = arcsin(v/V), Etkin & Reid (1.6,4); zero where the vehicle is not moving
+        V = np.linalg.norm(segment.state.conditions.frames.inertial.velocity_vector, axis=1)
+        return np.arcsin(np.clip(np.divide(segment.crosswind_speed, V, out=np.zeros_like(V), where=V > 0.), -1.0, 1.0))
+    return segment.sideslip_angle
