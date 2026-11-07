@@ -100,6 +100,7 @@ def plot_load_diagram(results,
                   'ytick.labelsize': ps.axis_font_size,
                   'axes.titlesize': ps.title_font_size}
     plt.rcParams.update(parameters)
+    plt.rcParams['font.family'] = 'Times New Roman'
  
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height)
@@ -110,7 +111,8 @@ def plot_load_diagram(results,
     # ------------------------------------------------------------------------
     CG_LEMAC       = results.trim_results.CG_percent_of_LEMAC_location*100
     SM             = results.trim_results.static_margin*100
-    SM_levels      = np.linspace(static_margin_lower_limit*100, static_margin_upper_limit*100, static_margin_resolution)
+    SM_levels      = np.arange(static_margin_lower_limit*100 - 2.5, static_margin_upper_limit*100 + 2.5, 2.5)
+    # SM_levels      = np.linspace(static_margin_lower_limit*100, static_margin_upper_limit*100, static_margin_resolution)
     CS             = axis.contourf(CG_LEMAC, results.trim_results.mass, SM, levels = SM_levels, cmap='viridis', extend='both', alpha = 0.5) 
     CS2            = axis.contour(CG_LEMAC, results.trim_results.mass,SM, levels = SM_levels,  colors='black', extend='both') 
     cbar           = fig.colorbar(CS, ax=axis)

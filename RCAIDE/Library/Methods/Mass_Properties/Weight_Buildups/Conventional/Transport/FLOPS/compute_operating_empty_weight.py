@@ -9,6 +9,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Data ,  Units 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight 
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS as FLOPS
+from RCAIDE.Library.Components import Component
 # python imports 
 import numpy as np
 
@@ -120,11 +121,38 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
     W_oper = FLOPS.compute_operating_items_weight(vehicle) 
-    
+
+    # Update system component masses if not user defined. If user defined than update the outputs
+    for system in vehicle.systems:
+        if isinstance(system,Component):
+            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Pilots:
+                    system.mass_properties.mass = W_oper.flight_crew
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Attendants:
+                    system.mass_properties.mass = W_oper.flight_attendants
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Miscellaneous: 
+                    system.mass_properties.mass = W_oper.misc
+                system.mass_properties.calculated_flag = True
+            else:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Pilots:
+                    W_oper.flight_crew = system.mass_properties.mass
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Attendants:
+                    W_oper.flight_attendants    = system.mass_properties.mass
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Miscellaneous: 
+                    W_oper.misc   = system.mass_properties.mass
+
     ##-------------------------------------------------------------------------------         
     # System Weight
     ##------------------------------------------------------------------------------- 
     W_systems = FLOPS.compute_systems_weight(vehicle) 
+    for system in vehicle.systems:
+            if isinstance(system,Component):
+                if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
+                    if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Furnishings:
+                        system.mass_properties.mass += W_oper.passenger_service
+                else:
+                    if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Furnishings:
+                        W_oper.passenger_service = system.mass_properties.mass/3
     
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
@@ -168,8 +196,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
         for propulsor in network.propulsors:
-            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter)\
-                                            +W_energy_network.W_engine_controls / number_of_engines
+            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter\
+                                            +W_energy_network.W_engine_controls + W_energy_network.W_fuel_system) / number_of_engines
             propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
         
         # Electric-Powered Propulsors  

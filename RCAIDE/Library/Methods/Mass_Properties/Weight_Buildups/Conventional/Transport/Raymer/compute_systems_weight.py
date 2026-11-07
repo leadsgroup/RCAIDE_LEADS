@@ -162,9 +162,11 @@ def compute_systems_weight(vehicle):
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
                     system.mass_properties.mass = WHYD * Units.lbs
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
-                    system.mass_properties.mass = WAC * Units.lbs + WAC * Units.lbs
+                    system.mass_properties.mass = WAC * Units.lbs + WAI * Units.lbs
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
                     system.mass_properties.mass = WIN * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Furnishings:
+                    system.mass_properties.mass = WFURN * Units.lbs
                 system.mass_properties.calculated_flag = True
             else:
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
@@ -182,6 +184,8 @@ def compute_systems_weight(vehicle):
                     WAC    = system.mass_properties.mass * 0.5 / Units.lbs
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
                     WIN    = system.mass_properties.mass / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Furnishings:
+                    WFURN    = system.mass_properties.mass / Units.lbs
 
 
     output                     = Data()

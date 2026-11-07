@@ -22,3 +22,7 @@ from .Hydraulics              import Hydraulics
 from .Instruments             import Instruments 
 from .Systems                 import Systems
 from .Water_Tank              import Water_Tank
+from .Pilots                  import Pilots
+from .Flight_Attendants       import Flight_Attendants
+from .Miscellaneous           import Miscellaneous
+from .Furnishings             import Furnishings

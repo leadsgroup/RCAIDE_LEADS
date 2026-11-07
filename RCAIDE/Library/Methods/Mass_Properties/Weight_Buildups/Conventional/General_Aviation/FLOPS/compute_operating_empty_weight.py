@@ -6,6 +6,7 @@
 #  Imports
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
+from RCAIDE.Library.Components import Component
 from RCAIDE.Framework.Core import Data ,  Units 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
 from RCAIDE.Library.Attributes.Materials.Aluminum import Aluminum
@@ -39,8 +40,17 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------             
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
-    W_oper = FLOPS.compute_operating_items_weight(vehicle)      
-    
+    W_oper = FLOPS.compute_operating_items_weight(vehicle)  
+    for system in vehicle.systems:
+        if isinstance(system,Component):
+            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Pilots:
+                    system.mass_properties.mass = W_oper.flight_crew
+                system.mass_properties.calculated_flag = True
+            else:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Pilots:
+                    W_oper.flight_crew = system.mass_properties.mass    
+
     ##-------------------------------------------------------------------------------         
     # System Weight
     ##------------------------------------------------------------------------------- 
@@ -89,7 +99,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
         for propulsor in network.propulsors:
             propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter +\
-                                            W_energy_network.W_engine_controls) / number_of_engines
+                                            W_energy_network.W_engine_controls + W_energy_network.W_fuel_system) / number_of_engines
             if propulsor.nacelle != None: 
                 propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
          
@@ -175,10 +185,10 @@ def compute_operating_empty_weight(vehicle, settings=None):
     for fuse in vehicle.fuselages:
         W_fuselage = FLOPS.compute_fuselage_weight(vehicle)
         fuse.mass_properties.mass = W_fuselage
-        if hasattr(settings.weight_correction_factors.empty.systems, 'furnishings'):
-            fuse.mass_properties.mass += W_systems.W_furnish * settings.weight_correction_factors.empty.systems.furnishings
-        else:
-            fuse.mass_properties.mass += W_systems.W_furnish 
+        # if hasattr(settings.weight_correction_factors.empty.systems, 'furnishings'):
+        #     fuse.mass_properties.mass += W_systems.W_furnish * settings.weight_correction_factors.empty.systems.furnishings
+        # else:
+        #     fuse.mass_properties.mass += W_systems.W_furnish 
         W_fuselage_total += W_fuselage
     
     ##-------------------------------------------------------------------------------                 

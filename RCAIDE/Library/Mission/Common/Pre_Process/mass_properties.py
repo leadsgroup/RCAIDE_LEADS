@@ -610,7 +610,27 @@ def apply_component_weights(analyses):
                         system.mass_properties.mass *= weight_correction_factors.empty.systems.instruments  
                     elif hasattr(weight_correction_factors.empty.systems, 'instruments') and system.mass_properties.calculated_flag == False:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.instruments = system.mass_properties.mass  
-                      
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Pilots:
+                    if hasattr(weight_correction_factors.empty.systems, 'pilots') and system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= weight_correction_factors.empty.systems.pilots  
+                    elif hasattr(weight_correction_factors.empty.systems, 'pilots') and system.mass_properties.calculated_flag == False:
+                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.pilots = system.mass_properties.mass 
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Attendants:
+                    if hasattr(weight_correction_factors.empty.systems, 'flight_attendants') and system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= weight_correction_factors.empty.systems.flight_attendants  
+                    elif hasattr(weight_correction_factors.empty.systems, 'flight_attendants') and system.mass_properties.calculated_flag == False:
+                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.flight_attendants = system.mass_properties.mass 
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Furnishings:
+                    if hasattr(weight_correction_factors.empty.systems, 'furnishings') and system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= weight_correction_factors.empty.systems.furnishings  
+                    elif hasattr(weight_correction_factors.empty.systems, 'furnishings') and system.mass_properties.calculated_flag == False:
+                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.furnishings = system.mass_properties.mass  
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Miscellaneous:
+                    if hasattr(weight_correction_factors.empty.systems, 'miscellaneous') and system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= weight_correction_factors.empty.systems.miscellaneous  
+                    elif hasattr(weight_correction_factors.empty.systems, 'miscellaneous') and system.mass_properties.calculated_flag == False:
+                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.miscellaneous = system.mass_properties.mass  
+                                      
 def iterate_for_mtow(old_mtow, oew, max_payload, max_fuel,vehicle):
     '''
     Staub factor after, Franco Staub, ex JetZero, is MTOW/(OEW + Max Fuel + Max Payload)
