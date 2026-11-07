@@ -14,6 +14,7 @@ from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_eleme
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_force_vector                 import compute_force_vector
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.discretize_wing                      import discretize_wing
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.discretize_wing                      import map_panel_forces_to_fea
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.assign_component_masses              import assign_component_masses
 
 # Python Imports
 import numpy as np
@@ -59,47 +60,14 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         structural_results[wing.tag].shear_stress         = np.zeros((n_cpts,num_elements))  # torsional shear (thinnest wall), per element
         structural_results[wing.tag].margin_of_safety     = np.zeros((n_cpts,num_elements))  # min(yield/normal, yield_shear/shear) - 1
  
-    # Precompute structural point loads; fuel loads computed per control point (time-varying)
-    source_pts       = np.zeros((0, 3))
-    source_loads_cst = np.zeros((0, 3))
-    propulsive_pts   = np.zeros((0, 3))
-    propulsive_loads = np.zeros((0, 3))
-    fuel_tank_info   = []  # list of (global_CG, fuel_tag, tank_static_mass)
-
-    for network in geometry.networks:
-        for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                if source.wing_tag is not None:
-                    global_CG = np.array(source.origin[0]) + np.array(source.mass_properties.center_of_gravity)
-                    fuel_tank_info.append((global_CG, source.fuel.tag, source.mass_properties.mass))
-
-            elif isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-                for battery_module in source.modules:
-                    if battery_module.wing_tag is not None:
-                        battery_load = float(np.mean(battery_module.mass_properties.mass * conditions.freestream.gravitational_acceleration)) * n
-                        global_CG    = np.array(battery_module.origin[0]) + np.array(battery_module.mass_properties.center_of_gravity)
-                        source_pts       = np.vstack([source_pts,       global_CG.reshape(1, 3)])
-                        source_loads_cst = np.vstack([source_loads_cst, [[0.0, 0.0, -battery_load]]])
-
-        for propulsor in network.propulsors:
-            if propulsor.wing_mounted:
-                prop_load = float(np.mean(propulsor.mass_properties.mass * conditions.freestream.gravitational_acceleration)) * n
-                global_CG = np.array(propulsor.origin[0]) + np.array(propulsor.mass_properties.center_of_gravity)
-                propulsive_pts   = np.vstack([propulsive_pts,   global_CG.reshape(1, 3)])
-                propulsive_loads = np.vstack([propulsive_loads, [[0.0, 0.0, -prop_load]]])
-
+    # Component masses carried by each wing's half-wing model; fuel masses are read per control point
+    component_masses = Data()
+    for wing in geometry.wings.values():
+        component_masses[wing.tag] = assign_component_masses(geometry, wing, structural_results[wing.tag].structural_node_data)
 
     # Loop over control points
     for ti in range(n_cpts):
-
-        # Time-varying fuel loads for this control point
-        ti_source_pts   = source_pts.copy()
-        ti_source_loads = source_loads_cst.copy()
-        for (global_CG, fuel_tag, tank_mass) in fuel_tank_info:
-            fuel_mass = conditions.weights.components.mass[fuel_tag][ti, 0] + tank_mass
-            fuel_load = fuel_mass * float(conditions.freestream.gravitational_acceleration[ti, 0]) * n
-            ti_source_pts   = np.vstack([ti_source_pts,   global_CG.reshape(1, 3)])
-            ti_source_loads = np.vstack([ti_source_loads, [[0.0, 0.0, -fuel_load]]])
+        g_n = float(conditions.freestream.gravitational_acceleration[ti, 0]) * n
 
         vd_ti           = min(ti, len(VD.n_sw) - 1)   # n_sw/n_cw stored once when mesh is fixed
         panels_per_wing = VD.n_sw[vd_ti] * VD.n_cw[vd_ti]
@@ -134,8 +102,17 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             panel_TE   = corners('A2', 'B2')
             aero_pts   = panel_LE + 0.25 * (panel_TE - panel_LE)
 
-            total_loads = np.concatenate((aero_loads, propulsive_loads, ti_source_loads), axis=0)
-            total_pts   = np.concatenate((aero_pts,   propulsive_pts,   ti_source_pts),   axis=0)
+            # Point masses on this wing: constant components, then fuel tanks at this control point
+            masses     = component_masses[wing.tag]
+            mass_pts   = [masses.point_pts]
+            mass_loads = [np.column_stack((np.zeros((len(masses.point_masses), 2)), -masses.point_masses * g_n))]
+            for (point, fuel_tag, tank_mass, share) in masses.fuel_points:
+                fuel_mass = (conditions.weights.components.mass[fuel_tag][ti, 0] + tank_mass) * share
+                mass_pts.append(point.reshape(1, 3))
+                mass_loads.append(np.array([[0.0, 0.0, -fuel_mass * g_n]]))
+
+            total_loads = np.concatenate([aero_loads] + mass_loads, axis=0)
+            total_pts   = np.concatenate([aero_pts]   + mass_pts,   axis=0)
 
             # Map aerodynamic loads to structure and convert to distributed (N/m)
             fea_forces, fea_moments = map_panel_forces_to_fea(total_pts, total_loads, fea_pts)
@@ -172,8 +149,14 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             Rib_Mass_Per_Meter = (airfoil_Area * wing.structural.rib_thickness  * Rho) / wing.structural.rib_spacing
             w_z_ribs           = -Rib_Mass_Per_Meter * 9.81 * n 
 
+            # Fuel spread along integral tanks at this control point
+            w_z_fuel = np.zeros_like(w_z_struct)
+            for (fuel_tag, tank_mass, share, element_fraction) in masses.fuel_spread:
+                fuel_mass = (conditions.weights.components.mass[fuel_tag][ti, 0] + tank_mass) * share
+                w_z_fuel -= fuel_mass * element_fraction / VD_structural_wing.Le * g_n
+
             # Total Distributed Loads
-            load_w_z_distributed = w_z_struct + w_z_ribs
+            load_w_z_distributed = w_z_struct + w_z_ribs + w_z_fuel
             
             # Matrices Assembly
             T_all         = compute_3d_transformation_matrix(VD_structural_wing.sweep_mid_elems, VD_structural_wing.dihedral_elems, VD_structural_wing.twist_elems, num_elements)
