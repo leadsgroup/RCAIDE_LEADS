@@ -50,7 +50,7 @@ if _NUMBA_AVAILABLE:
     # The zero-length-filament degenerate case (s=|B-A|=0) hits this directly (s1=s2=.../s),
     # and the surrounding mask (rm_sq < tol, using a possibly-nan rm_sq) still zeros it out
     # correctly after the fact -- but only if the division itself doesn't raise first.
-    @njit(cache=True, error_model='numpy')
+    @njit(cache=True, error_model='numpy', nogil=True)
     def _biot_savart_kernel_2d(P, A, B, rc_sq_arr, rc_qd_arr, vc_correction, tol):
         """Bit-for-bit transcription of _biot_savart_velocity_induction_numpy's plain 2-D
         (no batch dims) path into one fused (M,N) double loop -- same formula, same order
@@ -59,6 +59,11 @@ if _NUMBA_AVAILABLE:
         function's own docstring notes it's memory-bandwidth-bound at this codebase's
         array sizes, not compute-bound, which is exactly what re-reading each temporary
         from RAM 25 times over costs).
+
+        nogil=True -- pure numeric loop (math/np scalar ops only, no Python objects), same
+        reasoning as the SoA kernels below. Lets _influence() in
+        evaluate_bound_vortex_circulation.py dispatch its per-control-point calls to this
+        kernel across threads for real parallelism instead of serializing on the GIL.
 
         rc_sq_arr/rc_qd_arr are rc**2/rc**4 (already a plain (N,)-length array, scalar rc
         pre-broadcast by the caller) -- computed via plain numpy in the caller, NOT

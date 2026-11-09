@@ -67,20 +67,20 @@ def tiltrotor_transition_test(update_regression_values):
     #  FIDELITY / COUPLING TOGGLE -- uncomment exactly ONE block below
     # ------------------------------------------------------------------
     # --- BEMT ---
-    for propulsor in vehicle.networks.electric.propulsors:
-        propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
+    #for propulsor in vehicle.networks.electric.propulsors:
+    #    propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
 
     # --- LL uncoupled ---
-    # for propulsor in vehicle.networks.electric.propulsors:
-    #     propulsor.rotor.fidelity = 'Lifting_Line_Theory'
-    # vehicle.networks.electric.wing_on_rotor_coupling  = False
-    # vehicle.networks.electric.rotor_on_rotor_coupling = False
+    #for propulsor in vehicle.networks.electric.propulsors:
+    #    propulsor.rotor.fidelity = 'Lifting_Line_Theory'
+    #vehicle.networks.electric.wing_on_rotor_coupling  = False
+    #vehicle.networks.electric.rotor_on_rotor_coupling = False
 
     # --- LL coupled ---
-    # for propulsor in vehicle.networks.electric.propulsors:
-    #     propulsor.rotor.fidelity = 'Lifting_Line_Theory'
-    # vehicle.networks.electric.wing_on_rotor_coupling  = True
-    # vehicle.networks.electric.rotor_on_rotor_coupling = True
+    for propulsor in vehicle.networks.electric.propulsors:
+        propulsor.rotor.fidelity = 'Lifting_Line_Theory'
+    vehicle.networks.electric.wing_on_rotor_coupling  = True
+    vehicle.networks.electric.rotor_on_rotor_coupling = True
 
     # Set up configs
     configs  = TR_configs_setup(vehicle)
@@ -421,10 +421,15 @@ def TR_mission_setup(analyses):
 
     # unpack Segments module
     Segments = RCAIDE.Framework.Mission.Segments  
-    base_segment = Segments.Segment() 
+    base_segment = Segments.Segment()
     base_segment.state.numerics.mission_solver.type = 'optimize'
+    # Halved from the default 16 -- for a full-mission run-through, not accuracy. SLSQP's
+    # finite-difference gradient costs ~(n_unknowns+1) objective evals per iteration, and
+    # n_unknowns scales with control points, so this is a ~4x cut to gradient cost per
+    # optimize-type segment (plus a cheaper per-eval trajectory integration on top).
+    base_segment.state.numerics.number_of_control_points = 8
 
-    
+
     # ------------------------------------------------------------------
     #   First Climb Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
@@ -498,6 +503,145 @@ def TR_mission_setup(analyses):
 
     mission.append_segment(segment)
 
+    # ------------------------------------------------------------------
+    #  Departure Transition 2
+    # ------------------------------------------------------------------
+    segment                          = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                      = "departure_transition_2"
+    segment.analyses.extend(analyses.transition_setting_2)
+    segment.climb_rate               = 728. * Units['ft/min']
+    segment.air_speed_start          = 35 * Units['mph']
+    segment.air_speed_end            = 100 * Units['mph']
+    segment.altitude_end             = 500.0 * Units.ft
+    segment.true_course              = 0 * Units.degree
+    segment.state.numerics.mission_solver.type = 'root_finder'
+
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    # BEMT-converged (prior full-mission run, solver-speedup branch): throttle 0.436-0.465, pitch_angle 4.79-10.05 deg.
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.45]]
+    segment.assigned_control_variables.pitch_angle.active             = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[7.5 * Units.degrees]]
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------------------------------------------------------------------------
+    # Circular departure pattern
+    # ------------------------------------------------------------------------------------------------------------------------------------
+    segment                                               = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag                                           = "Departure_Pattern_Curve"
+    segment.analyses.extend( analyses.transition_setting_2 )
+    segment.air_speed   = 90 * Units['knots']
+    segment.turn_radius = 4000 * Units.feet
+    segment.true_course = 0 * Units.degree
+    segment.turn_angle  = 90 * Units.degree
+    segment.altitude    = 500 * Units.feet
+    segment.state.numerics.mission_solver.type = 'optimize'
+
+    segment.flight_dynamics.force_x                                             = True
+    segment.flight_dynamics.force_z                                             = True
+    segment.flight_dynamics.force_y                                             = True
+
+    # Placeholder wide-open bounds (carried over unresolved from the prior full-mission run on
+    # solver-speedup) -- this segment previously ran fully unbounded and caused a multi-hour
+    # hang; tighten once a real BEMT-converged trim is found for this geometry.
+    segment.assigned_control_variables.throttle.active                          = True
+    segment.assigned_control_variables.throttle.assigned_propulsors             = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.pitch_angle.active                        = True
+    # Sign of the turn (and hence bank) wasn't actually confirmed -- widened symmetric rather
+    # than one-sided so a wrong sign guess can't rule out the true solution.
+    segment.assigned_control_variables.bank_angle.active                        = True
+    segment.assigned_control_variables.bank_angle.initial_guess_values          = [[20.0 * Units.degree]]
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #  Climb to Cruise Altitude/Speed -- split into two segments at 130mph (avoids SLSQP
+    #  blowing up at the high-speed end of a single wide climb segment).
+    # ------------------------------------------------------------------
+    segment                           = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                       = "climb_1"
+    segment.analyses.extend(analyses.cruise)
+    segment.altitude_start            = 500.0 * Units.ft
+    segment.climb_rate                = 300. * Units['ft/min']
+    segment.air_speed_start           = 90.  * Units['knots']
+    segment.air_speed_end             = 170.  * Units['mph']
+    segment.altitude_end              = 700.0 * Units.ft
+    segment.true_course               = 90 * Units.degree
+    segment.state.numerics.mission_solver.type      = 'optimize'
+    segment.state.numerics.mission_solver.step_size = 1E-2
+    segment.state.numerics.mission_solver.tolerance = 1E-6
+    segment.state.numerics.mission_solver.objective = None
+
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    # Widened on purpose (no bounds/guess below) -- tighter bounds tuned during earlier LL work
+    # stalled for 50+ min on the restored rotor under BEMT without going infeasible, just very
+    # slow. Wider bounds give SLSQP more room to move each iteration.
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.pitch_angle.active               = True
+
+    segment.assigned_control_variables.thrust_vector_angle.active                     = True
+    segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+
+    segment.assigned_control_variables.blade_pitch_command.active                     = True
+    segment.assigned_control_variables.blade_pitch_command.assigned_rotors            = [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
+                                                                                        'outboard_starboard_rotor','rear_port_rotor','rear_starboard_rotor']]
+    segment.assigned_control_variables.blade_pitch_command.bounds                     = [[5.0 * Units.degrees, 35.0 * Units.degrees]]
+    segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[26.0 * Units.degrees]]
+
+    mission.append_segment(segment)
+
+    segment                           = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                       = "climb_2"
+    segment.analyses.extend(analyses.cruise)
+    segment.altitude_start            = 700.0 * Units.ft
+    segment.climb_rate                = 300. * Units['ft/min']
+    segment.air_speed_start           = 130.  * Units['mph']
+    segment.air_speed_end             = 170.  * Units['mph']
+    segment.altitude_end              = 1000.0 * Units.ft
+    segment.true_course               = 100 * Units.degree
+    segment.state.numerics.mission_solver.type      = 'optimize'
+    segment.state.numerics.mission_solver.step_size = 1E-2
+    segment.state.numerics.mission_solver.tolerance = 1E-6
+    segment.state.numerics.mission_solver.objective = None
+
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                          'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.throttle.bounds               = [[0.05, 0.8]]
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.3]]
+
+    segment.assigned_control_variables.pitch_angle.active               = True
+    segment.assigned_control_variables.pitch_angle.bounds               = [[-5.0 * Units.degrees, 20.0 * Units.degrees]]
+    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[4.33 * Units.degrees]]
+
+    segment.assigned_control_variables.thrust_vector_angle.active                     = True
+    segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.thrust_vector_angle.bounds                     = [[10.0 * Units.degrees, 90.0 * Units.degrees]]
+    segment.assigned_control_variables.thrust_vector_angle.initial_guess_values       = [[61.0 * Units.degrees]]
+
+    segment.assigned_control_variables.blade_pitch_command.active                     = True
+    segment.assigned_control_variables.blade_pitch_command.assigned_rotors            = [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
+                                                                                        'outboard_starboard_rotor','rear_port_rotor','rear_starboard_rotor']]
+    segment.assigned_control_variables.blade_pitch_command.bounds                     = [[5.0 * Units.degrees, 40.0 * Units.degrees]]
+    segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[24.0 * Units.degrees]]
+
+    mission.append_segment(segment)
+
 
     # ------------------------------------------------------------------
     #  Cruise Segment
@@ -520,6 +664,255 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.blade_pitch_command.active                     = True
     segment.assigned_control_variables.blade_pitch_command.assigned_rotors            =  [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
                                                                                            'outboard_starboard_rotor', 'rear_port_rotor','rear_starboard_rotor']]
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #    Descent Segment 1
+    # ------------------------------------------------------------------
+    segment                          = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                      = "descent_1"
+    segment.analyses.extend(analyses.cruise)
+    segment.climb_rate               = -100. * Units['ft/min']
+    segment.air_speed_start          = 170.  * Units['mph']
+    segment.air_speed_end            = 130.  * Units['mph']
+    segment.altitude_start           = 1000.0 * Units.ft
+    segment.altitude_end             = 750.0 * Units.ft
+    segment.true_course              = 90 * Units.degree
+    segment.state.numerics.mission_solver.type = 'root_finder'
+
+    segment.flight_dynamics.force_x                                             = True
+    segment.flight_dynamics.force_z                                             = True
+
+    segment.assigned_control_variables.throttle.active                          = True
+    segment.assigned_control_variables.throttle.assigned_propulsors             = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    # BEMT-converged (prior full-mission run, solver-speedup branch): throttle 0.262-0.325, pitch_angle 3.02-6.68 deg.
+    segment.assigned_control_variables.throttle.initial_guess_values        = [[0.29]]
+    segment.assigned_control_variables.pitch_angle.active                        = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values        = [[4.7 * Units.degrees]]
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #    Descent Segment 2 -- 130 -> 115 mph, still comfortably above wing stall
+    # ------------------------------------------------------------------
+    segment                          = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                      = "descent_2"
+    segment.analyses.extend(analyses.cruise)
+    segment.climb_rate               = -300. * Units['ft/min']
+    segment.air_speed_start          = 130.  * Units['mph']
+    segment.air_speed_end            = 115.  * Units['mph']
+    segment.altitude_start           = 750.0 * Units.ft
+    segment.altitude_end             = 600.0 * Units.ft
+    segment.true_course              = 90 * Units.degree
+
+    segment.state.numerics.mission_solver.type      = 'optimize'
+    segment.state.numerics.mission_solver.step_size = 1E-2
+    segment.state.numerics.mission_solver.tolerance = 1E-6
+    segment.state.numerics.mission_solver.objective = None
+
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    # Bounded -- unbounded throttle/pitch_angle here previously produced catastrophic mu
+    # (up to 266, near-zero throttle -> near-zero omega).
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.throttle.bounds               = [[0.06, 0.4]]
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.17]]
+    segment.assigned_control_variables.pitch_angle.active             = True
+    segment.assigned_control_variables.pitch_angle.bounds             = [[-2.0 * Units.degrees, 15.0 * Units.degrees]]
+    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[5.8 * Units.degrees]]
+    segment.assigned_control_variables.thrust_vector_angle.active                     = True
+    segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        =  [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.thrust_vector_angle.bounds                     = [[25.0 * Units.degrees, 85.0 * Units.degrees]]
+    segment.assigned_control_variables.thrust_vector_angle.initial_guess_values       = [[56.0 * Units.degrees]]
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #    Descent Segment 3 -- 115mph -> 90kts, the stall-crossing tail; blade_pitch_command
+    #    freed here since the wing alone can no longer carry the required CL by this speed.
+    # ------------------------------------------------------------------
+    segment                          = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                      = "descent_3"
+    segment.analyses.extend(analyses.cruise)
+    segment.climb_rate               = -300. * Units['ft/min']
+    segment.air_speed_start          = 115.  * Units['mph']
+    segment.air_speed_end            = 90 * Units.kts
+    segment.altitude_start           = 600.0 * Units.ft
+    segment.altitude_end             = 500.0 * Units.ft
+    segment.true_course              = 90 * Units.degree
+
+    segment.state.numerics.mission_solver.type      = 'optimize'
+    segment.state.numerics.mission_solver.step_size = 1E-2
+    segment.state.numerics.mission_solver.tolerance = 1E-6
+    segment.state.numerics.mission_solver.objective = None
+
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    # BEMT-converged (prior full-mission run, solver-speedup branch): throttle 0.2965-0.3360, pitch_angle 4.18-4.45 deg.
+    segment.assigned_control_variables.throttle.bounds               = [[0.15, 0.5]]
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.32]]
+    segment.assigned_control_variables.pitch_angle.active             = True
+    segment.assigned_control_variables.pitch_angle.bounds             = [[-2.0 * Units.degrees, 15.0 * Units.degrees]]
+    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[4.3 * Units.degrees]]
+
+    segment.assigned_control_variables.thrust_vector_angle.active                     = True
+    segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        =  [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    # BEMT-converged: 82.23-84.86 deg.
+    segment.assigned_control_variables.thrust_vector_angle.bounds                     = [[65.0 * Units.degrees, 90.0 * Units.degrees]]
+    segment.assigned_control_variables.thrust_vector_angle.initial_guess_values       = [[84.0 * Units.degrees]]
+
+    segment.assigned_control_variables.blade_pitch_command.active                     = True
+    segment.assigned_control_variables.blade_pitch_command.assigned_rotors            = [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
+                                                                                        'outboard_starboard_rotor','rear_port_rotor','rear_starboard_rotor']]
+    segment.assigned_control_variables.blade_pitch_command.bounds                     = [[2.0 * Units.degrees, 15.0 * Units.degrees]]
+    segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[4.5 * Units.degrees]]
+
+    mission.append_segment(segment)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Circular approach pattern
+    #------------------------------------------------------------------------------------------------------------------------------------
+    segment                                               = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag                                           = "Approach_Pattern_Curve"
+    segment.analyses.extend( analyses.transition_setting_2 )
+    segment.air_speed   = 90 * Units.kts
+    segment.turn_radius = 4000 * Units.feet
+    segment.true_course = 0 * Units.degree
+    segment.turn_angle  = 90 * Units.degree
+    segment.altitude    = 500 * Units.feet
+    segment.state.numerics.mission_solver.type = 'optimize'
+
+    segment.flight_dynamics.force_x                                             = True
+    segment.flight_dynamics.force_z                                             = True
+    segment.flight_dynamics.force_y                                             = True
+
+    segment.assigned_control_variables.throttle.active                          = True
+    segment.assigned_control_variables.throttle.assigned_propulsors             = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.throttle.bounds                          = [[0.05, 0.9]]
+    segment.assigned_control_variables.throttle.initial_guess_values        = [[0.33]]
+    segment.assigned_control_variables.pitch_angle.active                        = True
+    segment.assigned_control_variables.pitch_angle.bounds                       = [[-5.0 * Units.degrees, 20.0 * Units.degrees]]
+    segment.assigned_control_variables.pitch_angle.initial_guess_values         = [[4.5 * Units.degrees]]
+    segment.assigned_control_variables.bank_angle.active                        = True
+    segment.assigned_control_variables.bank_angle.bounds                        = [[-45.0 * Units.degree, 45.0 * Units.degree]]
+    segment.assigned_control_variables.bank_angle.initial_guess_values          = [[-10.0 * Units.degree]]
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #  Arriving Transition 1
+    # ------------------------------------------------------------------
+    segment                          = Segments.Descent.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                      = "arriving_transition_1"
+    segment.analyses.extend(analyses.low_speed_transition)
+    segment.descent_rate               = 728. * Units['ft/min']
+    segment.air_speed_start            = 90 * Units.kts
+    segment.air_speed_end              = 35 * Units['mph']
+    segment.altitude_start             = 500.0 * Units.ft
+    segment.altitude_end               = 50.0 * Units.ft
+    segment.true_course                = 0 * Units.degree
+    segment.state.numerics.mission_solver.step_size = 1E-2
+    segment.state.numerics.mission_solver.tolerance = 1E-6
+    segment.state.numerics.mission_solver.objective = None
+
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    segment.assigned_control_variables.throttle.active                                = True
+    segment.assigned_control_variables.throttle.assigned_propulsors                   = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    # BEMT-converged (prior full-mission run, solver-speedup branch): throttle 0.3924-0.5481, thrust_vector_angle
+    # 22.19-24.53 deg, blade_pitch_command 22.71-26.86 deg.
+    segment.assigned_control_variables.throttle.bounds                            = [[0.25, 0.7]]
+    segment.assigned_control_variables.throttle.initial_guess_values              = [[0.48]]
+
+    segment.assigned_control_variables.thrust_vector_angle.active                     = True
+    segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.thrust_vector_angle.bounds                     = [[5.0 * Units.degrees, 45.0 * Units.degrees]]
+    segment.assigned_control_variables.thrust_vector_angle.initial_guess_values       = [[23.75 * Units.degree]]
+
+    segment.assigned_control_variables.blade_pitch_command.active                     = True
+    segment.assigned_control_variables.blade_pitch_command.assigned_rotors            =  [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
+                                                                                        'outboard_starboard_rotor','rear_port_rotor','rear_starboard_rotor']]
+    segment.assigned_control_variables.blade_pitch_command.bounds                     = [[15.0 * Units.degrees, 32.0 * Units.degrees]]
+    segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[24.6 * Units.degrees]]
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #  Arriving Transition 2 / Landing Transition
+    # ------------------------------------------------------------------
+    segment                                               = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base_segment)
+    segment.tag                                           = "arriving_transition_2"
+    segment.analyses.extend( analyses.low_speed_transition)
+    segment.air_speed_start            = 35 * Units['mph']
+    segment.air_speed_end              = 10 * Units['knots']
+    segment.acceleration               = -1.0
+    segment.true_course                = 0 * Units.degree
+    segment.altitude                   = 50.0 * Units.ft
+    segment.state.numerics.mission_solver.type      = 'optimize'
+    segment.state.numerics.mission_solver.objective = None
+
+    segment.flight_dynamics.force_x                       = True
+    segment.flight_dynamics.force_z                       = True
+
+    segment.assigned_control_variables.throttle.active                                = True
+    segment.assigned_control_variables.throttle.assigned_propulsors                   = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    # BEMT-converged (prior full-mission run, solver-speedup branch): throttle 0.559-0.568, thrust_vector_angle 22.43-22.75 deg,
+    # blade_pitch_command 22.85-22.97 deg, pitch_angle 3.03-3.05 deg.
+    segment.assigned_control_variables.throttle.bounds                            = [[0.35, 0.75]]
+    segment.assigned_control_variables.throttle.initial_guess_values              = [[0.56]]
+
+    segment.assigned_control_variables.thrust_vector_angle.active                     = True
+    segment.assigned_control_variables.thrust_vector_angle.assigned_propulsors        = [['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    segment.assigned_control_variables.thrust_vector_angle.bounds                     = [[5.0 * Units.degrees, 40.0 * Units.degrees]]
+    segment.assigned_control_variables.thrust_vector_angle.initial_guess_values       = [[22.6 * Units.degree]]
+
+    segment.assigned_control_variables.blade_pitch_command.active                     = True
+    segment.assigned_control_variables.blade_pitch_command.assigned_rotors            = [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
+                                                                                        'outboard_starboard_rotor','rear_port_rotor','rear_starboard_rotor']]
+    segment.assigned_control_variables.blade_pitch_command.bounds                     = [[15.0 * Units.degrees, 30.0 * Units.degrees]]
+    segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[22.9 * Units.degrees]]
+
+    segment.assigned_control_variables.pitch_angle.active                             = True
+    segment.assigned_control_variables.pitch_angle.bounds                             = [[-2.0 * Units.degrees, 15.0 * Units.degrees]]
+    segment.assigned_control_variables.pitch_angle.initial_guess_values               = [[3.04 * Units.degrees]]
+
+    mission.append_segment(segment)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Vertical Descent
+    #------------------------------------------------------------------------------------------------------------------------------------
+    segment                                                         = Segments.Vertical_Flight.Climb(base_segment)
+    segment.tag                                                     = "Vertical_Descent"
+    segment.analyses.extend( analyses.vertical_flight)
+    segment.altitude_end                                            = 0.   * Units.ft
+    segment.climb_rate                                              = -300. * Units['ft/min']
+    segment.true_course                                             = 0 * Units.degree
+    segment.state.numerics.mission_solver.type = 'root_finder'
+
+    segment.flight_dynamics.force_z                                  = True
+
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  =[['front_port_propulsor','front_starboard_propulsor','outboard_port_propulsor',
+                                                                                        'outboard_starboard_propulsor','rear_port_propulsor','rear_starboard_propulsor']]
+    # BEMT-converged (prior full-mission run, solver-speedup branch): 0.4793-0.4796 -- close to hover's own ~0.487.
+    segment.assigned_control_variables.throttle.initial_guess_values = [[0.48]]
 
     mission.append_segment(segment)
 

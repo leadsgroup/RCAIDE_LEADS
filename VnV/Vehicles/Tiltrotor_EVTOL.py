@@ -486,13 +486,22 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     prop_rotor.wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from
     prop_rotor.wake_inputs.tol                          = 1e-3
     prop_rotor.wake_inputs.tol_CT                       = 1e-3
-    # Was 0.2 -- descent_2 control points 1-4 were oscillating (residual flat around ~5, not
-    # decreasing) rather than diverging or slowly converging, the classic signature of a
-    # relaxation factor too large for the local sensitivity of the Gamma_b fixed-point map at
-    # this flow condition. Lowered to damp the overshoot; costs more iterations per point but
-    # there's room in the 5000-iteration cap.
-    prop_rotor.wake_inputs.relax_0_Gammab               = 0.1
-    prop_rotor.wake_inputs.relax_0_CT                   = 0.2
+    # NOTE (2026-11-09): relax_0_Gammab was previously 0.1 (lowered from 0.2 -- descent_2
+    # control points 1-4 were oscillating at 0.2, the classic too-large-relaxation signature).
+    # Bumped back up to 0.3 after isolating Vertical_Climb's Gamma_b/CT/free_wake fixed-point
+    # maps directly (scratchpad/relax_experiment_A/B): at 0.1, Gamma_b took 63 inner iterations
+    # to converge for this flow condition; 0.3 took 19 (3x fewer), converging to the same
+    # Gamma_b field (diff ~2e-4, vs. |Gamma|~5.7). 0.5+ starts oscillating again (21 iters at
+    # 0.7, outright diverges at 1.0) -- 0.3 was chosen to stay well clear of that edge.
+    # relax_0_CT raised 0.2->0.5: at 0.2/0.3/0.4 the outer CT loop did not converge within a
+    # 5-iteration cap (each outer iteration costs one free_wake call); 0.5 converged cleanly in
+    # 5, matching the 0.2 baseline's Gamma_b field to ~3e-5. free_wake_relax raised 0.7->1.0:
+    # cuts free_wake's own inner iteration count 12->9 with no measurable accuracy loss.
+    # These were only validated against Vertical_Climb's flow condition -- NOT yet re-validated
+    # against descent_2, which is why relax_0_Gammab was lowered in the first place. Only climb
+    # segments are being run with this change for now; revisit before trusting it in descent.
+    prop_rotor.wake_inputs.relax_0_Gammab               = 0.3
+    prop_rotor.wake_inputs.relax_0_CT                   = 0.5
     prop_rotor.wake_inputs.max_iter_Gammab_0            = 100
     prop_rotor.wake_inputs.max_iter_CT_0                = 50
     prop_rotor.wake_inputs.CT_iter                      = True
@@ -502,7 +511,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     prop_rotor.wake_inputs.free_wake                    = True
     prop_rotor.wake_inputs.free_wake_max_iter           = 20
     prop_rotor.wake_inputs.free_wake_tol                = 1e-4
-    prop_rotor.wake_inputs.free_wake_relax              = 0.7
+    prop_rotor.wake_inputs.free_wake_relax              = 1.0
 
     propulsor.rotor = prop_rotor
 
@@ -853,9 +862,29 @@ def configs_setup(vehicle):
     config.tag                                        = 'cruise'
     vector_angle                                      = 0.0 * Units.degrees
     for network in  config.networks:
+        # Also clear the coupling flags, not just fidelity -- these were copied from the
+        # global toggle's vehicle-level settings. Leaving rotor_on_rotor_coupling/
+        # wing_on_rotor_coupling=True here would still route BEMT rotors through
+        # compute_rotor_to_rotor_interaction() with wing downwash added to their inflow --
+        # a real, different physics model from a clean standalone BEMT run, not just a
+        # fidelity relabeling (confirmed: this exact case ~doubled climb_1's SOC draw vs. the
+        # standalone BEMT reference before this fix).
+        network.wing_on_rotor_coupling  = False
+        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command   = propulsor.rotor.cruise.design_blade_pitch_command
+            # Force BEMT on this config regardless of the global LL-coupled fidelity toggle
+            # (2026-11-09): climb_1/climb_2/cruise/descent_1-3 all use this config, at full
+            # forward flight (0deg tilt, 90kts-170mph+) -- high advance ratio, wake swept
+            # downstream fast, rotors effectively isolated from each other. That's exactly
+            # where rotor-rotor/wing-rotor LL coupling matters least AND where its O(n_rot^2)
+            # Biot-Savart + free-wake cost is least justified (~800s/eval measured, vs BEMT's
+            # ~2.8s/eval for the same segment). LL coupled stays on vertical_flight/
+            # transition_setting_*/low_speed_transition configs, where hover/low-speed wake
+            # interaction is real.
+            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
+                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
 
     # ------------------------------------------------------------------
@@ -874,9 +903,14 @@ def configs_setup(vehicle):
     config.tag                                        = 'descent_cruise'
     vector_angle                                      = 0.0 * Units.degrees
     for network in  config.networks:
+        network.wing_on_rotor_coupling  = False   # see 'cruise' config above
+        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.9
+            # Force BEMT here too -- see 'cruise' config above for the full rationale.
+            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
+                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
 
     # ------------------------------------------------------------------
@@ -890,9 +924,14 @@ def configs_setup(vehicle):
     config.tag                                        = 'descent_cruise_slow'
     vector_angle                                      = 0.0 * Units.degrees
     for network in  config.networks:
+        network.wing_on_rotor_coupling  = False   # see 'cruise' config above
+        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.8
+            # Force BEMT here too -- see 'cruise' config above for the full rationale.
+            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
+                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
 
 

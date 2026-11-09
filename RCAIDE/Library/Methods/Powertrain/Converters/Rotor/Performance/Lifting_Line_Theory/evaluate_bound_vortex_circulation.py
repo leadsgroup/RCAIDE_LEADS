@@ -10,6 +10,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
+from concurrent.futures                               import ThreadPoolExecutor
 from RCAIDE.Framework.Core                           import Data
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import compute_airfoil_aerodynamics
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, contract_influence_tensor, initialize_wake_geometry, free_wake
@@ -146,8 +147,20 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     #  Pre-compute bound influence matrices K_bound[i][j] (geometry fixed throughout):
     #  bound vortices of rotor j acting on the collocation points of rotor i
+    #
+    #  Each (i,j) pair is an independent _influence() call writing its own K_bound[i][j] --
+    #  dispatched across one ThreadPoolExecutor (created once below, reused for every K_bound/
+    #  K_wake build in this function call) instead of a serial n_rot^2 Python loop. Real
+    #  parallelism depends on _biot_savart_kernel_2d's nogil=True (added alongside this
+    #  change); this is the loop that made LL-coupled runs blow up relative to uncoupled
+    #  (n_rot^2 scaling -- 36x more _influence calls for 6 rotors than for 1).
     # ------------------------------------------------------------------------------------------------------------------
-    K_bound = [[_influence(si.P_colloc, sj.A_bound, sj.B_bound, sj.rCb_flat, sj.vc_correction) for sj in S] for si in S]
+    _executor = ThreadPoolExecutor()
+    pairs   = [(i, j) for i in range(n_rot) for j in range(n_rot)]
+    K_bound_flat = list(_executor.map(
+        lambda p: _influence(S[p[0]].P_colloc, S[p[1]].A_bound, S[p[1]].B_bound, S[p[1]].rCb_flat, S[p[1]].vc_correction),
+        pairs))
+    K_bound = [[K_bound_flat[i*n_rot + j] for j in range(n_rot)] for i in range(n_rot)]
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Outer loop: CT (CT_iter=True) or single pass (CT_iter=False)
@@ -156,17 +169,26 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     n_outer   = max(s.max_iter_CT for s in S) if CT_iter else 1
     max_inner = max(s.max_iter_Gammab for s in S)
 
-    for it in range(n_outer):
+    try:
+      for it in range(n_outer):
 
         # -- K_wake[i][j]: wake of rotor j acting on rotor i. Rebuilt each outer iteration (wake
         #    geometry changes with CT); in simple mode there is a single outer pass so it's built once --
         K_wake = [[None]*n_rot for _ in range(n_rot)]
+        wake_jobs = []
         for j, sj in enumerate(S):
             if not sj.include_wake:
                 continue
             A_wake, B_wake, rCvf_flat = _wake_filaments(sj)
             for i, si in enumerate(S):
-                K_wake[i][j] = _influence(si.P_colloc, A_wake, B_wake, rCvf_flat, sj.vc_correction)
+                wake_jobs.append((i, j, si.P_colloc, A_wake, B_wake, rCvf_flat, sj.vc_correction))
+
+        def _build_wake_K(job):
+            i, j, P, A, B, rc, vc = job
+            return i, j, _influence(P, A, B, rc, vc)
+
+        for i, j, K in _executor.map(_build_wake_K, wake_jobs):
+            K_wake[i][j] = K
 
         # -- Inner Gamma_b loop, all rotors together --
         conv1    = False
@@ -293,6 +315,8 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                     free_wake(wake_rotors, wake_wake_inputs, conditions)
         else:
             conv = True   # simple mode always exits after one outer pass
+    finally:
+        _executor.shutdown()
 
     if not conv and CT_iter:
         for s in S:
