@@ -67,7 +67,7 @@ def compute_wing_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
     """ 
     tank_percent_span_location = 0
     if fuel_tank.packs_after_tank is not None:
-        tank_percent_span_location = fuel_tanks[fuel_tank.packs_after_tank].tank_percent_span_location
+        tank_percent_span_location = fuel_tanks[fuel_tank.packs_after_tank].tank_percent_span_location + fuel_tank.spanwise_spacing / (wing.spans.projected / 2)
     seg_tags = fuel_tank.segments_bounding_tank
     for i in range(len(seg_tags)-1):
         inner_segment = wing.segments[seg_tags[i]]
