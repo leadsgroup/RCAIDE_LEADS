@@ -141,7 +141,7 @@ def converge(segment):
                                                  maxfev = numerics.mission_solver.max_evaluations,
                                                  epsfcn = numerics.mission_solver.step_size,
                                                  full_output = 1) 
-            scaled_iterate(x_scaled)
+            scaled_iterate(x_scaled)   # leaves the segment at the solution, mirrored into the bounds
 
         if ier !=1:
             mission_converge = False
@@ -196,11 +196,10 @@ def iterate_root_finder(unknowns, segment, layout):
     """Residuals of the segment at the given unknowns, written to and read from the segment's layout.
 
     Assumptions:
-    fsolve has no native bounds support, unlike the "optimize"/SLSQP
-    path -- without this, a proposed unknown (e.g. a [0,1] power split
-    ratio or bounded control variable) can wander outside its declared
-    bounds mid-iteration. Clip to the same bounds the SLSQP path
-    enforces natively before evaluating the residual.
+    fsolve has no bounds, so a proposed unknown (e.g. a [0,1] power split ratio or a bounded control variable)
+    can leave its declared bounds mid-iteration. It is mirrored back inside (reflect_into_bounds) before the
+    residual is evaluated. Clipping it to the bound instead would make the residual flat beyond the bound, so the
+    finite-difference Jacobian would lose that unknown and the solve would stall at the bound.
 
     Source:
     N/A
@@ -224,7 +223,22 @@ def iterate_root_finder(unknowns, segment, layout):
         upper = np.concatenate([upper, segment.state.unknowns_upper_bounds.network.pack_array()])
 
     unknown_slice, residual_slice = solver_slices(layout, network)
-    return segment_residual(np.clip(unknowns, lower, upper), segment, layout, unknown_slice, residual_slice)
+    return segment_residual(reflect_into_bounds(unknowns, lower, upper), segment, layout, unknown_slice, residual_slice)
+
+
+def reflect_into_bounds(x, lower, upper):
+    """x with every entry outside [lower, upper] mirrored back inside at the bound it crossed, e.g. 0.1 below a
+    lower bound becomes 0.1 above it. Entries within their bounds are returned unchanged. With both bounds finite
+    the mirroring repeats, so any value maps into the interval."""
+    both     = np.isfinite(lower) & np.isfinite(upper)
+    width    = np.where(both, upper - lower, 1.)
+    folded   = np.mod(x - np.where(both, lower, 0.), 2.*width)          # position along one mirrored period
+    in_both  = np.where(both, lower, 0.) + np.where(folded <= width, folded, 2.*width - folded)
+    in_lower = 2.*lower - x                                              # mirrored at a lower bound only
+    in_upper = 2.*upper - x                                              # mirrored at an upper bound only
+    mirrored = np.where(both, in_both, np.where(x < lower, in_lower, in_upper))
+    outside  = (x < lower) | (x > upper)
+    return np.where(outside, mirrored, x)
 
 
 def segment_residual(unknowns, segment, layout, unknown_slice, residual_slice):
