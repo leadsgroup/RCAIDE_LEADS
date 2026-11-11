@@ -8,6 +8,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # imports 
+from RCAIDE.Framework.Core import array_namespace
 import numpy as np
  
 # ----------------------------------------------------------------------------------------------------------------------
@@ -67,11 +68,11 @@ def compute_electrical_bus_distribution_losses(bus,component_conditions,state,ne
     # 2. Loss calculation for the whole time array 
     discriminant = (-Voltage)**2 - 4*resistance*P_cable
         
-    I_mission_array = (Voltage - np.sqrt(discriminant)) / (2*resistance)
+    I_mission_array = (Voltage - array_namespace(discriminant).sqrt(discriminant)) / (2*resistance)
     P_loss = (I_mission_array**2) * resistance 
     
     # 3. Write results back to the state arrays
-    bus_conditions.inputs.power.electrical += P_loss   
-    bus_conditions.outputs.power.thermal   += P_loss
+    bus_conditions.inputs.power.electrical = bus_conditions.inputs.power.electrical + P_loss
+    bus_conditions.outputs.power.thermal   = bus_conditions.outputs.power.thermal + P_loss
 
     return  

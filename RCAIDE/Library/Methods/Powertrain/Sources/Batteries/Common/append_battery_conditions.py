@@ -10,6 +10,8 @@
 # RCAIDE imports 
 import RCAIDE 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Framework.Core                 import   set_at
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
@@ -272,9 +274,9 @@ def append_battery_segment_conditions(battery, segment):
     """
 
     battery_conditions = segment.state.conditions.energy.sources[battery.tag] 
-    battery_conditions.power_draw[:,0] =  0
-    battery_conditions.inputs.power.electrical[:,0] =  0
-    battery_conditions.outputs.power.electrical[:,0] =  0
+    battery_conditions.power_draw = set_at(battery_conditions.power_draw, np.s_[:,0], 0)
+    battery_conditions.inputs.power.electrical = set_at(battery_conditions.inputs.power.electrical, np.s_[:,0], 0)
+    battery_conditions.outputs.power.electrical = set_at(battery_conditions.outputs.power.electrical, np.s_[:,0], 0)
     if segment.state.initials:  
         battery_initials                                        = segment.state.initials.conditions.energy.sources[battery.tag] 
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
@@ -282,11 +284,10 @@ def append_battery_segment_conditions(battery, segment):
         else:                   
             battery_conditions.battery_discharge_flag           = True      
 
-        battery_conditions.energy[:,0]                = battery_initials.energy[-1,0]
-        battery_conditions.temperature[:,0]           = battery_initials.temperature[-1,0] 
+        battery_conditions.energy                = set_at(battery_conditions.energy, np.s_[:,0], battery_initials.energy[-1,0])
+        battery_conditions.temperature           = set_at(battery_conditions.temperature, np.s_[:,0], battery_initials.temperature[-1,0])
         battery_conditions.cycle_in_day               = battery_initials.cycle_in_day        
-        battery_conditions.state_of_charge[:,0]       = battery_initials.state_of_charge[-1,0]
-        battery_conditions.energy[:,0]                = battery_initials.energy[-1,0]
+        battery_conditions.state_of_charge       = set_at(battery_conditions.state_of_charge, np.s_[:,0], battery_initials.state_of_charge[-1,0])
  
     else:
         
@@ -300,7 +301,7 @@ def append_battery_segment_conditions(battery, segment):
                 temp_dev = segment.temperature_deviation    
             atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)  
             cell_temperature  = atmo_data.temperature[0,0] 
-        battery_conditions.temperature[:,0]                = cell_temperature 
+        battery_conditions.temperature                = set_at(battery_conditions.temperature, np.s_[:,0], cell_temperature)
 
     # Every module gets its own condition bucket carried over; see append_battery_conditions
     # for why this cannot be skipped for identical modules.
@@ -331,9 +332,9 @@ def append_module_segment_conditions(module,battery,segment):
     """
     
     module_conditions = segment.state.conditions.energy.sources[battery.tag][module.tag]
-    module_conditions.power_draw[:,0] =  0
-    module_conditions.inputs.power.electrical[:,0] =  0
-    module_conditions.outputs.power.electrical[:,0] =  0
+    module_conditions.power_draw = set_at(module_conditions.power_draw, np.s_[:,0], 0)
+    module_conditions.inputs.power.electrical = set_at(module_conditions.inputs.power.electrical, np.s_[:,0], 0)
+    module_conditions.outputs.power.electrical = set_at(module_conditions.outputs.power.electrical, np.s_[:,0], 0)
     if segment.state.initials:  
         module_initials                                        = segment.state.initials.conditions.energy.sources[battery.tag][module.tag]
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
@@ -341,15 +342,15 @@ def append_module_segment_conditions(module,battery,segment):
         else:                   
             module_conditions.battery_discharge_flag           = True      
 
-        module_conditions.energy[:,0]                     = module_initials.energy[-1,0]
-        module_conditions.temperature[:,0]                = module_initials.temperature[-1,0]
-        module_conditions.cell.temperature[:,0]           = module_initials.cell.temperature[-1,0]
+        module_conditions.energy                     = set_at(module_conditions.energy, np.s_[:,0], module_initials.energy[-1,0])
+        module_conditions.temperature                = set_at(module_conditions.temperature, np.s_[:,0], module_initials.temperature[-1,0])
+        module_conditions.cell.temperature           = set_at(module_conditions.cell.temperature, np.s_[:,0], module_initials.cell.temperature[-1,0])
         module_conditions.cell.cycle_in_day               = module_initials.cell.cycle_in_day      
-        module_conditions.cell.charge_throughput[:,0]     = module_initials.cell.charge_throughput[-1,0]
+        module_conditions.cell.charge_throughput     = set_at(module_conditions.cell.charge_throughput, np.s_[:,0], module_initials.cell.charge_throughput[-1,0])
         module_conditions.cell.resistance_growth_factor   = module_initials.cell.resistance_growth_factor 
         module_conditions.cell.capacity_fade_factor       = module_initials.cell.capacity_fade_factor 
-        module_conditions.cell.state_of_charge[:,0]       = module_initials.cell.state_of_charge[-1,0]
-        module_conditions.cell.energy[:,0]                = module_initials.cell.energy[-1,0]
+        module_conditions.cell.state_of_charge       = set_at(module_conditions.cell.state_of_charge, np.s_[:,0], module_initials.cell.state_of_charge[-1,0])
+        module_conditions.cell.energy                = set_at(module_conditions.cell.energy, np.s_[:,0], module_initials.cell.energy[-1,0])
  
     else:
         
@@ -363,8 +364,8 @@ def append_module_segment_conditions(module,battery,segment):
                 temp_dev = segment.temperature_deviation    
             atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)  
             cell_temperature  = atmo_data.temperature[0,0] 
-        module_conditions.temperature[:,0]                = cell_temperature
-        module_conditions.cell.temperature[:,0]           = cell_temperature
+        module_conditions.temperature                = set_at(module_conditions.temperature, np.s_[:,0], cell_temperature)
+        module_conditions.cell.temperature           = set_at(module_conditions.cell.temperature, np.s_[:,0], cell_temperature)
 
     if module.heat_acquisition_system != None and module.assigned_distributors != None:
         coolant_line_tag = module.assigned_distributors[0][0]

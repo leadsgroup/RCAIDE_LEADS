@@ -11,6 +11,8 @@ from RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.co
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance                      import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance                      import * 
 
+from RCAIDE.Framework.Core import array_namespace
+
 # pacakge imports  
 import numpy as np 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -115,7 +117,7 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
     moment_vector[:,0]      = rotor.origin[0][0]  -  center_of_gravity[0][0] 
     moment_vector[:,1]      = rotor.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]      = rotor.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, conditions.energy.converters[rotor.tag].thrust)     
+    moment                  =  array_namespace(conditions.energy.converters[rotor.tag].thrust).cross(moment_vector, conditions.energy.converters[rotor.tag].thrust)     
     
     # Detemine esc current 
     conditions.energy.modulators[esc.tag].outputs.current = conditions.energy.converters[motor.tag].inputs.current
@@ -207,7 +209,7 @@ def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_ta
     moment_vector[:,0]      = rotor.origin[0][0]  -  center_of_gravity[0][0] 
     moment_vector[:,1]      = rotor.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]      = rotor.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, thrust_vector)
+    moment                  =  array_namespace(thrust_vector).cross(moment_vector, thrust_vector)
      
     conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive   = P_mech  
     conditions.energy.propulsors[propulsor.tag].outputs.thrust             = thrust_vector  

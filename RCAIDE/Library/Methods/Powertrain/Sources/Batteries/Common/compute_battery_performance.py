@@ -4,6 +4,8 @@
 # Created:  Feb 2024, M. Clarke
 # Modified: Sep 2024, S. Shekar
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_nmc_cell_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -29,10 +31,10 @@ def compute_battery_performance(battery,state,network):
     psi = state.conditions.energy.battery_fuel_cell_power_split_ratio[electrical_distributor_tag]
     
     # Reset accumulators before summing across modules
-    battery_conditions.energy[:,0]                = 0.0
-    battery_conditions.heat_energy_generated[:,0] = 0.0
-    battery_conditions.voltage_open_circuit[:,0]  = 0.0
-    battery_conditions.voltage_under_load[:,0]    = 0.0
+    battery_conditions.energy                   = 0. * state.ones_row(1)
+    battery_conditions.heat_energy_generated    = 0. * state.ones_row(1)
+    battery_conditions.voltage_open_circuit     = 0. * state.ones_row(1)
+    battery_conditions.voltage_under_load       = 0. * state.ones_row(1)
 
     stored_module_tag = None
     for m_i, module in enumerate(battery.modules):
@@ -64,23 +66,25 @@ def compute_battery_performance(battery,state,network):
             
             # aggregate module conditions to battery 
             battery_conditions.temperature              =   battery_conditions[module.tag].temperature 
-            battery_conditions.energy                   +=  battery_conditions[module.tag].energy
+            battery_conditions.energy                   =   battery_conditions.energy + battery_conditions[module.tag].energy
             battery_conditions.state_of_charge          =   battery_conditions[module.tag].state_of_charge  
-            battery_conditions.heat_energy_generated    +=  battery_conditions[module.tag].heat_energy_generated       
+            battery_conditions.heat_energy_generated    =   battery_conditions.heat_energy_generated + battery_conditions[module.tag].heat_energy_generated       
 
             if battery.battery_module_electric_configuration == 'Series': 
-                battery_conditions.voltage_open_circuit  +=  battery_conditions[module.tag].voltage_open_circuit 
-                battery_conditions.voltage_under_load    +=  battery_conditions[module.tag].voltage_under_load 
+                battery_conditions.voltage_open_circuit  =  battery_conditions.voltage_open_circuit + battery_conditions[module.tag].voltage_open_circuit
+                battery_conditions.voltage_under_load    =  battery_conditions.voltage_under_load + battery_conditions[module.tag].voltage_under_load
             elif battery.battery_module_electric_configuration == 'Parallel': 
                 battery_conditions.voltage_open_circuit  = battery_conditions[module.tag].voltage_open_circuit 
                 battery_conditions.voltage_under_load    = battery_conditions[module.tag].voltage_under_load  
        
             if state.conditions.energy.recharging:
-                fully_charged = battery_conditions.state_of_charge                    == 1
-                battery_conditions.charging_current[fully_charged]                    = 0
-                battery_conditions[module.tag].power_draw[fully_charged]              = 0
-                battery_conditions[module.tag].current[fully_charged]                 = 0
-                battery_conditions[module.tag].inputs.power.electrical[fully_charged] = 0
+                xp            = array_namespace(battery_conditions.state_of_charge)
+                fully_charged = battery_conditions.state_of_charge == 1
+                module_conditions = battery_conditions[module.tag]
+                battery_conditions.charging_current            = xp.where(fully_charged, 0., battery_conditions.charging_current)
+                module_conditions.power_draw                   = xp.where(fully_charged, 0., module_conditions.power_draw)
+                module_conditions.current                      = xp.where(fully_charged, 0., module_conditions.current)
+                module_conditions.inputs.power.electrical      = xp.where(fully_charged, 0., module_conditions.inputs.power.electrical)
             
     stored_results_flag     = True
     stored_battery_tag      = battery.tag

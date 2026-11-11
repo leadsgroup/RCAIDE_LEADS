@@ -2,6 +2,7 @@
 #
 # Created:  May 2026, M. Clarke, S. Sharma
 
+from RCAIDE.Framework.Core import array_namespace, set_at
 import numpy as np
 
 def compute_number_of_windows(vehicle):
@@ -68,6 +69,7 @@ def compute_ecs_power_draw(environmental_controls, state, vehicle):
     P1       = state.conditions.freestream.pressure
     gamma    = state.conditions.freestream.specific_heat
     eta_c    = environmental_controls.cabin_compressor_efficiency
+    xp       = array_namespace(Mach, Cp, T1, P1, gamma)
 
     # Heat loads and the mass flow actually needed to hold them in range --
     # the bare CS 25.831 floor (m_dot_nom) is often not enough: at typical
@@ -84,20 +86,20 @@ def compute_ecs_power_draw(environmental_controls, state, vehicle):
 
     m_dot_nom         = m_dot_per_pax * N_pax
     T_in_uncorrected  = T_cabin - Q_total / (Cp * m_dot_nom)
-    m_dot_cabin       = np.where(
+    m_dot_cabin       = xp.where(
         T_in_uncorrected < T_in_min, Q_total / (Cp * (T_cabin - T_in_min)),
-        np.where(T_in_uncorrected > T_in_max, Q_total / (Cp * (T_in_max - T_cabin)), m_dot_nom))
+        xp.where(T_in_uncorrected > T_in_max, Q_total / (Cp * (T_in_max - T_cabin)), m_dot_nom))
 
     # Only the fresh-air fraction of the (possibly corrected) cabin flow
     # passes through the packs/compressor -- the rest is recirculated -- and
     # that's floored at the regulatory minimum regardless.
     m_dot_fresh  = (1 - epsilon) * m_dot_cabin
-    m_dot_packs  = np.maximum(m_dot_fresh, m_dot_nom)
+    m_dot_packs  = xp.maximum(m_dot_fresh, m_dot_nom)
     m_dot_recirc = epsilon * m_dot_cabin
 
     T_ram   = T1 * (1 + ((gamma - 1) / 2) * Mach**2)
     P_ram   = P1 * (1 + ((gamma - 1) / 2) * Mach**2)
-    P_cabin = np.maximum(78000, P_ram + 20000)
+    P_cabin = xp.maximum(78000, P_ram + 20000)
     # Compression starts from the ram-recovered state (T_ram, P_ram), not raw
     # freestream (T1, P1) -- the ram effect already does part of the
     # compression "for free" using the aircraft's own kinetic energy; only the
@@ -119,6 +121,6 @@ def compute_ecs_power_draw(environmental_controls, state, vehicle):
     P_ecs   = P_comp + P_fan
 
     system_conditions                              = state.conditions.energy.systems[environmental_controls.tag]
-    system_conditions.inputs.power.electrical[:,0]  = P_ecs[:,0]
-    system_conditions.outputs.power.electrical[:,0] = 0.0
+    system_conditions.inputs.power.electrical  = set_at(system_conditions.inputs.power.electrical, np.s_[:,0], P_ecs[:,0])
+    system_conditions.outputs.power.electrical = set_at(system_conditions.outputs.power.electrical, np.s_[:,0], 0.0)
     return system_conditions.inputs, system_conditions.outputs

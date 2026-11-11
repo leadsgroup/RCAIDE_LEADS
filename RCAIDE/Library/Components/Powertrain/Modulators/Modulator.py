@@ -8,6 +8,7 @@
  # RCAIDE imports
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components                      import Component    
+from RCAIDE.Library.Methods.Powertrain.reset_power_conditions import reset_power_conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Converter Component
 # ----------------------------------------------------------------------------------------------------------------------
@@ -43,17 +44,4 @@ class Modulator(Component):
 
     def append_segment_conditions(self, segment):
         modulator_conditions = segment.state.conditions.energy.modulators[self.tag]
-        modulator_conditions.inputs.power.propulsive[:,0]  = 0.0
-        modulator_conditions.inputs.power.mechanical[:,0]  = 0.0
-        modulator_conditions.inputs.power.electrical[:,0]  = 0.0
-        modulator_conditions.inputs.power.chemical[:,0]    = 0.0
-        modulator_conditions.inputs.power.pneumatic[:,0]   = 0.0
-        modulator_conditions.inputs.power.hydraulic[:,0]   = 0.0
-        modulator_conditions.inputs.power.thermal[:,0]     = 0.0
-        modulator_conditions.outputs.power.propulsive[:,0] = 0.0
-        modulator_conditions.outputs.power.mechanical[:,0] = 0.0
-        modulator_conditions.outputs.power.electrical[:,0] = 0.0
-        modulator_conditions.outputs.power.chemical[:,0]   = 0.0
-        modulator_conditions.outputs.power.pneumatic[:,0]  = 0.0
-        modulator_conditions.outputs.power.hydraulic[:,0]  = 0.0
-        modulator_conditions.outputs.power.thermal[:,0]    = 0.0
+        reset_power_conditions(modulator_conditions)

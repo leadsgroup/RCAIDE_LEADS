@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports   
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.reset_power_conditions import reset_power_conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -86,19 +87,6 @@ def append_bus_conditions(bus,segment):
 def append_bus_segment_conditions(bus,segment):
 
     bus_conditions   = segment.state.conditions.energy.distributors[bus.tag]
-    bus_conditions.inputs.power.electrical[:,0]             = 0.0
-    bus_conditions.inputs.power.thermal[:,0]                = 0.0
-    bus_conditions.inputs.power.hydraulic[:,0]              = 0.0
-    bus_conditions.inputs.power.propulsive[:,0]             = 0.0
-    bus_conditions.inputs.power.pneumatic[:,0]              = 0.0
-    bus_conditions.inputs.power.mechanical[:,0]             = 0.0
-    bus_conditions.inputs.power.chemical[:,0]               = 0.0 
-    bus_conditions.outputs.power.electrical[:,0]            = 0.0
-    bus_conditions.outputs.power.thermal[:,0]               = 0.0
-    bus_conditions.outputs.power.hydraulic[:,0]             = 0.0
-    bus_conditions.outputs.power.propulsive[:,0]            = 0.0
-    bus_conditions.outputs.power.pneumatic[:,0]             = 0.0
-    bus_conditions.outputs.power.mechanical[:,0]            = 0.0
-    bus_conditions.outputs.power.chemical[:,0]              = 0.0    
+    reset_power_conditions(bus_conditions)
 
     return

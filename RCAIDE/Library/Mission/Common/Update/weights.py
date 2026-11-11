@@ -11,7 +11,8 @@ from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.update_center_of_g
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.update_moments_of_inertia import update_moments_of_inertia
 
 # package imports 
-import numpy as np  
+import numpy as np
+from RCAIDE.Framework.Core import array_namespace, set_at  
     
 # ----------------------------------------------------------------------------------------------------------------------
 # Update Weights
@@ -53,8 +54,8 @@ def weights(segment):
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion) or \
                     (type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Throttle):
  
-        W = m_0_vehicle*g 
-        conditions.frames.inertial.gravity_force_vector[:,2] = W[:,0] 
+        W = m_0_vehicle*g
+        conditions.frames.inertial.gravity_force_vector = set_at(conditions.frames.inertial.gravity_force_vector, np.s_[:,2], W[:,0]) 
     else:
     
         # --------------------------------------------------------------------------  
@@ -68,7 +69,7 @@ def weights(segment):
                         fuel =  source.fuel
                         mass_flow_rate = conditions.energy.sources[source.tag].mass_flow_rate              
                         m_0_fuel       = conditions.weights.components.mass[fuel.tag][0,0]     
-                        conditions.weights.components.mass[fuel.tag][:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten() 
+                        conditions.weights.components.mass[fuel.tag] = set_at(conditions.weights.components.mass[fuel.tag], np.s_[:,0], m_0_fuel + array_namespace(I, mass_flow_rate).dot(I, -mass_flow_rate).flatten()) 
                 
         if settings.run_center_of_gravity_analysis:
             update_center_of_gravity(segment.state, vehicle)
@@ -82,10 +83,10 @@ def weights(segment):
         # --------------------------------------------------------------------------                  
         # update mass 
         # --------------------------------------------------------------------------  
-        m = m_0_vehicle + np.dot(I, -m_dot_vehicle) 
-        W = m*g 
-        conditions.weights.vehicle.mass[1:,0]                = m[1:,0]  
-        conditions.frames.inertial.gravity_force_vector[:,2] = W[:,0]
+        m = m_0_vehicle + array_namespace(I, m_dot_vehicle).dot(I, -m_dot_vehicle)
+        W = m*g
+        conditions.weights.vehicle.mass                 = set_at(conditions.weights.vehicle.mass, np.s_[1:,0], m[1:,0])
+        conditions.frames.inertial.gravity_force_vector = set_at(conditions.frames.inertial.gravity_force_vector, np.s_[:,2], W[:,0])
                 
     return
  

@@ -5,6 +5,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Framework.Core import set_at
+import numpy as np
 
 def compute_systems_power_draw(system, state, vehicle):
     """Computes the power draw of a generic system.
@@ -26,7 +28,7 @@ def compute_systems_power_draw(system, state, vehicle):
         Output power conditions for the system.
     """
     system_conditions                               = state.conditions.energy.systems[system.tag]
-    system_conditions.inputs.power.electrical[:,0]  = system.power_draw
-    system_conditions.outputs.power.electrical[:,0] = 0.0
+    system_conditions.inputs.power.electrical  = set_at(system_conditions.inputs.power.electrical, np.s_[:,0], system.power_draw)
+    system_conditions.outputs.power.electrical = set_at(system_conditions.outputs.power.electrical, np.s_[:,0], 0.0)
 
     return system_conditions.inputs, system_conditions.outputs
