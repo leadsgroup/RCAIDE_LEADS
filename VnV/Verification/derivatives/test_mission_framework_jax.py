@@ -41,13 +41,15 @@ def main():
                          frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'network', 'energy', 'thrust',
                                        'weights', 'stability'))
 
-    # the electric rotor networks of the tiltrotor and the stopped rotor run on JAX, so every unknown reaches the
-    # residual in every segment
+    # the electric rotor networks of the tiltrotor, stopped rotor and tilt wing run on JAX, so every unknown reaches
+    # the residual in every segment
     os.chdir(os.path.join(vnv_folder, "Verification", "network_vtol"))
     sys.path.insert(0, os.getcwd())
     check_mission_on_jax("tiltrotor", tiltrotor_mission(), check_derivatives,
                          frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'stability'))
     check_mission_on_jax("stopped_rotor", stopped_rotor_mission(), check_derivatives,
+                         frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'stability'))
+    check_mission_on_jax("tiltwing", tiltwing_mission(), check_derivatives,
                          frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'stability'))
 
     os.chdir(start_folder)
@@ -186,6 +188,13 @@ def stopped_rotor_mission():
     vehicle  = vtol.SR_vehicle_setup(False)
     analyses = vtol.SR_analyses_setup(vtol.SR_configs_setup(vehicle))
     return vtol.missions_setup(vtol.SR_mission_setup(analyses, vehicle)).base_mission
+
+
+def tiltwing_mission():
+    import vtol_aircraft_test as vtol
+    vehicle  = vtol.TW_vehicle_setup(False)
+    analyses = vtol.TW_analyses_setup(vtol.TW_configs_setup(vehicle))
+    return vtol.missions_setup(vtol.TW_mission_setup(analyses)).base_mission
 
 
 if __name__ == '__main__':
