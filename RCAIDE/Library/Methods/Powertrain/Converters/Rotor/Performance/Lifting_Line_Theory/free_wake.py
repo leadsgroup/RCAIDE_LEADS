@@ -103,6 +103,20 @@ def free_wake(rotor, wake_inputs, conditions):
     # here and reused for every compute_V_ind call in this invocation.
     _executor = ThreadPoolExecutor()
 
+    # Gamma_c/rc_c/sign depend only on (source rotor s, control point cp) -- NOT on the
+    # azimuth column j -- but _compute_one used to re-concatenate them from scratch on every
+    # (i,cp,j) task, i.e. once per task per source rotor (1.38M times for one
+    # departure_transition_1 eval, see scratchpad/profile_stats.txt 2026-11-10/11) when there
+    # are only n_rot*ctrl_pts (<=48 on this vehicle) distinct values. Precomputed once here
+    # instead; purely a caching change, no math changes (same concatenation, same sign flip,
+    # just computed once per (s,cp) instead of once per (i,cp,j,s)).
+    _Gamma_rc_sign_cache = {}
+    for s, gs in enumerate(G):
+        for cp in range(ctrl_pts):
+            Gamma_c = np.concatenate((gs.Gamma_w_flat[cp], gs.Gamma_b_flat[cp]))
+            rc_c    = np.concatenate((gs.rcvf_flat[cp],    gs.rcb_flat[cp]))
+            _Gamma_rc_sign_cache[(s, cp)] = (Gamma_c, rc_c, bool(gs.CW[cp]))
+
     def compute_V_ind(field_grids, source_grids):
         """Induced velocity at the wake nodes of every relaxed rotor i (its own hub frame),
         from the wakes (source_grids) and blades of every rotor, sampled at the same instant
@@ -160,15 +174,17 @@ def free_wake(rotor, wake_inputs, conditions):
                 Dx = np.concatenate((r_w_end[:, 0],   B_blade[:, 0]))
                 Dy = np.concatenate((r_w_end[:, 1],   B_blade[:, 1]))
                 Dz = np.concatenate((r_w_end[:, 2],   B_blade[:, 2]))
-                Gamma_c = np.concatenate((gs.Gamma_w_flat[cp], gs.Gamma_b_flat[cp]))
-                rc_c    = np.concatenate((gs.rcvf_flat[cp],    gs.rcb_flat[cp]))
+                # Gamma_c/rc_c/CW depend only on (s,cp), not j -- precomputed once above
+                # instead of re-concatenated on every (i,cp,j) task (see
+                # _Gamma_rc_sign_cache's comment).
+                Gamma_c, rc_c, is_cw = _Gamma_rc_sign_cache[(s, cp)]
                 vx, vy, vz = biot_savart_induced_velocity_soa(
                     Px, Py, Pz,
                     np.ascontiguousarray(Cx), np.ascontiguousarray(Cy), np.ascontiguousarray(Cz),
                     np.ascontiguousarray(Dx), np.ascontiguousarray(Dy), np.ascontiguousarray(Dz),
                     Gamma_c, rc_c, gs.vc_correction)
 
-                if gs.CW[cp]:
+                if is_cw:
                     sumx -= vx; sumy -= vy; sumz -= vz
                 else:
                     sumx += vx; sumy += vy; sumz += vz
