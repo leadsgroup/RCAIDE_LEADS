@@ -1,4 +1,6 @@
 # RCAIDE/Framework/Core/Arrays.py
+#
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------
 #   Imports
@@ -11,6 +13,22 @@ import numpy as np
 
 array_type  = np.ndarray
 matrix_type = np.matrixlib.defmatrix.matrix
+
+def array_namespace(*arrays):
+    """NumPy, or jax.numpy when any argument is a JAX array, including a traced value inside jax.jit."""
+    for A in arrays:
+        if type(A).__module__.startswith(('jax', 'jaxlib')):
+            import jax.numpy as jnp
+            return jnp
+    return np
+
+def set_at(A, index, value):
+    """A with A[index] = value: written in place for NumPy, a new array for JAX, whose arrays are immutable."""
+    if isinstance(A, np.ndarray) and array_namespace(value) is np:
+        A[index] = value
+        return A
+    import jax.numpy as jnp
+    return jnp.asarray(A).at[index].set(value)
  
 def atleast_2d_col(A):
     """Makes a 2D array in column format
@@ -74,7 +92,7 @@ def atleast_2d(A,oned_as='row'):
     """       
     
     # not an array yet
-    if not isinstance(A,(array_type,matrix_type)):
+    if not isinstance(A,(array_type,matrix_type)) and array_namespace(A) is np:
         if not isinstance(A,(list,tuple)):
             A = [A]
         A = np.array(A)

@@ -3,6 +3,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -10,6 +11,8 @@
 
 # Package imports 
 import numpy as np
+
+from RCAIDE.Framework.Core.Arrays import array_namespace
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  interp2d
@@ -83,11 +86,12 @@ def orientation_product(T,Bb):
     """            
     
     assert T.ndim == 3
+    xp = array_namespace(T, Bb)
     
     if Bb.ndim == 3:
-        C = np.einsum('aij,ajk->aik', T, Bb )
+        C = xp.einsum('aij,ajk->aik', T, Bb )
     elif Bb.ndim == 2:
-        C = np.einsum('aij,aj->ai', T, Bb )
+        C = xp.einsum('aij,aj->ai', T, Bb )
     else:
         raise Exception('bad B rank')
         
@@ -119,7 +123,7 @@ def orientation_transpose(T):
     
     assert T.ndim == 3
     
-    Tt = np.swapaxes(T,1,2)
+    Tt = array_namespace(T).swapaxes(T,1,2)
         
     return Tt
 
@@ -187,12 +191,13 @@ def T0(a):
     #               [0, cos,sin],
     #               [0,-sin,cos]])
     
-    cos = np.cos(a)
-    sin = np.sin(a)
+    xp  = array_namespace(a)
+    cos = xp.cos(a)
+    sin = xp.sin(a)
                   
-    zero = np.zeros_like(cos)
-    one  = np.ones_like(cos)
-    T    = np.stack([ one, zero, zero, zero,  cos,  sin, zero, -sin,  cos], axis=-1).reshape(-1,3,3)
+    zero = xp.zeros_like(cos)
+    one  = xp.ones_like(cos)
+    T    = xp.stack([ one, zero, zero, zero,  cos,  sin, zero, -sin,  cos], axis=-1).reshape(-1,3,3)
     return T
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -221,12 +226,13 @@ def T1(a):
     #               [0  ,1,   0],
     #               [sin,0, cos]])
     
-    cos = np.cos(a)
-    sin = np.sin(a)     
+    xp  = array_namespace(a)
+    cos = xp.cos(a)
+    sin = xp.sin(a)     
     
-    zero = np.zeros_like(cos)
-    one  = np.ones_like(cos)
-    T    = np.stack([ cos, zero, -sin, zero,  one, zero,  sin, zero,  cos], axis=-1).reshape(-1,3,3)
+    zero = xp.zeros_like(cos)
+    one  = xp.ones_like(cos)
+    T    = xp.stack([ cos, zero, -sin, zero,  one, zero,  sin, zero,  cos], axis=-1).reshape(-1,3,3)
     return T
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -255,12 +261,13 @@ def T2(a):
     #               [-sin,cos,0],
     #               [0   ,0  ,1]])
         
-    cos = np.cos(a)
-    sin = np.sin(a)     
+    xp  = array_namespace(a)
+    cos = xp.cos(a)
+    sin = xp.sin(a)     
     
-    zero = np.zeros_like(cos)
-    one  = np.ones_like(cos)
-    T    = np.stack([ cos,  sin, zero, -sin,  cos, zero, zero, zero,  one], axis=-1).reshape(-1,3,3)
+    zero = xp.zeros_like(cos)
+    one  = xp.ones_like(cos)
+    T    = xp.stack([ cos,  sin, zero, -sin,  cos, zero, zero, zero,  one], axis=-1).reshape(-1,3,3)
     return T
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -289,11 +296,12 @@ def new_tensor(a):
     assert a.ndim == 1
     n_a = len(a)
     
-    T = np.eye(3)
+    xp = array_namespace(a)
+    T = xp.eye(3)
     
     if a.dtype is np.dtype('complex'):
         T = T + 0j
     
-    T = np.resize(T,[n_a,3,3])
+    T = xp.broadcast_to(T,(n_a,3,3))
     
     return T
