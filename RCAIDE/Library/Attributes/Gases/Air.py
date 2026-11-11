@@ -2,13 +2,16 @@
 # 
 #
 # Created:  Mar 2024, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Imports
 # ----------------------------------------------------------------------------------------------------------------------  
  
 from .Gas import Gas 
-import numpy as np 
+import numpy as np
+
+from RCAIDE.Framework.Core import array_namespace 
 
 # ----------------------------------------------------------------------------------------------------------------------  
 # Air Class
@@ -119,9 +122,9 @@ class Air(Gas):
         if variable_gamma:
             g = self.compute_gamma(T,p)
         else:
-            g = 1.4*np.ones_like(T)
+            g = 1.4*array_namespace(T).ones_like(T)
             
-        return np.sqrt(g*self.gas_specific_constant*T)
+        return array_namespace(T).sqrt(g*self.gas_specific_constant*T)
 
     def compute_cp(self,T=300.,p=101325.):
         """
@@ -318,4 +321,4 @@ class Air(Gas):
         see :func:`compute_gamma`.)
         """
 
-        return self.gas_specific_constant*np.ones_like(T)
+        return self.gas_specific_constant*array_namespace(T).ones_like(T)
