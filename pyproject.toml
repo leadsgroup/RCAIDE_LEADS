@@ -59,6 +59,10 @@ dependencies = [
 # Dynamic version configuration
 dynamic = ["version"]
 
+# Automatic differentiation (pip install RCAIDE[ad]); optional, so the NumPy path never needs it
+[project.optional-dependencies]
+ad = ["jax"]
+
 [tool.setuptools]
 package-dir = {"" = "."}
 

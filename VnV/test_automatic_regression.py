@@ -74,6 +74,8 @@ modules = [
     'Verification/optimization/optimization_packages.py',
     'Verification/solver_numerics/hp_decomposition_test.py',
     'Verification/solver_numerics/test_segment_layout.py',
+    'Verification/derivatives/test_derivative_check.py',
+    'Verification/derivatives/test_core_functions_jax.py',
     'Verification/solver_numerics/test_segment_layout_vehicles.py',
     'Verification/solver_numerics/test_solver_layout_io.py',
     'Verification/framework_core/test_data_copy_values.py',
