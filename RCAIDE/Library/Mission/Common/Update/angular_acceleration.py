@@ -2,11 +2,13 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Imports
 # ---------------------------------------------------------------------------------------------------------------------- 
 import numpy as np
+from RCAIDE.Framework.Core   import array_namespace
 from RCAIDE.Framework.Core   import orientation_product, orientation_transpose 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -39,9 +41,10 @@ def angular_acceleration(segment):
     T_inertia2wind  = orientation_transpose(T_wind2inertial)    
     
     # accelerations
-    ang_acc_i = np.dot(D,omega)
+    xp        = array_namespace(omega)   # numpy, or jax.numpy when omega is a JAX array
+    ang_acc_i = xp.dot(D,omega)
     ang_acc_w = orientation_product(T_inertia2wind,ang_acc_i )
 
     # pack conditions
-    segment.state.conditions.frames.inertial.angular_acceleration_vector[:,:] = ang_acc_i[:,:] 
-    segment.state.conditions.frames.wind.angular_acceleration_vector[:,:]     = ang_acc_w[:,:]
+    segment.state.conditions.frames.inertial.angular_acceleration_vector = ang_acc_i 
+    segment.state.conditions.frames.wind.angular_acceleration_vector     = ang_acc_w

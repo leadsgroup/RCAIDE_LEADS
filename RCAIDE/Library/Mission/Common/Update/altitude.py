@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Update Altitude
@@ -24,4 +25,4 @@ def altitude(segment):
                     
     """    
     altitude = -segment.state.conditions.frames.inertial.position_vector[:,2]
-    segment.state.conditions.freestream.altitude[:,0] = altitude 
+    segment.state.conditions.freestream.altitude = altitude[:,None] 

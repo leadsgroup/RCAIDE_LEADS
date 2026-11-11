@@ -2,10 +2,13 @@
 #
 #
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
+
+from RCAIDE.Framework.Core import array_namespace, set_at
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Unpack Unknowns
@@ -93,7 +96,10 @@ def orientation(segment):
     RCAIDE.Framework.Mission.Segments
     """
 
-    ctrls    = segment.assigned_control_variables
+    # set_at(A, np.s_[:,1], value) does A[:,1] = value and returns A. NumPy writes in place; JAX arrays cannot be
+    # changed, so for JAX it returns a new array, which is why the result is always assigned back.
+    ctrls     = segment.assigned_control_variables
+    rotations = segment.state.conditions.frames.body.inertial_rotations   # columns: roll, pitch, heading
 
     # Body Angle Control
     if segment.lift_coefficient !=  None:
@@ -101,27 +107,30 @@ def orientation(segment):
         segment.state.conditions.aerodynamics.coefficients.lift.inviscid.total = segment.lift_coefficient / segment.analyses.aerodynamics.settings.fuselage_lift_correction   * segment.state.ones_row(1)
     else:
         if ctrls.pitch_angle.active:
-            segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.mission.pitch_angle[:,0]
+            rotations = set_at(rotations, np.s_[:,1], segment.state.unknowns.mission.pitch_angle[:,0])
         else:
-            segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.angle_of_attack
+            rotations = set_at(rotations, np.s_[:,1], segment.angle_of_attack)
 
     # Bank Angle
     if ctrls.bank_angle.active:
-        segment.state.conditions.frames.body.inertial_rotations[:,0] = -segment.state.unknowns.mission.bank_angle[:,0]
+        rotations = set_at(rotations, np.s_[:,0], -segment.state.unknowns.mission.bank_angle[:,0])
     else:
-        segment.state.conditions.frames.body.inertial_rotations[:,0] = -segment.bank_angle
-    segment.state.conditions.frames.body.inertial_rotations[:,2] =  segment.state.conditions.frames.planet.true_heading[:,0]
+        rotations = set_at(rotations, np.s_[:,0], -segment.bank_angle)
+    rotations = set_at(rotations, np.s_[:,2], segment.state.conditions.frames.planet.true_heading[:,0])
+    segment.state.conditions.frames.body.inertial_rotations = rotations
+    inertial = segment.state.conditions.frames.inertial
 
     # Velocity Control
     if ctrls.velocity.active:
-        segment.state.conditions.frames.inertial.velocity_vector[:,0] = segment.state.unknowns.mission.velocity[:,0]
+        inertial.velocity_vector = set_at(inertial.velocity_vector, np.s_[:,0], segment.state.unknowns.mission.velocity[:,0])
 
     # Altitude Control
     if ctrls.altitude.active:
-        segment.state.conditions.frames.inertial.position_vector[:,2] = -segment.state.unknowns.mission.altitude[:,0]
+        inertial.position_vector = set_at(inertial.position_vector, np.s_[:,2], -segment.state.unknowns.mission.altitude[:,0])
 
     # Sideslip Angle, after velocity control because a crosswind uses the airspeed at each control point
-    segment.state.conditions.frames.wind.body_rotations[:,2] = sideslip_angle(segment)
+    wind = segment.state.conditions.frames.wind
+    wind.body_rotations = set_at(wind.body_rotations, np.s_[:,2], sideslip_angle(segment))
 
     return
 
@@ -132,6 +141,12 @@ def sideslip_angle(segment):
         return segment.state.unknowns.mission.sideslip_angle[:,0]
     if segment.crosswind_speed != 0.0:
         # beta = arcsin(v/V), Etkin & Reid (1.6,4); zero where the vehicle is not moving
-        V = np.linalg.norm(segment.state.conditions.frames.inertial.velocity_vector, axis=1)
-        return np.arcsin(np.clip(np.divide(segment.crosswind_speed, V, out=np.zeros_like(V), where=V > 0.), -1.0, 1.0))
+        V  = segment.state.conditions.frames.inertial.velocity_vector
+        xp = array_namespace(V)
+        V  = xp.linalg.norm(V, axis=1)
+        # divide only where the vehicle moves; V_safe keeps the unused division finite, since JAX differentiates
+        # both branches of a where and a division by zero there would make the gradient NaN
+        moving = V > 0.
+        V_safe = xp.where(moving, V, 1.)
+        return xp.arcsin(xp.clip(xp.where(moving, segment.crosswind_speed / V_safe, 0.), -1.0, 1.0))
     return segment.sideslip_angle

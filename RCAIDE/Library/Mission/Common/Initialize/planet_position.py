@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Initialize Planet Position
@@ -76,7 +77,7 @@ def planet_position(segment):
         longitude_initial = 0.0
         latitude_initial  = 0.0
 
-    segment.state.conditions.frames.planet.longitude[:,0] = longitude_initial
-    segment.state.conditions.frames.planet.latitude[:,0]  = latitude_initial    
+    segment.state.conditions.frames.planet.longitude = longitude_initial * segment.state.ones_row(1)
+    segment.state.conditions.frames.planet.latitude  = latitude_initial  * segment.state.ones_row(1)
 
     return 
