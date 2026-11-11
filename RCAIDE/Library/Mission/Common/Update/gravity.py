@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -26,12 +27,12 @@ def gravity(segment):
 
     # unpack
     planet = segment.analyses.planet
-    H      = segment.conditions.freestream.altitude
+    H      = segment.state.conditions.freestream.altitude
     
     # calculate
     g      = planet.compute_gravity(H)
 
     # pack
-    segment.state.conditions.freestream.gravity[:,0] = g[:,0]
+    segment.state.conditions.freestream.gravity = g
 
     return 

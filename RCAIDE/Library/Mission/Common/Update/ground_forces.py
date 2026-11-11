@@ -2,12 +2,14 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE  
-from RCAIDE.Framework.Core import   orientation_product 
+from RCAIDE.Framework.Core import   orientation_product, set_at
+import numpy as np
 from RCAIDE.Library.Mission.Common.Update.forces import forces
  
 # ----------------------------------------------------------------------------------------------------------------------
@@ -52,8 +54,10 @@ def ground_forces(segment):
     Ff = N * friction_coeff
 
     #pack results. Friction acts along x-direction
-    conditions.frames.inertial.ground_force_vector[:,2] = N[:,0]
-    conditions.frames.inertial.ground_force_vector[:,0] = Ff[:,0]  
+    F_ground = conditions.frames.inertial.ground_force_vector
+    F_ground = set_at(F_ground, np.s_[:,2], N[:,0])
+    F_ground = set_at(F_ground, np.s_[:,0], Ff[:,0])
+    conditions.frames.inertial.ground_force_vector = F_ground
 
     forces(segment)
 
@@ -66,4 +70,4 @@ def ground_forces(segment):
     F = total_aero_forces + inertial_ground_force_vector
 
     # pack
-    conditions.frames.inertial.total_force_vector[:,:] = F[:,:]
+    conditions.frames.inertial.total_force_vector = F

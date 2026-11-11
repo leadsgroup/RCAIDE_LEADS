@@ -2,7 +2,12 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
  
+import numpy as np
+
+from RCAIDE.Framework.Core import set_at
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Unpack Unknowns
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -73,6 +78,9 @@ def ground(segment):
 
     # apply unknowns
     conditions = segment.state.conditions
-    conditions.frames.inertial.velocity_vector[1:,0] = ground_velocity[:,0]
-    conditions.frames.inertial.velocity_vector[0,0]  = v0
+    # set_at(A, np.s_[1:,0], value) does A[1:,0] = value and returns A (a new array for JAX, whose arrays cannot change)
+    V = conditions.frames.inertial.velocity_vector
+    V = set_at(V, np.s_[1:,0], ground_velocity[:,0])
+    V = set_at(V, np.s_[0,0], v0)
+    conditions.frames.inertial.velocity_vector       = V
     conditions.frames.inertial.time                  = times

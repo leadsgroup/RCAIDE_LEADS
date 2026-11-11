@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -54,7 +55,7 @@ def moments(segment):
     M_tot_w = M_thrust_w + M_aero_w
     
     # pack
-    conditions.frames.inertial.total_moment_vector[:,:] = M_tot_i[:,:]
-    conditions.frames.wind.total_moment_vector[:,:]     = M_tot_w[:,:]
+    conditions.frames.inertial.total_moment_vector = M_tot_i
+    conditions.frames.wind.total_moment_vector     = M_tot_w
 
     return

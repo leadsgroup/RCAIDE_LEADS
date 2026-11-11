@@ -2,13 +2,16 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports 
-import numpy as np 
+import numpy as np
+
+from RCAIDE.Framework.Core import array_namespace 
     
 # ----------------------------------------------------------------------------------------------------------------------
 #  Update Freestream
@@ -45,8 +48,9 @@ def freestream(segment):
     mu         = conditions.freestream.dynamic_viscosity
 
     # velocity magnitude
-    Vmag2 = np.sum( V**2, axis=1)[:,None]  
-    Vmag  = np.sqrt(Vmag2)
+    xp    = array_namespace(V)
+    Vmag2 = xp.sum( V**2, axis=1)[:,None]  
+    Vmag  = xp.sqrt(Vmag2)
 
     # dynamic pressure
     q = 0.5 * rho * Vmag2 # Pa
@@ -58,10 +62,10 @@ def freestream(segment):
     Re = rho * Vmag / mu  # per m
 
     # pack
-    conditions.freestream.velocity[...]         = Vmag
-    conditions.freestream.mach_number[...]      = M
-    conditions.freestream.reynolds_number[...]  = Re
-    conditions.freestream.dynamic_pressure[...] = q
+    conditions.freestream.velocity         = Vmag
+    conditions.freestream.mach_number      = M
+    conditions.freestream.reynolds_number  = Re
+    conditions.freestream.dynamic_pressure = q
 
     return
 

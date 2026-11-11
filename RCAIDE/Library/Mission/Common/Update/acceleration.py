@@ -2,11 +2,14 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Imports
 # ---------------------------------------------------------------------------------------------------------------------- 
 import numpy as np
+
+from RCAIDE.Framework.Core import array_namespace
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Update Acceleration
@@ -36,7 +39,8 @@ def acceleration(segment):
     D = segment.state.numerics.time.differentiate
     
     # accelerations
-    acc = np.dot(D,v)
+    xp  = array_namespace(v)   # numpy, or jax.numpy when v is a JAX array
+    acc = xp.dot(D,v)
     
     # pack conditions
-    segment.state.conditions.frames.inertial.acceleration_vector[:,:] = acc[:,:]   
+    segment.state.conditions.frames.inertial.acceleration_vector = acc   

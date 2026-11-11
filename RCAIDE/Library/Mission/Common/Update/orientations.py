@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -12,6 +13,8 @@ from RCAIDE.Framework.Core  import Units,  angles_to_dcms, orientation_product, 
 
 # package imports 
 import numpy as np
+
+from RCAIDE.Framework.Core import array_namespace
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Update Orientations
@@ -71,53 +74,52 @@ def orientations(segment):
     V_stability = V_body * 1.
 
     # calculate angle of attack
-    alpha = np.arctan2(V_stability[:,2],V_stability[:,0])[:,None] 
+    xp    = array_namespace(V_inertial, body_inertial_rotations)
+    alpha = xp.arctan2(V_stability[:,2],V_stability[:,0])[:,None] 
 
     # pack aerodynamics angles
-    conditions.aerodynamics.angles.alpha[:,0] = alpha[:,0]
-    conditions.aerodynamics.angles.beta[:,0]  = beta 
-    conditions.aerodynamics.angles.phi[:,0]   = phi[:,0] 
+    conditions.aerodynamics.angles.alpha = alpha
+    conditions.aerodynamics.angles.beta  = beta[:,None] 
+    conditions.aerodynamics.angles.phi   = phi 
 
     # pack transformation tensor
-    conditions.frames.body.transform_to_inertial[...] = T_body2inertial 
+    conditions.frames.body.transform_to_inertial = T_body2inertial 
 
     # ------------------------------------------------------------------
     #  Wind Frame
     # ------------------------------------------------------------------
 
     # back calculate wind frame rotations
-    wind_body_rotations = body_inertial_rotations * 0.
-    wind_body_rotations[:,0] = 0          # no roll in wind frame
-    wind_body_rotations[:,1] = alpha[:,0] # theta is angle of attack
-    wind_body_rotations[:,2] = beta 
+    # columns: roll (none in the wind frame), pitch (angle of attack), yaw (sideslip)
+    wind_body_rotations = xp.stack([xp.zeros_like(beta), alpha[:,0], beta], axis=1)
 
     # wind frame tranformation matricies
     T_wind2body     = angles_to_dcms(wind_body_rotations,(2,1,0))       
     T_wind2inertial = orientation_product(T_wind2body,T_body2inertial) 
 
     # pack wind rotations
-    conditions.frames.wind.body_rotations[...] = wind_body_rotations
+    conditions.frames.wind.body_rotations = wind_body_rotations
 
     # pack transformation tensor
-    conditions.frames.wind.transform_to_inertial[...] = T_wind2inertial
-    conditions.frames.wind.transform_to_body[...]     = T_wind2body
+    conditions.frames.wind.transform_to_inertial = T_wind2inertial
+    conditions.frames.wind.transform_to_body     = T_wind2body
     
     # ------------------------------------------------------------------
     # Rotation rates 
     # ------------------------------------------------------------------ 
-    stability_frame_rotations       =  np.concatenate((np.concatenate((roll_rate, pitch_rate), axis=1), yaw_rate), axis=1)
+    stability_frame_rotations       =  xp.concatenate((roll_rate, pitch_rate, yaw_rate), axis=1)
     phi                             = body_inertial_rotations[:, 0]
     theta                           = body_inertial_rotations[:, 1]
-    reverse_transformation          = np.zeros_like(T_body2inertial)
-    reverse_transformation[:, 0, 0] =  1 
-    reverse_transformation[:, 0, 1] =  np.sin(phi)*np.tan(theta)
-    reverse_transformation[:, 0, 2] =  np.cos(phi)*np.tan(theta)
-    reverse_transformation[:, 1, 1] =  np.cos(phi)
-    reverse_transformation[:, 1, 2] =  -np.sin(phi) 
-    reverse_transformation[:, 2, 1] =  np.sin(phi) /np.cos(theta)
-    reverse_transformation[:, 2, 2] =  np.cos(phi) /np.cos(theta) 
+    zero                            =  xp.zeros_like(phi)
+    one                             =  xp.ones_like(phi)
+    # body rates to Euler angle rates, one 3x3 matrix per control point, built row by row with stack rather than
+    # by writing entries, so it works for JAX arrays too
+    row_1                           =  xp.stack([one,  xp.sin(phi)*xp.tan(theta), xp.cos(phi)*xp.tan(theta)], axis=-1)
+    row_2                           =  xp.stack([zero, xp.cos(phi),               -xp.sin(phi)             ], axis=-1)
+    row_3                           =  xp.stack([zero, xp.sin(phi)/xp.cos(theta), xp.cos(phi)/xp.cos(theta)], axis=-1)
+    reverse_transformation          =  xp.stack([row_1, row_2, row_3], axis=1)
     inertial_rotations              =  orientation_product(reverse_transformation,stability_frame_rotations)
-    segment.state.conditions.frames.inertial.angular_velocity_vector[...] = inertial_rotations 
+    segment.state.conditions.frames.inertial.angular_velocity_vector = inertial_rotations 
     
     return
          

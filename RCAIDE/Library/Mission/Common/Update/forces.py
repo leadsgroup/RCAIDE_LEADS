@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -9,7 +10,7 @@
 
 # RCAIDE imports
 import  RCAIDE 
-from RCAIDE.Framework.Core   import orientation_product, orientation_transpose  
+from RCAIDE.Framework.Core   import orientation_product, orientation_transpose, array_namespace  
 import  numpy as  np 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -50,6 +51,7 @@ def forces(segment):
     T_body2wind     = orientation_transpose(T_wind2body) 
 
     # transform matrices 
+    xp            = array_namespace(F_aero_w, F_thrust_body, F_weight_i)
     F_aero_i      = orientation_product(T_wind2inertial,F_aero_w) 
     F_thrust_i    = orientation_product(T_body2inertial,F_thrust_body)  
     F_thrust_wind = orientation_product(T_body2wind,F_thrust_body)
@@ -58,21 +60,23 @@ def forces(segment):
     
     if type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Climb or \
         type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Descent:        
-        F_aero_i =  np.zeros_like(F_thrust_i)
-        F_aero_w =  np.zeros_like(F_thrust_i)
-        F_weight_wind[:, [0, 2]] = F_weight_wind[:, [2, 0]]
-        F_thrust_wind[:, [0, 2]] = F_thrust_wind[:, [2, 0]]
+        F_aero_i =  xp.zeros_like(F_thrust_i)
+        F_aero_w =  xp.zeros_like(F_thrust_i)
+        F_weight_wind = F_weight_wind[:, [2, 1, 0]]   # swap the x and z components
+        F_thrust_wind = F_thrust_wind[:, [2, 1, 0]]
     
-    F_weight_i[:,1] *= -1        
-    F_weight_wind[:,1] *= -1
+    # flip the sign of the y component; multiplying makes a new array, so the stored gravity force is not modified
+    flip_y        = xp.asarray([1., -1., 1.])
+    F_weight_i    = F_weight_i * flip_y        
+    F_weight_wind = F_weight_wind * flip_y
         
     # sum of the forces
     F_tot_i = F_aero_i +  F_thrust_i  + F_weight_i
     F_tot_w = F_aero_w +  F_thrust_wind  + F_weight_wind
 
     # pack
-    conditions.frames.inertial.total_force_vector[:,:] = F_tot_i[:,:]
-    conditions.frames.wind.total_force_vector[:,:]     = F_tot_w[:,:]
+    conditions.frames.inertial.total_force_vector = F_tot_i
+    conditions.frames.wind.total_force_vector     = F_tot_w
 
     return
  

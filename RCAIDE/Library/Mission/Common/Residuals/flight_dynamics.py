@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -9,7 +10,7 @@
 
 import RCAIDE
 import numpy as np 
-from RCAIDE.Framework.Core   import orientation_product, orientation_transpose 
+from RCAIDE.Framework.Core   import orientation_product, orientation_transpose, array_namespace 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Residual Total Forces
@@ -123,7 +124,8 @@ def flight_dynamics(segment):
     if transition_seg_flag or ground_seg_flag: 
         v       = segment.state.conditions.frames.inertial.velocity_vector
         D       = segment.state.numerics.time.differentiate 
-        segment.state.conditions.frames.inertial.acceleration_vector = np.dot(D,v)
+        xp      = array_namespace(v)   # numpy, or jax.numpy when v is a JAX array
+        segment.state.conditions.frames.inertial.acceleration_vector = xp.dot(D,v)
 
     FT_i = segment.state.conditions.frames.inertial.total_force_vector
     a_i  = segment.state.conditions.frames.inertial.acceleration_vector  
@@ -133,7 +135,8 @@ def flight_dynamics(segment):
     if transition_seg_flag: 
         omega = segment.state.conditions.frames.inertial.angular_velocity_vector
         D     = segment.state.numerics.time.differentiate
-        ang_acc_i = np.dot(D,omega)
+        xp    = array_namespace(omega)
+        ang_acc_i = xp.dot(D,omega)
         segment.state.conditions.frames.inertial.angular_acceleration_vector = ang_acc_i 
         segment.state.conditions.frames.wind.angular_acceleration_vector     = orientation_product(T_inertia2wind,ang_acc_i )
  
@@ -149,22 +152,22 @@ def flight_dynamics(segment):
     if ground_seg_flag:
         vf = segment.velocity_end
         if vf == 0.0: vf = 0.01
-        segment.state.residuals.mission.force_x[...] = (FT_i[1:,0]/m[1:,0] - a_i[1:,0])[:,None]
-        segment.state.residuals.mission.final_velocity_error[...] = (v[-1,0] - vf)
+        segment.state.residuals.mission.force_x = (FT_i[1:,0]/m[1:,0] - a_i[1:,0])[:,None]
+        segment.state.residuals.mission.final_velocity_error = xp.asarray(v[-1,0] - vf)
     elif taxi_seg_flag:
         if segment.flight_dynamics.force_x:
-            segment.state.residuals.mission.force_x[...] = (FT_i[:,0]/m[:,0] - a_i[:,0])[:,None]
+            segment.state.residuals.mission.force_x = (FT_i[:,0]/m[:,0] - a_i[:,0])[:,None]
     else:
         if segment.flight_dynamics.force_x:
-            segment.state.residuals.mission.force_x[...] = (FT_w[:,0]/m[:,0] - a_w[:,0])[:,None]
+            segment.state.residuals.mission.force_x = (FT_w[:,0]/m[:,0] - a_w[:,0])[:,None]
         if segment.flight_dynamics.force_y: 
-            segment.state.residuals.mission.force_y[...] = (FT_w[:,1]/m[:,0] - a_w[:,1])[:,None]
+            segment.state.residuals.mission.force_y = (FT_w[:,1]/m[:,0] - a_w[:,1])[:,None]
         if segment.flight_dynamics.force_z: 
-            segment.state.residuals.mission.force_z[...] = (FT_w[:,2]/m[:,0] - a_w[:,2])[:,None]
+            segment.state.residuals.mission.force_z = (FT_w[:,2]/m[:,0] - a_w[:,2])[:,None]
         if  segment.flight_dynamics.moment_x:
-            segment.state.residuals.mission.moment_x[...] = (MT_w[:,0]/MOI_Ixx[:,0] - ang_acc_w[:,0])[:,None]
+            segment.state.residuals.mission.moment_x = (MT_w[:,0]/MOI_Ixx[:,0] - ang_acc_w[:,0])[:,None]
         if  segment.flight_dynamics.moment_y:
-            segment.state.residuals.mission.moment_y[...] = (MT_w[:,1]/MOI_Iyy[:,0] - ang_acc_w[:,1])[:,None]
+            segment.state.residuals.mission.moment_y = (MT_w[:,1]/MOI_Iyy[:,0] - ang_acc_w[:,1])[:,None]
         if  segment.flight_dynamics.moment_z:
-            segment.state.residuals.mission.moment_z[...] = (MT_w[:,2]/MOI_Izz[:,0] - ang_acc_w[:,2])[:,None]
+            segment.state.residuals.mission.moment_z = (MT_w[:,2]/MOI_Izz[:,0] - ang_acc_w[:,2])[:,None]
     return

@@ -2,6 +2,7 @@
 # 
 # 
 # Created:  Mar 2026, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -9,6 +10,7 @@
 
 # Package imports  
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.orientation import sideslip_angle
+from RCAIDE.Framework.Core import array_namespace, set_at
 import numpy as np
  
 # ----------------------------------------------------------------------------------------------------------------------
@@ -48,25 +50,30 @@ def unpack_pitch_angle(segment):
         - conditions.frames.body.transform_to_inertial
     """          
     
-    ctrls    = segment.assigned_control_variables 
+    # set_at(A, np.s_[:,1], value) does A[:,1] = value and returns A. NumPy writes in place; JAX arrays cannot be
+    # changed, so for JAX it returns a new array, which is why the result is always assigned back.
+    ctrls     = segment.assigned_control_variables 
+    rotations = segment.state.conditions.frames.body.inertial_rotations   # columns: roll, pitch, heading
 
     # Body Angle Control    
     if ctrls.pitch_angle.active: 
-        segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.mission.pitch_angle[:,0] 
+        rotations = set_at(rotations, np.s_[:,1], segment.state.unknowns.mission.pitch_angle[:,0])
     else:
-        segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.angle_of_attack
-        
+        rotations = set_at(rotations, np.s_[:,1], segment.angle_of_attack)
+
     # Bank Angle 
     if ctrls.bank_angle.active: 
-        segment.state.conditions.frames.body.inertial_rotations[:,0] = segment.state.unknowns.mission.bank_angle[:,0]
+        rotations = set_at(rotations, np.s_[:,0], segment.state.unknowns.mission.bank_angle[:,0])
     else:
-        segment.state.conditions.frames.body.inertial_rotations[:,0] = segment.bank_angle
-    
-    # Sideslip Angle 
-    segment.state.conditions.frames.wind.body_rotations[:,2] = sideslip_angle(segment)        
-    
-    # Heading Angle    
-    segment.state.conditions.frames.body.inertial_rotations[:,2] =  segment.state.conditions.frames.planet.true_heading[:,0]     
+        rotations = set_at(rotations, np.s_[:,0], segment.bank_angle)
+
+    # Sideslip Angle  
+    wind = segment.state.conditions.frames.wind
+    wind.body_rotations = set_at(wind.body_rotations, np.s_[:,2], sideslip_angle(segment))
+
+    # Heading Angle  
+    rotations = set_at(rotations, np.s_[:,2], segment.state.conditions.frames.planet.true_heading[:,0])
+    segment.state.conditions.frames.body.inertial_rotations = rotations
          
 # ----------------------------------------------------------------------
 #  Initialize Conditions
@@ -164,19 +171,20 @@ def update_differentials_altitude(segment):
     # get overall time step
     vz = -v[:,2,None] # Inertial velocity is z down
     dz = altf - alt0 # negative in a descent, as is vz, so the segment time is positive
-    dt = dz / np.dot(I[-1,:],vz)[-1] # maintain column array
+    xp = array_namespace(v)   # numpy, or jax.numpy when v is a JAX array
+    dt = dz / xp.dot(I[-1,:],vz)[-1] # maintain column array
     
     # Integrate vz to get altitudes
-    alt = alt0 + np.dot(I*dt,vz)
+    alt = alt0 + xp.dot(I*dt,vz)
 
     # rescale operators
     t = t * dt
 
     # pack
     t_initial = segment.state.conditions.frames.inertial.time[0,0]
-    segment.state.conditions.frames.inertial.time[:,0] = t_initial + t[:,0]
-    conditions.frames.inertial.position_vector[:,2]    = -alt[:,0] # z points down
-    conditions.freestream.altitude[:,0]                =  alt[:,0] # positive altitude in this context    
+    segment.state.conditions.frames.inertial.time      = t_initial + t
+    conditions.frames.inertial.position_vector         = set_at(conditions.frames.inertial.position_vector, np.s_[:,2], -alt[:,0]) # z points down
+    conditions.freestream.altitude                     =  alt # positive altitude in this context    
 
     return
 
@@ -197,13 +205,12 @@ def update_velocity_vector_from_wind_angle(segment):
     gamma = theta-alpha
 
     # process
-    v_x =   np.cos(beta) *v_mag * np.cos(gamma)
-    v_y =   np.sin(beta) *v_mag * np.cos(gamma)
-    v_z = -v_mag * np.sin(gamma) # z points down
+    xp  = array_namespace(alpha, theta)   # numpy, or jax.numpy when the unknowns are JAX arrays
+    v_x =   np.cos(beta) *v_mag * xp.cos(gamma)
+    v_y =   np.sin(beta) *v_mag * xp.cos(gamma)
+    v_z = -v_mag * xp.sin(gamma) # z points down
 
     # pack
-    conditions.frames.inertial.velocity_vector[:,0] = v_x[:,0]
-    conditions.frames.inertial.velocity_vector[:,1] = v_y[:,0]
-    conditions.frames.inertial.velocity_vector[:,2] = v_z[:,0]
+    conditions.frames.inertial.velocity_vector = xp.concatenate([v_x, v_y, v_z], axis=1)
 
     return conditions
