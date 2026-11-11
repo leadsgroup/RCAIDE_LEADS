@@ -1,6 +1,7 @@
 #RCAIDE/Frameworks/Analyses/Atmospheric/US_Standard_1976.py
 #
 # Created: Dec 2024, M. Clarke
+# Modified: Nov 2026, M. Clarke
 
 # ----------------------------------------------------------------------
 #  Imports
@@ -9,7 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Analyses.Atmospheric      import Atmospheric
 from RCAIDE.Framework.Mission.Common.Conditions import Conditions 
-from RCAIDE.Framework.Core.Arrays               import atleast_2d_col 
+from RCAIDE.Framework.Core.Arrays               import atleast_2d_col, array_namespace
 from RCAIDE.Library.Attributes.Gases            import Air
 from RCAIDE.Library.Attributes.Planets          import Earth
 
@@ -107,51 +108,46 @@ class US_Standard_1976(Atmospheric):
         
         # convert input if necessary
         zs = atleast_2d_col(zs)
+        xp = array_namespace(zs)
 
         # get model altitude bounds
         zmin = self.breaks.altitude[0]
-        zmax = self.breaks.altitude[-1]   
-        
+        zmax = self.breaks.altitude[-1]
+
         # convert geometric to geopotential altitude
         zs = zs/(1 + zs/Rad)
-        
-        # check ranges
-        if np.amin(zs) < zmin:
-            print("Warning: altitude requested below minimum for this atmospheric model; returning values for h = -2.0 km")
-            zs[zs < zmin] = zmin
-        if np.amax(zs) > zmax:
-            print("Warning: altitude requested above maximum for this atmospheric model; returning values for h = 86.0 km")   
-            zs[zs > zmax] = zmax        
 
-        # initialize return data
-        zeros = np.zeros_like(zs)
-        p     = zeros * 0.0
-        T     = zeros * 0.0
-        rho   = zeros * 0.0
-        a     = zeros * 0.0
-        mu    = zeros * 0.0
-        z0    = zeros * 0.0
-        T0    = zeros * 0.0
-        p0    = zeros * 0.0
-        alpha = zeros * 0.0
-        
-        # populate the altitude breaks
-        # this uses >= and <= to capture both edges and because values should be the same at the edges
-        for i in range( len(self.breaks.altitude)-1 ): 
+        # check ranges; the warning needs concrete values, so it is skipped while JAX traces
+        if xp is np:
+            if np.amin(zs) < zmin:
+                print("Warning: altitude requested below minimum for this atmospheric model; returning values for h = -2.0 km")
+            if np.amax(zs) > zmax:
+                print("Warning: altitude requested above maximum for this atmospheric model; returning values for h = 86.0 km")
+        zs = xp.clip(zs, zmin, zmax)
+
+        # find the layer each altitude is in, and that layer's base values and lapse rate
+        z0    = zs * 0.0
+        T0    = zs * 0.0
+        p0    = zs * 0.0
+        alpha = zs * 0.0
+        for i in range( len(self.breaks.altitude)-1 ):
             i_inside = (zs >= self.breaks.altitude[i]) & (zs <= self.breaks.altitude[i+1])
-            z0[ i_inside ]    = self.breaks.altitude[i]
-            T0[ i_inside ]    = self.breaks.temperature[i]
-            p0[ i_inside ]    = self.breaks.pressure[i]
-            alpha[ i_inside ] = -(self.breaks.temperature[i+1] - self.breaks.temperature[i])/ \
-                                 (self.breaks.altitude[i+1]    - self.breaks.altitude[i])
-        
-        # interpolate the breaks
-        dz = zs-z0
-        i_isoth = (alpha == 0.)
-        i_adiab = (alpha != 0.)
-        p[i_isoth] = p0[i_isoth] * np.exp(-1.*dz[i_isoth]*grav/(R*T0[i_isoth]))
-        p[i_adiab] = p0[i_adiab] * ( (1.-alpha[i_adiab]*dz[i_adiab]/T0[i_adiab]) **(1.*grav/(alpha[i_adiab]*R)) )
-        
+            z0    = xp.where(i_inside, self.breaks.altitude[i], z0)
+            T0    = xp.where(i_inside, self.breaks.temperature[i], T0)
+            p0    = xp.where(i_inside, self.breaks.pressure[i], p0)
+            alpha = xp.where(i_inside, -(self.breaks.temperature[i+1] - self.breaks.temperature[i])/ \
+                                        (self.breaks.altitude[i+1]    - self.breaks.altitude[i]), alpha)
+
+        # pressure: isothermal layers use the exponential, the others the power law. Both formulas are evaluated
+        # everywhere, so the unused power law must stay finite for gradients: in isothermal layers its base is
+        # exactly 1 (zero lapse rate) and its exponent uses a lapse rate of 1 instead of dividing by zero
+        dz          = zs-z0
+        i_isoth     = (alpha == 0.)
+        alpha_safe  = xp.where(i_isoth, 1., alpha)
+        p_isoth     = p0 * xp.exp(-1.*dz*grav/(R*T0))
+        p_adiab     = p0 * ( (1.-alpha*dz/T0) **(1.*grav/(alpha_safe*R)) )
+        p           = xp.where(i_isoth, p_isoth, p_adiab)
+
         T     = T0 - dz*alpha + delta_isa
         rho   = gas.compute_density(T,p)
         a     = gas.compute_speed_of_sound(T,p,var_gamma)
