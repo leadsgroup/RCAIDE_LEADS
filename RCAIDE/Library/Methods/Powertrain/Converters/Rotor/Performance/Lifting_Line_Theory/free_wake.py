@@ -178,10 +178,13 @@ def free_wake(rotor, wake_inputs, conditions):
                 # instead of re-concatenated on every (i,cp,j) task (see
                 # _Gamma_rc_sign_cache's comment).
                 Gamma_c, rc_c, is_cw = _Gamma_rc_sign_cache[(s, cp)]
+                # Cx/Cy/Cz/Dx/Dy/Dz are np.concatenate(...) results -- already freshly
+                # allocated and C-contiguous by construction, so the ascontiguousarray()
+                # this used to wrap them in was a pure no-op paying for a redundant check
+                # on every one of these ~8.3M calls (see scratchpad/profile_stats.txt
+                # 2026-11-11). Removed; same arrays, same memory layout, zero behavior change.
                 vx, vy, vz = biot_savart_induced_velocity_soa(
-                    Px, Py, Pz,
-                    np.ascontiguousarray(Cx), np.ascontiguousarray(Cy), np.ascontiguousarray(Cz),
-                    np.ascontiguousarray(Dx), np.ascontiguousarray(Dy), np.ascontiguousarray(Dz),
+                    Px, Py, Pz, Cx, Cy, Cz, Dx, Dy, Dz,
                     Gamma_c, rc_c, gs.vc_correction)
 
                 if is_cw:
