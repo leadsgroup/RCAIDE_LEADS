@@ -2,6 +2,7 @@
 # 
 # Created:  Aug 2025, M. Clarke
 #           Apr 2026, M. Clarke 
+# Modified: Nov 2026, M. Clarke 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Imports
@@ -60,11 +61,13 @@ def postprocess_vortex_distribution(VD, settings):
     # Leading edge sweeps 
     panel_sweeps = np.arctan((VD.XA1-VD.XB1) /(VD.YA1-VD.YB1))
     panel_sweeps[VD.YA1 > VD.YB1] = -panel_sweeps[VD.YA1 > VD.YB1]
-    VD.leading_edge_sweeps =  panel_sweeps[LE_ind] 
+    # Sweeps, strip widths and strip chords feed transonic wave drag, which takes cosines and powers of them.
+    # They are stored in 64-bit so those results do not depend on how a library rounds 32-bit math.
+    VD.leading_edge_sweeps =  panel_sweeps[LE_ind].astype(np.float64) 
 
     # Strip widths: projected spanwise extent of each strip (A inboard, B outboard; abs for the mirrored half)
     Del_Y =  np.abs(VD.YB1-VD.YA1)
-    VD.chord_widths  = Del_Y[LE_ind]  
+    VD.chord_widths  = Del_Y[LE_ind].astype(np.float64)   # 64-bit, see above
     
     # Compute strip-wise values
     LE_X           = X1c[LE_ind]
@@ -94,7 +97,7 @@ def postprocess_vortex_distribution(VD, settings):
     VD.D                       = D         
     VD.tangent_incidence_angle = tan_incidence
     VD.chord_lengths           = np.atleast_2d(chord_adjusted)   # per panel
-    VD.strip_chord_lengths     = strip_chords                    # per spanwise strip
+    VD.strip_chord_lengths     = strip_chords.astype(np.float64)  # per spanwise strip, 64-bit
     VD.Y_SW                    = Y_SW
     
     VD.XC_TE  = XC_TE_wings
