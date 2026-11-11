@@ -865,6 +865,20 @@ def TR_mission_setup(analyses):
     segment.altitude                   = 50.0 * Units.ft
     segment.state.numerics.mission_solver.type      = 'optimize'
     segment.state.numerics.mission_solver.objective = None
+    # FD step raised from the 1E-8 framework default (2026-11-10): at 1E-8 the perturbation is
+    # smaller than the noise floor of BEMT's own inner convergence, so SLSQP's finite-difference
+    # gradient is essentially noise -- confirmed directly (instrumented eval log showed SLSQP
+    # probing the exact same point for 60+ evals with no visible movement). Matches
+    # arriving_transition_1's override.
+    segment.state.numerics.mission_solver.step_size = 1E-2
+    segment.state.numerics.mission_solver.tolerance = 1E-6
+    # Hard cap (2026-11-10): even after the step_size fix and dropping pitch_angle (144 unknowns,
+    # matching arriving_transition_1), this flight condition (10kts, near-hover) still needed
+    # 2h47m+ of real SLSQP iteration without converging -- the framework default of 200 major
+    # iterations is unbounded in practice here. Capped so this segment can never again silently
+    # run for hours; if it hits this cap unconverged, that's a real signal to revisit the
+    # trim setup (bounds/initial guess), not a transient fluke.
+    segment.state.numerics.mission_solver.max_evaluations = 40
 
     segment.flight_dynamics.force_x                       = True
     segment.flight_dynamics.force_z                       = True
@@ -889,9 +903,13 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.blade_pitch_command.bounds                     = [[15.0 * Units.degrees, 30.0 * Units.degrees]]
     segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[22.9 * Units.degrees]]
 
-    segment.assigned_control_variables.pitch_angle.active                             = True
-    segment.assigned_control_variables.pitch_angle.bounds                             = [[-2.0 * Units.degrees, 15.0 * Units.degrees]]
-    segment.assigned_control_variables.pitch_angle.initial_guess_values               = [[3.04 * Units.degrees]]
+    # pitch_angle dropped as a free control (2026-11-10): this was the 4th control pushing this
+    # segment to 192 unknowns (16 ctrl pts x 4 controls) vs. arriving_transition_1's 144 (3
+    # controls) -- one SLSQP finite-difference gradient sweep here costs ~193 serial BEMT evals
+    # (~1.7s each, confirmed via instrumented eval log) = ~5.5 min PER major iteration, which was
+    # compounding into multi-hour runs even after the step_size fix above. arriving_transition_1
+    # trims fine with just throttle/thrust_vector_angle/blade_pitch_command and no pitch_angle
+    # control, so dropping it here too for consistency.
 
     mission.append_segment(segment)
 

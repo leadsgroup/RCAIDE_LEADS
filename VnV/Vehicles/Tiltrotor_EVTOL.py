@@ -491,16 +491,21 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     # Bumped back up to 0.3 after isolating Vertical_Climb's Gamma_b/CT/free_wake fixed-point
     # maps directly (scratchpad/relax_experiment_A/B): at 0.1, Gamma_b took 63 inner iterations
     # to converge for this flow condition; 0.3 took 19 (3x fewer), converging to the same
-    # Gamma_b field (diff ~2e-4, vs. |Gamma|~5.7). 0.5+ starts oscillating again (21 iters at
-    # 0.7, outright diverges at 1.0) -- 0.3 was chosen to stay well clear of that edge.
-    # relax_0_CT raised 0.2->0.5: at 0.2/0.3/0.4 the outer CT loop did not converge within a
-    # 5-iteration cap (each outer iteration costs one free_wake call); 0.5 converged cleanly in
-    # 5, matching the 0.2 baseline's Gamma_b field to ~3e-5. free_wake_relax raised 0.7->1.0:
-    # cuts free_wake's own inner iteration count 12->9 with no measurable accuracy loss.
-    # These were only validated against Vertical_Climb's flow condition -- NOT yet re-validated
-    # against descent_2, which is why relax_0_Gammab was lowered in the first place. Only climb
-    # segments are being run with this change for now; revisit before trusting it in descent.
-    prop_rotor.wake_inputs.relax_0_Gammab               = 0.3
+    # Gamma_b field (diff ~2e-4, vs. |Gamma|~5.7). 0.7 starts backsliding (21 iters) and 1.0
+    # outright diverges, so 0.3 was chosen conservatively at the time.
+    # UPDATE (2026-11-10): raised 0.3->0.5 after direct validation on the real isolated
+    # segments (not just the offline snapshot above), on genuinely LL-coupled cruise and
+    # Vertical_Climb:
+    #   - cruise (150mph, forward flight): 67.26min -> 5.67min (11.9x), SOC/rpm/thrust identical
+    #     to 5 decimals.
+    #   - Vertical_Climb (hover climb): 12.71min -> 10.58min, SOC/rpm identical to 2 decimals,
+    #     converged both ways -- this directly supersedes the 2026-11-09 "0.5+ oscillates" read,
+    #     which was from an offline snapshot rather than the real segment (the per-call CT/wake-
+    #     geometry warm-start in lifting_line_performance.py may also be masking what looked like
+    #     instability there).
+    # NOT yet re-validated: descent_2 (the original reason 0.1 was chosen) and
+    # transition_setting_1's segments -- revisit if either shows oscillation.
+    prop_rotor.wake_inputs.relax_0_Gammab               = 0.5
     prop_rotor.wake_inputs.relax_0_CT                   = 0.5
     prop_rotor.wake_inputs.max_iter_Gammab_0            = 100
     prop_rotor.wake_inputs.max_iter_CT_0                = 50
@@ -778,12 +783,23 @@ def configs_setup(vehicle):
     #  Transition Setting 2
     # ------------------------------------------------------------------
     config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    vector_angle                                      = 75.0  * Units.degrees   
-    config.tag                                        = 'transition_setting_2' 
-    for network in  config.networks:  
+    vector_angle                                      = 75.0  * Units.degrees
+    config.tag                                        = 'transition_setting_2'
+    for network in  config.networks:
+        # Force BEMT here too (2026-11-09) -- see 'cruise' config's rationale above. This
+        # config is used by departure_transition_2 (root_finder, cheap either way) AND
+        # Departure_Pattern_Curve/Approach_Pattern_Curve (optimize-type, 3 free controls x 16
+        # ctrl pts) -- confirmed directly: Departure_Pattern_Curve under LL coupling ran 3.45+
+        # hours with zero progress (same multi-day trajectory as climb_1 before its fix). 90kts
+        # in a banked turn is fast enough that wake-wake interaction is still likely weak, same
+        # reasoning as the straight-flight cruise-family configs.
+        network.wing_on_rotor_coupling  = False
+        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.5
+            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
+                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
 
     # ------------------------------------------------------------------
@@ -803,12 +819,22 @@ def configs_setup(vehicle):
     # Low Speed Transition  
     # ------------------------------------------------------------------
     config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    vector_angle                                      = 70.0  * Units.degrees   
-    config.tag                                        = 'low_speed_transition' 
-    for network in  config.networks:  
+    vector_angle                                      = 70.0  * Units.degrees
+    config.tag                                        = 'low_speed_transition'
+    for network in  config.networks:
+        # Force BEMT here too (2026-11-09) -- see 'cruise'/'transition_setting_2' configs
+        # above. Used by arriving_transition_1 (90kts->35mph) and arriving_transition_2
+        # (35mph->10kts), both optimize-type with 3 free controls. NOTE: arriving_transition_2
+        # ends at 10kts, noticeably slower/closer to hover than anything else scoped to BEMT so
+        # far -- this is the least-confident of these overrides; revisit if arriving_transition_2
+        # results look physically off.
+        network.wing_on_rotor_coupling  = False
+        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]  
+            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.3
+            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
+                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
     
 
