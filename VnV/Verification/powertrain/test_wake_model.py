@@ -30,15 +30,23 @@ def main():
     rotor_inputs = tiltrotor_rotor_inputs()
     os.chdir(start_folder)
 
-    for tag, (rotor, wake_inputs) in rotor_inputs.items():
+    for tag, (rotor, wake_inputs, conditions) in rotor_inputs.items():
         check_inflow_converged(tag, rotor, wake_inputs)
+
+    # the 2D (azimuthal) analysis in the transition has reversed flow at the blade root on the retreating side, where
+    # the residual jumps across a branch cut; bisection must not stop on that jump
+    rotor, wake_inputs, conditions = rotor_inputs['departure_transition_1']
+    check_inflow_converged('departure_transition_1, 2D', rotor, two_dimensional_wake_inputs(rotor, conditions))
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Checks
 # ----------------------------------------------------------------------------------------------------------------------
 def check_inflow_converged(tag, rotor, wake_inputs):
-    PSI_start = np.ones((wake_inputs.ctrl_pts, wake_inputs.Nr))
+    if wake_inputs.use_2d_analysis:
+        PSI_start = np.ones((wake_inputs.ctrl_pts, wake_inputs.Nr, wake_inputs.Na))
+    else:
+        PSI_start = np.ones((wake_inputs.ctrl_pts, wake_inputs.Nr))
 
     # an unconverged station is reported as a RuntimeWarning, so it is turned into an error here
     with warnings.catch_warnings():
@@ -65,9 +73,10 @@ def tiltrotor_rotor_inputs():
     captured = {}
     wake_convergence = wake_model.wake_convergence
     def recording_wake_convergence(rotor, wake_inputs):
-        captured.setdefault(current_tag[0], (rotor, wake_inputs))
+        captured.setdefault(current_tag[0], (rotor, wake_inputs, current_conditions[0]))
         return wake_convergence(rotor, wake_inputs)
-    current_tag = [None]
+    current_tag        = [None]
+    current_conditions = [None]
     wake_model.wake_convergence = recording_wake_convergence
 
     # initialize each segment from the previous one and iterate it once, as a mission solve starts
@@ -77,7 +86,8 @@ def tiltrotor_rotor_inputs():
         for tag, segment in mission.segments.items():
             if previous is not None:
                 segment.state.initials = previous
-            current_tag[0] = tag
+            current_tag[0]        = tag
+            current_conditions[0] = segment.state.conditions
             segment.process.initialize.expand_state(segment)
             segment.process.initialize(segment)
             segment.process.iterate(segment)
@@ -86,6 +96,24 @@ def tiltrotor_rotor_inputs():
         wake_model.wake_convergence = wake_convergence
     captured.pop(None, None)   # solves made while sizing the vehicle, before any segment
     return captured
+
+
+def two_dimensional_wake_inputs(rotor, conditions):
+    """The wake inputs of the rotor at these conditions with the 2D analysis, recorded as the rotor is evaluated."""
+    from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance import BEMT_Helmholtz_performance
+    captured = []
+    wake_convergence = wake_model.wake_convergence
+    def recording_wake_convergence(rotor, wake_inputs):
+        captured.append(wake_inputs)
+        return wake_convergence(rotor, wake_inputs)
+    wake_model.wake_convergence = recording_wake_convergence
+    rotor.use_2d_analysis       = True
+    try:
+        BEMT_Helmholtz_performance(rotor, conditions)
+    finally:
+        wake_model.wake_convergence = wake_convergence
+        rotor.use_2d_analysis       = False
+    return captured[0]
 
 
 if __name__ == '__main__':

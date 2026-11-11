@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports  
+from RCAIDE.Framework.Core import Data, array_namespace
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift.BET_calculations import compute_airfoil_aerodynamics,compute_inflow_and_tip_loss
 # Python imports
 import numpy as np 
@@ -157,12 +158,48 @@ def wake_convergence(rotor,wake_inputs):
     else:
         shape = (wake_inputs.ctrl_pts, wake_inputs.Nr)
 
-    PSI = stationwise_newton(np.ones(shape), wake_inputs, rotor)
+    xp = array_namespace(*[wake_inputs[name] for name in WAKE_ARRAYS])
+    if xp is np:
+        PSI = stationwise_newton(np.ones(shape), wake_inputs, rotor)
+    else:
+        PSI = inflow_angle_jax(shape, wake_inputs, rotor)
     
     # Calculate the velocities given PSI
     va, vt = va_vt(PSI, wake_inputs, rotor)
     
     return va, vt
+
+# the arrays of wake_inputs that can carry derivatives
+WAKE_ARRAYS = ('velocity_total', 'velocity_axial', 'velocity_tangential', 'twist_distribution',
+               'chord_distribution', 'radius_distribution', 'speed_of_sounds', 'dynamic_viscosities')
+
+def inflow_angle_jax(shape, wake_inputs, rotor):
+    """
+    Inflow angles on JAX, with derivatives by the implicit function theorem.
+
+    The NumPy station-wise solve finds the angles outside the compiled graph (jax.pure_callback), so values equal
+    the NumPy path's. jax.lax.custom_root then differentiates residual(PSI) = 0 instead of the solver iterations.
+    The residual of a station depends only on its own angle, so the Jacobian is diagonal and the tangent solve is
+    one division per station.
+    """
+    import jax
+    import jax.numpy as jnp
+
+    def solve_numpy(*values):
+        numpy_inputs = Data(wake_inputs)
+        for name, value in zip(WAKE_ARRAYS, values):
+            numpy_inputs[name] = np.asarray(value)
+        return stationwise_newton(np.ones(shape), numpy_inputs, rotor)
+
+    def solve(f, guess):
+        arrays = [jnp.asarray(wake_inputs[name], dtype=jnp.float64) for name in WAKE_ARRAYS]
+        return jax.pure_callback(solve_numpy, jax.ShapeDtypeStruct(shape, jnp.float64), *arrays)
+
+    def tangent_solve(g, y):
+        # g is the linearized residual; with a diagonal Jacobian, g(ones) is that diagonal
+        return y / g(jnp.ones_like(y))
+
+    return jax.lax.custom_root(lambda PSI: residual(PSI, wake_inputs, rotor), jnp.ones(shape), solve, tangent_solve)
 
 def stationwise_newton(PSI, wake_inputs, rotor, max_iterations=50, max_step=0.2, n_scan=61):
     """
@@ -197,7 +234,8 @@ def stationwise_newton(PSI, wake_inputs, rotor, max_iterations=50, max_step=0.2,
     root outside the scanned interval; those stations take the sign change closest to the initial guess and bisect
     it (bracketing as in Ning, "A simple solution method for the blade element momentum equations with guaranteed
     convergence", Wind Energy 17(9), 2014). Assumption: the physical root lies in [-pi/2, pi] and is the one closest
-    to the initial guess. A warning reports stations left unconverged.
+    to the initial guess. A sign change where bisection does not reduce the residual is a jump, not a root, and the
+    next closest one is tried. A warning reports stations left unconverged.
     """
     tol        = rotor.sol_tolerance
     h          = 1e-7
@@ -227,27 +265,48 @@ def stationwise_newton(PSI, wake_inputs, rotor, max_iterations=50, max_step=0.2,
     change = np.sign(R_scan[:-1]) != np.sign(R_scan[1:])
     middle = (0.5*(scan[:-1] + scan[1:])).reshape((-1,) + (1,)*PSI.ndim)   # one scan interval per row, any station shape
     dist   = np.where(change, np.abs(middle - PSI_0[None]), np.inf)
-    k      = np.argmin(dist, axis=0)
-    found  = active & np.isfinite(np.min(dist, axis=0))
-    lo     = np.where(found, scan[k], PSI)
-    hi     = np.where(found, scan[k + 1], PSI)
-    R_lo   = residual(lo, wake_inputs, rotor)
+    rows   = np.arange(n_scan - 1).reshape((-1,) + (1,)*PSI.ndim)
+    found  = np.zeros(PSI.shape, dtype=bool)
+    jump   = None
 
-    # bisection on the bracketed stations
-    while np.any(found & (hi - lo > tol*(np.abs(lo) + tol))):
-        mid      = 0.5*(lo + hi)
-        R_mid    = residual(np.where(found, mid, PSI), wake_inputs, rotor)
-        same     = np.sign(R_mid) == np.sign(R_lo)
-        lo       = np.where(found & same, mid, lo)
-        R_lo     = np.where(found & same, R_mid, R_lo)
-        hi       = np.where(found & ~same, mid, hi)
-    PSI = np.where(found, 0.5*(lo + hi), PSI)
+    # a sign change can also be a jump of the residual (in reverse flow, the angle of attack jumps by 2 pi where the
+    # axial velocity changes sign); bisection then ends with a large residual, and the next closest sign change is tried
+    for attempt in range(n_scan - 1):
+        bracketed = active & ~found & np.isfinite(np.min(dist, axis=0))
+        if not np.any(bracketed):
+            break
+        k        = np.argmin(dist, axis=0)
+        lo       = np.where(bracketed, scan[k], PSI)
+        hi       = np.where(bracketed, scan[k + 1], PSI)
+        R_ends   = np.maximum(np.abs(np.take_along_axis(R_scan, k[None], 0)[0]), np.abs(np.take_along_axis(R_scan, k[None] + 1, 0)[0]))
+        PSI_b    = bisection(lo, hi, bracketed, PSI, wake_inputs, rotor, tol)
+        R_b      = residual(PSI_b, wake_inputs, rotor)
+        root     = bracketed & (np.abs(R_b) <= 1e-3*R_ends)
+        PSI      = np.where(root, PSI_b, PSI)
+        found    = found | root
+        if jump is None:
+            jump = np.where(bracketed & ~root, PSI_b, np.nan)   # the jump, kept where no root is found
+        dist     = np.where((rows == k[None]) & (bracketed & ~root)[None], np.inf, dist)
 
     unconverged = active & ~found
     if np.any(unconverged):
+        if jump is not None:
+            PSI = np.where(unconverged & np.isfinite(jump), jump, PSI)
         warnings.warn(f"{rotor.tag}: BEMT inflow angle not converged at {np.sum(unconverged)} of {PSI.size} stations "
-                      f"(no sign change of the residual in [-pi/2, pi])", RuntimeWarning)
+                      f"(no root of the residual in [-pi/2, pi])", RuntimeWarning)
     return PSI
+
+def bisection(lo, hi, bracketed, PSI, wake_inputs, rotor, tol):
+    """Bisects the residual on [lo, hi] at the bracketed stations; the other stations keep PSI."""
+    R_lo = residual(lo, wake_inputs, rotor)
+    while np.any(bracketed & (hi - lo > tol*(np.abs(lo) + tol))):
+        mid   = 0.5*(lo + hi)
+        R_mid = residual(np.where(bracketed, mid, PSI), wake_inputs, rotor)
+        same  = np.sign(R_mid) == np.sign(R_lo)
+        lo    = np.where(bracketed & same, mid, lo)
+        R_lo  = np.where(bracketed & same, R_mid, R_lo)
+        hi    = np.where(bracketed & ~same, mid, hi)
+    return np.where(bracketed, 0.5*(lo + hi), PSI)
 
 def residual(PSI, wake_inputs, rotor):
     """
@@ -284,8 +343,9 @@ def residual(PSI, wake_inputs, rotor):
     a_loc        = rotor.airfoil_polar_stations
     
     # compute velocities
-    sin_psi      = np.sin(PSI)
-    cos_psi      = np.cos(PSI)
+    xp           = array_namespace(PSI, U, Ua, Ut)
+    sin_psi      = xp.sin(PSI)
+    cos_psi      = xp.cos(PSI)
     Wa           = 0.5*Ua + 0.5*U*sin_psi
     Wt           = 0.5*Ut + 0.5*U*cos_psi
     vt           = Ut - Wt
@@ -322,8 +382,9 @@ def va_vt(PSI, wake_inputs, rotor):
     Ut              = wake_inputs.velocity_tangential
     
     # compute velocities
-    sin_psi      = np.sin(PSI)
-    cos_psi      = np.cos(PSI)
+    xp           = array_namespace(PSI, U, Ua, Ut)
+    sin_psi      = xp.sin(PSI)
+    cos_psi      = xp.cos(PSI)
     Wa           = 0.5*Ua + 0.5*U*sin_psi
     Wt           = 0.5*Ut + 0.5*U*cos_psi
     va           = Wa - Ua

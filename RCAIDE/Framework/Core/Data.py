@@ -13,7 +13,7 @@
 # ----------------------------------------------------------------------
 
 import numpy as np
-from .Arrays import atleast_2d_col, array_type, matrix_type 
+from .Arrays import atleast_2d_col, array_type, matrix_type, array_namespace
 
 from copy import copy
 
@@ -793,6 +793,8 @@ class Data(dict):
             elif isinstance(v, array_type) and isinstance(old, array_type) and v.dtype.kind == 'f' \
                     and old.dtype.kind == 'f' and old.flags.writeable and old.shape == v.shape:
                 old[...] = v
+            elif array_namespace(v) is not np:
+                self[k] = v   # JAX arrays are immutable, and a traced value cannot be copied
             else:
                 self[k] = deepcopy(v)
         return self
