@@ -97,6 +97,7 @@ modules = [
     'Verification/powertrain/fuel_tank_volume_test.py',
     'Verification/powertrain/test_fuel_load_rules.py',
     'Verification/powertrain/cryogenic_tank_performance_test.py',
+    'Verification/powertrain/test_wake_model.py',
     'Validation/converters/test_dc_motor_validation.py',
     'Validation/converters/test_pmsm_motor_validation.py',
     'Validation/converters/test_rotor_validation.py',

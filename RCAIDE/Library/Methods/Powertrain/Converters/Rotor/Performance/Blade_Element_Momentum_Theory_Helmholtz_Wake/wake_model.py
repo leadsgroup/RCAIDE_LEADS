@@ -2,6 +2,7 @@
 #
 # Created:  Jan 2022, R. Erhard
 # Modified:  Jun 2024, M. Clarke  
+#            Nov 2026, M. Clarke
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
@@ -9,7 +10,7 @@
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift.BET_calculations import compute_airfoil_aerodynamics,compute_inflow_and_tip_loss
 # Python imports
 import numpy as np 
-import scipy as sp
+import warnings
 
 # ----------------------------------------------------------------------------------------------------------------------
 # wake model
@@ -136,13 +137,11 @@ def wake_convergence(rotor,wake_inputs):
     http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
 
     Inputs:
-       self         - rotor wake
-       rotor        - SUAVE rotor
+       rotor        - rotor
        wake_inputs.
           Ua        - Axial velocity
           Ut        - Tangential velocity
           r         - radius distribution
-       
        
     Outputs:
        va  - axially-induced velocity from rotor wake
@@ -152,26 +151,16 @@ def wake_convergence(rotor,wake_inputs):
     None
     
     """        
-    
-    # Unpack some wake inputs
-    ctrl_pts        = wake_inputs.ctrl_pts
-    Nr              = wake_inputs.Nr
-    Na              = wake_inputs.Na    
-
+    # one inflow angle per station: (ctrl_pts, Nr) for the 1D analysis, (ctrl_pts, Nr, Na) for the 2D analysis
     if wake_inputs.use_2d_analysis:
-        PSI    = np.ones((ctrl_pts,Nr,Na))
+        shape = (wake_inputs.ctrl_pts, wake_inputs.Nr, wake_inputs.Na)
     else:
-        PSI    = np.ones((ctrl_pts,Nr))
+        shape = (wake_inputs.ctrl_pts, wake_inputs.Nr)
 
-    if wake_inputs.use_2d_analysis:
-        # each station's residual depends only on its own inflow angle, so the stations are solved independently
-        PSI_final = stationwise_newton(PSI,wake_inputs,rotor)
-    else:
-        PSI_final,infodict,ier,msg = sp.optimize.fsolve(iteration,PSI,args=(wake_inputs,rotor),xtol=rotor.sol_tolerance,full_output = 1,band=(1,0))
+    PSI = stationwise_newton(np.ones(shape), wake_inputs, rotor)
     
     # Calculate the velocities given PSI
-    va, vt = va_vt(PSI_final, wake_inputs, rotor)
-
+    va, vt = va_vt(PSI, wake_inputs, rotor)
     
     return va, vt
 
@@ -183,9 +172,9 @@ def stationwise_newton(PSI, wake_inputs, rotor, max_iterations=50, max_step=0.2,
     Parameters
     ----------
     PSI : numpy.ndarray
-        Initial inflow angles, shape (ctrl_pts, Nr, Na) [rad]
+        Initial inflow angles, one per station, shape (ctrl_pts, Nr) or (ctrl_pts, Nr, Na) [rad]
     wake_inputs : Data
-        Wake inputs used by iteration()
+        Wake inputs used by residual()
     rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
         Rotor with sol_tolerance
     max_iterations : int
@@ -198,19 +187,25 @@ def stationwise_newton(PSI, wake_inputs, rotor, max_iterations=50, max_step=0.2,
     Returns
     -------
     PSI : numpy.ndarray
-        Converged inflow angles, shape (ctrl_pts, Nr, Na) [rad]
+        Converged inflow angles, same shape as the input [rad]
 
     Notes
     -----
     The residual of a station depends only on its own inflow angle, so the Jacobian is diagonal and each
-    derivative is a forward difference of the full residual array. Where the residual is not monotonic Newton
-    can cycle; those stations take the sign change closest to the initial guess and bisect it.
+    derivative is a forward difference of the full residual array. Solving the stations together as one system
+    lets a few stiff stations stall all of them. Where the residual is not monotonic Newton can cycle or reach a
+    root outside the scanned interval; those stations take the sign change closest to the initial guess and bisect
+    it (bracketing as in Ning, "A simple solution method for the blade element momentum equations with guaranteed
+    convergence", Wind Energy 17(9), 2014). Assumption: the physical root lies in [-pi/2, pi] and is the one closest
+    to the initial guess. A warning reports stations left unconverged.
     """
-    tol     = rotor.sol_tolerance
-    h       = 1e-7
-    PSI_0   = PSI.astype(float).copy()
-    PSI     = PSI_0.copy()
-    active  = np.ones(PSI.shape, dtype=bool)
+    tol        = rotor.sol_tolerance
+    h          = 1e-7
+    PSI_lower  = -np.pi/2
+    PSI_upper  = np.pi
+    PSI_0      = PSI.astype(float).copy()
+    PSI        = PSI_0.copy()
+    active     = np.ones(PSI.shape, dtype=bool)
     for i in range(max_iterations):
         R      = residual(PSI, wake_inputs, rotor)
         dR     = (residual(PSI + h, wake_inputs, rotor) - R)/h
@@ -219,13 +214,18 @@ def stationwise_newton(PSI, wake_inputs, rotor, max_iterations=50, max_step=0.2,
         PSI   -= step
         active = np.abs(step) > tol*(np.abs(PSI) + tol)
         if not np.any(active):
-            return PSI
+            break
 
-    # bracket the root closest to the initial guess at the unconverged stations
-    scan   = np.linspace(-np.pi/2, np.pi, n_scan)
+    # stations still moving, or converged outside the scanned interval, are bracketed and bisected
+    active = active | (PSI < PSI_lower) | (PSI > PSI_upper)
+    if not np.any(active):
+        return PSI
+
+    # bracket the root closest to the initial guess at those stations
+    scan   = np.linspace(PSI_lower, PSI_upper, n_scan)
     R_scan = np.array([residual(np.where(active, angle, PSI), wake_inputs, rotor) for angle in scan])
     change = np.sign(R_scan[:-1]) != np.sign(R_scan[1:])
-    middle = 0.5*(scan[:-1] + scan[1:])[:, None, None, None]
+    middle = (0.5*(scan[:-1] + scan[1:])).reshape((-1,) + (1,)*PSI.ndim)   # one scan interval per row, any station shape
     dist   = np.where(change, np.abs(middle - PSI_0[None]), np.inf)
     k      = np.argmin(dist, axis=0)
     found  = active & np.isfinite(np.min(dist, axis=0))
@@ -242,39 +242,24 @@ def stationwise_newton(PSI, wake_inputs, rotor, max_iterations=50, max_step=0.2,
         R_lo     = np.where(found & same, R_mid, R_lo)
         hi       = np.where(found & ~same, mid, hi)
     PSI = np.where(found, 0.5*(lo + hi), PSI)
+
+    unconverged = active & ~found
+    if np.any(unconverged):
+        warnings.warn(f"{rotor.tag}: BEMT inflow angle not converged at {np.sum(unconverged)} of {PSI.size} stations "
+                      f"(no sign change of the residual in [-pi/2, pi])", RuntimeWarning)
     return PSI
 
 def residual(PSI, wake_inputs, rotor):
-    """ BEVW residual with the shape of PSI """
-    return iteration(PSI, wake_inputs, rotor).reshape(PSI.shape)
-
-def iteration(PSI, wake_inputs, rotor):
     """
-    Computes the BEVW iteration.
-
-    Assumptions:
-    N/A
-
-    Source:
-    N/A
+    BEVW residual on the blade circulation at every station, same shape as PSI.
 
     Inputs:
-       B                          number of rotor blades                          [-]
-       beta                       blade twist distribution                        [-]
-       r                          radius distribution                             [m]
-       R                          tip radius                                      [m]
-       Wt                         tangential velocity                             [m/s]
-       Wa                         axial velocity                                  [m/s]
-       U                          total velocity                                  [m/s]
-       Ut                         tangential velocity                             [m/s]
-       Ua                         axial velocity                                  [m/s]
-       cos_psi                    cosine of the inflow angle PSI                  [-]
-       sin_psi                    sine of the inflow angle PSI                    [-]
-       piece                      output of a step in tip loss calculation        [-]
+       PSI                        inflow angle, one per station                   [rad]
+       wake_inputs                velocities, blade geometry and flow properties  [-]
+       rotor                      rotor                                           [-]
 
     Outputs:
-       dR_dpsi                    derivative of residual wrt inflow angle         [-]
-
+       Rsquiggly                  circulation residual                            [m^2/s]
     """    
     
     # Unpack inputs to rotor wake fidelity zero
@@ -298,12 +283,6 @@ def iteration(PSI, wake_inputs, rotor):
     airfoils     = rotor.airfoils
     a_loc        = rotor.airfoil_polar_stations
     
-    # Reshape PSI because the solver gives it flat
-    if wake_inputs.use_2d_analysis:
-        PSI    = np.reshape(PSI,(ctrl_pts,Nr,Na))
-    else:
-        PSI    = np.reshape(PSI,(ctrl_pts,Nr))
-    
     # compute velocities
     sin_psi      = np.sin(PSI)
     cos_psi      = np.cos(PSI)
@@ -321,50 +300,26 @@ def iteration(PSI, wake_inputs, rotor):
     Gamma       = vt*(4.*np.pi*r/B)*F*(1.+(4.*lamdaw*R/(np.pi*B*r))*(4.*lamdaw*R/(np.pi*B*r)))**0.5
     Rsquiggly   = Gamma - 0.5*W*c*Cl
     
-    return Rsquiggly.flatten()
+    return Rsquiggly
  
 def va_vt(PSI, wake_inputs, rotor):
     """
-    Computes the inflow velocities
-
-    Assumptions:
-    N/A
-
-    Source:
-    N/A
+    Induced velocities from the converged inflow angle.
 
     Inputs:
-       B                          number of rotor blades                          [-]
-       beta                       blade twist distribution                        [-]
-       r                          radius distribution                             [m]
-       R                          tip radius                                      [m]
-       Wt                         tangential velocity                             [m/s]
-       Wa                         axial velocity                                  [m/s]
-       U                          total velocity                                  [m/s]
-       Ut                         tangential velocity                             [m/s]
-       Ua                         axial velocity                                  [m/s]
-       cos_psi                    cosine of the inflow angle PSI                  [-]
-       sin_psi                    sine of the inflow angle PSI                    [-]
-       piece                      output of a step in tip loss calculation        [-]
+       PSI                        inflow angle, one per station                   [rad]
+       wake_inputs                velocities                                      [-]
+       rotor                      rotor                                           [-]
 
     Outputs:
-       dR_dpsi                    derivative of residual wrt inflow angle         [-]
-
+       va                         axially induced velocity                        [m/s]
+       vt                         tangentially induced velocity                   [m/s]
     """    
     
     # Unpack inputs to rotor wake fidelity zero
     U               = wake_inputs.velocity_total
     Ua              = wake_inputs.velocity_axial
     Ut              = wake_inputs.velocity_tangential
-    ctrl_pts        = wake_inputs.ctrl_pts
-    Nr              = wake_inputs.Nr
-    Na              = wake_inputs.Na
-    
-    # Reshape PSI because the solver gives it flat
-    if wake_inputs.use_2d_analysis:
-        PSI    = np.reshape(PSI,(ctrl_pts,Nr,Na))
-    else:
-        PSI    = np.reshape(PSI,(ctrl_pts,Nr))
     
     # compute velocities
     sin_psi      = np.sin(PSI)
@@ -375,94 +330,3 @@ def va_vt(PSI, wake_inputs, rotor):
     vt           = Ut - Wt
 
     return va, vt
- 
-def compute_dR_dpsi(PSI,wake_inputs,rotor):
-    """
-    Computes the analytical derivative for the BEVW iteration.
-
-    Assumptions:
-    N/A
-
-    Source:
-    N/A
-
-    Inputs:
-       B                          number of rotor blades                          [-]
-       beta                       blade twist distribution                        [-]
-       r                          radius distribution                             [m]
-       R                          tip radius                                      [m]
-       Wt                         tangential velocity                             [m/s]
-       Wa                         axial velocity                                  [m/s]
-       U                          total velocity                                  [m/s]
-       Ut                         tangential velocity                             [m/s]
-       Ua                         axial velocity                                  [m/s]
-       cos_psi                    cosine of the inflow angle PSI                  [-]
-       sin_psi                    sine of the inflow angle PSI                    [-]
-       piece                      output of a step in tip loss calculation        [-]
-
-    Outputs:
-       dR_dpsi                    derivative of residual wrt inflow angle         [-]
-
-    """
-    # Unpack inputs to rotor wake fidelity zero
-    U               = wake_inputs.velocity_total
-    Ua              = wake_inputs.velocity_axial
-    Ut              = wake_inputs.velocity_tangential
-    beta            = wake_inputs.twist_distribution
-    r               = wake_inputs.radius_distribution
-    ctrl_pts        = wake_inputs.ctrl_pts
-    Nr              = wake_inputs.Nr
-    Na              = wake_inputs.Na    
-
-    # Unpack rotor data        
-    R        = rotor.tip_radius
-    B        = rotor.number_of_blades      
-    
-    # Reshape PSI because the solver gives it flat
-    if wake_inputs.use_2d_analysis:
-        PSI    = np.reshape(PSI,(ctrl_pts,Nr,Na))
-    else:
-        PSI    = np.reshape(PSI,(ctrl_pts,Nr))    
-    
-    
-    # An analytical derivative for dR_dpsi used in the Newton iteration for the BEVW
-    # This was solved symbolically in Matlab and exported
-    # compute velocities
-    sin_psi      = np.sin(PSI)
-    cos_psi      = np.cos(PSI)
-    Wa           = 0.5*Ua + 0.5*U*sin_psi
-    Wt           = 0.5*Ut + 0.5*U*cos_psi
-    
-    lamdaw, F, piece = compute_inflow_and_tip_loss(r,R,Wa,Wt,B)
-    
-    pi          = np.pi
-    pi2         = np.pi**2
-    BB          = B*B
-    BBB         = BB*B
-    f_wt_2      = 4*Wt*Wt
-    f_wa_2      = 4*Wa*Wa
-    arccos_piece = np.arccos(piece)
-    Ucospsi     = U*cos_psi
-    Usinpsi     = U*sin_psi
-    Utcospsi    = Ut*cos_psi
-    Uasinpsi    = Ua*sin_psi
-    UapUsinpsi  = (Ua + Usinpsi)
-    utpUcospsi  = (Ut + Ucospsi)
-    utpUcospsi2 = utpUcospsi*utpUcospsi
-    UapUsinpsi2 = UapUsinpsi*UapUsinpsi
-    dR_dpsi     = ((4.*U*r*arccos_piece*sin_psi*((16.*UapUsinpsi2)/(BB*pi2*f_wt_2) + 1.)**(0.5))/B -
-                   (pi*U*(Ua*cos_psi - Ut*sin_psi)*(beta - np.arctan((Wa+Wa)/(Wt+Wt))))/(2.*(f_wt_2 + f_wa_2)**(0.5))
-                   + (pi*U*(f_wt_2 +f_wa_2)**(0.5)*(U + Utcospsi  +  Uasinpsi))/(2.*(f_wa_2/(f_wt_2) + 1.)*utpUcospsi2)
-                   - (4.*U*piece*((16.*UapUsinpsi2)/(BB*pi2*f_wt_2) + 1.)**(0.5)*(R - r)*(Ut/2. -
-                    (Ucospsi)/2.)*(U + Utcospsi + Uasinpsi ))/(f_wa_2*(1. - np.exp(-(B*(Wt+Wt)*(R -
-                    r))/(r*(Wa+Wa))))**(0.5)) + (128.*U*r*arccos_piece*(Wa+Wa)*(Ut/2. - (Ucospsi)/2.)*(U +
-                    Utcospsi  + Uasinpsi ))/(BBB*pi2*utpUcospsi*utpUcospsi2*((16.*f_wa_2)/(BB*pi2*f_wt_2) + 1.)**(0.5)))
-
-    dR_dpsi[np.isnan(dR_dpsi)] = 0.1
-    
-    # This needs to be made into a jacobian
-    dR_dpsi = dR_dpsi.flatten()
-    L       = np.size(PSI)
-    jac     = np.eye(L)*dR_dpsi
-    
-    return jac
