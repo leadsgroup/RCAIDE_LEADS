@@ -370,7 +370,8 @@ def solve_turboprop_offdesign_robust(design_constants, reference_point, mach_num
     design    = pack_turboprop_design_constants(design_constants) if packed_design_constants is None else packed_design_constants
     reference = pack_turboprop_reference_point(reference_point)  if packed_reference_point  is None else packed_reference_point
     M0, T0, P0, Tt4 = float(mach_number), float(static_temperature), float(static_pressure), float(combustor_exit_temperature)
-    offtake_design = design[16] * reference[9]
+    offtake_design = design[TURBOPROP_DESIGN_CONSTANT_FIELDS.index('shaft_work_specific_design')] * \
+                     reference[TURBOPROP_REFERENCE_POINT_FIELDS.index('m0')]
     offtake        = offtake_design if shaft_power_offtake is None else float(shaft_power_offtake)
     output = solve_turboprop_offdesign_kernel(design, reference, M0, T0, P0, Tt4, tolerance, max_iterations,
                                               np.nan, np.nan, np.nan, offtake)
