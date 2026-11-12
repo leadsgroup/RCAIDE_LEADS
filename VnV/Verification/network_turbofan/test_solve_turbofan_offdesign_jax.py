@@ -86,8 +86,10 @@ def check_step_matches_numba_kernel(turbofan):
         for value, index in [(state[0], 6), (state[1], 10), (state[2], 11), (state[3], 12), (outputs['mass_flow_rate'], 17),
                              (outputs['thrust'], 19), (outputs['fuel_mass_flow_rate'], 20),
                              (outputs['core_nozzle_exit_velocity'], 25), (outputs['fan_nozzle_exit_velocity'], 26)]:
-            assert value[0] == kernel[index], f"xp matching differs from the numba kernel at output {index}: {value[0]} vs {kernel[index]}"
-    print('xp matching step and outputs equal the numba kernel exactly')
+            # equal to the last bits: numba may fuse multiply-adds on some platforms (seen on Linux x86)
+            assert abs(value[0] - kernel[index]) <= 1e-13 * abs(kernel[index]), \
+                f"xp matching differs from the numba kernel at output {index}: {value[0]} vs {kernel[index]}"
+    print('xp matching step and outputs equal the numba kernel to the last bits')
 
 
 def check_jax_solve(turbofan, points):
