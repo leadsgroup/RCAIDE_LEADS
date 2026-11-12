@@ -12,6 +12,8 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_reservoir_performance
 # ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Framework.Core import set_at
+
 def compute_reservoir_performance(reservoir,coolant_line,state,network):
     """
     Computes the reservoir coolant-temperature residual for the current control points.
@@ -60,7 +62,7 @@ def compute_reservoir_performance(reservoir,coolant_line,state,network):
 
     reservoir_conditions = state.conditions.energy.distributors[coolant_line.tag][reservoir.tag]
     R[0] = T_coolant_scaled[0,0] - reservoir_conditions.coolant_temperature[0,0] / T_scale
-    state.residuals.network[key][:, 0] = R
+    state.residuals.network[key] = set_at(state.residuals.network[key], np.s_[:, 0], R)
 
     reservoir_conditions.coolant_temperature[1:,0] = T_coolant_unkn[1:,0]
 

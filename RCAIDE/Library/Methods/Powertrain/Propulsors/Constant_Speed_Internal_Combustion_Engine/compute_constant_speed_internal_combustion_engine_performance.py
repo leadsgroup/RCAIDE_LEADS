@@ -7,7 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports  
-from RCAIDE.Framework.Core import Units  
+from RCAIDE.Framework.Core import Units, array_namespace
 from RCAIDE.Library.Methods.Powertrain.Converters.Engine import compute_throttle_from_power
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import  compute_rotor_performance
  
@@ -109,7 +109,7 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor, sta
     moment_vector[:,0]      = propeller.origin[0][0]  -  center_of_gravity[0][0] 
     moment_vector[:,1]      = propeller.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]      = propeller.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, conditions.energy.converters[propeller.tag].thrust)       
+    moment                  =  array_namespace(conditions.energy.converters[propeller.tag].thrust).cross(moment_vector, conditions.energy.converters[propeller.tag].thrust)       
         
 
     # Run the engine to calculate the throttle setting and the fuel burn
@@ -172,7 +172,7 @@ def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,
     moment_vector[:,0]      = propeller.origin[0][0]  -  center_of_gravity[0][0]
     moment_vector[:,1]      = propeller.origin[0][1]  -  center_of_gravity[0][1]
     moment_vector[:,2]      = propeller.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, thrust)
+    moment                  =  array_namespace(thrust).cross(moment_vector, thrust)
 
     # pack results
     conditions.energy.propulsors[propulsor.tag].outputs.thrust    = thrust

@@ -7,7 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports
-from RCAIDE.Framework.Core     import Data
+from RCAIDE.Framework.Core     import Data, set_at
 from RCAIDE.Framework.Analyses import Analysis
 import numpy as np
 
@@ -62,7 +62,7 @@ class Energy(Analysis):
         net_electrical_power = state.conditions.energy.net_electrical_power
 
         if 'electrical_power' in state.unknowns.network:
-            state.residuals.network['electrical_power'][...] = net_electrical_power
+            state.residuals.network['electrical_power'] = set_at(state.residuals.network['electrical_power'], np.s_[...], net_electrical_power)
 
         # Unpack Residuals
         residual_keys = list(state.residuals.network.keys())

@@ -9,7 +9,8 @@
 from RCAIDE.Library.Methods.Powertrain.Converters.Engine.compute_power_available import compute_power_available
 
 # package imports
-import numpy as np 
+import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 # compute_power_from_throttle
@@ -98,7 +99,8 @@ def compute_power_from_throttle(engine,conditions):
     torque = P/omega
     
     # Determine fuel flow rate and cap at 0
-    m_dot_fuel  = np.fmax(m_dot,np.zeros_like(altitude)) 
+    xp          = array_namespace(m_dot)
+    m_dot_fuel  = xp.fmax(m_dot, 0.0)
     
     # Store results 
     engine_conditions.power.propulsive                = P
