@@ -17,10 +17,10 @@ from RCAIDE.Framework.Core import Data, array_namespace
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
     # The mission framework (unknown unpacking, frames, kinematics, atmosphere, freestream, forces, moments and the
-    # flight dynamics residuals), aerodynamics, stability and the electric rotor network (rotor, motor, ESC, bus,
-    # battery) are written once for NumPy and JAX. For every segment of the 787 and tiltrotor missions, this runs the segment's own iterate steps on
-    # JAX and checks values, compiled values and derivatives against the NumPy path. Steps not yet written for JAX
-    # are held at their NumPy values.
+    # flight dynamics residuals), aerodynamics, stability, the fuel network with the off-design turbofan and the
+    # electric rotor network (rotor, motor, ESC, bus, battery) are written once for NumPy and JAX. For every segment
+    # of the 787 and the VTOL missions, this runs the segment's own iterate steps on JAX and checks values, compiled
+    # values and derivatives against the NumPy path.
     try:
         import jax
     except ImportError:
@@ -36,9 +36,10 @@ def main():
     # the imported VnV scripts expect to run from their own folders
     os.chdir(os.path.join(vnv_folder, "Validation", "aircraft_performance"))
     sys.path.insert(0, os.getcwd())
-    # the turbofan network and the steps that read it are not written for JAX yet
+    # every iterate step of the 787 runs on JAX; the NumPy engine matching stops at a 1e-8 change and the JAX one
+    # converges fully (its implicit derivative needs the matched state), so values agree to about 1e-7
     check_mission_on_jax("boeing_787", boeing_787_mission(), check_derivatives,
-                         frozen_steps=('network', 'energy', 'thrust', 'weights'))
+                         frozen_steps=(), value_tolerance=1e-6)
 
     # every iterate step of the tiltrotor, stopped rotor and tilt wing runs on JAX
     os.chdir(os.path.join(vnv_folder, "Verification", "network_vtol"))
@@ -56,7 +57,7 @@ def main():
 # ----------------------------------------------------------------------------------------------------------------------
 #  Checks
 # ----------------------------------------------------------------------------------------------------------------------
-def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_only=()):
+def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_only=(), value_tolerance=1e-12):
     import jax
     mission.process.initialize(mission)
 
@@ -71,7 +72,7 @@ def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_
         previous = segment.state
 
         residual = Segment_Residual(segment, frozen_steps)
-        report   = check_derivatives(residual, (residual.x0,), value_tolerance=1e-12, derivative_tolerance=1e-6)
+        report   = check_derivatives(residual, (residual.x0,), value_tolerance=value_tolerance, derivative_tolerance=1e-6)
         # unknowns that change the residual through the steps checked here; with none, the derivative check is empty
         jacobian = np.asarray(jax.jacfwd(residual)(jax.numpy.asarray(residual.x0)))
         reaching = int(np.sum(np.any(jacobian != 0., axis=0)))

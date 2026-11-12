@@ -2,6 +2,10 @@
 #
 # Created:  May 2026, M. Clarke, S. Sharma
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Framework.Core import set_at, array_namespace
 import numpy as np
 
 def compute_ice_protection_power_draw(ice_protection, state, vehicle):
@@ -42,10 +46,11 @@ def compute_ice_protection_power_draw(ice_protection, state, vehicle):
     P_ice_initial  = P_anti_ice + P_de_ice
 
     T_ambient  = state.conditions.freestream.temperature
-    IPS_active = np.where((T_ambient <= 273.15) & (T_ambient >= 243.15), 1.0, 0.0)
+    xp         = array_namespace(T_ambient)
+    IPS_active = xp.where((T_ambient <= 273.15) & (T_ambient >= 243.15), 1.0, 0.0)
     P_ice      = P_ice_initial * IPS_active
 
     system_conditions                              = state.conditions.energy.systems[ice_protection.tag]
-    system_conditions.inputs.power.electrical[:,0]  = P_ice[:,0]
-    system_conditions.outputs.power.electrical[:,0] = 0.0
+    system_conditions.inputs.power.electrical  = set_at(system_conditions.inputs.power.electrical, np.s_[:,0], P_ice[:,0])
+    system_conditions.outputs.power.electrical = set_at(system_conditions.outputs.power.electrical, np.s_[:,0], 0.0)
     return system_conditions.inputs, system_conditions.outputs

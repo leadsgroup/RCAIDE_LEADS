@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # package imports
 import numpy as np
+from RCAIDE.Framework.Core import array_namespace, set_at
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -78,14 +79,16 @@ def compute_fuel_tank_performance(tank,state,distributor):
     tank_conditions.mass_flow_rate         = net_mass_flow_rate
 
     if len(net_mass_flow_rate) > 1:
-        fuel_mass     = m_0_fuel + np.dot(I, -net_mass_flow_rate).flatten()
+        xp            = array_namespace(I, net_mass_flow_rate)
+        fuel_mass     = m_0_fuel + xp.dot(I, -net_mass_flow_rate).flatten()
+        # a finite refuel target above the starting mass caps the fuel mass; inf keeps the unused branch finite
         refuel_target = tank_conditions.refuel_target_mass[0,0]
-        if np.isfinite(refuel_target) and m_0_fuel < refuel_target:
-            fuel_mass = np.minimum(fuel_mass, refuel_target)
+        capped        = xp.isfinite(refuel_target) & (m_0_fuel < refuel_target)
+        fuel_mass     = xp.where(capped, xp.minimum(fuel_mass, xp.where(capped, refuel_target, xp.inf)), fuel_mass)
         # An empty tank stops at zero; demand it cannot meet is reported as a deficit
         empty = fuel_mass <= 0.0
-        tank_conditions.fuel_deficit_rate[:,0] = np.where(empty, np.maximum(net_mass_flow_rate[:,0], 0.0), 0.0)
-        tank_conditions.fuel_mass[:,0]         = np.maximum(fuel_mass, 0.0)
+        tank_conditions.fuel_deficit_rate = set_at(tank_conditions.fuel_deficit_rate, np.s_[:,0], xp.where(empty, xp.maximum(net_mass_flow_rate[:,0], 0.0), 0.0))
+        tank_conditions.fuel_mass         = set_at(tank_conditions.fuel_mass, np.s_[:,0], xp.maximum(fuel_mass, 0.0))
 
     stored_results_flag            = True
     stored_source_tag              = tank.tag   

@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  extend_thrust_below_floor
@@ -18,7 +18,7 @@ def extend_thrust_below_floor(floor_thrust, floor_slope, throttle, floor_fractio
 
     Parameters
     ----------
-    floor_thrust : float
+    floor_thrust : float or array
         Thrust at the matching floor [N].
     floor_slope : float
         Thrust slope with throttle just above the floor [N].
@@ -35,7 +35,9 @@ def extend_thrust_below_floor(floor_thrust, floor_slope, throttle, floor_fractio
     thrust : float
         Thrust below the floor [N].
     """
-    span = floor_thrust - lower_bound
-    if span <= 0.0 or floor_slope <= 0.0:
-        return floor_thrust
-    return lower_bound + span * np.exp(floor_slope * (throttle - floor_fraction) / span)
+    xp       = array_namespace(floor_thrust, floor_slope, throttle, floor_fraction)
+    span     = floor_thrust - lower_bound
+    usable   = (span > 0.0) & (floor_slope > 0.0)
+    span     = xp.where(usable, span, 1.0)
+    extended = lower_bound + span * xp.exp(xp.where(usable, floor_slope, 0.0) * (throttle - floor_fraction) / span)
+    return xp.where(usable, extended, floor_thrust)

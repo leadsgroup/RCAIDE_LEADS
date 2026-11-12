@@ -9,6 +9,7 @@
 # imports 
 import numpy as np 
 from scipy.optimize import fsolve
+from RCAIDE.Framework.Core import array_namespace
  
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_line_distribution_losses
@@ -96,10 +97,10 @@ def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state):
     # Floored to avoid a 64/Re divide-by-zero (and the resulting inf*0 = nan in
     # h_major) when flow_velocity is exactly zero, e.g. at an idle/ground segment
     # or the solver's initial guess.
-    Re = np.maximum((flow_velocity * diameter) / k_viscosity, 1e-6)
+    xp = array_namespace(mass_flow_rate)
+    Re = xp.maximum((flow_velocity * diameter) / k_viscosity, 1e-6)
 
     # 4. Friction Factor (f)
-    f =  np.zeros_like(Re)
     f_Re_leq_2300 = 64 / Re # Re < 2300
 
  
@@ -108,11 +109,13 @@ def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state):
         return vals     
     
     # f_initial using Swamee-Jain explicit formula
-    f_initial = 0.25 / (np.log10((e/diameter)/3.7 + 5.74/(Re[:, 0]**0.9)))**2
-    f_Re_geq_2300 = fsolve(colebrook, f_initial)
-    
-    f[:,0]        = f_Re_geq_2300
-    f[ Re < 2300] = f_Re_leq_2300[ Re < 2300] 
+    if xp is np:
+        f_initial     = 0.25 / (np.log10((e/diameter)/3.7 + 5.74/(Re[:, 0]**0.9)))**2
+        f_Re_geq_2300 = fsolve(colebrook, f_initial)
+    else:
+        # laminar points take 64/Re; the turbulent solve there runs at Re = 2300 so its unused value stays finite
+        f_Re_geq_2300 = colebrook_friction_factor_jax(xp.maximum(Re[:, 0], 2300.), e/diameter)
+    f = xp.where(Re < 2300, f_Re_leq_2300, f_Re_geq_2300[:, None])
 
     # 5. Head Loss (m)
     h_major     = f * (length / diameter) * (flow_velocity**2 / (2 * g))
@@ -130,3 +133,46 @@ def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state):
     fuel_line_conditions.inputs.power.hydraulic  += power_ideal_total
     fuel_line_conditions.mass_flow_rate          += mass_flow_rate
     return
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# colebrook_friction_factor_jax
+# ----------------------------------------------------------------------------------------------------------------------
+def colebrook_friction_factor_jax(Re, relative_roughness, tolerance=1e-14, max_iterations=100):
+    """
+    Colebrook friction factor on JAX, differentiable with respect to Re and the roughness.
+
+    The fixed-point form 1/sqrt(f) = -2 log10(e/(3.7 D) + 2.51/(Re sqrt(f))) is iterated from the Swamee-Jain
+    estimate; derivatives come from the implicit function theorem (jax.lax.custom_root). Each point is independent,
+    so the tangent solve is diagonal.
+
+    Inputs:
+       Re                   Reynolds number at each point, at least 2300, 1-D   [-]
+       relative_roughness   surface roughness over pipe diameter                [-]
+
+    Outputs:
+       f                    Darcy friction factor at each point                  [-]
+    """
+    import jax
+    import jax.numpy as jnp
+
+    def residual(f):
+        return 1/jnp.sqrt(f) + 2*jnp.log10(relative_roughness/3.7 + 2.51/(Re*jnp.sqrt(f)))
+
+    def solve(residual, f_initial):
+        def condition(carry):
+            x, change, i = carry
+            return (change > tolerance) & (i < max_iterations)
+        def body(carry):
+            x, change, i = carry
+            x_new = -2*jnp.log10(relative_roughness/3.7 + 2.51*x/Re)
+            return x_new, jnp.max(jnp.abs(x_new - x) / jnp.abs(x_new)), i + 1
+        x = jax.lax.while_loop(condition, body, (1/jnp.sqrt(f_initial), jnp.inf, 0))[0]
+        return 1/x**2
+
+    def tangent_solve(linear_map, y):
+        return y / linear_map(jnp.ones_like(y))
+
+    # Swamee-Jain explicit estimate
+    f_initial = 0.25 / (jnp.log10(relative_roughness/3.7 + 5.74/(Re**0.9)))**2
+    return jax.lax.custom_root(residual, f_initial, solve, tangent_solve)

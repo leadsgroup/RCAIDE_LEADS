@@ -2,6 +2,12 @@
 #
 # Created:  May 2026, M. Clarke, S. Sharma
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Framework.Core import set_at
+import numpy as np
+
 def compute_cabin_loads_power_draw(cabin_loads, state, vehicle):
     """Computes the electrical power draw of the cabin loads system.
 
@@ -30,6 +36,6 @@ def compute_cabin_loads_power_draw(cabin_loads, state, vehicle):
     P_cabin            = N_pax * (P_ife_per_pax + P_galley_per_pax + P_lighting_per_pax)
 
     system_conditions                              = state.conditions.energy.systems[cabin_loads.tag]
-    system_conditions.inputs.power.electrical[:,0]  = P_cabin
-    system_conditions.outputs.power.electrical[:,0] = 0.0
+    system_conditions.inputs.power.electrical  = set_at(system_conditions.inputs.power.electrical, np.s_[:,0], P_cabin)
+    system_conditions.outputs.power.electrical = set_at(system_conditions.outputs.power.electrical, np.s_[:,0], 0.0)
     return system_conditions.inputs, system_conditions.outputs
