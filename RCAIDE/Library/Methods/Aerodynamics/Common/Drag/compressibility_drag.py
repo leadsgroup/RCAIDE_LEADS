@@ -390,9 +390,13 @@ def transonic_lift_wave_drag(conditions, vortex_distribution, geometry):
     # Local Mach number right before the shock wave, from the local pressure (isentropic, normal to the sweep).
     # A normal shock needs a supersonic upstream Mach number: for M1 < 1 the entropy would decrease across it
     # (Anderson, Modern Compressible Flow, Sec. 3.6, Eq. 3.60). Where M1 <= 1 there is no shock and no wave drag;
-    # M1 = 1 there keeps the unused form finite, and the wave drag goes to zero smoothly at M1 = 1.
-    M1_squared = (5+Mach**2*xp.cos(delta[0])**2)/(1+0.7*Mach**2*Cp_shock)**(2/7) - 5
-    shock      = M1_squared > 1
+    # M1 = 1 there keeps the unused form finite, and the wave drag goes to zero smoothly at M1 = 1. The local to
+    # freestream pressure ratio 1 + 0.7 M^2 Cp must be positive for the isentropic relation; where it is not (high
+    # Mach with a strong suction peak) there is no shock either, and a unit ratio keeps the unused form finite.
+    pressure_ratio = 1+0.7*Mach**2*Cp_shock
+    physical       = pressure_ratio > 0
+    M1_squared     = (5+Mach**2*xp.cos(delta[0])**2)/xp.where(physical, pressure_ratio, 1.)**(2/7) - 5
+    shock          = physical & (M1_squared > 1)
     M1_0_star  = xp.sqrt(xp.where(shock, M1_squared, 1.))
     
     # Calculate the wave drag coefficient
