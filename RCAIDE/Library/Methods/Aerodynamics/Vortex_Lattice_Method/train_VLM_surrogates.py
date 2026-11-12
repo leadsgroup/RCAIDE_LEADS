@@ -168,12 +168,7 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
         conditions.control_surfaces                  = Data()
         conditions.weights                           = Data()
         conditions.weights.components                = Data()
-        conditions.weights.components.mass           = Data()
-        for network in vehicle.networks:
-            for source in network.sources:
-                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                    conditions.weights.components.mass[source.fuel.tag] = (
-                        source.mass_properties.mass * np.ones((n_pts, 1)))
+        conditions.weights.components.mass           = full_fuel_masses(vehicle, n_pts)
 
     # run VLM (and, if coupled, VLM<->FEA to convergence) for all conditions
     coupled = (aerostructural_analyses is not None
@@ -526,12 +521,19 @@ def control_surface_structural_conditions(Mach, a0, rho0, vehicle):
     conditions.aerostructures                        = Data()
     conditions.weights                               = Data()
     conditions.weights.components                    = Data()
-    conditions.weights.components.mass               = Data()
+    conditions.weights.components.mass               = full_fuel_masses(vehicle, len(Mach))
+    return conditions
+
+
+def full_fuel_masses(vehicle, n_rows):
+    """Fuel mass in each tank, keyed by fuel tag as the mission stores it, at its loaded value for n_rows cases.
+    FEA adds the empty tank mass (source.mass_properties.mass) itself, so only the fuel goes here."""
+    fuel_masses = Data()
     for network in vehicle.networks:
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                conditions.weights.components.mass[source.fuel.tag] = source.mass_properties.mass * np.ones_like(Machs)
-    return conditions
+                fuel_masses[source.fuel.tag] = source.fuel.mass_properties.mass * np.ones((n_rows, 1))
+    return fuel_masses
 
 
 def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_np,Mach,AoA):
