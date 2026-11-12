@@ -129,8 +129,9 @@ def compressible_mixed_flat_plate(Re,Ma,Tc,xt):
     #cf_turb  = 0.455/(np.log10(Rext)**2.58) # Schlichting empircal formula for turbulent flat plate. note that this correlation is meant for smooth surfaces.
 
     # Turbulent flat plate correlation from Shevell's Fundamentals of Flight. Accounts for typical roughness of a transport aircraft
-    y = np.array([0.01273, 0.0090077, 0.0058721317, 0.00716019, 0.0049416, 0.003744045, 0.00316321, 0.002506763, 0.002064, 0.0016604122])
-    x = np.array([10000, 115300, 675100, 281300, 1492600, 6040200, 14920400, 58584300, 193593000, 897594100])
+    # in increasing Reynolds number, as interpolation requires
+    y = np.array([0.01273, 0.0090077, 0.00716019, 0.0058721317, 0.0049416, 0.003744045, 0.00316321, 0.002506763, 0.002064, 0.0016604122])
+    x = np.array([10000, 115300, 281300, 675100, 1492600, 6040200, 14920400, 58584300, 193593000, 897594100])
     cf_turb = xp.interp(Rext, x, y) # Data is from Figure 11.2 of Shevell's Fundamentals of Flight.
     cf_lam   = 1.328/(Rex**0.5)
     
