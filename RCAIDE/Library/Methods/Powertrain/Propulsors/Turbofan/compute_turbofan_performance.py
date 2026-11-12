@@ -8,7 +8,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core import Data   
+from RCAIDE.Framework.Core import Data, array_namespace
+from RCAIDE.Library.Methods.Utilities import Linear_Interpolator
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                  import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor            import compute_combustor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor           import compute_compressor_performance
@@ -22,9 +23,9 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_perf
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
     pack_design_constants, pack_reference_point,
     solve_turbofan_offdesign_robust, OffDesignMatchingError)
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.solve_turbofan_offdesign_jax import solve_turbofan_offdesign_jax
 
 import  numpy as  np
-from scipy.interpolate import RegularGridInterpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_performance
@@ -526,13 +527,14 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
         conditions.energy.converters[component.tag].copy_values(conditions.energy.converters[component_0.tag])
     
     # compute moment  
-    moment_vector      = 0*state.ones_row(3)
-    thrust_vector      = 0*state.ones_row(3)
-    thrust_vector[:,0] = conditions.energy.propulsors[turbofan.tag].outputs.thrust[:,0] 
-    moment_vector[:,0] = turbofan.origin[0][0] -   center_of_gravity[0][0] 
-    moment_vector[:,1] = turbofan.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2] = turbofan.origin[0][2]  -  center_of_gravity[0][2]
-    moment             = np.cross(moment_vector,thrust_vector)    
+    thrust             = conditions.energy.propulsors[turbofan.tag].outputs.thrust[:,0]
+    xp                 = array_namespace(thrust)
+    zero               = 0 * thrust
+    thrust_vector      = xp.stack([thrust, zero, zero], axis=1)
+    moment_vector      = xp.stack([zero + (turbofan.origin[0][0] - center_of_gravity[0][0]),
+                                   zero + (turbofan.origin[0][1] - center_of_gravity[0][1]),
+                                   zero + (turbofan.origin[0][2] - center_of_gravity[0][2])], axis=1)
+    moment             = xp.cross(moment_vector, thrust_vector)
    
     conditions.energy.propulsors[turbofan.tag].outputs.moment = moment
     
@@ -621,95 +623,207 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     decays from the floor thrust toward zero (extend_thrust_below_floor), so
     it is never negative and keeps a gradient for the mission solver.
 
+    On JAX every control point is matched at once by `solve_turbofan_offdesign_jax`, differentiable through the
+    implicit function theorem. Points no solver matches are NaN there: the idle fallback deck is not available on JAX.
+
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.solve_turbofan_offdesign_robust
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan_offdesign_matching
+    RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.solve_turbofan_offdesign_jax
     """
     conditions           = state.conditions
     turbofan_conditions  = conditions.energy.propulsors[turbofan.tag]
-    noise_conditions      = conditions.aeroacoustics.propulsors[turbofan.tag]
+    noise_conditions     = conditions.aeroacoustics.propulsors[turbofan.tag]
+    xp                   = array_namespace(turbofan_conditions.throttle, conditions.freestream.mach_number)
 
     # freestream quantities may be column vectors or 1-D arrays (e.g. estimate_take_off_field_length),
     # and may hold a single value for all control points -- broadcast each onto the throttle rows
     # throttle is a fraction of the takeoff rating; the solver runs on the fraction of the design-point Tt4
-    throttle            = np.ravel(turbofan_conditions.throttle) * turbofan.rated_takeoff_temperature_ratio
-    n                   = len(throttle)
-    altitude            = np.ravel(conditions.freestream.altitude)    * np.ones(n)
-    mach_number         = np.ravel(conditions.freestream.mach_number) * np.ones(n)
-    static_temperature  = np.ravel(conditions.freestream.temperature) * np.ones(n)
-    static_pressure     = np.ravel(conditions.freestream.pressure)    * np.ones(n)
-    velocity            = np.ravel(conditions.freestream.velocity)    * np.ones(n)
+    throttle            = xp.ravel(turbofan_conditions.throttle) * turbofan.rated_takeoff_temperature_ratio
+    n                   = throttle.shape[0]
+    altitude            = xp.ravel(conditions.freestream.altitude)    * xp.ones(n)
+    mach_number         = xp.ravel(conditions.freestream.mach_number) * xp.ones(n)
+    static_temperature  = xp.ravel(conditions.freestream.temperature) * xp.ones(n)
+    static_pressure     = xp.ravel(conditions.freestream.pressure)    * xp.ones(n)
+    velocity            = xp.ravel(conditions.freestream.velocity)    * xp.ones(n)
 
     design_constants = turbofan.offdesign_matching.design_constants
     reference_point  = turbofan.offdesign_matching.reference_point
-    idle_fallback    = getattr(turbofan.offdesign_matching, 'idle_fallback', None)
     matching_floor   = getattr(turbofan.offdesign_matching, 'matching_floor', None)
 
     # lowest Tt4 fraction the matching solver represents; below it thrust decays from the floor (extend_thrust_below_floor)
     if matching_floor is not None:
-        floor_interpolator = RegularGridInterpolator((matching_floor.altitude, matching_floor.mach_number),
-                                                     matching_floor.combustor_exit_temperature_fraction,
-                                                     bounds_error=False, fill_value=None)
-        floor_fraction     = floor_interpolator(np.column_stack([altitude, mach_number]))
+        floor_interpolator = Linear_Interpolator([matching_floor.altitude, matching_floor.mach_number],
+                                                 matching_floor.combustor_exit_temperature_fraction)
+        floor_fraction     = floor_interpolator(xp.stack([altitude, mach_number], axis=1))
     else:
-        floor_fraction     = np.full(n, -np.inf)
+        floor_fraction     = -np.inf * xp.ones(n)
     below_floor = throttle < floor_fraction
-    floor_step  = 0.02  # Tt4 fraction step for the floor thrust slope
-
-    thrust_N             = np.zeros(n)
-    fuel_mass_flow_rate   = np.zeros(n)
-    # NaN, not zero: a point routed to idle_fallback has no real station data (see Notes),
-    # and NaN correctly signals that rather than a silently-wrong 0
-    core_nozzle_exit_velocity            = np.full(n, np.nan)
-    fan_nozzle_exit_velocity             = np.full(n, np.nan)
-    core_nozzle_exit_static_temperature  = np.full(n, np.nan)
-    fan_nozzle_exit_static_temperature   = np.full(n, np.nan)
-    core_nozzle_exit_static_pressure     = np.full(n, np.nan)
-    fan_nozzle_exit_static_pressure      = np.full(n, np.nan)
-    core_nozzle_exit_stagnation_temperature = np.full(n, np.nan)
-    fan_nozzle_exit_stagnation_temperature  = np.full(n, np.nan)
-    core_nozzle_exit_stagnation_pressure    = np.full(n, np.nan)
-    fan_nozzle_exit_stagnation_pressure     = np.full(n, np.nan)
-    # feed bypass_ratio/flow_through_*/fuel_to_air_ratio/total_*_reference below
-    alpha_out       = np.full(n, np.nan)
-    tau_r_out       = np.full(n, np.nan)
-    tau_f_out       = np.full(n, np.nan)
-    tau_f_alone_out = np.full(n, np.nan)
-    pi_r_out        = np.full(n, np.nan)
-    pi_d_out        = np.full(n, np.nan)
-    pi_f_out        = np.full(n, np.nan)
-    fuel_to_air_ratio_out = np.full(n, np.nan)
-    # combustor inlet (station 3) state and core flow, used by the emissions models
-    combustor_inlet_stagnation_temperature = np.full(n, np.nan)
-    combustor_inlet_stagnation_pressure    = np.full(n, np.nan)
-    core_mass_flow_rate                    = np.full(n, np.nan)
-
-    packed_design_constants = pack_design_constants(design_constants)
-    packed_reference_point  = pack_reference_point(reference_point)
 
     # HP-spool shaft power to/from the integrated drive motor or generator at the mission's electrical
     # power; the design-point offtake outside a mission
     lpc_conditions       = conditions.energy.converters[turbofan.low_pressure_compressor.tag]
-    lpc_conditions.omega = turbofan.low_pressure_compressor.design_angular_velocity * throttle.reshape(-1, 1)
+    lpc_conditions.omega = turbofan.low_pressure_compressor.design_angular_velocity * xp.reshape(throttle, (-1, 1))
     external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbofan, state, lpc_conditions.omega)
-    shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
+    shaft_power_offtake  = xp.ravel(external_shaft_power) * xp.ones(n) if in_mission else None
+
+    flight = (altitude, mach_number, static_temperature, static_pressure, throttle, floor_fraction, below_floor, shaft_power_offtake)
+    if xp is np:
+        result = solve_offdesign_points_numpy(turbofan, *flight)
+    else:
+        result = solve_offdesign_points_jax(turbofan, *flight)
+
+    thrust_N            = result['thrust']
+    fuel_mass_flow_rate = result['fuel_mass_flow_rate']
+    alpha               = result['alpha']
+    zero                = 0 * thrust_N
+    thrust_vector       = xp.stack([thrust_N, zero, zero], axis=1)
+
+    positive       = thrust_N > 0
+    gravity        = xp.ravel(conditions.freestream.gravity) * xp.ones(n) if hasattr(conditions.freestream, 'gravity') \
+                     else 9.80665 * xp.ones(n)
+    TSFC           = xp.where(positive, fuel_mass_flow_rate * gravity / xp.where(positive, thrust_N, 1.0), 0.0)
+
+    power_propulsive = thrust_N * velocity
+
+    # Compute forces and moments
+    moment_vector  = xp.stack([zero + (turbofan.origin[0][0] - center_of_gravity[0][0]),
+                               zero + (turbofan.origin[0][1] - center_of_gravity[0][1]),
+                               zero + (turbofan.origin[0][2] - center_of_gravity[0][2])], axis=1)
+    moment         = xp.cross(moment_vector, thrust_vector)
+
+    # Pack turbofan outputs -- same fields as compute_turbofan_performance/_surrogate
+    turbofan_conditions.thrust                            = thrust_vector
+    turbofan_conditions.fuel_mass_flow_rate               = xp.reshape(fuel_mass_flow_rate, (-1,1))
+    turbofan_conditions.thrust_specific_fuel_consumption  = xp.reshape(TSFC, (-1,1))
+    turbofan_conditions.moment                            = moment
+    turbofan_conditions.outputs.thrust                    = thrust_vector
+    turbofan_conditions.outputs.moment                    = moment
+    turbofan_conditions.outputs.power.propulsive          = xp.reshape(power_propulsive, (-1,1))
+    turbofan_conditions.below_matching_floor              = xp.reshape(below_floor.astype(float), (-1,1))
+
+    # same fields the analytical path sets; NaN at idle_fallback points
+    turbofan_conditions.bypass_ratio                      = xp.reshape(alpha, (-1,1))
+    turbofan_conditions.flow_through_core                 = xp.reshape(1./(1.+alpha), (-1,1))
+    turbofan_conditions.flow_through_fan                  = xp.reshape(alpha/(1.+alpha), (-1,1))
+    turbofan_conditions.fuel_to_air_ratio                 = xp.reshape(result['fuel_to_air_ratio'], (-1,1))
+    turbofan_conditions.core_mass_flow_rate               = xp.reshape(result['mass_flow_rate'] / (1 + alpha), (-1,1))
+    turbofan_conditions.total_temperature_reference       = xp.reshape(result['tau_r']*result['tau_f']*static_temperature, (-1,1))
+    turbofan_conditions.total_pressure_reference          = xp.reshape(result['pi_r']*result['pi_d']*result['pi_f']*static_pressure, (-1,1))
+
+    if turbofan.combustor is not None and turbofan.combustor.fuel_data is not None:
+        turbofan_conditions.inputs.power.chemical = \
+            xp.reshape(fuel_mass_flow_rate * turbofan.combustor.fuel_data.lower_heating_value, (-1,1))
+        # uses specific_energy, not lower_heating_value used just above -- different fields
+        turbofan_conditions.overall_efficiency = \
+            xp.reshape(thrust_N * velocity / (fuel_mass_flow_rate * turbofan.combustor.fuel_data.specific_energy), (-1,1))
+    # thermal_efficiency not set: needs internal enthalpies the offdesign solver doesn't return
+
+    # noise_conditions schema match -- real values at points the live solver handled,
+    # NaN at any point routed to idle_fallback (no station data there either)
+    for stream in ('core', 'fan'):
+        noise_conditions.copy_values({stream + '_nozzle': Data(
+            exit_static_temperature      = xp.reshape(result[stream + '_nozzle_exit_static_temperature'], (-1,1)),
+            exit_static_pressure         = xp.reshape(result[stream + '_nozzle_exit_static_pressure'], (-1,1)),
+            exit_stagnation_temperature  = xp.reshape(result[stream + '_nozzle_exit_stagnation_temperature'], (-1,1)),
+            exit_stagnation_pressure     = xp.reshape(result[stream + '_nozzle_exit_stagnation_pressure'], (-1,1)),
+            exit_velocity                = xp.reshape(result[stream + '_nozzle_exit_velocity'], (-1,1)),
+        )})
+    # fan total temperature rise (fan inlet Tt2 = T0*tau_r) sets the fan angular velocity
+    fan_inlet_stagnation_temperature  = result['tau_r'] * static_temperature
+    fan_exit_stagnation_temperature   = fan_inlet_stagnation_temperature * result['tau_f_alone']
+    fan_angular_velocity              = compute_fan_angular_velocity(turbofan.fan, fan_exit_stagnation_temperature - fan_inlet_stagnation_temperature)
+    noise_conditions.copy_values({'fan': Data(angular_velocity = xp.reshape(fan_angular_velocity, (-1,1)))})
+
+    # component station states, in the same conditions the analytical cycle populates, so that
+    # downstream consumers (e.g. the aeroacoustic engine noise models) read one location
+    converters = conditions.energy.converters
+    for nozzle, stream in ((turbofan.core_nozzle, 'core'), (turbofan.fan_nozzle, 'fan')):
+        nozzle_outputs                        = converters[nozzle.tag].outputs
+        nozzle_outputs.velocity               = xp.reshape(result[stream + '_nozzle_exit_velocity'], (-1,1))
+        nozzle_outputs.static_temperature     = xp.reshape(result[stream + '_nozzle_exit_static_temperature'], (-1,1))
+        nozzle_outputs.static_pressure        = xp.reshape(result[stream + '_nozzle_exit_static_pressure'], (-1,1))
+        nozzle_outputs.stagnation_temperature = xp.reshape(result[stream + '_nozzle_exit_stagnation_temperature'], (-1,1))
+        nozzle_outputs.stagnation_pressure    = xp.reshape(result[stream + '_nozzle_exit_stagnation_pressure'], (-1,1))
+
+    # combustor inlet (station 3) state, used by the emissions models
+    combustor_conditions                                = converters[turbofan.combustor.tag]
+    combustor_conditions.inputs.stagnation_temperature  = xp.reshape(static_temperature * result['tau_r'] * result['tau_f'] * result['tau_cH'], (-1,1))
+    combustor_conditions.inputs.stagnation_pressure     = xp.reshape(static_pressure * result['pi_r'] * result['pi_d'] * result['pi_f'] * result['pi_cH'], (-1,1))
+    combustor_conditions.outputs.fuel_to_air_ratio      = xp.reshape(result['fuel_to_air_ratio'], (-1,1))
+
+    fan_conditions                                = converters[turbofan.fan.tag]
+    fan_conditions.inputs.stagnation_temperature  = xp.reshape(fan_inlet_stagnation_temperature, (-1,1))
+    fan_conditions.outputs.stagnation_temperature = xp.reshape(fan_exit_stagnation_temperature, (-1,1))
+    fan_conditions.omega                          = xp.reshape(fan_angular_velocity, (-1,1))
+
+    stored_results_flag   = True
+    stored_propulsor_tag  = turbofan.tag
+
+    return turbofan_conditions.inputs, turbofan_conditions.outputs, stored_results_flag, stored_propulsor_tag
+
+# fields of the matched point that compute_turbofan_performance_offdesign reads
+OFFDESIGN_POINT_FIELDS = ['thrust', 'fuel_mass_flow_rate', 'alpha', 'tau_r', 'tau_f', 'tau_f_alone', 'tau_cH', 'pi_r', 'pi_d',
+                          'pi_f', 'pi_cH', 'fuel_to_air_ratio', 'mass_flow_rate',
+                          'core_nozzle_exit_velocity', 'fan_nozzle_exit_velocity',
+                          'core_nozzle_exit_static_temperature', 'fan_nozzle_exit_static_temperature',
+                          'core_nozzle_exit_static_pressure', 'fan_nozzle_exit_static_pressure',
+                          'core_nozzle_exit_stagnation_temperature', 'fan_nozzle_exit_stagnation_temperature',
+                          'core_nozzle_exit_stagnation_pressure', 'fan_nozzle_exit_stagnation_pressure']
+
+# Tt4 fraction step for the floor thrust slope
+FLOOR_STEP = 0.02
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  solve_offdesign_points_numpy
+# ----------------------------------------------------------------------------------------------------------------------
+def solve_offdesign_points_numpy(turbofan, altitude, mach_number, static_temperature, static_pressure, throttle,
+                                 floor_fraction, below_floor, shaft_power_offtake):
+    """
+    Matched off-design point at each control point on NumPy: the numba kernel through solve_turbofan_offdesign_robust,
+    one point at a time, with the thrust below the matching floor extended from the floor and the idle fallback deck
+    at points the matching cannot solve.
+
+    Inputs:
+       turbofan            turbofan with offdesign_matching
+       altitude, mach_number, static_temperature, static_pressure, throttle (Tt4 fraction), floor_fraction,
+       below_floor         1-D arrays, one entry per control point
+       shaft_power_offtake 1-D array, or None for the design-point offtake
+
+    Outputs:
+       result              dict of 1-D arrays named as OFFDESIGN_POINT_FIELDS; NaN station data at idle fallback points
+    """
+    design_constants = turbofan.offdesign_matching.design_constants
+    reference_point  = turbofan.offdesign_matching.reference_point
+    idle_fallback    = getattr(turbofan.offdesign_matching, 'idle_fallback', None)
+    n                = len(throttle)
+
+    # NaN, not zero: a point routed to idle_fallback has no real station data (see Notes),
+    # and NaN correctly signals that rather than a silently-wrong 0
+    result                        = {field: np.full(n, np.nan) for field in OFFDESIGN_POINT_FIELDS}
+    result['thrust']              = np.zeros(n)
+    result['fuel_mass_flow_rate'] = np.zeros(n)
+
+    packed_design_constants = pack_design_constants(design_constants)
+    packed_reference_point  = pack_reference_point(reference_point)
+    offtake = [None] * n if shaft_power_offtake is None else shaft_power_offtake
     for i in range(n):
         combustor_exit_temperature = reference_point.Tt4 * max(throttle[i], floor_fraction[i])
         try:
-            result = solve_turbofan_offdesign_robust(
+            point  = solve_turbofan_offdesign_robust(
                 design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
                 combustor_exit_temperature, packed_design_constants=packed_design_constants,
-                packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
-            thrust = result.thrust
+                packed_reference_point=packed_reference_point, shaft_power_offtake=offtake[i])
+            thrust = point.thrust
             if below_floor[i]:
                 # station data and fuel flow stay at the floor
                 above_floor = solve_turbofan_offdesign_robust(
                     design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
-                    reference_point.Tt4 * (floor_fraction[i] + floor_step), packed_design_constants=packed_design_constants,
-                    packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
-                floor_slope = (above_floor.thrust - result.thrust) / floor_step
-                thrust      = extend_thrust_below_floor(result.thrust, floor_slope, throttle[i], floor_fraction[i])
+                    reference_point.Tt4 * (floor_fraction[i] + FLOOR_STEP), packed_design_constants=packed_design_constants,
+                    packed_reference_point=packed_reference_point, shaft_power_offtake=offtake[i])
+                floor_slope = (above_floor.thrust - point.thrust) / FLOOR_STEP
+                thrust      = extend_thrust_below_floor(point.thrust, floor_slope, throttle[i], floor_fraction[i])
         except OffDesignMatchingError:
             if idle_fallback is None:
                 raise
@@ -719,128 +833,44 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
                                          throttle=np.array([query_fraction]))
             if below_floor[i]:
                 F_above, _ = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
-                                                 throttle=np.array([floor_fraction[i] + floor_step]))
-                F = np.array([extend_thrust_below_floor(F[0], (F_above[0] - F[0]) / floor_step, throttle[i], floor_fraction[i])])
-            thrust_N[i]             = F[0]
-            fuel_mass_flow_rate[i]  = FF[0]
+                                                 throttle=np.array([floor_fraction[i] + FLOOR_STEP]))
+                F = np.array([extend_thrust_below_floor(F[0], (F_above[0] - F[0]) / FLOOR_STEP, throttle[i], floor_fraction[i])])
+            result['thrust'][i]              = F[0]
+            result['fuel_mass_flow_rate'][i] = FF[0]
             continue
-        thrust_N[i]                                = thrust
-        fuel_mass_flow_rate[i]                      = result.fuel_mass_flow_rate
-        core_nozzle_exit_velocity[i]                = result.core_nozzle_exit_velocity
-        fan_nozzle_exit_velocity[i]                 = result.fan_nozzle_exit_velocity
-        core_nozzle_exit_static_temperature[i]      = result.core_nozzle_exit_static_temperature
-        fan_nozzle_exit_static_temperature[i]       = result.fan_nozzle_exit_static_temperature
-        core_nozzle_exit_static_pressure[i]         = result.core_nozzle_exit_static_pressure
-        fan_nozzle_exit_static_pressure[i]          = result.fan_nozzle_exit_static_pressure
-        core_nozzle_exit_stagnation_temperature[i]  = result.core_nozzle_exit_stagnation_temperature
-        fan_nozzle_exit_stagnation_temperature[i]   = result.fan_nozzle_exit_stagnation_temperature
-        core_nozzle_exit_stagnation_pressure[i]     = result.core_nozzle_exit_stagnation_pressure
-        fan_nozzle_exit_stagnation_pressure[i]      = result.fan_nozzle_exit_stagnation_pressure
-        alpha_out[i]                                = result.alpha
-        tau_r_out[i]                                = result.tau_r
-        tau_f_out[i]                                = result.tau_f
-        tau_f_alone_out[i]                          = result.tau_f_alone
-        pi_r_out[i]                                 = result.pi_r
-        pi_d_out[i]                                 = result.pi_d
-        pi_f_out[i]                                 = result.pi_f
-        fuel_to_air_ratio_out[i]                    = result.fuel_to_air_ratio
-        combustor_inlet_stagnation_temperature[i]   = static_temperature[i] * result.tau_r * result.tau_f * result.tau_cH
-        combustor_inlet_stagnation_pressure[i]      = static_pressure[i] * result.pi_r * result.pi_d * result.pi_f * result.pi_cH
-        core_mass_flow_rate[i]                      = result.mass_flow_rate / (1 + result.alpha)
+        for field in OFFDESIGN_POINT_FIELDS:
+            result[field][i] = point[field]
+        result['thrust'][i] = thrust
+    return result
 
-    thrust_vector      = np.zeros((n, 3))
-    thrust_vector[:,0] = thrust_N
+# ----------------------------------------------------------------------------------------------------------------------
+#  solve_offdesign_points_jax
+# ----------------------------------------------------------------------------------------------------------------------
+def solve_offdesign_points_jax(turbofan, altitude, mach_number, static_temperature, static_pressure, throttle,
+                               floor_fraction, below_floor, shaft_power_offtake):
+    """
+    Matched off-design point at every control point at once on JAX (solve_turbofan_offdesign_jax), differentiable,
+    with the thrust below the matching floor extended from the floor as on NumPy. Points no solver matches are NaN:
+    the idle fallback deck is not available on JAX.
 
-    TSFC           = np.zeros(n)
-    positive       = thrust_N > 0
-    gravity        = np.ravel(conditions.freestream.gravity) * np.ones(n) if hasattr(conditions.freestream, 'gravity') \
-                     else 9.80665 * np.ones(n)
-    TSFC[positive] = fuel_mass_flow_rate[positive] * gravity[positive] / thrust_N[positive]
+    Inputs and outputs as solve_offdesign_points_numpy.
+    """
+    import jax.numpy as jnp
+    design_constants = turbofan.offdesign_matching.design_constants
+    reference_point  = turbofan.offdesign_matching.reference_point
+    if shaft_power_offtake is None:
+        offtake_design      = getattr(design_constants, 'shaft_work_specific_design', 0.0) * reference_point.m0 / (1 + reference_point.alpha)
+        shaft_power_offtake = offtake_design * jnp.ones_like(throttle)
+    freestream = (mach_number, static_temperature, static_pressure)
 
-    power_propulsive = thrust_N * velocity
-
-    # Compute forces and moments
-    moment_vector      = 0*state.ones_row(3)
-    moment_vector[:,0] = turbofan.origin[0][0] - center_of_gravity[0][0]
-    moment_vector[:,1] = turbofan.origin[0][1] - center_of_gravity[0][1]
-    moment_vector[:,2] = turbofan.origin[0][2] - center_of_gravity[0][2]
-    moment              = np.cross(moment_vector, thrust_vector)
-
-    # Pack turbofan outputs -- same fields as compute_turbofan_performance/_surrogate
-    turbofan_conditions.thrust                            = thrust_vector
-    turbofan_conditions.fuel_mass_flow_rate                = fuel_mass_flow_rate.reshape(-1,1)
-    turbofan_conditions.thrust_specific_fuel_consumption   = TSFC.reshape(-1,1)
-    turbofan_conditions.moment                             = moment
-    turbofan_conditions.outputs.thrust                     = thrust_vector
-    turbofan_conditions.outputs.moment                     = moment
-    turbofan_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
-    turbofan_conditions.below_matching_floor               = below_floor.astype(float).reshape(-1,1)
-
-    # same fields the analytical path sets (~lines 441-448, 476-477); NaN at idle_fallback points
-    turbofan_conditions.bypass_ratio                       = alpha_out.reshape(-1,1)
-    turbofan_conditions.flow_through_core                  = (1./(1.+alpha_out)).reshape(-1,1)
-    turbofan_conditions.flow_through_fan                   = (alpha_out/(1.+alpha_out)).reshape(-1,1)
-    turbofan_conditions.fuel_to_air_ratio                  = fuel_to_air_ratio_out.reshape(-1,1)
-    turbofan_conditions.core_mass_flow_rate                = core_mass_flow_rate.reshape(-1,1)
-    turbofan_conditions.total_temperature_reference        = (tau_r_out*tau_f_out*static_temperature).reshape(-1,1)
-    turbofan_conditions.total_pressure_reference           = (pi_r_out*pi_d_out*pi_f_out*static_pressure).reshape(-1,1)
-
-    if turbofan.combustor is not None and turbofan.combustor.fuel_data is not None:
-        turbofan_conditions.inputs.power.chemical = \
-            (fuel_mass_flow_rate * turbofan.combustor.fuel_data.lower_heating_value).reshape(-1,1)
-        # uses specific_energy, not lower_heating_value used just above -- different fields
-        turbofan_conditions.overall_efficiency = \
-            (thrust_N * velocity / (fuel_mass_flow_rate * turbofan.combustor.fuel_data.specific_energy)).reshape(-1,1)
-    # thermal_efficiency not set: needs internal enthalpies the offdesign solver doesn't return
-
-    # noise_conditions schema match -- real values at points the live solver handled,
-    # NaN at any point routed to idle_fallback (no station data there either)
-    noise_conditions.copy_values({'core_nozzle': Data(
-        exit_static_temperature      = core_nozzle_exit_static_temperature.reshape(-1,1),
-        exit_static_pressure         = core_nozzle_exit_static_pressure.reshape(-1,1),
-        exit_stagnation_temperature  = core_nozzle_exit_stagnation_temperature.reshape(-1,1),
-        exit_stagnation_pressure     = core_nozzle_exit_stagnation_pressure.reshape(-1,1),
-        exit_velocity                = core_nozzle_exit_velocity.reshape(-1,1),
-    )})
-    noise_conditions.copy_values({'fan_nozzle': Data(
-        exit_static_temperature      = fan_nozzle_exit_static_temperature.reshape(-1,1),
-        exit_static_pressure         = fan_nozzle_exit_static_pressure.reshape(-1,1),
-        exit_stagnation_temperature  = fan_nozzle_exit_stagnation_temperature.reshape(-1,1),
-        exit_stagnation_pressure     = fan_nozzle_exit_stagnation_pressure.reshape(-1,1),
-        exit_velocity                = fan_nozzle_exit_velocity.reshape(-1,1),
-    )})
-    # fan total temperature rise (fan inlet Tt2 = T0*tau_r) sets the fan angular velocity
-    fan_inlet_stagnation_temperature  = tau_r_out * static_temperature
-    fan_exit_stagnation_temperature   = fan_inlet_stagnation_temperature * tau_f_alone_out
-    fan_angular_velocity              = compute_fan_angular_velocity(turbofan.fan, fan_exit_stagnation_temperature - fan_inlet_stagnation_temperature)
-    noise_conditions.copy_values({'fan': Data(angular_velocity = fan_angular_velocity.reshape(-1,1))})
-
-    # component station states, in the same conditions the analytical cycle populates, so that
-    # downstream consumers (e.g. the aeroacoustic engine noise models) read one location
-    converters = conditions.energy.converters
-    for nozzle, V, T_s, P_s, T_t, P_t in [
-            (turbofan.core_nozzle, core_nozzle_exit_velocity, core_nozzle_exit_static_temperature, core_nozzle_exit_static_pressure,
-             core_nozzle_exit_stagnation_temperature, core_nozzle_exit_stagnation_pressure),
-            (turbofan.fan_nozzle, fan_nozzle_exit_velocity, fan_nozzle_exit_static_temperature, fan_nozzle_exit_static_pressure,
-             fan_nozzle_exit_stagnation_temperature, fan_nozzle_exit_stagnation_pressure)]:
-        nozzle_outputs                        = converters[nozzle.tag].outputs
-        nozzle_outputs.velocity               = V.reshape(-1,1)
-        nozzle_outputs.static_temperature     = T_s.reshape(-1,1)
-        nozzle_outputs.static_pressure        = P_s.reshape(-1,1)
-        nozzle_outputs.stagnation_temperature = T_t.reshape(-1,1)
-        nozzle_outputs.stagnation_pressure    = P_t.reshape(-1,1)
-
-    combustor_conditions                                = converters[turbofan.combustor.tag]
-    combustor_conditions.inputs.stagnation_temperature  = combustor_inlet_stagnation_temperature.reshape(-1,1)
-    combustor_conditions.inputs.stagnation_pressure     = combustor_inlet_stagnation_pressure.reshape(-1,1)
-    combustor_conditions.outputs.fuel_to_air_ratio      = fuel_to_air_ratio_out.reshape(-1,1)
-
-    fan_conditions                                = converters[turbofan.fan.tag]
-    fan_conditions.inputs.stagnation_temperature  = fan_inlet_stagnation_temperature.reshape(-1,1)
-    fan_conditions.outputs.stagnation_temperature = fan_exit_stagnation_temperature.reshape(-1,1)
-    fan_conditions.omega                          = fan_angular_velocity.reshape(-1,1)
-
-    stored_results_flag   = True
-    stored_propulsor_tag  = turbofan.tag
-
-    return turbofan_conditions.inputs, turbofan_conditions.outputs, stored_results_flag, stored_propulsor_tag
+    result, matched = solve_turbofan_offdesign_jax(design_constants, reference_point, *freestream,
+                                                   reference_point.Tt4 * jnp.maximum(throttle, floor_fraction), shaft_power_offtake)
+    result = dict(result)
+    if getattr(turbofan.offdesign_matching, 'matching_floor', None) is not None:
+        # station data and fuel flow stay at the floor; thrust decays from it with the floor's slope
+        above, _    = solve_turbofan_offdesign_jax(design_constants, reference_point, *freestream,
+                                                   reference_point.Tt4 * (floor_fraction + FLOOR_STEP), shaft_power_offtake)
+        floor_slope = (above['thrust'] - result['thrust']) / FLOOR_STEP
+        extended    = extend_thrust_below_floor(result['thrust'], floor_slope, throttle, floor_fraction)
+        result['thrust'] = jnp.where(below_floor, extended, result['thrust'])
+    return result

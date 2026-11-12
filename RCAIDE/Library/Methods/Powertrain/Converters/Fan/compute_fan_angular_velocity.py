@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Imports
 # ----------------------------------------------------------------------------------------------------------------------
-import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_fan_angular_velocity
@@ -50,6 +50,7 @@ def compute_fan_angular_velocity(fan, total_temperature_rise):
     if fan.design_total_temperature_rise <= 0:
         raise ValueError(f"Fan '{fan.tag}' has no design_total_temperature_rise; the turbofan must be sized "
                          "with design_turbofan before its fan angular velocity can be computed.")
-    speed_ratio      = np.sqrt(np.maximum(total_temperature_rise, 0.0) / fan.design_total_temperature_rise)
+    xp               = array_namespace(total_temperature_rise)
+    speed_ratio      = xp.sqrt(xp.maximum(total_temperature_rise, 0.0) / fan.design_total_temperature_rise)
     angular_velocity = fan.design_angular_velocity * speed_ratio
     return angular_velocity

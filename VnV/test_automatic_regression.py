@@ -25,6 +25,7 @@ modules = [
     'Verification/network_turbofan/test_turbofan_matching_floor.py',
     'Verification/network_turbojet/test_turbojet_matching_floor.py',
     'Verification/network_turbofan/test_turbofan_offtake.py',
+    'Verification/network_turbofan/test_solve_turbofan_offdesign_jax.py',
     'Verification/powertrain/test_compute_battery_properties.py',
     'Verification/powertrain/test_compute_reformer_performance.py',
     'Verification/aircraft_performance/landing_field_length_test.py',

@@ -8,7 +8,9 @@
 # RCAIDE imports  
 import RCAIDE 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Framework.Core               import   set_at
 from RCAIDE.Library.Methods.Powertrain.reset_power_conditions import reset_power_conditions
+import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -111,6 +113,6 @@ def append_fuel_line_segment_conditions(fuel_line,segment):
     
 
     fuel_line_conditions   = segment.state.conditions.energy.distributors[fuel_line.tag] 
-    fuel_line_conditions.mass_flow_rate[:,0]                      = 0.0  
+    fuel_line_conditions.mass_flow_rate = set_at(fuel_line_conditions.mass_flow_rate, np.s_[:,0], 0.0)
     reset_power_conditions(fuel_line_conditions)
     return

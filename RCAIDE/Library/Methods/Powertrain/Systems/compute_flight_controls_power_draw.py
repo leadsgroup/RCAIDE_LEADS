@@ -2,6 +2,12 @@
 #
 # Created:  Jul 2024, RCAIDE Team
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Framework.Core import set_at
+import numpy as np
+
 def compute_flight_controls_power_draw(flight_controls, state, vehicle):
     """Computes the electrical power draw of the flight controls system.
 
@@ -22,6 +28,6 @@ def compute_flight_controls_power_draw(flight_controls, state, vehicle):
         Output power conditions.
     """
     system_conditions                              = state.conditions.energy.systems[flight_controls.tag]
-    system_conditions.inputs.power.electrical[:,0]  = flight_controls.power_draw
-    system_conditions.outputs.power.electrical[:,0] = 0.0
+    system_conditions.inputs.power.electrical  = set_at(system_conditions.inputs.power.electrical, np.s_[:,0], flight_controls.power_draw)
+    system_conditions.outputs.power.electrical = set_at(system_conditions.outputs.power.electrical, np.s_[:,0], 0.0)
     return system_conditions.inputs, system_conditions.outputs

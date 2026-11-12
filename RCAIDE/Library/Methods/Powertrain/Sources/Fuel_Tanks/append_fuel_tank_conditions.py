@@ -9,6 +9,7 @@
 # RCAIDE imports
 import  RCAIDE
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Framework.Core               import   set_at
 from .compute_fuel_tank_capacity         import compute_fuel_tank_capacity
 import numpy as np
 from RCAIDE.Library.Methods.Powertrain.reset_power_conditions import reset_power_conditions
@@ -93,7 +94,8 @@ def append_fuel_tank_segment_conditions(tank, segment):
     energy_conditions  = segment.state.conditions.energy     
     # fuel mass carries over from the previous segment's end state
     if segment.state.initials.keys():
-        energy_conditions.sources[tank.tag].fuel_mass[:,0] = segment.state.initials.conditions.energy.sources[tank.tag].fuel_mass[-1,0]
+        tank_conditions           = energy_conditions.sources[tank.tag]
+        tank_conditions.fuel_mass = set_at(tank_conditions.fuel_mass, np.s_[:,0], segment.state.initials.conditions.energy.sources[tank.tag].fuel_mass[-1,0])
     reset_power_conditions(energy_conditions.sources[tank.tag])
     
     return 

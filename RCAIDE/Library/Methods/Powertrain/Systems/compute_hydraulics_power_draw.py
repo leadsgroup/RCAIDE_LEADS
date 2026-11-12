@@ -2,6 +2,12 @@
 #
 # Created:  May 2026, M. Clarke, S. Sharma
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Framework.Core import set_at
+import numpy as np
+
 def compute_hydraulics_power_draw(hydraulics, state, vehicle):
     """Computes the power draw of a triple-redundant hydraulic system.
 
@@ -46,6 +52,6 @@ def compute_hydraulics_power_draw(hydraulics, state, vehicle):
     P_act = P_sys_left + P_sys_right + P_sys_central
 
     system_conditions                              = state.conditions.energy.systems[hydraulics.tag]
-    system_conditions.inputs.power.electrical[:,0]  = P_act
-    system_conditions.outputs.power.electrical[:,0] = 0.0
+    system_conditions.inputs.power.electrical  = set_at(system_conditions.inputs.power.electrical, np.s_[:,0], P_act)
+    system_conditions.outputs.power.electrical = set_at(system_conditions.outputs.power.electrical, np.s_[:,0], 0.0)
     return system_conditions.inputs, system_conditions.outputs
