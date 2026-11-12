@@ -3,6 +3,7 @@
 # Created:  Jun 2024, M. Clarke
 
 import numpy as  np
+from RCAIDE.Framework.Core import array_namespace
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_turbine_performance
@@ -180,7 +181,7 @@ def compute_turbine_performance(turbine,conditions):
     T_out     = Tt_out/(1.+(gamma-1.)/2.*M0*M0)
     P_out     = Pt_out/((1.+(gamma-1.)/2.*M0*M0)**(gamma/(gamma-1.)))   
     h_out     = T_out * Cp
-    u_out     = np.sqrt(2*(ht_out-h_out))      
+    u_out     = array_namespace(ht_out, h_out).sqrt(2*(ht_out-h_out))      
     
     # Pack outputs of turbine 
     turbine_conditions.outputs.stagnation_pressure     = Pt_out

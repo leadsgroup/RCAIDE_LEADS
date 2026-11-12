@@ -10,6 +10,7 @@
  
 # Python package imports
 import numpy                               as np
+from RCAIDE.Framework.Core import array_namespace
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_power
@@ -131,11 +132,11 @@ def compute_power(turboshaft,conditions):
     Psp                                        =  Cp*total_temperature_reference*tau_lambda*tau_tH*(1 - tau_tL)*eta_c     
         
     if turboshaft.reverse_mode_computation == False: 
-        m_dot_air   = m_dot_compressor*turboshaft_conditions.throttle*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)     
+        m_dot_air   = m_dot_compressor*turboshaft_conditions.throttle*array_namespace(total_temperature_reference).sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)     
         Power       = Psp*m_dot_air
     else:
         m_dot_air = Power / Psp
-        turboshaft_conditions.throttle =  m_dot_air / (m_dot_compressor*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref) )
+        turboshaft_conditions.throttle =  m_dot_air / (m_dot_compressor*array_namespace(total_temperature_reference).sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref) )
          
     # fuel to air ratio
     f                                          = (Cp*total_temperature_reference/LHV)*(tau_lambda - tau_r*tau_c)                                                                              

@@ -163,7 +163,9 @@ def compute_compression_nozzle_performance(compression_nozzle, conditions):
         if xp is np and np.any(too_low): # in case pressures go too low
             warn('Pt_out goes too low',RuntimeWarning)
         Pt_out  = xp.where(too_low, P0, Pt_out)
-        M_out   = xp.sqrt( (((Pt_out/P0)**((gamma-1.)/gamma))-1.) *2./(gamma-1.) )
+        # zero where the pressure was capped, where the square root's derivative is infinite
+        M_squared = (((Pt_out/P0)**((gamma-1.)/gamma))-1.) *2./(gamma-1.)
+        M_out   = xp.where(too_low, 0., xp.sqrt(xp.where(too_low, 1., M_squared)))
         T_out  = Tt_out/(1.+(gamma-1.)/2.*M_out*M_out)
         P_out  = Pt_out/(1.+(gamma-1.)/2.*M_out*M_out)**(gamma/(gamma-1.))
         
