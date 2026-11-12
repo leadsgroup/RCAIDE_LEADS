@@ -82,7 +82,8 @@ def check_step_matches_numba_kernel(turboprop):
         # kernel output order: tau_c 4, pi_tL 7, mass flow 10, thrust 12, fuel flow 13, V9 19, shaft power 25
         for value, index in [(state[0], 4), (state[1], 7), (outputs.mass_flow_rate, 10), (outputs.thrust, 12),
                              (outputs.fuel_mass_flow_rate, 13), (outputs.core_nozzle_exit_velocity, 19), (outputs.shaft_power, 25)]:
-            assert value[0] == kernel[index], f"xp matching differs from the numba kernel at output {index}: {value[0]} vs {kernel[index]}"
+            assert value[0] == kernel[index], \
+                f"xp matching differs from the numba kernel at output {index}: {value[0]} vs {kernel[index]}"
     print('xp matching step and outputs equal the numba kernel exactly')
 
 

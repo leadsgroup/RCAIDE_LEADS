@@ -8,7 +8,8 @@
 # ----------------------------------------------------------------------------------------------------------------------     
 
 # package imports
-import numpy as np  
+import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 from warnings import warn
 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -135,40 +136,40 @@ def compute_compression_nozzle_performance(compression_nozzle, conditions):
     Tt_out  = Tt_in*(PR*eta_rec)**((gamma-1)/(gamma*eta_p_old))
     ht_out  = Tt_out*Cp 
 
-    if compressibility_effects: 
-        # initilize arrays
-        Pt_out   = np.ones_like(Tt_in)
-        M_out     = np.ones_like(Tt_in)
-        T_out    = np.ones_like(Tt_in)
-        P_out    = np.ones_like(Tt_in)
+    xp = array_namespace(Tt_in, Pt_in, P0, M0)
+    if compressibility_effects:
+        # isentropic relations where the inflow is subsonic, a normal shock where it is supersonic (Anderson, Modern
+        # Compressible Flow, Sec. 3.6); each branch is kept finite where it is not used
+        subsonic = M0 <= 1.0
+        Pt_low   = Pt_in*PR
+        M_low    = xp.sqrt(xp.maximum(((Pt_low/P0)**((gamma-1.)/gamma))-1., 0.) *2./(gamma-1.))
+        T_low    = Tt_out/(1.+(gamma-1.)/2.*M_low*M_low)
+        P_low    = Pt_low/((1.+(gamma-1.)/2.*M_low*M_low)**(gamma/(gamma-1.)))
 
-        if M_out <= 1.0: # use isentropic relations
-            i_low          = M0 <= 1.0
-            Pt_out[i_low]  = Pt_in[i_low]*PR
-            M_out[i_low]    = np.sqrt( (((Pt_out[i_low]/P0[i_low])**((gamma[i_low]-1.)/gamma[i_low]))-1.) *2./(gamma[i_low]-1.) ) 
-            T_out[i_low]   = Tt_out[i_low]/(1.+(gamma[i_low]-1.)/2.*M_out[i_low]*M_out[i_low])
-            P_out[i_low]   = Pt_out[i_low]/((1.+(gamma[i_low]-1.)/2.*M_out[i_low]*M_out[i_low])**(gamma[i_low]/(gamma[i_low]-1.)))
+        M1       = xp.where(subsonic, 2.0, M0)
+        M_high   = xp.sqrt((1.+(gamma-1.)/2.*M1**2.)/(gamma*M1**2-(gamma-1.)/2.))
+        T_high   = Tt_out/(1.+(gamma-1.)/2*M_high*M_high)
+        Pt_high  = PR*Pt_in*((((gamma+1.)*(M1**2.))/((gamma-1.)*M1**2.+2.))**(gamma/(gamma-1.)))*\
+                   ((gamma+1.)/(2.*gamma*M1**2.-(gamma-1.)))**(1./(gamma-1.))
+        P_high   = Pt_high/(1.+(gamma-1.)/2.*M_high**2.)**(gamma/(gamma-1.))
 
-        else: # use normal shock
-            i_high         = M0 > 1.0
-            M_out[i_high]   = np.sqrt((1.+(gamma[i_high]-1.)/2.*M0[i_high]**2.)/(gamma[i_high]*M0[i_high]**2-(gamma[i_high]-1.)/2.))
-            T_out[i_high]  = Tt_out[i_high]/(1.+(gamma[i_high]-1.)/2*M_out[i_high]*M_out[i_high])
-            Pt_out[i_high] = PR*Pt_in[i_high]*((((gamma[i_high]+1.)*(M0[i_high]**2.))/((gamma[i_high]-1.)*\
-                            M0[i_high]**2.+2.))**(gamma[i_high]/(gamma[i_high]-1.)))*((gamma[i_high]+1.)/(2.*gamma[i_high]*\
-                            M0[i_high]**2.-(gamma[i_high]-1.)))**(1./(gamma[i_high]-1.))
-            P_out[i_high]  = Pt_out[i_high]/(1.+(gamma[i_high]-1.)/2.*M_out[i_high]**2.)**(gamma[i_high]/(gamma[i_high]-1.))
+        Pt_out   = xp.where(subsonic, Pt_low, Pt_high)
+        M_out    = xp.where(subsonic, M_low, M_high)
+        T_out    = xp.where(subsonic, T_low, T_high)
+        P_out    = xp.where(subsonic, P_low, P_high)
     else:
         Pt_out  = Pt_in*PR*eta_rec 
-        if np.any(Pt_out<P0): # in case pressures go too low
+        too_low = Pt_out < P0
+        if xp is np and np.any(too_low): # in case pressures go too low
             warn('Pt_out goes too low',RuntimeWarning)
-            Pt_out[Pt_out<P0] = P0[Pt_out<P0] 
-        M_out   = np.sqrt( (((Pt_out/P0)**((gamma-1.)/gamma))-1.) *2./(gamma-1.) )
+        Pt_out  = xp.where(too_low, P0, Pt_out)
+        M_out   = xp.sqrt( (((Pt_out/P0)**((gamma-1.)/gamma))-1.) *2./(gamma-1.) )
         T_out  = Tt_out/(1.+(gamma-1.)/2.*M_out*M_out)
         P_out  = Pt_out/(1.+(gamma-1.)/2.*M_out*M_out)**(gamma/(gamma-1.))
         
     # Compute exit ethalpy and velocity  
     h_out   = Cp*T_out
-    u_out   = np.sqrt(2.*(ht_out-h_out))
+    u_out   = xp.sqrt(2.*(ht_out-h_out))
 
     # Pack computed quantities into outputs
     nozzle_conditions.outputs.mach_number             = M_out
