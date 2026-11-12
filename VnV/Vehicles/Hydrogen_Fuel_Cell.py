@@ -42,6 +42,9 @@ def vehicle_setup(fuel_cell_model):
     fuel_cell_stacks = []
     if fuel_cell_model == 'PEM':
         fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell()
+        # sized for the 50 W avionics load with a 25% margin, one cell in series as the bus voltage
+        fuel_cell_stack.design_power   = 62.5
+        fuel_cell_stack.design_voltage = 0.5
         fuel_cell_stacks.append(fuel_cell_stack)
     if fuel_cell_model == 'Larminie':
         fuel_cell_stack_1 = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()
