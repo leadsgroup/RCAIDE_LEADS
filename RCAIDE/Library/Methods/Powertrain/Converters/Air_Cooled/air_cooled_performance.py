@@ -26,6 +26,9 @@ def air_cooled_performance(HAS,battery_module,coolant_line, Q_heat_gen,T_cell,st
     Pakowski, Zdzisław. "Fundamentals of Heat and Mass Transfer, Frank P Incropera,
     David P DeWitt, Theodore L Bergman, Adrienne S Lavine, J. Wiley & Sons, Hoboken
     NJ (2007), 997 pp." (2007): 1683-1684.,  Chapter 7 pg 437-446
+    Clarke, M. and Alonso, J. J., "Lithium-Ion Battery Modeling for Aerospace Applications", Journal of Aircraft,
+    Vol. 58, No. 6 (2021), pp. 1323-1335, Eqs. 7 and 10-12: tube bank in cross flow, with the wall Prandtl number and the log-mean temperature
+    difference taken at the cell surface temperature
 
     Inputs:
               h                         (heat transfer coefficient)  [W/(m^2*K)]
@@ -82,7 +85,8 @@ def air_cooled_performance(HAS,battery_module,coolant_line, Q_heat_gen,T_cell,st
         else:
             V_max = V_coolant*(S_T/(S_T-D_cell))
 
-        T        = (T_ambient+T_cell)/2
+        # the cells are isothermal, so the tube-bank wall temperature is the cell temperature [Clarke & Alonso Eqs. 7, 10-11]
+        T_wall   = T_cell
         Re_max   = V_max*D_cell/nu_coolant
         # one correlation range for every point, as chosen by the lowest Reynolds number
         xp       = array_namespace(Re_max, T_cell)
@@ -90,10 +94,10 @@ def air_cooled_performance(HAS,battery_module,coolant_line, Q_heat_gen,T_cell,st
         C        = xp.where(upper, 0.35*((S_T/S_L)**0.2), 0.51)
         m        = xp.where(upper, 0.6, 0.5)
 
-        Pr_w_coolant          = HAS.cooling_fluid.compute_prandtl_number(T)
+        Pr_w_coolant          = HAS.cooling_fluid.compute_prandtl_number(T_wall)
         Nu                    = C*(Re_max**m)*(Pr_coolant**0.36)*((Pr_coolant/Pr_w_coolant)**0.25)
         h                     = Nu*K_coolant/D_cell
-        Tw_Ti                 = (T - T_ambient)
+        Tw_Ti                 = (T_wall - T_ambient)
         decay                 = xp.exp((-np.pi*D_cell*n_total_module*h)/(rho_coolant*V_coolant*Nn*S_T*Cp_coolant))
         Tw_To                 = Tw_Ti * decay
         # no temperature difference, no heat; a unit difference keeps the unused log-mean finite
