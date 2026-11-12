@@ -10,3 +10,4 @@
 
 from . import Chebyshev 
 from RCAIDE.Library.Methods.Utilities.Cubic_Spline_Blender     import Cubic_Spline_Blender
+from RCAIDE.Library.Methods.Utilities.Linear_Interpolator      import Linear_Interpolator

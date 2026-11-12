@@ -9,7 +9,7 @@
 
 # RCAIDE imports  
 import RCAIDE 
-from RCAIDE.Framework.Core                                               import Data, orientation_product 
+from RCAIDE.Framework.Core                                               import Data, orientation_product, array_namespace
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM       import VLM
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.compute_zero_lift_moment import compute_zero_lift_moment
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
@@ -46,8 +46,10 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions       = state.conditions
     aerodynamics     = state.analyses.aerodynamics  
 
-    # train the supersonic/transonic surrogates the first time a condition reaches the transonic blend
-    if aerodynamics.surrogates.get('supersonic_pending', False) and \
+    # train the supersonic/transonic surrogates the first time a condition reaches the transonic blend; that check
+    # needs concrete values, so a JAX evaluation uses the surrogates as they are, prepared by a NumPy evaluation first
+    xp = array_namespace(conditions.aerodynamics.angles.alpha, conditions.freestream.mach_number)
+    if xp is np and aerodynamics.surrogates.get('supersonic_pending', False) and \
        np.max(conditions.freestream.mach_number) >= aerodynamics.surrogates.subsonic_smoothing_min:
         owner = aerodynamics.surrogate_owner if aerodynamics.surrogate_owner is not None else aerodynamics
         owner.train_supersonic_surrogates()
@@ -55,10 +57,10 @@ def evaluate_surrogate(state,settings,vehicle):
     sub_sur          = aerodynamics.surrogates.subsonic
     sup_sur          = aerodynamics.surrogates.supersonic
     trans_sur        = aerodynamics.surrogates.transonic  
-    AoA              = np.atleast_2d(conditions.aerodynamics.angles.alpha)  
-    Beta             = np.atleast_2d(conditions.aerodynamics.angles.beta)    
-    Mach             = np.atleast_2d(conditions.freestream.mach_number)  
-    ones_row         = np.ones_like(AoA)  
+    AoA              = xp.atleast_2d(conditions.aerodynamics.angles.alpha)  
+    Beta             = xp.atleast_2d(conditions.aerodynamics.angles.beta)    
+    Mach             = xp.atleast_2d(conditions.freestream.mach_number)  
+    ones_row         = xp.ones_like(AoA)  
     hsub_min         = aerodynamics.surrogates.subsonic_smoothing_min   
     hsub_max         = aerodynamics.surrogates.subsonic_smoothing_max   
     hsup_min         = aerodynamics.surrogates.supersonic_smoothing_min 
@@ -71,7 +73,7 @@ def evaluate_surrogate(state,settings,vehicle):
     h_sup            = lambda M:sup_trans_spline.compute(M)            
     
     #Alpha 
-    pts_alpha   = np.hstack((AoA,Mach))
+    pts_alpha   = xp.hstack((AoA,Mach))
     results_alpha = compute_coefficients(sub_sur.Clift_alpha,  sub_sur.Cdrag_induced_alpha,  sub_sur.CX_alpha,  sub_sur.CY_alpha,  sub_sur.CZ_alpha,  sub_sur.CL_alpha,  sub_sur.CM_alpha,   sub_sur.CN_alpha,
                                          trans_sur.Clift_alpha,trans_sur.Cdrag_induced_alpha,trans_sur.CX_alpha,trans_sur.CY_alpha,trans_sur.CZ_alpha,trans_sur.CL_alpha,trans_sur.CM_alpha, trans_sur.CN_alpha,
                                          sup_sur.Clift_alpha,  sup_sur.Cdrag_induced_alpha,  sup_sur.CX_alpha,  sup_sur.CY_alpha,  sup_sur.CZ_alpha,  sup_sur.CL_alpha,  sup_sur.CM_alpha,   sup_sur.CN_alpha,
@@ -98,15 +100,15 @@ def evaluate_surrogate(state,settings,vehicle):
     # ----------------------------------------------------------------------------------------------------------------------- 
     # slopes at the flight condition, from the alpha tables; compute_longitudinal_derivatives completes the set
     delta_alpha, delta_Mach = aerodynamics.training.reference_angle_perturbation, 0.01   # delta_Mach: finite-difference step
-    Mach_low                = np.maximum(Mach - delta_Mach, 0.)
+    Mach_low                = xp.maximum(Mach - delta_Mach, 0.)
     derivatives             = conditions.static_stability.derivatives
     overrides               = aerodynamics.stability_derivatives
     def table(key, angle, M):
-        points = np.hstack((angle, M))
-        value  = h_sub(M) * np.atleast_2d(getattr(sub_sur, key)(points)).T
+        points = xp.hstack((angle, M))
+        value  = h_sub(M) * xp.atleast_2d(getattr(sub_sur, key)(points)).T
         if getattr(trans_sur, key) is None and getattr(sup_sur, key) is None:
             return value
-        return value + (1 - (h_sup(M) + h_sub(M))) * np.atleast_2d(getattr(trans_sur, key)(points)).T + h_sup(M) * np.atleast_2d(getattr(sup_sur, key)(points)).T
+        return value + (1 - (h_sup(M) + h_sub(M))) * xp.atleast_2d(getattr(trans_sur, key)(points)).T + h_sup(M) * xp.atleast_2d(getattr(sup_sur, key)(points)).T
     for coefficient, key in (('Clift', 'Clift_alpha'), ('Cdrag', 'Cdrag_induced_alpha'), ('CM', 'CM_alpha')):
         slope_alpha = (table(key, AoA + delta_alpha, Mach) - table(key, AoA - delta_alpha, Mach)) / (2 * delta_alpha)
         slope_u     = Mach * (table(key, AoA, Mach + delta_Mach) - table(key, AoA, Mach_low)) / (Mach + delta_Mach - Mach_low)   # Etkin & Reid (5.3,2)
@@ -155,7 +157,7 @@ def evaluate_surrogate(state,settings,vehicle):
                 derivative[coeff] = override * ones_row
             # Cdrag_delta is always non-negative, same convention as trim_drag.py
             if coeff == 'Cdrag':
-                derivative[coeff] = np.abs(derivative[coeff])
+                derivative[coeff] = xp.abs(derivative[coeff])
             setattr(conditions.static_stability.derivatives, key, derivative[coeff])
 
         conditions.static_stability.coefficients.Y                 += derivative['CY']    * deflection
@@ -172,7 +174,7 @@ def evaluate_surrogate(state,settings,vehicle):
                             for key in high_lift_keys]
             conditions.aerodynamics.coefficients.drag.induced.inviscid += p * deflection + q * deflection**2 + (r0 + r1 * deflection) * AoA * deflection
         else:
-            conditions.aerodynamics.coefficients.drag.induced.inviscid += derivative['Cdrag'] * np.abs(deflection)
+            conditions.aerodynamics.coefficients.drag.induced.inviscid += derivative['Cdrag'] * xp.abs(deflection)
 
         cs_conditions.static_stability.coefficients.Y += derivative['CY'] * deflection
         cs_conditions.static_stability.coefficients.L += derivative['CL'] * deflection
@@ -561,14 +563,15 @@ def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_s
     
 
      #  subsonic 
-    sub_Clift          = np.atleast_2d(sub_sur_Clift(pts)).T  
-    sub_Cdrag          = np.atleast_2d(sub_sur_Cdrag(pts)).T  
-    sub_CX             = np.atleast_2d(sub_sur_CX(pts)).T 
-    sub_CY             = np.atleast_2d(sub_sur_CY(pts)).T     
-    sub_CZ             = np.atleast_2d(sub_sur_CZ(pts)).T     
-    sub_CL             = np.atleast_2d(sub_sur_CL(pts)).T     
-    sub_CM             = np.atleast_2d(sub_sur_CM(pts)).T     
-    sub_CN             = np.atleast_2d(sub_sur_CN(pts)).T
+    xp                 = array_namespace(pts)
+    sub_Clift          = xp.atleast_2d(sub_sur_Clift(pts)).T  
+    sub_Cdrag          = xp.atleast_2d(sub_sur_Cdrag(pts)).T  
+    sub_CX             = xp.atleast_2d(sub_sur_CX(pts)).T 
+    sub_CY             = xp.atleast_2d(sub_sur_CY(pts)).T     
+    sub_CZ             = xp.atleast_2d(sub_sur_CZ(pts)).T     
+    sub_CL             = xp.atleast_2d(sub_sur_CL(pts)).T     
+    sub_CM             = xp.atleast_2d(sub_sur_CM(pts)).T     
+    sub_CN             = xp.atleast_2d(sub_sur_CN(pts)).T
     sub_Clift_y        = sub_sur_cl_spanwise(pts) 
     
     
@@ -589,25 +592,25 @@ def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_s
    
     
     # transonic   
-    trans_Clift   = np.atleast_2d(trans_sur_Clift(pts)).T  
-    trans_Cdrag   = np.atleast_2d(trans_sur_Cdrag(pts)).T  
-    trans_CX      = np.atleast_2d(trans_sur_CX(pts)).T 
-    trans_CY      = np.atleast_2d(trans_sur_CY(pts)).T     
-    trans_CZ      = np.atleast_2d(trans_sur_CZ(pts)).T     
-    trans_CL      = np.atleast_2d(trans_sur_CL(pts)).T     
-    trans_CM      = np.atleast_2d(trans_sur_CM(pts)).T     
-    trans_CN      = np.atleast_2d(trans_sur_CN(pts)).T
+    trans_Clift   = xp.atleast_2d(trans_sur_Clift(pts)).T  
+    trans_Cdrag   = xp.atleast_2d(trans_sur_Cdrag(pts)).T  
+    trans_CX      = xp.atleast_2d(trans_sur_CX(pts)).T 
+    trans_CY      = xp.atleast_2d(trans_sur_CY(pts)).T     
+    trans_CZ      = xp.atleast_2d(trans_sur_CZ(pts)).T     
+    trans_CL      = xp.atleast_2d(trans_sur_CL(pts)).T     
+    trans_CM      = xp.atleast_2d(trans_sur_CM(pts)).T     
+    trans_CN      = xp.atleast_2d(trans_sur_CN(pts)).T
     trans_Clift_y = trans_sur_cl_spanwise(pts) 
 
     # supersonic 
-    sup_Clift     = np.atleast_2d(sup_sur_Clift(pts)).T  
-    sup_Cdrag     = np.atleast_2d(sup_sur_Cdrag(pts)).T  
-    sup_CX        = np.atleast_2d(sup_sur_CX(pts)).T 
-    sup_CY        = np.atleast_2d(sup_sur_CY(pts)).T     
-    sup_CZ        = np.atleast_2d(sup_sur_CZ(pts)).T     
-    sup_CL        = np.atleast_2d(sup_sur_CL(pts)).T     
-    sup_CM        = np.atleast_2d(sup_sur_CM(pts)).T     
-    sup_CN        = np.atleast_2d(sup_sur_CN(pts)).T   
+    sup_Clift     = xp.atleast_2d(sup_sur_Clift(pts)).T  
+    sup_Cdrag     = xp.atleast_2d(sup_sur_Cdrag(pts)).T  
+    sup_CX        = xp.atleast_2d(sup_sur_CX(pts)).T 
+    sup_CY        = xp.atleast_2d(sup_sur_CY(pts)).T     
+    sup_CZ        = xp.atleast_2d(sup_sur_CZ(pts)).T     
+    sup_CL        = xp.atleast_2d(sup_sur_CL(pts)).T     
+    sup_CM        = xp.atleast_2d(sup_sur_CM(pts)).T     
+    sup_CN        = xp.atleast_2d(sup_sur_CN(pts)).T   
     sup_Clift_y   = sup_sur_cl_spanwise(pts)          
 
     # apply 

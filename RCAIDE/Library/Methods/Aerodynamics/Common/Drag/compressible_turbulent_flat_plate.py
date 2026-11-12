@@ -5,6 +5,8 @@
 # ----------------------------------------------------------------------
 import numpy as np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ----------------------------------------------------------------------
 #  Compressible Turbulent Flat Plate
 # ----------------------------------------------------------------------
@@ -94,7 +96,7 @@ def compressible_turbulent_flat_plate(Re,Ma,Tc):
     """
 
     # incompressible skin friction coefficient
-    cf_inc = 0.455/(np.log10(Re))**2.58
+    cf_inc = 0.455/(array_namespace(Re).log10(Re))**2.58
     
     # compressibility correction
     Tw = Tc * (1. + 0.178*Ma**2.)

@@ -10,7 +10,9 @@ import RCAIDE
 from RCAIDE.Framework.Core import Data
 
 # python
-import numpy as np 
+import numpy as np
+
+from RCAIDE.Framework.Core import array_namespace 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  cooling_drag
@@ -132,7 +134,8 @@ def cooling_drag(state,settings,geometry):
     reference_area             = geometry.reference_area
     
     # Create an empty array for cooling drag coefficient
-    cd_cooling  = np.zeros_like(density)
+    xp          = array_namespace(density)
+    cd_cooling  = xp.zeros_like(density)
     
     for network in geometry.networks:
         for coolant_line in  network.distributors:
@@ -159,7 +162,7 @@ def cooling_drag(state,settings,geometry):
                             cd_cooling         = F_cooling_drag/(0.5 * density * (velocity**2) * reference_area)
                             
                             # Check if fan operation is active
-                            cd_cooling[state.conditions.freestream.velocity<heat_exchanger.minimum_air_speed] =  0 
+                            cd_cooling = xp.where(state.conditions.freestream.velocity<heat_exchanger.minimum_air_speed, 0., cd_cooling) 
     
     # dump to results
     conditions.aerodynamics.coefficients.drag.cooling.total=  cd_cooling  

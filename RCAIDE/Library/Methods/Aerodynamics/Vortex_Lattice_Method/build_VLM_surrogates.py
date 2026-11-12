@@ -12,8 +12,7 @@ from RCAIDE.Framework.Core import  Data
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
 
 # package imports
-from scipy.interpolate   import RegularGridInterpolator
-from scipy import interpolate
+from RCAIDE.Library.Methods.Utilities.Linear_Interpolator import Linear_Interpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
@@ -88,40 +87,40 @@ def build_surrogate(aerodynamics, training, vehicle):
     AoA_data       = aerodynamics.training.angle_of_attack     
     
     # Pack the outputs
-    surrogates.Clift_alpha        = RegularGridInterpolator((AoA_data ,mach_data),training.Clift_alpha        ,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.Cdrag_induced_alpha= RegularGridInterpolator((AoA_data ,mach_data),training.Cdrag_induced_alpha,method = 'linear',   bounds_error=False, fill_value=None)      
-    surrogates.CM_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CM_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)  
-    surrogates.CX_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CX_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)  
-    surrogates.CZ_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CZ_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.CY_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CY_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.CL_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CL_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)
-    surrogates.CN_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CN_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)  
-    surrogates.Clift_spanwise     = RegularGridInterpolator((AoA_data, mach_data),training.Clift_spanwise      ,method='linear',    bounds_error=False, fill_value=None)      
+    surrogates.Clift_alpha        = Linear_Interpolator([AoA_data, mach_data], training.Clift_alpha)      
+    surrogates.Cdrag_induced_alpha= Linear_Interpolator([AoA_data, mach_data], training.Cdrag_induced_alpha)      
+    surrogates.CM_alpha           = Linear_Interpolator([AoA_data, mach_data], training.CM_alpha)  
+    surrogates.CX_alpha           = Linear_Interpolator([AoA_data, mach_data], training.CX_alpha)  
+    surrogates.CZ_alpha           = Linear_Interpolator([AoA_data, mach_data], training.CZ_alpha)
+    surrogates.CY_alpha           = Linear_Interpolator([AoA_data, mach_data], training.CY_alpha)
+    surrogates.CL_alpha           = Linear_Interpolator([AoA_data, mach_data], training.CL_alpha)
+    surrogates.CN_alpha           = Linear_Interpolator([AoA_data, mach_data], training.CN_alpha)  
+    surrogates.Clift_spanwise     = Linear_Interpolator([AoA_data, mach_data], training.Clift_spanwise)      
     if 'gamma_alpha' in training: # training data stored before vortex strengths were added has no gamma_alpha
-        surrogates.gamma_alpha    = RegularGridInterpolator((AoA_data, mach_data),training.gamma_alpha         ,method='linear',    bounds_error=False, fill_value=None)      
+        surrogates.gamma_alpha    = Linear_Interpolator([AoA_data, mach_data], training.gamma_alpha)      
     else:
         surrogates.gamma_alpha    = None
 
 
 
     # Use interpolat.interp1d below
-    surrogates.CM_zero_lift     = interpolate.interp1d(mach_data, training.CM_zero_lift, kind='linear', bounds_error=False, fill_value='extrapolate')
+    surrogates.CM_zero_lift     = Linear_Interpolator([mach_data], training.CM_zero_lift)
     
-    surrogates.dCY_dbeta       = RegularGridInterpolator((AoA_data, mach_data), training.dCY_dbeta, method='linear', bounds_error=False, fill_value=None)
-    surrogates.dCY_dr          = RegularGridInterpolator((AoA_data, mach_data), training.dCY_dr, method='linear', bounds_error=False, fill_value=None)
-    surrogates.dCY_dp           = RegularGridInterpolator((AoA_data, mach_data), training.dCY_dp, method='linear', bounds_error=False, fill_value=None)
+    surrogates.dCY_dbeta       = Linear_Interpolator([AoA_data, mach_data], training.dCY_dbeta)
+    surrogates.dCY_dr          = Linear_Interpolator([AoA_data, mach_data], training.dCY_dr)
+    surrogates.dCY_dp           = Linear_Interpolator([AoA_data, mach_data], training.dCY_dp)
     
-    surrogates.dCZ_dq          = RegularGridInterpolator((AoA_data, mach_data), training.dCZ_dq, method='linear', bounds_error=False, fill_value=None)
+    surrogates.dCZ_dq          = Linear_Interpolator([AoA_data, mach_data], training.dCZ_dq)
     
-    surrogates.dCL_dbeta       = RegularGridInterpolator((AoA_data, mach_data), training.dCL_dbeta, method='linear', bounds_error=False, fill_value=None)
-    surrogates.dCL_dp          = RegularGridInterpolator((AoA_data, mach_data), training.dCL_dp, method='linear', bounds_error=False, fill_value=None)
-    surrogates.dCL_dr          = RegularGridInterpolator((AoA_data, mach_data), training.dCL_dr, method='linear', bounds_error=False, fill_value=None)
+    surrogates.dCL_dbeta       = Linear_Interpolator([AoA_data, mach_data], training.dCL_dbeta)
+    surrogates.dCL_dp          = Linear_Interpolator([AoA_data, mach_data], training.dCL_dp)
+    surrogates.dCL_dr          = Linear_Interpolator([AoA_data, mach_data], training.dCL_dr)
     
-    surrogates.dCM_dq          = RegularGridInterpolator((AoA_data, mach_data), training.dCM_dq, method='linear', bounds_error=False, fill_value=None)
+    surrogates.dCM_dq          = Linear_Interpolator([AoA_data, mach_data], training.dCM_dq)
     
-    surrogates.dCN_dbeta       = RegularGridInterpolator((AoA_data, mach_data), training.dCN_dbeta, method='linear', bounds_error=False, fill_value=None)
-    surrogates.dCN_dp          = RegularGridInterpolator((AoA_data, mach_data), training.dCN_dp, method='linear', bounds_error=False, fill_value=None)
-    surrogates.dCN_dr          = RegularGridInterpolator((AoA_data, mach_data), training.dCN_dr, method='linear', bounds_error=False, fill_value=None)
+    surrogates.dCN_dbeta       = Linear_Interpolator([AoA_data, mach_data], training.dCN_dbeta)
+    surrogates.dCN_dp          = Linear_Interpolator([AoA_data, mach_data], training.dCN_dp)
+    surrogates.dCN_dr          = Linear_Interpolator([AoA_data, mach_data], training.dCN_dr)
    
 
     # see control_surface_registry.py for why every control surface is handled through one generic path here
@@ -129,12 +128,12 @@ def build_surrogate(aerodynamics, training, vehicle):
         if getattr(aerodynamics, flag):
             for coeff in ('Clift', 'Cdrag', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN'):
                 key = 'd' + coeff + '_ddelta_' + letter
-                surrogates[key] = interpolate.interp1d(mach_data, training[key], kind='linear', bounds_error=False, fill_value='extrapolate')
+                surrogates[key] = Linear_Interpolator([mach_data], training[key])
     for letter in HIGH_LIFT_LETTERS:
         for term in HIGH_LIFT_DRAG_TERMS:
             key = 'high_lift_Cdrag_' + term + '_' + letter
             if key in training:
-                surrogates[key] = interpolate.interp1d(mach_data, training[key], kind='linear', bounds_error=False, fill_value='extrapolate')
+                surrogates[key] = Linear_Interpolator([mach_data], training[key])
 
     return surrogates
  

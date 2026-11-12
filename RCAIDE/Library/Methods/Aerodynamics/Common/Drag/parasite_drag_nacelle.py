@@ -14,6 +14,8 @@ from RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressible_turbulent_flat
 # package imports
 import numpy as np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Supersonic Parasite Drag Nacekke 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -182,54 +184,31 @@ def nacelle_drag(state,settings, nacelle):
     # cylindrical-body form factor (same method as parasite_drag_fuselage, sized to the nacelle)
     d_d = nacelle.diameter/nacelle.length
 
-    if np.all((Mach<=1.0) == True):
-        # subsonic condition
-        D              = np.zeros_like(Mach)
-        D[Mach < 0.95]  = np.sqrt(1 - (1-Mach[Mach < 0.95]**2) * d_d**2)
-        D[Mach >= 0.95] = np.sqrt(1 - d_d**2)
+    xp = array_namespace(Mach)
 
-        a              = np.zeros_like(Mach)
-        a[Mach < 0.95]  = 2 * (1-Mach[Mach < 0.95]**2) * (d_d**2) *(np.arctanh(D[Mach < 0.95])-D[Mach < 0.95]) / (D[Mach < 0.95]**3)
-        a[Mach >= 0.95] = 2  * (d_d**2) *(np.arctanh(D[Mach >= 0.95])-D[Mach >= 0.95]) / (D[Mach >= 0.95]**3)
+    # every point subsonic: the 0.95 Mach switch. Masked values keep the unused forms finite for gradients
+    low      = Mach < 0.95
+    M_low    = xp.where(low, Mach, 0.)
+    D        = xp.where(low, xp.sqrt(1 - (1-M_low**2) * d_d**2), xp.sqrt(1 - d_d**2))
+    a        = xp.where(low, 2 * (1-M_low**2) * (d_d**2) *(xp.arctanh(D)-D) / (D**3), 2  * (d_d**2) *(xp.arctanh(D)-D) / (D**3))
+    du_sub   = xp.where(low, a / ( (2-a) * (1-M_low**2)**0.5 ), a / ( (2-a) ))
 
-        du_max_u               = np.zeros_like(Mach)
-        du_max_u[Mach < 0.95]  = a[Mach < 0.95] / ( (2-a[Mach < 0.95]) * (1-Mach[Mach < 0.95]**2)**0.5 )
-        du_max_u[Mach >= 0.95] = a[Mach >= 0.95] / ( (2-a[Mach >= 0.95]) )
+    # otherwise: blend the subsonic form, below Mach 1, with the high speed form at every point
+    low_inds      = Mach < 1.0
+    M_blend       = xp.where(low_inds, Mach, 0.)
+    D_low         = xp.sqrt(1 - (1-M_blend**2) * d_d**2)
+    a_low         = 2 * (1-M_blend**2) * (d_d**2) *(xp.arctanh(D_low)-D_low) / (D_low**3)
+    du_max_u_low  = xp.where(low_inds, a_low / ( (2-a_low) * (1-M_blend**2)**0.5 ), 0.)
+    D_high        = xp.sqrt(1 - d_d**2) * xp.ones_like(Mach)
+    a_high        = 2  * (d_d**2) *(xp.arctanh(D_high)-D_high) / (D_high**3)
+    du_max_u_high = a_high / (2-a_high)
+    trans_spline  = Cubic_Spline_Blender(low_mach_cutoff,high_mach_cutoff)
+    du_blend      = du_max_u_low*(trans_spline.compute(Mach)) + du_max_u_high*(1-trans_spline.compute(Mach))
 
-        k_nac         = (1 + form_factor*du_max_u)**2
-        parasite_drag = k_nac * cf_prop * Swet / Sref
-    else:
+    du_max_u      = xp.where(xp.all(Mach <= 1.0), du_sub, du_blend)
+    k_nac         = (1 + form_factor*du_max_u)**2
+    parasite_drag = k_nac * cf_prop * Swet / Sref
 
-        # supersonic condition
-        D_low        = np.zeros_like(Mach)
-        a_low        = np.zeros_like(Mach)
-        du_max_u_low = np.zeros_like(Mach)
-
-        # "low" (subsonic) formula relies on arctanh(D), which is only defined for D<1,
-        # i.e. Mach<1 -- it must never be evaluated past that regardless of high_mach_cutoff.
-        # It decays continuously to 0 as Mach->1, so leaving it at 0 beyond that is exact, not an approximation.
-        low_inds  = Mach < 1.0
-
-        D_low[low_inds]        = np.sqrt(1 - (1-Mach[low_inds]**2) * d_d**2)
-        a_low[low_inds]        = 2 * (1-Mach[low_inds]**2) * (d_d**2) *(np.arctanh(D_low[low_inds])-D_low[low_inds]) / (D_low[low_inds]**3)
-        du_max_u_low[low_inds] = a_low[low_inds] / ( (2-a_low[low_inds]) * (1-Mach[low_inds]**2)**0.5 )
-
-        # "high" (frozen) formula has no Mach dependence, so it is valid everywhere -- no masking needed
-        D_high        = np.sqrt(1 - d_d**2) * np.ones_like(Mach)
-        a_high        = 2  * (d_d**2) *(np.arctanh(D_high)-D_high) / (D_high**3)
-        du_max_u_high = a_high / (2-a_high)
-
-        trans_spline = Cubic_Spline_Blender(low_mach_cutoff,high_mach_cutoff)
-        h00 = lambda M:trans_spline.compute(M)
-
-        du_max_u = du_max_u_low*(h00(Mach)) + du_max_u_high*(1-h00(Mach))
-
-        k_nac = (1 + form_factor*du_max_u)**2
-
-        # find the final result    
-        parasite_drag = k_nac * cf_prop * Swet / Sref        
-    
-    # store results
     results = Data(
         wetted_area               = Swet    , 
         reference_area            = Sref    , 

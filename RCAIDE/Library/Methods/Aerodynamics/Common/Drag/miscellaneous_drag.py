@@ -12,6 +12,8 @@ from RCAIDE.Framework.Core                    import Units
 # package imports
 import numpy as np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Miscellaneous Drag Total
 # ----------------------------------------------------------------------------------------------------------------------   
@@ -129,7 +131,8 @@ def miscellaneous_drag(state,settings,geometry):
     Mach           = conditions.freestream.mach_number 
    
     # landing gear drag, GASP correlation (see Notes)
-    landing_gear_drag  =  np.zeros_like(Mach)
+    xp                 =  array_namespace(Mach)
+    landing_gear_drag  =  xp.zeros_like(Mach)
     if any(landing_gear.gear_extended for landing_gear in geometry.landing_gears):
         gross_weight   = geometry.mass_properties.max_takeoff / Units.lb
         flat_plate     = 0.0033 * gross_weight**0.785 * Units.ft**2
@@ -138,10 +141,10 @@ def miscellaneous_drag(state,settings,geometry):
             for control_surface in wing.control_surfaces:
                 if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
                     flap_deg = max(flap_deg, abs(control_surface.deflection) / Units.degrees)
-        landing_gear_drag[:,0] = flat_plate / S_ref * max(0.0, 1 - 0.454545 * flap_deg / 50)
+        landing_gear_drag = landing_gear_drag + flat_plate / S_ref * max(0.0, 1 - 0.454545 * flap_deg / 50)
          
     # subsonic 
-    miscellaneous_drag =  np.zeros_like(Mach) 
+    miscellaneous_drag =  xp.zeros_like(Mach) 
     swet_tot       = 0.
     for wing in geometry.wings:
         swet_tot += wing.areas.wetted 
@@ -153,11 +156,11 @@ def miscellaneous_drag(state,settings,geometry):
         for propulsor in network.propulsors:   
             if propulsor.nacelle !=  None:                    
                 swet_tot += propulsor.nacelle.areas.wetted 
-    miscellaneous_drag[:,0] =  (0.40* (0.0184 + 0.000469 * swet_tot - 1.13*10**-7 * swet_tot ** 2)) / S_ref
+    miscellaneous_drag = miscellaneous_drag + (0.40* (0.0184 + 0.000469 * swet_tot - 1.13*10**-7 * swet_tot ** 2)) / S_ref
     
     # supersonic 
     fuselage_upsweep_drag   = 0.006 /S_ref  
-    miscellaneous_drag[Mach>1] = fuselage_upsweep_drag
+    miscellaneous_drag = xp.where(Mach > 1, fuselage_upsweep_drag, miscellaneous_drag)
     
     # total misc drag 
     total_miscellaneous_drag = miscellaneous_drag + landing_gear_drag

@@ -7,6 +7,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_lateral_derivatives
 # ----------------------------------------------------------------------------------------------------------------------
@@ -37,10 +39,11 @@ def compute_lateral_derivatives(state, settings, vehicle):
     derivatives = conditions.static_stability.derivatives
     alpha       = conditions.aerodynamics.angles.alpha
     overrides   = state.analyses.aerodynamics.stability_derivatives
+    xp          = array_namespace(alpha)
     for coefficient in ('CY', 'CL', 'CN'):
         C_p, C_r = derivatives[coefficient + '_p'], derivatives[coefficient + '_r']
-        rotated  = {'_p': C_p * np.cos(alpha) + C_r * np.sin(alpha), '_r': -C_p * np.sin(alpha) + C_r * np.cos(alpha)}
+        rotated  = {'_p': C_p * xp.cos(alpha) + C_r * xp.sin(alpha), '_r': -C_p * xp.sin(alpha) + C_r * xp.cos(alpha)}
         for suffix, value in rotated.items():
             override = getattr(overrides, coefficient + suffix, None)
-            derivatives[coefficient + suffix] = value if override is None else override * np.ones_like(alpha)
+            derivatives[coefficient + suffix] = value if override is None else override * xp.ones_like(alpha)
     return

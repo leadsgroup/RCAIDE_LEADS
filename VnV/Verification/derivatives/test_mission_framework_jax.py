@@ -17,8 +17,8 @@ from RCAIDE.Framework.Core import Data, array_namespace
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
     # The mission framework (unknown unpacking, frames, kinematics, atmosphere, freestream, forces, moments and the
-    # flight dynamics residuals) and the electric rotor network (rotor, motor, ESC, bus, battery) are written once for
-    # NumPy and JAX. For every segment of the 787 and tiltrotor missions, this runs the segment's own iterate steps on
+    # flight dynamics residuals), aerodynamics, stability and the electric rotor network (rotor, motor, ESC, bus,
+    # battery) are written once for NumPy and JAX. For every segment of the 787 and tiltrotor missions, this runs the segment's own iterate steps on
     # JAX and checks values, compiled values and derivatives against the NumPy path. Steps not yet written for JAX
     # are held at their NumPy values.
     try:
@@ -36,21 +36,19 @@ def main():
     # the imported VnV scripts expect to run from their own folders
     os.chdir(os.path.join(vnv_folder, "Validation", "aircraft_performance"))
     sys.path.insert(0, os.getcwd())
-    # the turbofan network is not written for JAX yet
+    # the turbofan network and the steps that read it are not written for JAX yet
     check_mission_on_jax("boeing_787", boeing_787_mission(), check_derivatives,
-                         frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'network', 'energy', 'thrust',
-                                       'weights', 'stability'))
+                         frozen_steps=('network', 'energy', 'thrust', 'weights'))
 
-    # the electric rotor networks of the tiltrotor, stopped rotor and tilt wing run on JAX, so every unknown reaches
-    # the residual in every segment
+    # every iterate step of the tiltrotor, stopped rotor and tilt wing runs on JAX
     os.chdir(os.path.join(vnv_folder, "Verification", "network_vtol"))
     sys.path.insert(0, os.getcwd())
     check_mission_on_jax("tiltrotor", tiltrotor_mission(), check_derivatives,
-                         frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'stability'))
+                         frozen_steps=())
     check_mission_on_jax("stopped_rotor", stopped_rotor_mission(), check_derivatives,
-                         frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'stability'))
+                         frozen_steps=())
     check_mission_on_jax("tiltwing", tiltwing_mission(), check_derivatives,
-                         frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'stability'))
+                         frozen_steps=())
 
     os.chdir(start_folder)
     return

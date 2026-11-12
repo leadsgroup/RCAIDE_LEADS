@@ -11,6 +11,8 @@ from RCAIDE.Library.Components.Wings          import Main_Wing
 
 # package imports
 import numpy as np
+
+from RCAIDE.Framework.Core import array_namespace
 from scipy.interpolate import RegularGridInterpolator
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Compressibility Drag Total
@@ -142,10 +144,10 @@ def compressibility_drag(state,settings,geometry):
     total_CDw_lift   = sup_CDw_lift  + trans_CDw_lift
     
     # store results  
-    conditions.aerodynamics.coefficients.drag.compressible.total[:,0]           = total_CDc[:,0]   
-    conditions.aerodynamics.coefficients.drag.compressible.wave.total[:,0]      = total_CDw[:,0]             
-    conditions.aerodynamics.coefficients.drag.compressible.wave.volume[:,0]     = sup_CDw_volume[:,0]                
-    conditions.aerodynamics.coefficients.drag.compressible.wave.lift[:,0]       = total_CDw_lift[:,0]              
+    conditions.aerodynamics.coefficients.drag.compressible.total           = total_CDc   
+    conditions.aerodynamics.coefficients.drag.compressible.wave.total      = total_CDw             
+    conditions.aerodynamics.coefficients.drag.compressible.wave.volume     = sup_CDw_volume                
+    conditions.aerodynamics.coefficients.drag.compressible.wave.lift       = total_CDw_lift              
 
     return  
 
@@ -248,22 +250,23 @@ def subsonic_compressibility_drag(state,settings,geometry):
     # Unpack
     conditions          = state.conditions
     Mach                = conditions.freestream.mach_number    
-    cd_compressibility  = np.zeros_like(Mach)
+    xp                  = array_namespace(Mach)
+    cd_compressibility  = xp.zeros_like(Mach)
     cl                  = conditions.aerodynamics.coefficients.lift.total
     for wing in  geometry.wings:
         if isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing) or isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             sweep_w   = wing.sweeps.leading_edge 
     
             # Get effective CLift_wings and sweep
-            tc = wing.thickness_to_chord / np.cos(sweep_w)
-            cl = conditions.aerodynamics.coefficients.lift.total/ (np.cos(sweep_w) ** 2)
+            tc = wing.thickness_to_chord / xp.cos(sweep_w)
+            cl = conditions.aerodynamics.coefficients.lift.total/ (xp.cos(sweep_w) ** 2)
     
             # Compressibility drag based on regressed fits from AA241 
             mcc_cos_ws = 0.922321524499352  - 1.153885166170620*tc  - 0.304541067183461*cl    \
                            + 0.332881324404729*tc*tc  + 0.467317361111105*tc*cl   + 0.087490431201549*cl*cl
     
             # Crest-critical Mach number, corrected for wing sweep
-            Mcc = mcc_cos_ws/ np.cos(sweep_w)      
+            Mcc = mcc_cos_ws/ xp.cos(sweep_w)      
     
             # Divergence ratio
             mo_Mach = Mach/Mcc
@@ -272,7 +275,7 @@ def subsonic_compressibility_drag(state,settings,geometry):
             dcdc_cos3g = 0.0019*mo_Mach**14.641
     
             # Compressibility drag  
-            cd_compressibility = dcdc_cos3g * (np.cos(sweep_w)**3)  
+            cd_compressibility = dcdc_cos3g * (xp.cos(sweep_w)**3)  
  
     cd_comp  = cd_compressibility 
 
@@ -363,14 +366,15 @@ def transonic_lift_wave_drag(conditions, vortex_distribution, geometry):
     """
     Mach              = conditions.freestream.mach_number  
     S_ref             = geometry.reference_area 
-    CD_wave_transonic = np.zeros_like(Mach) 
+    xp                = array_namespace(Mach, conditions.aerodynamics.coefficients.lift.spanwise)
+    CD_wave_transonic = xp.zeros_like(Mach)
     CL_y              = conditions.aerodynamics.coefficients.lift.spanwise *geometry.wings.main_wing.areas.projected/S_ref
 
     chords   = vortex_distribution.strip_chord_lengths
     delta    = vortex_distribution.leading_edge_sweeps 
     dy       = vortex_distribution.chord_widths
     
-    CD_wave_transonic = np.zeros_like(Mach)
+    CD_wave_transonic = xp.zeros_like(Mach)
     c_kappa           = 0.23 # normalized curvature of the airfoil. This can eventually be calcualted using airfoil shape data. 
 
     # ------------------------------------------------------------------
@@ -383,19 +387,21 @@ def transonic_lift_wave_drag(conditions, vortex_distribution, geometry):
     # ------------------------------------------------------------------
 
     # Calculate the local mach number right before the shock wave
-    M1_0_star = np.sqrt((5+Mach**2*np.cos(delta[0])**2)/(1+0.7*Mach**2*Cp_shock)**(2/7) - 5)
+    # where Cp > -0.6 there is likely no shock and the drag is set to zero below; M1 = 1 there keeps that unused form finite
+    no_shock  = Cp_shock > -0.6
+    M1_0_star = xp.sqrt(xp.where(no_shock, 1., (5+Mach**2*xp.cos(delta[0])**2)/(1+0.7*Mach**2*xp.where(no_shock, 0., Cp_shock))**(2/7) - 5))
     
     # Calculate the wave drag coefficient
-    constant = (np.cos(delta[0])**4)/c_kappa * 0.243*((1+0.2*Mach*np.cos(delta[0]))/(Mach*np.cos(delta[0])))**3 # note, delta is assumed to remain constant across all conditions. 
+    constant = (xp.cos(delta[0])**4)/c_kappa * 0.243*((1+0.2*Mach*xp.cos(delta[0]))/(Mach*xp.cos(delta[0])))**3 # note, delta is assumed to remain constant across all conditions. 
     CD_wave_segment = constant*(M1_0_star - 1)**4*(2-M1_0_star)/(M1_0_star*(1+0.2*M1_0_star**2)) * 0.5
     
     # Set the wave drag coefficient to 0 if there is no shock wave
-    CD_wave_segment[Cp_shock > -0.6] = 0.0 # If the Cp > -0.6 then there is likely no shock wave
+    CD_wave_segment = xp.where(no_shock, 0.0, CD_wave_segment)
 
     S_segment        = chords[0]*dy[0]
-    CD_wave_transonic = np.sum(CD_wave_segment*S_segment/S_ref, axis=1, keepdims=True) 
+    CD_wave_transonic = xp.sum(CD_wave_segment*S_segment/S_ref, axis=1, keepdims=True) 
         
-    CD_wave_transonic[Mach>1] = 0.0
+    CD_wave_transonic = xp.where(Mach > 1, 0.0, CD_wave_transonic)
     return CD_wave_transonic 
  
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -471,7 +477,10 @@ def supersonic_lift_wave_drag(conditions,configuration,geometry):
     """
     # Initalize cd arrays 
     Mach         = conditions.freestream.mach_number
-    cd_lift_wave = np.zeros_like(Mach)
+    xp           = array_namespace(Mach)
+    cd_lift_wave = xp.zeros_like(Mach)
+    supersonic   = Mach > 1
+    M_sup        = xp.where(supersonic, Mach, 2.)   # a supersonic stand-in keeps the unused form finite for gradients
     
     for wing in  geometry.wings:
         if isinstance(wing, Main_Wing):   
@@ -483,17 +492,17 @@ def supersonic_lift_wave_drag(conditions,configuration,geometry):
             s    = wing.spans.projected / 2
             AR   = wing.aspect_ratio
             p    = 2/AR*s/l
-            beta = np.sqrt(Mach**2-1) 
+            beta = xp.sqrt(M_sup**2-1) 
             x    =  beta*s/l
         
-            ret = np.zeros_like(x) 
-            ret[x > 0.178] = 0.4935 - 0.2382*x[x > 0.178] + 1.6306*x[x > 0.178]**2 - 0.86*x[x > 0.178]**3 + 0.2232*x[x > 0.178]**4 - 0.0365*x[x > 0.178]**5 - 0.5            
+            ret = xp.zeros_like(x) 
+            ret = xp.where(x > 0.178, 0.4935 - 0.2382*x + 1.6306*x**2 - 0.86*x**3 + 0.2232*x**4 - 0.0365*x**5 - 0.5, ret)
             
             Kw           = (1+1/p)*ret/(2*beta**2*(s/l)**2) 
-            cd_lift_wave = CL**2 * (beta**2/np.pi*p*(s/l)*Kw) 
+            cd_lift_wave = xp.where(supersonic, CL**2 * (beta**2/np.pi*p*(s/l)*Kw), 0.) 
     
-    cd_lift_wave[cd_lift_wave<0] = 0.
-    cd_lift_wave[np.isnan(cd_lift_wave)] = 0.  
+    cd_lift_wave = xp.where(cd_lift_wave < 0, 0., cd_lift_wave)
+    cd_lift_wave = xp.where(xp.isnan(cd_lift_wave), 0., cd_lift_wave)  
     return cd_lift_wave
 
 def supersonic_volume_wave_drag(conditions, settings, vehicle):
@@ -580,7 +589,7 @@ def supersonic_volume_wave_drag(conditions, settings, vehicle):
     volume      =  (3 / 16) * (np.pi ** 2) * (Rmax ** 2)  *  L 
     CD_wave_vol_frontal = 24 *volume /(L **3)
     
-    CD_wave_vol =  CD_wave_vol_frontal * ( Amax / S_ref) *  np.ones_like(conditions.freestream.mach_number) 
+    CD_wave_vol =  CD_wave_vol_frontal * ( Amax / S_ref) *  array_namespace(conditions.freestream.mach_number).ones_like(conditions.freestream.mach_number) 
     return CD_wave_vol
  
 

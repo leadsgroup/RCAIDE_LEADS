@@ -9,6 +9,8 @@
 
 import numpy as np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ----------------------------------------------------------------------
 #  Blender Class
 # ----------------------------------------------------------------------
@@ -68,8 +70,9 @@ class Cubic_Spline_Blender():
         eta = self.eta_transform(x)
     
         y = 2*eta*eta*eta-3*eta*eta+1
-        y[eta<0] = 1
-        y[eta>1] = 0
+        xp  = array_namespace(eta)
+        y   = xp.where(eta < 0, 1., y)
+        y   = xp.where(eta > 1, 0., y)
         return y
 
     def eta_transform(self,x):
