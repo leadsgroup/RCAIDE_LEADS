@@ -7,7 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
-from RCAIDE.Framework.Core import Data
+from RCAIDE.Framework.Core import Data, array_namespace
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
     compressor_pressure_ratio, OffDesignMatchingError, njit, constant_efficiency_pressure_ratio_kernel)
 
@@ -408,11 +408,40 @@ def apply_turbojet_afterburner(result, design_constants, afterburner, working_fl
     ----------
     [1] Mattingly, J. D., "Elements of Gas Turbine Propulsion", McGraw-Hill, 1996, Sec. 8-4.
     """
+    xp  = array_namespace(result.thrust, static_temperature, static_pressure)
     Tt7 = afterburner.turbine_inlet_temperature
     T0, P0 = static_temperature, static_pressure
     Tt5 = result.tau_lambda * design_constants.tau_tH * result.tau_tL * design_constants.cpc * T0 / design_constants.cpt
-    if not (Tt7 > Tt5) or not np.isfinite(result.thrust):
-        return result
+    # the afterburner acts where it heats the turbine exit flow of a matched point; elsewhere the result is unchanged
+    active = (Tt7 > Tt5) & xp.isfinite(result.thrust)
+
+    dc         = design_constants
+    gamma_c    = dc.gamma_c
+    Rc         = (gamma_c - 1) / gamma_c * dc.cpc
+    V0         = xp.sqrt(gamma_c * Rc * T0) * xp.sqrt(2 / (gamma_c - 1) * (result.tau_r - 1))
+    cp_AB      = float(np.ravel(working_fluid.compute_cp(Tt7))[0])
+    gamma_AB   = float(np.ravel(working_fluid.compute_gamma(Tt7))[0])
+    R_AB       = (gamma_AB - 1) / gamma_AB * cp_AB                                                   # (8-45r)
+    tau_lambda_AB = cp_AB * Tt7 / (dc.cpc * T0)                                                      # (8-45s)
+    f_AB = (tau_lambda_AB - result.tau_lambda * dc.tau_tH * result.tau_tL) / \
+           (afterburner.fuel_data.specific_energy * afterburner.efficiency / (dc.cpc * T0) - tau_lambda_AB)  # (8-45t)
+    Pt9_P9 = result.stagnation_to_ambient_core_nozzle_pressure_ratio * afterburner.pressure_ratio    # (8-45u), P9 = P0
+    Pt9_P9 = xp.where(active, Pt9_P9, 2.0)                                                           # finite where unused
+    M9     = xp.sqrt(2 / (gamma_AB - 1) * (Pt9_P9 ** ((gamma_AB - 1) / gamma_AB) - 1))              # (8-45v)
+    T9     = Tt7 / (Pt9_P9 ** ((gamma_AB - 1) / gamma_AB))                                          # (8-45w)
+    V9     = M9 * xp.sqrt(gamma_AB * R_AB * T9)                                                      # (8-45x)
+    f_0    = result.fuel_to_air_ratio + f_AB                                                         # (8-45y)
+    thrust = result.mass_flow_rate * ((1 + f_0) * V9 - V0)                                           # (8-45z), P9 = P0
+    fuel_mass_flow_rate = f_0 * result.mass_flow_rate
+
+    for field, value in [('stagnation_to_ambient_core_nozzle_pressure_ratio', Pt9_P9), ('M9', M9), ('fuel_to_air_ratio', f_0),
+                         ('thrust', thrust), ('fuel_mass_flow_rate', fuel_mass_flow_rate),
+                         ('specific_fuel_consumption', xp.where(thrust > 0, fuel_mass_flow_rate / xp.where(thrust > 0, thrust, 1.0), np.nan)),
+                         ('core_nozzle_exit_velocity', V9), ('core_nozzle_exit_static_temperature', T9),
+                         ('core_nozzle_exit_static_pressure', P0 + 0 * T9), ('core_nozzle_exit_stagnation_temperature', Tt7 + 0 * T9),
+                         ('core_nozzle_exit_stagnation_pressure', Pt9_P9 * P0)]:
+        result[field] = xp.where(active, value, result[field])
+    return result
 
     dc         = design_constants
     gamma_c    = dc.gamma_c

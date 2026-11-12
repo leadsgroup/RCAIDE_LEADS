@@ -6,13 +6,15 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 from RCAIDE.Framework.Core import array_namespace
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.solve_offdesign_matching_jax import solve_offdesign_matching_jax, robust_states_from_points
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
-    pack_design_constants, pack_reference_point, solve_turbofan_offdesign_robust, OffDesignMatchingError)
+    pack_design_constants, pack_reference_point, solve_turbofan_offdesign_robust)
 
 import numpy as np
 
-# number of matching quantities carried between iterations: tau_f, tau_tL, pi_tL, bypass ratio, mass flow estimate
-STATE_SIZE = 5
+# matching quantities carried between iterations, as named in the robust solver's result
+STATE_FIELDS = ['tau_f', 'tau_tL', 'pi_tL', 'alpha', 'mass_flow_rate']
+STATE_SIZE   = len(STATE_FIELDS)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Pieces of the matching equations, as in solve_turbofan_offdesign_kernel, with its branches as where
@@ -196,16 +198,14 @@ def turbofan_matching_outputs(state, inputs, design, reference):
 #  solve_turbofan_offdesign_jax
 # ----------------------------------------------------------------------------------------------------------------------
 def solve_turbofan_offdesign_jax(design_constants, reference_point, mach_number, static_temperature, static_pressure,
-                                 combustor_exit_temperature, shaft_power_offtake, tolerance=1e-12, max_iterations=400,
-                                 relaxation_factor=0.5):
+                                 combustor_exit_temperature, shaft_power_offtake, relaxation_factor=0.5):
     """
     Off-design matching of every control point at once on JAX, differentiable with respect to the flight condition,
     the combustor exit temperature and the shaft power offtake.
 
-    The matched state is the fixed point of turbofan_matching_step. A JAX iteration from the reference point finds it.
-    Points it does not converge are solved by solve_turbofan_offdesign_robust (continuation, as on the NumPy path)
-    through a callback and then refined by the JAX iteration. Derivatives come from the implicit function theorem
-    at the matched state (jax.lax.custom_root), with one 5 x 5 tangent solve per point.
+    The matched state is the fixed point of turbofan_matching_step, solved by solve_offdesign_matching_jax: a JAX
+    iteration from the reference point, solve_turbofan_offdesign_robust (continuation, as on the NumPy path) through
+    a callback at points the iteration does not converge, and derivatives by the implicit function theorem.
 
     Inputs:
        design_constants, reference_point   offdesign_matching.design_constants and .reference_point
@@ -213,13 +213,11 @@ def solve_turbofan_offdesign_jax(design_constants, reference_point, mach_number,
        static_pressure                     freestream at each control point, 1-D                         [-, K, Pa]
        combustor_exit_temperature          Tt4 at each control point, 1-D                                 [K]
        shaft_power_offtake                 net shaft power taken from the HP spool at each point, 1-D     [W]
-       tolerance                           relative change of every state entry that ends the iteration   [-]
 
     Outputs:
        outputs   dict of turbofan_matching_outputs; NaN at points no solver matches
        matched   True where the point is matched
     """
-    import jax
     import jax.numpy as jnp
 
     design    = pack_design_constants(design_constants)
@@ -234,61 +232,19 @@ def solve_turbofan_offdesign_jax(design_constants, reference_point, mach_number,
     def residual(flat):
         return step(flat)[0] - flat
 
-    def iterate(flat):
-        """Fixed-point iteration; each point stops when it converges, collapses or leaves the finite range."""
-        def condition(carry):
-            flat, active, done, i = carry
-            return jnp.any(active) & (i < max_iterations)
-        def body(carry):
-            flat, active, done, i = carry
-            new, collapsed = step(flat)
-            old       = flat.reshape(STATE_SIZE, n)
-            new       = new.reshape(STATE_SIZE, n)
-            settled   = jnp.all(jnp.abs(new - old) <= tolerance * jnp.maximum(1.0, jnp.abs(old)), axis=0) & (i > 0)
-            finite    = jnp.all(jnp.isfinite(new), axis=0)
-            failed    = active & (collapsed | ~finite)
-            converged = active & settled & ~failed
-            new       = jnp.where(active & ~failed, new, old)
-            return new.ravel(), active & ~converged & ~failed, done | converged, i + 1
-        start = (flat, jnp.ones(n, dtype=bool), jnp.zeros(n, dtype=bool), 0)
-        flat, active, done, i = jax.lax.while_loop(condition, body, start)
-        return flat, done
+    def solve_point(i, values):
+        M0, T0, P0, Tt4, offtake = (value[i] for value in values)
+        return solve_turbofan_offdesign_robust(design_constants, reference_point, M0, T0, P0, Tt4, packed_design_constants=design,
+                                               packed_reference_point=reference, shaft_power_offtake=offtake)
+    robust_states = robust_states_from_points(solve_point, STATE_FIELDS, STATE_SIZE, n)
 
-    def robust_states(flat, done, M0, T0, P0, Tt4, offtake):
-        """Matched states from the robust NumPy solver at the points the JAX iteration did not converge."""
-        states = np.array(flat, dtype=np.float64).reshape(STATE_SIZE, n)
-        for i in np.flatnonzero(~np.asarray(done)):
-            try:
-                result = solve_turbofan_offdesign_robust(design_constants, reference_point, M0[i], T0[i], P0[i], Tt4[i],
-                                                         packed_design_constants=design, packed_reference_point=reference,
-                                                         shaft_power_offtake=offtake[i])
-            except OffDesignMatchingError:
-                continue
-            states[:, i] = [result.tau_f, result.tau_tL, result.pi_tL, result.alpha, result.mass_flow_rate]
-        return states.ravel()
+    initial = jnp.concatenate([value * jnp.ones(n) for value in reference[[4, 5, 6, 7, 13]]])
+    flat, matched = solve_offdesign_matching_jax(step, residual, initial, robust_states, inputs, STATE_SIZE, n)
 
-    def forward(f, guess):
-        flat, done = iterate(guess)
-        def rescue(flat):
-            shape  = jax.ShapeDtypeStruct(flat.shape, jnp.float64)
-            states = jax.pure_callback(robust_states, shape, flat, done, *inputs)
-            return iterate(states)[0]
-        return jax.lax.cond(jnp.all(done), lambda flat: flat, rescue, flat)
-
-    def tangent_solve(linear_map, y):
-        """The points are independent, so the map is block diagonal: five products give every 5 x 5 block."""
-        columns = [linear_map(jnp.zeros((STATE_SIZE, n)).at[k].set(1.0).ravel()).reshape(STATE_SIZE, n) for k in range(STATE_SIZE)]
-        blocks  = jnp.stack(columns, axis=-1).transpose(1, 0, 2)
-        x       = jnp.linalg.solve(blocks, y.reshape(STATE_SIZE, n).T[:, :, None])[:, :, 0]
-        return x.T.ravel()
-
-    guess   = jnp.concatenate([value * jnp.ones(n) for value in reference[[4, 5, 6, 7, 13]]])
-    flat    = jax.lax.custom_root(residual, guess, forward, tangent_solve)
-
-    # a point is matched where the state is a fixed point of the step
-    check   = jax.lax.stop_gradient(flat).reshape(STATE_SIZE, n)
-    change  = jax.lax.stop_gradient(residual(flat)).reshape(STATE_SIZE, n)
-    matched = jnp.all(jnp.abs(change) <= 1e-9 * jnp.maximum(1.0, jnp.abs(check)), axis=0)
+    # as in the robust NumPy solver: a combustor exit temperature not above the inlet stagnation temperature has
+    # no matched operating point, though the iteration may still find a fixed point there
+    gamma_c = float(design_constants.gamma_c)
+    matched = matched & (combustor_exit_temperature > static_temperature * (1 + (gamma_c - 1) / 2 * mach_number ** 2))
 
     outputs = turbofan_matching_outputs(tuple(flat.reshape(STATE_SIZE, n)), inputs, design, reference)
     outputs = {name: jnp.where(matched, value, jnp.nan) for name, value in outputs.items()}
