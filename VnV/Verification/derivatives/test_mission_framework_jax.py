@@ -96,17 +96,32 @@ def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_
     return
 
 
+def powertrain_component_types(vehicle):
+    """Class names of every powertrain component on the vehicle's networks, including battery modules and their heat
+    acquisition systems."""
+    names = set()
+    for network in vehicle.networks:
+        for group in ('propulsors', 'converters', 'sources', 'distributors'):
+            for component in getattr(network, group, {}).values() if hasattr(getattr(network, group, None), 'values') else []:
+                names.add(type(component).__name__)
+                for module in getattr(component, 'modules', {}).values() if hasattr(getattr(component, 'modules', None), 'values') else []:
+                    names.add(type(module).__name__)
+                    if getattr(module, 'heat_acquisition_system', None) is not None:
+                        names.add(type(module.heat_acquisition_system).__name__)
+    return names
+
+
 # kinds of segment already checked in this run (see segment_signature)
 CHECKED_SIGNATURES = set()
 
 def segment_signature(segment):
     """
-    What distinguishes one segment's code path from another's: its type, the propulsor types it flies on, and its
-    flight regime (subsonic, transonic or supersonic, which switch drag and engine models), read from the NumPy
-    iterate. Segments with the same signature run the same code, so one of them is checked.
+    What distinguishes one segment's code path from another's: its type, the powertrain component types it flies on
+    (propulsors, converters, sources, and the battery modules and their heat acquisition systems), and its flight
+    regime (subsonic, transonic or supersonic, which switch drag and engine models), read from the NumPy iterate.
+    Segments with the same signature run the same code, so one of them is checked.
     """
-    propulsors = sorted({type(propulsor).__name__ for network in segment.analyses.vehicle.networks
-                         for propulsor in network.propulsors})
+    propulsors = sorted(powertrain_component_types(segment.analyses.vehicle))
     mach       = float(np.max(segment.state.conditions.freestream.mach_number))
     regime     = 'subsonic' if mach < 0.7 else ('transonic' if mach < 1.0 else 'supersonic')
     return (type(segment).__name__, tuple(propulsors), regime)
