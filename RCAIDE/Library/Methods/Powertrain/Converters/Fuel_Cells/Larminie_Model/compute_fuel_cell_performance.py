@@ -5,11 +5,11 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model   import compute_voltage, compute_power_difference
+from RCAIDE.Framework.Core import Units, array_namespace
+from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage import compute_voltage
+from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_current_density import compute_current_density
 
 import numpy as np
-import scipy as sp
 
 # ----------------------------------------------------------------------
 #  Larminie Model to Compute Fuel Cell Performance
@@ -43,9 +43,10 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     Notes
     -----
     This function implements the Larminie-Dicks model to calculate fuel cell performance
-    based on current operating conditions. It determines the optimal current density
-    that matches the required power output, then calculates voltage, efficiency,
-    and fuel consumption.
+    based on current operating conditions. It finds the current density on the low-current
+    branch of the cell's power curve that matches the required power output (held at the
+    maximum-power current density when the demand exceeds the maximum), then calculates voltage,
+    efficiency, and fuel consumption.
     
     The function handles both series and parallel electrical configurations for
     connecting the fuel cell stack to the electric bus.
@@ -90,7 +91,7 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_voltage
-    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power_difference
+    RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_current_density
     """
     # ---------------------------------------------------------------------------------    
     # fuel cell stack properties 
@@ -112,31 +113,22 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     psi = state.conditions.energy.battery_fuel_cell_power_split_ratio[electrical_distributor_tag]
     total_electrical_demand = state.conditions.energy.distributors[electrical_distributor_tag].outputs.power.electrical
     P_stack                     = total_electrical_demand * fuel_cell_stack.power_split_ratio * (1. - psi)
-    # P_stack's own row count (not state.numerics.number_of_control_points) since single-point
-    # evaluation contexts (e.g. estimate_take_off_field_length) can size it differently.
-    n_ctrl_pts                  = P_stack.shape[0]
+    # current density of each cell on the low-current branch of its power curve (see compute_current_density)
+    xp                          = array_namespace(P_stack)
+    P_cell                      = P_stack[:, 0] / n_total
+    current_density             = compute_current_density(fuel_cell, P_cell)
+    V_fuel_cell                 = compute_voltage(fuel_cell,current_density)
+    efficiency                  = V_fuel_cell / fuel_cell.ideal_voltage
+    mdot_cell                   = P_cell / (fuel_cell.propellant.specific_energy * efficiency)
 
-    for t_idx in range(n_ctrl_pts):
-        P_cell = P_stack[t_idx, 0] / n_total
+    I_cell  = P_cell / V_fuel_cell
+    I_stack = I_cell * n_parallel
 
-        # ---------------------------------------------------------------------------------
-        # Compute fuel cell performance
-        # ---------------------------------------------------------------------------------
-        lb                          = 0.0001/(Units.cm**2.)
-        ub                          = 1.2/(Units.cm**2.)
-        current_density             = sp.optimize.fminbound(compute_power_difference, lb, ub, args=(fuel_cell,P_cell))
-        V_fuel_cell                 = compute_voltage(fuel_cell,current_density)
-        efficiency                  = np.divide(V_fuel_cell, fuel_cell.ideal_voltage)
-        mdot_cell                   = np.divide(P_cell,np.multiply(fuel_cell.propellant.specific_energy,efficiency))
-
-        I_cell  = P_cell / V_fuel_cell
-        I_stack = I_cell * n_parallel
-
-        fuel_cell_stack_conditions.power[t_idx]                                = P_stack[t_idx, 0]
-        fuel_cell_stack_conditions.current[t_idx]                              = I_stack
-        fuel_cell_stack_conditions.voltage_open_circuit[t_idx]                 = V_fuel_cell *  n_series
-        fuel_cell_stack_conditions.voltage_under_load[t_idx]                   = V_fuel_cell *  n_series
-        fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]                    = mdot_cell * n_total
+    fuel_cell_stack_conditions.power                = xp.reshape(P_stack[:, 0], (-1, 1))
+    fuel_cell_stack_conditions.current              = xp.reshape(I_stack, (-1, 1))
+    fuel_cell_stack_conditions.voltage_open_circuit = xp.reshape(V_fuel_cell * n_series, (-1, 1))
+    fuel_cell_stack_conditions.voltage_under_load   = xp.reshape(V_fuel_cell * n_series, (-1, 1))
+    fuel_cell_stack_conditions.H2_mass_flow_rate    = xp.reshape(mdot_cell * n_total, (-1, 1))
 
     stored_results_flag                                               = True
     stored_converter_tag                                              = fuel_cell_stack.tag

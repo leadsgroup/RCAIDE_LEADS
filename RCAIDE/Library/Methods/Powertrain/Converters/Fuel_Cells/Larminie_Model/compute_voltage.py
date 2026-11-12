@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from RCAIDE.Framework.Core import Units 
+from RCAIDE.Framework.Core import Units, array_namespace
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -77,6 +77,7 @@ def compute_voltage(fuel_cell, current_density):
     n   = fuel_cell.n   
     
     i1 = current_density/(0.001/(Units.cm**2.)) # current density(mA cm^-2)
-    v  = Eoc-r*i1-A1*np.log(i1)-m*np.exp(n*i1)     #useful voltage vector
+    xp = array_namespace(i1)
+    v  = Eoc-r*i1-A1*xp.log(i1)-m*xp.exp(n*i1)     #useful voltage vector
 
     return v

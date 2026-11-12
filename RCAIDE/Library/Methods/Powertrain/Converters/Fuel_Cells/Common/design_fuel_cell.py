@@ -11,6 +11,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model import  compute_power, compute_voltage
+from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_current_density import compute_maximum_power_current_density
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance import  evaluate_PEM ,  evaluate_max_gross_power, set_rated_current_density
 import  scipy as  sp
 import  numpy as  np
@@ -81,10 +82,8 @@ def design_fuel_cell(fuel_cell_stack):
     fuel_cell = fuel_cell_stack.fuel_cell
 
     if type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack:
-        lb                                     = 0.0001/(Units.cm**2.)    #lower bound on fuel cell current density
-        ub                                     = 1.2/(Units.cm**2.)
-        sign                                   = -1. # used to minimize -power
-        maximum_current_density                = sp.optimize.fminbound(compute_power, lb, ub, args=(fuel_cell, sign))
+        # the cell power is concave in current density: its maximum is where its slope falls through zero
+        maximum_current_density                = float(compute_maximum_power_current_density(fuel_cell))
         P_fuel_cell                            = compute_power(maximum_current_density,fuel_cell)      # single-cell power at its max-power point [W]
         V_fuel_cell                            = compute_voltage(fuel_cell,maximum_current_density)    # single-cell voltage at that point [V]
 
