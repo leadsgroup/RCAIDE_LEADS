@@ -15,6 +15,7 @@ from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cy
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_propulsor_center_of_gravity import compute_propulsor_center_of_gravity
 
 import numpy as  np
+from RCAIDE.Library.Methods.Powertrain.reset_power_conditions import reset_power_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propusor
@@ -117,20 +118,7 @@ class Propulsor(Component):
 
     def append_segment_conditions(self, segment):
         propulsor_conditions = segment.state.conditions.energy.propulsors[self.tag]
-        propulsor_conditions.inputs.power.propulsive[:,0]  = 0.0
-        propulsor_conditions.inputs.power.mechanical[:,0]  = 0.0
-        propulsor_conditions.inputs.power.electrical[:,0]  = 0.0
-        propulsor_conditions.inputs.power.chemical[:,0]    = 0.0
-        propulsor_conditions.inputs.power.pneumatic[:,0]   = 0.0
-        propulsor_conditions.inputs.power.hydraulic[:,0]   = 0.0
-        propulsor_conditions.inputs.power.thermal[:,0]     = 0.0
-        propulsor_conditions.outputs.power.propulsive[:,0] = 0.0
-        propulsor_conditions.outputs.power.mechanical[:,0] = 0.0
-        propulsor_conditions.outputs.power.electrical[:,0] = 0.0
-        propulsor_conditions.outputs.power.chemical[:,0]   = 0.0
-        propulsor_conditions.outputs.power.pneumatic[:,0]  = 0.0
-        propulsor_conditions.outputs.power.hydraulic[:,0]  = 0.0
-        propulsor_conditions.outputs.power.thermal[:,0]    = 0.0
+        reset_power_conditions(propulsor_conditions)
 
     def compute_center_of_gravity(self, vehicle):
         """

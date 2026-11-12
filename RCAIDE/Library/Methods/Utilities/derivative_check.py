@@ -24,8 +24,9 @@ def check_derivatives(function, inputs, steps=(1e-4, 1e-5, 1e-6), n_directions=3
     inputs : tuple of numpy.ndarray
         Point at which the function is checked.
     steps : tuple of float
-        Relative finite-difference steps; the smallest error over the steps is compared with the tolerance, so
-        truncation (large steps) and round-off (small steps) both show in the report.
+        Relative finite-difference steps, scaled for each input element by max(1, |x|), so inputs of different
+        magnitude (a temperature and a throttle) each get a step suited to them; the smallest error over the steps
+        is compared with the tolerance, so truncation (large steps) and round-off (small steps) both show.
     n_directions : int
         Number of random input directions for the forward and reverse mode checks.
     value_tolerance : float
@@ -69,16 +70,15 @@ def check_derivatives(function, inputs, steps=(1e-4, 1e-5, 1e-6), n_directions=3
     jvp_errors = []
     vjp_errors = []
     for _ in range(n_directions):
-        v      = tuple(rng.standard_normal(x.shape) for x in x_np)
+        # random direction, each element scaled by the size of its input
+        v      = tuple(rng.standard_normal(x.shape) * np.maximum(1.0, np.abs(x)) for x in x_np)
         u      = rng.standard_normal(y_np.shape)
         jv     = np.asarray(jax.jvp(flat, x_jax, tuple(jnp.asarray(d) for d in v))[1])
-        scale  = max(1.0, max(np.max(np.abs(x)) for x in x_np))
         errors = []
         for h in steps:
-            step  = h * scale
-            plus  = flat(*(x + step * d for x, d in zip(x_np, v)))
-            minus = flat(*(x - step * d for x, d in zip(x_np, v)))
-            errors.append(relative_error(jv, (plus - minus) / (2 * step)))
+            plus  = flat(*(x + h * d for x, d in zip(x_np, v)))
+            minus = flat(*(x - h * d for x, d in zip(x_np, v)))
+            errors.append(relative_error(jv, (plus - minus) / (2 * h)))
         jvp_errors.append(errors)
 
         y, pullback = jax.vjp(flat, *x_jax)

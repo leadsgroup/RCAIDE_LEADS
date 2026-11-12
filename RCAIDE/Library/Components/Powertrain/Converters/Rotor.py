@@ -8,7 +8,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
  # RCAIDE imports 
-from RCAIDE.Framework.Core                              import Data , Units, Container
+from RCAIDE.Framework.Core                              import Data , Units, Container, array_namespace
 from RCAIDE.Library.Components.Powertrain.Converters    import Converter  
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions import  append_rotor_conditions
 
@@ -376,19 +376,19 @@ class Rotor(Converter):
         body_2_vehicle = sp.spatial.transform.Rotation.from_rotvec([0,np.pi,0]).as_matrix()
 
         # Go from vehicle frame to propeller vehicle frame: rot 1 including the extra body rotation
-        cpts       = len(np.atleast_1d(commanded_thrust_vector))
-        rots       = np.array(self.orientation_euler_angles) * 1.
-        rots       = np.repeat(rots[None,:], cpts, axis=0) 
-        rots[:,1] += commanded_thrust_vector[:,0]
-        
-        vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()
+        xp         = array_namespace(commanded_thrust_vector)
+        tilt       = xp.reshape(commanded_thrust_vector, (-1, 1))
+        zero       = xp.zeros_like(tilt)
+        rots       = np.array(self.orientation_euler_angles)[None, :] * 1. + xp.concatenate([zero, tilt, zero], axis=1)
+
+        vehicle_2_prop_vec = extrinsic_xyz_rotation(rots)
 
         # GO from the propeller vehicle frame to the propeller velocity frame: rot 2
         prop_vec_2_prop_vel = self.vec_to_vel()
 
         # Do all the matrix multiplies
-        rot1    = np.matmul(body_2_vehicle,vehicle_2_prop_vec)
-        rot_mat = np.matmul(rot1,prop_vec_2_prop_vel)
+        rot1    = xp.matmul(body_2_vehicle,vehicle_2_prop_vec)
+        rot_mat = xp.matmul(rot1,prop_vec_2_prop_vel)
  
         return rot_mat , rots
 
@@ -457,6 +457,25 @@ class Rotor(Converter):
         return rot_mat, rots
 
  
+def extrinsic_xyz_rotation(angles):
+    """Rotation matrices of extrinsic rotations about x, then y, then z, one per row of angles (n, 3) [rad]; the same
+    as scipy's Rotation.from_euler('xyz', angles).as_matrix(), for NumPy or JAX."""
+    xp   = array_namespace(angles)
+    c, s = xp.cos(angles), xp.sin(angles)
+    one  = xp.ones_like(c[:, 0])
+    zero = xp.zeros_like(c[:, 0])
+    R_x  = xp.stack([xp.stack([one, zero, zero], axis=-1),
+                     xp.stack([zero, c[:, 0], -s[:, 0]], axis=-1),
+                     xp.stack([zero, s[:, 0], c[:, 0]], axis=-1)], axis=1)
+    R_y  = xp.stack([xp.stack([c[:, 1], zero, s[:, 1]], axis=-1),
+                     xp.stack([zero, one, zero], axis=-1),
+                     xp.stack([-s[:, 1], zero, c[:, 1]], axis=-1)], axis=1)
+    R_z  = xp.stack([xp.stack([c[:, 2], -s[:, 2], zero], axis=-1),
+                     xp.stack([s[:, 2], c[:, 2], zero], axis=-1),
+                     xp.stack([zero, zero, one], axis=-1)], axis=1)
+    return xp.matmul(R_z, xp.matmul(R_y, R_x))
+
+
 class Airfoil_Container(Container):
     """ Container for rotor airfoil  
     

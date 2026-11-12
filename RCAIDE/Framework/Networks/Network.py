@@ -18,6 +18,7 @@ from RCAIDE.Library.Components import Component
 # python imports 
 import numpy as np 
 import scipy.linalg as sla
+from RCAIDE.Library.Methods.Powertrain.reset_power_conditions import reset_power_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Network
@@ -217,13 +218,13 @@ class Network(Component):
                     propulsor_thrust = propulsor_thrust * -1
                     propulsor_moment = propulsor_moment * -1
 
-                total_thrust           += propulsor_thrust
-                total_moment           += propulsor_moment
-                total_mdot             += state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate  
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)   
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
+                total_thrust           = total_thrust + propulsor_thrust
+                total_moment           = total_moment + propulsor_moment
+                total_mdot             = total_mdot + state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate
+                net_electrical_power   = net_electrical_power + (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      = net_thermal_power + (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    = net_hydraulic_power + (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     = net_chemical_power + (outputs.power.chemical - inputs.power.chemical)
                      
                 for input_power_type in inputs.power.keys():
                     state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type] 
@@ -246,10 +247,10 @@ class Network(Component):
         for system in systems:
             if system.active: 
                 inputs, outputs,_,_= system.compute_performance(state,vehicle)  
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
+                net_electrical_power   = net_electrical_power + (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      = net_thermal_power + (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    = net_hydraulic_power + (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     = net_chemical_power + (outputs.power.chemical - inputs.power.chemical)
 
                 for input_power_type in inputs.power.keys():
                     state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type] 
@@ -283,13 +284,13 @@ class Network(Component):
                     inputs, outputs, stored_results_flag, stored_converter_tag = converter.compute_performance(state,network)
                 else:
                     inputs, outputs = converter.reuse_stored_data(state,network,stored_converter_tag=stored_converter_tag)
-                total_mdot             += state.conditions.energy.converters[converter.tag].fuel_mass_flow_rate
+                total_mdot             = total_mdot + state.conditions.energy.converters[converter.tag].fuel_mass_flow_rate
                 externally_powered_now  = ground_operations and converter.externally_powered
                 if not externally_powered_now:
-                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
+                    net_electrical_power   = net_electrical_power + (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      = net_thermal_power + (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    = net_hydraulic_power + (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     = net_chemical_power + (outputs.power.chemical - inputs.power.chemical)
 
                 for input_power_type in inputs.power.keys():
                     state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type]
@@ -314,17 +315,17 @@ class Network(Component):
         for source in sources:
             if source.active:
                 inputs, outputs, _, _  = source.compute_performance(state,network)
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
+                net_electrical_power   = net_electrical_power + (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      = net_thermal_power + (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    = net_hydraulic_power + (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     = net_chemical_power + (outputs.power.chemical - inputs.power.chemical)
                 source_conditions = state.conditions.energy.sources[source.tag]
                 if 'refuel_mass_flow_rate' in source_conditions:
-                    total_mdot -= source_conditions.refuel_mass_flow_rate
+                    total_mdot = total_mdot - source_conditions.refuel_mass_flow_rate
                 if 'vent_rate' in source_conditions:
-                    total_mdot += source_conditions.vent_rate
+                    total_mdot = total_mdot + source_conditions.vent_rate
                 if 'refuel_return_rate' in source_conditions:
-                    total_mdot += source_conditions.refuel_return_rate
+                    total_mdot = total_mdot + source_conditions.refuel_return_rate
 
                 if source.assigned_distributors != None:
                     for distributor_tag in source.assigned_distributors[0]:
@@ -339,10 +340,10 @@ class Network(Component):
         for distributor in distributors:
             if distributor.active:
                 inputs, outputs         = distributor.compute_performance(state,network)
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
+                net_electrical_power   = net_electrical_power + (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      = net_thermal_power + (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    = net_hydraulic_power + (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     = net_chemical_power + (outputs.power.chemical - inputs.power.chemical)
 
         # Final aggregation for system level performance
         conditions.energy.total_force_vector       = total_thrust
@@ -358,20 +359,7 @@ class Network(Component):
        
     def append_segment_conditions(self,segment): 
  
-        segment.conditions.energy.inputs.power.propulsive[:,0]     = 0.0
-        segment.conditions.energy.inputs.power.mechanical[:,0]     = 0.0
-        segment.conditions.energy.inputs.power.electrical[:,0]     = 0.0
-        segment.conditions.energy.inputs.power.chemical[:,0]       = 0.0
-        segment.conditions.energy.inputs.power.pneumatic[:,0]      = 0.0
-        segment.conditions.energy.inputs.power.hydraulic[:,0]      = 0.0
-        segment.conditions.energy.inputs.power.thermal[:,0]        = 0.0
-        segment.conditions.energy.outputs.power.propulsive[:,0]    = 0.0
-        segment.conditions.energy.outputs.power.mechanical[:,0]    = 0.0
-        segment.conditions.energy.outputs.power.electrical[:,0]    = 0.0
-        segment.conditions.energy.outputs.power.chemical[:,0]      = 0.0
-        segment.conditions.energy.outputs.power.pneumatic[:,0]     = 0.0
-        segment.conditions.energy.outputs.power.hydraulic[:,0]     = 0.0
-        segment.conditions.energy.outputs.power.thermal[:,0]       = 0.0 
+        reset_power_conditions(segment.conditions.energy)
               
         return 
         

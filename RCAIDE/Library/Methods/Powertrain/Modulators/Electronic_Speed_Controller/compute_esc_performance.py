@@ -2,6 +2,8 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
+
+from RCAIDE.Framework.Core import array_namespace
  
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_electric_rotor_performance
@@ -51,13 +53,9 @@ def compute_voltage_out_from_throttle(esc,conditions):
         Process of controlling output voltage through throttle position
     """
     esc_conditions = conditions.energy.modulators[esc.tag]
-    eta            = esc_conditions.throttle * 1.0
     
-    # Negative throttle is bad
-    eta[eta<=0.0] = 0.0
-    
-    # Cap the throttle
-    eta[eta>=1.0] = 1.0
+    # Negative throttle is bad, and the throttle is capped at one
+    eta            = array_namespace(esc_conditions.throttle).clip(esc_conditions.throttle * 1.0, 0.0, 1.0)
     
     # Pack the output
     esc_conditions.outputs.voltage  =eta*esc_conditions.inputs.voltage
@@ -102,14 +100,8 @@ def compute_esc_performance(esc,state):
 
     esc_conditions = state.conditions.energy.modulators[esc.tag]
     
-    eta            = esc_conditions.throttle
+    eta            = array_namespace(esc_conditions.throttle).clip(esc_conditions.throttle, 0.0, 1.0)   # negative throttle is bad, and the throttle is capped at one
     eff            = esc.efficiency
-
-    # Negative throttle is bad
-    eta[eta<=0.0] = 0.0
-    
-    # Cap the throttle
-    eta[eta>=1.0] = 1.0
 
     currentout     = esc_conditions.outputs.current 
     currentin      = currentout*eta/eff # The inclusion of eta satisfies a power balance: p_in = p_out/eff

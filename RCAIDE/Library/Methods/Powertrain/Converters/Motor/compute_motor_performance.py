@@ -176,7 +176,7 @@ def compute_motor_performance(motor,conditions):
             mu_0            = motor.mu_0                            
             mu_r            = motor.mu_r   
             Q               = power/omega                                      
-            i               = np.sqrt((2*(Q)*l)/(D_in*mu_0*mu_r*L*kw))    
+            i               = ((2*(Q)*l)/(D_in*mu_0*mu_r*L*kw))**0.5    
             v               = omega/Kv   + ((Q*Kv) + io) * Res  
             etam            = (1-io/i)*(1-i*Res/v)     
 

@@ -4,6 +4,7 @@
 # Modified: Oct 2025, M. Guidotti
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+from RCAIDE.Library.Methods.Powertrain.reset_power_conditions import reset_power_conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_system_conditions
@@ -40,18 +41,5 @@ def append_systems_conditions(system, segment):
 def append_system_segment_conditions(system, segment): 
  
     system_conditions   = segment.state.conditions.energy.systems[system.tag]  
-    system_conditions.inputs.power.electrical[:,0]             = 0.0
-    system_conditions.inputs.power.thermal[:,0]                = 0.0
-    system_conditions.inputs.power.hydraulic[:,0]              = 0.0
-    system_conditions.inputs.power.propulsive[:,0]             = 0.0
-    system_conditions.inputs.power.pneumatic[:,0]              = 0.0
-    system_conditions.inputs.power.mechanical[:,0]             = 0.0
-    system_conditions.inputs.power.chemical[:,0]               = 0.0 
-    system_conditions.outputs.power.electrical[:,0]            = 0.0
-    system_conditions.outputs.power.thermal[:,0]               = 0.0
-    system_conditions.outputs.power.hydraulic[:,0]             = 0.0
-    system_conditions.outputs.power.propulsive[:,0]            = 0.0
-    system_conditions.outputs.power.pneumatic[:,0]             = 0.0
-    system_conditions.outputs.power.mechanical[:,0]            = 0.0
-    system_conditions.outputs.power.chemical[:,0]              = 0.0 
+    reset_power_conditions(system_conditions)
     return

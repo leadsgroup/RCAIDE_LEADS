@@ -11,6 +11,7 @@ import  RCAIDE
 from RCAIDE.Framework.Mission.Common     import   Conditions
 from .compute_fuel_tank_capacity         import compute_fuel_tank_capacity
 import numpy as np
+from RCAIDE.Library.Methods.Powertrain.reset_power_conditions import reset_power_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
@@ -93,20 +94,7 @@ def append_fuel_tank_segment_conditions(tank, segment):
     # fuel mass carries over from the previous segment's end state
     if segment.state.initials.keys():
         energy_conditions.sources[tank.tag].fuel_mass[:,0] = segment.state.initials.conditions.energy.sources[tank.tag].fuel_mass[-1,0]
-    energy_conditions.sources[tank.tag].inputs.power.propulsive[:,0]    = 0.0
-    energy_conditions.sources[tank.tag].inputs.power.mechanical[:,0]    = 0.0 
-    energy_conditions.sources[tank.tag].inputs.power.electrical[:,0]    = 0.0 
-    energy_conditions.sources[tank.tag].inputs.power.chemical[:,0]      = 0.0
-    energy_conditions.sources[tank.tag].inputs.power.pneumatic[:,0]     = 0.0 
-    energy_conditions.sources[tank.tag].inputs.power.hydraulic[:,0]     = 0.0 
-    energy_conditions.sources[tank.tag].inputs.power.thermal[:,0]       = 0.0 
-    energy_conditions.sources[tank.tag].outputs.power.propulsive[:,0]   = 0.0
-    energy_conditions.sources[tank.tag].outputs.power.mechanical[:,0]   = 0.0   
-    energy_conditions.sources[tank.tag].outputs.power.electrical[:,0]   = 0.0 
-    energy_conditions.sources[tank.tag].outputs.power.chemical[:,0]     = 0.0
-    energy_conditions.sources[tank.tag].outputs.power.pneumatic[:,0]    = 0.0   
-    energy_conditions.sources[tank.tag].outputs.power.hydraulic[:,0]    = 0.0   
-    energy_conditions.sources[tank.tag].outputs.power.thermal[:,0]      = 0.0  
+    reset_power_conditions(energy_conditions.sources[tank.tag])
     
     return 
     

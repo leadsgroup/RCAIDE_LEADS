@@ -32,8 +32,11 @@ def interp2d(x,y,xp,yp,zp,fill_value= None):
     Returns:
         1D array `z` satisfying `z[i] = f(x[i], y[i])`.
     """ 
-    ix = np.clip(np.searchsorted(xp, x, side="right"), 1, len(xp) - 1)
-    iy = np.clip(np.searchsorted(yp, y, side="right"), 1, len(yp) - 1)
+    # xp is the grid argument here, so the array module is named xnp
+    xnp = array_namespace(x, y, xp, yp, zp)
+    xp, yp, zp = xnp.asarray(xp), xnp.asarray(yp), xnp.asarray(zp)   # NumPy tables indexed by JAX indices
+    ix = xnp.clip(xnp.searchsorted(xp, x, side="right"), 1, len(xp) - 1)
+    iy = xnp.clip(xnp.searchsorted(yp, y, side="right"), 1, len(yp) - 1)
 
     # Using Wikipedia's notation (https://en.wikipedia.org/wiki/Bilinear_interpolation)
     z_11 = zp[ix - 1, iy - 1]
@@ -47,18 +50,58 @@ def interp2d(x,y,xp,yp,zp,fill_value= None):
     z_xy2 = (xp[ix] - x) / (xp[ix] - xp[ix - 1]) * z_12 + (x - xp[ix - 1]) / (
         xp[ix] - xp[ix - 1]
     ) * z_22
-
     z = (yp[iy] - y) / (yp[iy] - yp[iy - 1]) * z_xy1 + (y - yp[iy - 1]) / (
         yp[iy] - yp[iy - 1]
     ) * z_xy2
 
     if fill_value is not None:
-        oob = np.logical_or(
-            x < xp[0], np.logical_or(x > xp[-1], np.logical_or(y < yp[0], y > yp[-1]))
+        oob = xnp.logical_or(
+            x < xp[0], xnp.logical_or(x > xp[-1], xnp.logical_or(y < yp[0], y > yp[-1]))
         )
-        z = np.where(oob, fill_value, z)
-
+        z = xnp.where(oob, fill_value, z)
     return z
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  regular_grid_interpolation
+# ----------------------------------------------------------------------------------------------------------------------
+def regular_grid_interpolation(grid, values, points):
+    """
+    Multilinear interpolation on a regular grid, for NumPy or JAX; the same as scipy's
+    RegularGridInterpolator(grid, values, bounds_error=False, fill_value=None), which extrapolates linearly.
+
+    Inputs:
+       grid      tuple of d increasing 1D arrays, the grid points along each axis
+       values    array of shape (len(grid[0]), ..., len(grid[d-1]), ...) with the values at the grid points
+       points    array of shape (n, d), the points at which to interpolate
+
+    Outputs:
+       result    array of shape (n, ...), the interpolated values
+    """
+    xp     = array_namespace(values, points)
+    values = xp.asarray(values)   # NumPy tables indexed by JAX indices
+
+    # for each axis, the grid interval that holds each point and the point's position in it
+    lower   = []
+    weights = []
+    for axis, g in enumerate(grid):
+        g = xp.asarray(g)
+        x = points[:, axis]
+        i = xp.clip(xp.searchsorted(g, x, side="right") - 1, 0, len(g) - 2)
+        lower.append(i)
+        weights.append((x - g[i]) / (g[i + 1] - g[i]))
+
+    # sum over the 2^d corners of each grid cell
+    result = 0.
+    for corner in range(2**len(grid)):
+        index  = []
+        weight = 1.
+        for axis in range(len(grid)):
+            upper   = (corner >> axis) & 1
+            index.append(lower[axis] + upper)
+            weight  = weight * (weights[axis] if upper else 1. - weights[axis])
+        weight = weight.reshape(weight.shape + (1,)*(values.ndim - len(grid)))
+        result = result + weight * values[tuple(index)]
+    return result
 
 # ----------------------------------------------------------------------------------------------------------------------
 # orientation_product

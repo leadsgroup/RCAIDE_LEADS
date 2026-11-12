@@ -17,9 +17,9 @@ from RCAIDE.Framework.Core import Data, array_namespace
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
     # The mission framework (unknown unpacking, frames, kinematics, atmosphere, freestream, forces, moments and the
-    # flight dynamics residuals) is written once for NumPy and JAX. For every segment of the 787 and tiltrotor
-    # missions, this runs the segment's own iterate steps on JAX and checks values, compiled values and derivatives
-    # against the NumPy path. Steps not yet written for JAX (aerodynamics, the energy network, weights, stability)
+    # flight dynamics residuals) and the electric rotor network (rotor, motor, ESC, bus, battery) are written once for
+    # NumPy and JAX. For every segment of the 787 and tiltrotor missions, this runs the segment's own iterate steps on
+    # JAX and checks values, compiled values and derivatives against the NumPy path. Steps not yet written for JAX
     # are held at their NumPy values.
     try:
         import jax
@@ -36,14 +36,21 @@ def main():
     # the imported VnV scripts expect to run from their own folders
     os.chdir(os.path.join(vnv_folder, "Validation", "aircraft_performance"))
     sys.path.insert(0, os.getcwd())
-    check_mission_on_jax("boeing_787", boeing_787_mission(), check_derivatives)
+    # the turbofan network is not written for JAX yet
+    check_mission_on_jax("boeing_787", boeing_787_mission(), check_derivatives,
+                         frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'network', 'energy', 'thrust',
+                                       'weights', 'stability'))
 
-    # in the vertical climb and the transition every unknown (throttle, thrust vector angle, motor and battery
-    # states) acts through the energy network, which is held fixed here, so only values are checked there
+    # the electric rotor networks of the tiltrotor, stopped rotor and tilt wing run on JAX, so every unknown reaches
+    # the residual in every segment
     os.chdir(os.path.join(vnv_folder, "Verification", "network_vtol"))
     sys.path.insert(0, os.getcwd())
     check_mission_on_jax("tiltrotor", tiltrotor_mission(), check_derivatives,
-                         values_only=("vertical_climb", "departure_transition_1"))
+                         frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'stability'))
+    check_mission_on_jax("stopped_rotor", stopped_rotor_mission(), check_derivatives,
+                         frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'stability'))
+    check_mission_on_jax("tiltwing", tiltwing_mission(), check_derivatives,
+                         frozen_steps=('aerodynamics', 'aero_propulsion_coupling', 'stability'))
 
     os.chdir(start_folder)
     return
@@ -51,7 +58,7 @@ def main():
 # ----------------------------------------------------------------------------------------------------------------------
 #  Checks
 # ----------------------------------------------------------------------------------------------------------------------
-def check_mission_on_jax(name, mission, check_derivatives, values_only=()):
+def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_only=()):
     import jax
     mission.process.initialize(mission)
 
@@ -65,7 +72,7 @@ def check_mission_on_jax(name, mission, check_derivatives, values_only=()):
         segment.process.iterate(segment)
         previous = segment.state
 
-        residual = Segment_Residual(segment)
+        residual = Segment_Residual(segment, frozen_steps)
         report   = check_derivatives(residual, (residual.x0,), value_tolerance=1e-12, derivative_tolerance=1e-6)
         # unknowns that change the residual through the steps checked here; with none, the derivative check is empty
         jacobian = np.asarray(jax.jacfwd(residual)(jax.numpy.asarray(residual.x0)))
@@ -79,17 +86,14 @@ def check_mission_on_jax(name, mission, check_derivatives, values_only=()):
 # ----------------------------------------------------------------------------------------------------------------------
 #  The residual of one segment as a function of its unknowns
 # ----------------------------------------------------------------------------------------------------------------------
-# steps not yet written for JAX; their outputs stay at the values of the NumPy iterate
-FROZEN_STEPS = ('aerodynamics', 'aero_propulsion_coupling', 'network', 'energy', 'thrust', 'weights', 'stability')
-
-
 class Segment_Residual:
-    """residual(x): the segment's iterate steps on a fresh copy of its state, with unknowns x, NumPy or JAX."""
+    """residual(x): the segment's iterate steps on a fresh copy of its state, with unknowns x, NumPy or JAX. The
+    frozen steps (not yet written for JAX) are skipped, so their outputs stay at the values of the NumPy iterate."""
 
-    def __init__(self, segment):
+    def __init__(self, segment, frozen_steps):
         self.segment = segment
         self.state   = segment.state
-        self.steps   = iterate_steps(segment.process.iterate)
+        self.steps   = iterate_steps(segment.process.iterate, frozen_steps)
         self.x0      = np.concatenate([np.ravel(value) for value in float_leaves(self.state.unknowns)])
 
     def __call__(self, x):
@@ -110,13 +114,13 @@ class Segment_Residual:
             segment.state, segment.conditions = self.state, self.state.conditions
 
 
-def iterate_steps(process, frozen=False):
+def iterate_steps(process, frozen_steps, frozen=False):
     """The iterate process as a flat list of functions, in order, without the frozen steps."""
     steps = []
     for key, step in process.items():
-        skip = frozen or key in FROZEN_STEPS
+        skip = frozen or key in frozen_steps
         if hasattr(step, 'items'):
-            steps += iterate_steps(step, skip)
+            steps += iterate_steps(step, frozen_steps, skip)
         elif not skip:
             steps.append(step)
     return steps
@@ -177,6 +181,20 @@ def tiltrotor_mission():
     vehicle  = vtol.TR_vehicle_setup(False)
     analyses = vtol.TR_analyses_setup(vtol.TR_configs_setup(vehicle))
     return vtol.missions_setup(vtol.TR_mission_setup(analyses)).base_mission
+
+
+def stopped_rotor_mission():
+    import vtol_aircraft_test as vtol
+    vehicle  = vtol.SR_vehicle_setup(False)
+    analyses = vtol.SR_analyses_setup(vtol.SR_configs_setup(vehicle))
+    return vtol.missions_setup(vtol.SR_mission_setup(analyses, vehicle)).base_mission
+
+
+def tiltwing_mission():
+    import vtol_aircraft_test as vtol
+    vehicle  = vtol.TW_vehicle_setup(False)
+    analyses = vtol.TW_analyses_setup(vtol.TW_configs_setup(vehicle))
+    return vtol.missions_setup(vtol.TW_mission_setup(analyses)).base_mission
 
 
 if __name__ == '__main__':

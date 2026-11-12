@@ -8,7 +8,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Units 
+from RCAIDE.Framework.Core import Units, array_namespace, set_at, regular_grid_interpolation
 import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_nmc_cell_performance
@@ -199,7 +199,8 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
     
     # Scaled and bounded unknowns
     T_cell_scaled = T_cell_unkn / T_scale
-    SOC_bounded = np.clip(SOC_cell_unkn, 1e-4, 1.0) 
+    xp          = array_namespace(SOC_cell_unkn, T_cell_unkn, I_module, P_module)
+    SOC_bounded = xp.clip(SOC_cell_unkn, 1e-4, 1.0) 
     
     # ---------------------------------------------------------------------------------
     # Compute Bus electrical properties 
@@ -220,8 +221,8 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
     # ---------------------------------------------------------------------------------~
     log_R0_base = np.log(0.1036)
     R0_factor   = 0.01483/0.1036 * (SOC_bounded**2) - 0.02518/0.1036 * SOC_bounded
-    R_0_cell    = np.exp(log_R0_base + R0_factor) * battery_module_conditions.cell.resistance_growth_factor
-    R_0_cell    = np.maximum(R_0_cell, 1e-6)
+    R_0_cell    = xp.exp(log_R0_base + R0_factor) * battery_module_conditions.cell.resistance_growth_factor
+    R_0_cell    = xp.maximum(R_0_cell, 1e-6)
     
     delta_S = -496.66*(SOC_bounded)**6 +  1729.4*(SOC_bounded)**5 + -2278 *(SOC_bounded)**4 +  \
                 1382.2 *(SOC_bounded)**3 -380.47*(SOC_bounded)**2 +  46.508*(SOC_bounded)  + -10.692  
@@ -238,7 +239,7 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
     Q_heat_module = Q_heat_cell * n_total
     
     # Voltage calculations with bounded inputs
-    T_cell_bounded = np.clip(T_cell_unkn, 272.65, 322.65)
+    T_cell_bounded = xp.clip(T_cell_unkn, 272.65, 322.65)
     V_ul_cell      = compute_nmc_cell_state(battery_module_data, SOC_bounded, T_cell_bounded, abs(I_cell))
     V_oc_cell      = V_ul_cell + (abs(I_cell) * R_0_cell)
     
@@ -258,21 +259,25 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
         # Temperature residual with scaling
         dT_dt  = Q_heat_cell / (cell_mass * Cp)
     dT_dt_scaled     = dT_dt /  T_scale
-    R_temp           = np.dot(D, T_cell_scaled)[:, 0] - dT_dt_scaled[:, 0]
-    R_temp[0]        = T_cell_scaled[0,0] - battery_module_conditions.cell.temperature[0, 0] / T_scale
-    state.residuals.network[battery.tag + '_' + battery_module.tag  + '_cell_temperature'][:, 0] = R_temp
+    R_temp           = xp.matmul(D, T_cell_scaled)[:, 0] - dT_dt_scaled[:, 0]
+    R_temp           = set_at(R_temp, 0, T_cell_scaled[0,0] - battery_module_conditions.cell.temperature[0, 0] / T_scale)
+    residuals        = state.residuals.network
+    temperature_key  = battery.tag + '_' + battery_module.tag  + '_cell_temperature'
+    residuals[temperature_key] = set_at(residuals[temperature_key], np.s_[:, 0], R_temp)
         
     # SOC residual with better conditioning
     dE_dt        = -P_module
     dE_dt_scaled = dE_dt / E_scale
-    R_soc        = np.dot(D, SOC_cell_unkn)[:, 0] - dE_dt_scaled[:, 0]
-    R_soc[0]     = SOC_cell_unkn[0,0] - battery_module_conditions.cell.state_of_charge[0, 0]
-    state.residuals.network[battery.tag + '_' + battery_module.tag  +  '_cell_state_of_charge'][:, 0] = R_soc
+    R_soc        = xp.matmul(D, SOC_cell_unkn)[:, 0] - dE_dt_scaled[:, 0]
+    R_soc        = set_at(R_soc, 0, SOC_cell_unkn[0,0] - battery_module_conditions.cell.state_of_charge[0, 0])
+    soc_key      = battery.tag + '_' + battery_module.tag  +  '_cell_state_of_charge'
+    residuals[soc_key] = set_at(residuals[soc_key], np.s_[:, 0], R_soc)
 
     # Charge throughput 
-    dt      = np.diff(state.numerics.time.control_points[:,0])
+    time    = state.numerics.time.control_points[:,0]
+    dt      = array_namespace(time).diff(time)
     avg_I   = (I_cell[:-1, 0] + I_cell[1:, 0]) / 2
-    Q_Ah    = np.atleast_2d(np.concatenate(([0.0], np.cumsum(dt*avg_I)))).T / Units.hr   + battery_module_conditions.cell.charge_throughput[0]
+    Q_Ah    = xp.concatenate([xp.zeros(1), xp.cumsum(dt*avg_I)])[:, None] / Units.hr   + battery_module_conditions.cell.charge_throughput[0]
     
     # Store results
     # Module 
@@ -281,9 +286,9 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
     battery_module_conditions.current                       = I_module 
     battery_module_conditions.heat_energy_generated         = Q_heat_module
     battery_module_conditions.voltage_under_load            = V_ul_cell * n_series
-    battery_module_conditions.state_of_charge[1:,0]         = SOC_cell_unkn[1:,0]
-    battery_module_conditions.temperature[1:,0]             = T_cell_unkn[1:,0]
-    battery_module_conditions.energy[1:,0]                  = SOC_cell_unkn[1:,0] * E_module_max
+    battery_module_conditions.state_of_charge = set_at(battery_module_conditions.state_of_charge, np.s_[1:,0], SOC_cell_unkn[1:,0])
+    battery_module_conditions.temperature     = set_at(battery_module_conditions.temperature, np.s_[1:,0], T_cell_unkn[1:,0])
+    battery_module_conditions.energy          = set_at(battery_module_conditions.energy, np.s_[1:,0], SOC_cell_unkn[1:,0] * E_module_max)
     battery_module_conditions.depth_of_discharge            = 1. - battery_module_conditions.state_of_charge
     
     # Cell 
@@ -370,18 +375,16 @@ def compute_nmc_cell_state(battery_module_data, SOC, T, I):
     """
 
     # Make sure things do not break by limiting current, temperature and current 
-    SOC[SOC < 0.]   = 0.  
-    SOC[SOC > 1.]   = 1.    
+    xp              = array_namespace(SOC, T, I)
+    SOC             = xp.clip(SOC, 0., 1.)
     DOD             = 1 - SOC 
     
-    T[np.isnan(T)] = 302.65
-    T[T<272.65]    = 272.65 # model does not fit for below 0  degrees
-    T[T>322.65]    = 322.65 # model does not fit for above 50 degrees
+    T              = xp.where(xp.isnan(T), 302.65, T)
+    T              = xp.clip(T, 272.65, 322.65)   # model does not fit below 0 or above 50 degrees
      
-    I[I<0.0]       = 0.0
-    I[I>8.0]       = 8.0   
+    I              = xp.clip(I, 0.0, 8.0)
      
-    pts            = np.hstack((np.hstack((I, T)),DOD  )) # amps, temp, SOC   
-    V_ul           = np.atleast_2d(battery_module_data.Voltage(pts)[:,1]).T  
+    pts            = xp.concatenate([I, T, DOD], axis=1) # amps, temp, SOC   
+    V_ul           = regular_grid_interpolation(battery_module_data.Voltage.grid, battery_module_data.Voltage.values, pts)[:, 1:2]
     
     return V_ul
