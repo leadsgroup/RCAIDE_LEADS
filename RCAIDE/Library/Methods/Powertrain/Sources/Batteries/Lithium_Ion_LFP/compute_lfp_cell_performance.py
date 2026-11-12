@@ -7,7 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Units, set_at, array_namespace
+from RCAIDE.Framework.Core import Units, set_at, array_namespace, regular_grid_interpolation
 import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_lfp_cell_performance
@@ -196,8 +196,8 @@ def compute_lfp_cell_state(battery_module, battery_module_data, SOC, T, I):
         The battery module containing LFP cells with the following attributes:
             - cell.nominal_capacity : float
                 Nominal capacity of the cell [Ah]
-    battery_module_data : function
-        Look-up function that maps C-rate, temperature, and discharge capacity to voltage
+    battery_module_data : Data
+        Regular-grid voltage table over C-rate, temperature and discharge capacity (grid, values)
     SOC : numpy.ndarray
         State of charge of the cell [unitless, 0-1]
     T : numpy.ndarray
@@ -242,23 +242,11 @@ def compute_lfp_cell_state(battery_module, battery_module_data, SOC, T, I):
     T              = xp.clip(T-273, -10, 60)
 
     I             = xp.clip(I, 0.0, 52.0)
-    C_rate        = I/capacity
+    # within the table's C-rates: at rest the lowest-rate curve stands in for the open-circuit voltage
+    c_rates, temperatures, capacities = battery_module_data.grid
+    C_rate        = xp.clip(I/capacity, c_rates[0], c_rates[-1])
 
-    if xp is np:
-        V_ul  = battery_module_data(C_rate, T, discharge_capacity)
-    else:
-        V_ul  = nearest_neighbor_lookup_jax(battery_module_data, xp.concatenate([C_rate, T, discharge_capacity], axis=1))[:, None]
+    points = xp.concatenate([C_rate, T, discharge_capacity], axis=1)
+    V_ul   = regular_grid_interpolation(battery_module_data.grid, battery_module_data.values, points)[:, None]
 
     return V_ul
-
-
-def nearest_neighbor_lookup_jax(interpolator, points):
-    """
-    The value of a scipy NearestNDInterpolator at points on JAX: the data point at the least Euclidean distance.
-    The result is piecewise constant, so its derivative with respect to the points is zero.
-    """
-    import jax.numpy as jnp
-    data     = jnp.asarray(interpolator.points)
-    values   = jnp.asarray(interpolator.values)
-    distance = jnp.sum((points[:, None, :] - data[None, :, :]) ** 2, axis=-1)
-    return values[jnp.argmin(distance, axis=1)]
