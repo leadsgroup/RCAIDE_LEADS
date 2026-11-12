@@ -18,9 +18,10 @@ from RCAIDE.Framework.Core import Data, array_namespace
 def main():
     # The mission framework (unknown unpacking, frames, kinematics, atmosphere, freestream, forces, moments and the
     # flight dynamics residuals), aerodynamics, stability, the fuel network with the off-design turbofan and the
-    # electric rotor network (rotor, motor, ESC, bus, battery) are written once for NumPy and JAX. For every segment
-    # of the 787 and the VTOL missions, this runs the segment's own iterate steps on JAX and checks values, compiled
-    # values and derivatives against the NumPy path.
+    # electric rotor network (rotor, motor, ESC, bus, battery) and every other powertrain are written once for NumPy
+    # and JAX. For each distinct kind of segment across the missions below (segment type, propulsors, flight regime;
+    # see segment_signature), this runs the segment's own iterate steps on JAX and checks compiled values and forward
+    # and reverse derivatives against the NumPy path. RCAIDE_JAX_EVERY_SEGMENT=1 checks every segment instead.
     try:
         import jax
     except ImportError:
@@ -28,6 +29,7 @@ def main():
         return
     jax.config.update("jax_enable_x64", True)
     from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
+    CHECKED_SIGNATURES.clear()
 
     vnv_folder = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
     sys.path.insert(0, os.path.join(vnv_folder, "Vehicles"))
@@ -65,7 +67,6 @@ def main():
 #  Checks
 # ----------------------------------------------------------------------------------------------------------------------
 def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_only=(), value_tolerance=1e-12):
-    import jax
     mission.process.initialize(mission)
 
     # initialize each segment from the previous one and iterate it once with NumPy, as a mission solve starts
@@ -78,16 +79,37 @@ def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_
         segment.process.iterate(segment)
         previous = segment.state
 
+        # each distinct kind of segment is checked once, unless every segment is asked for
+        signature = segment_signature(segment)
+        if signature in CHECKED_SIGNATURES and not os.environ.get("RCAIDE_JAX_EVERY_SEGMENT"):
+            continue
+        CHECKED_SIGNATURES.add(signature)
+
         residual = Segment_Residual(segment, frozen_steps)
         report   = check_derivatives(residual, (residual.x0,), value_tolerance=value_tolerance, derivative_tolerance=1e-6)
         # unknowns that change the residual through the steps checked here; with none, the derivative check is empty
-        jacobian = np.asarray(jax.jacfwd(residual)(jax.numpy.asarray(residual.x0)))
-        reaching = int(np.sum(np.any(jacobian != 0., axis=0)))
-        print(f"  {name} {tag}: {reaching} of {residual.x0.size} unknowns reach the residual, values {report.value_error:.1e}, "
-              f"compiled {report.compiled_error:.1e}, derivatives {report.jvp_error:.1e}")
+        reaching = int(np.count_nonzero(report.input_sensitivity[0]))
+        print(f"  {name} {tag} {signature}: {reaching} of {residual.x0.size} unknowns reach the residual, "
+              f"values {report.value_error:.1e}, derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
         assert report.passed, f"{name} {tag}: JAX check failed, {report}"
         assert (reaching == 0) == (tag in values_only), f"{name} {tag}: {reaching} unknowns reach the residual"
     return
+
+
+# kinds of segment already checked in this run (see segment_signature)
+CHECKED_SIGNATURES = set()
+
+def segment_signature(segment):
+    """
+    What distinguishes one segment's code path from another's: its type, the propulsor types it flies on, and its
+    flight regime (subsonic, transonic or supersonic, which switch drag and engine models), read from the NumPy
+    iterate. Segments with the same signature run the same code, so one of them is checked.
+    """
+    propulsors = sorted({type(propulsor).__name__ for network in segment.analyses.vehicle.networks
+                         for propulsor in network.propulsors})
+    mach       = float(np.max(segment.state.conditions.freestream.mach_number))
+    regime     = 'subsonic' if mach < 0.7 else ('transonic' if mach < 1.0 else 'supersonic')
+    return (type(segment).__name__, tuple(propulsors), regime)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  The residual of one segment as a function of its unknowns
