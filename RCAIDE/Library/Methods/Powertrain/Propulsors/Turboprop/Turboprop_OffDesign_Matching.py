@@ -52,7 +52,9 @@ def pack_turboprop_reference_point(reference_point):
     """Reference point as a float array in TURBOPROP_REFERENCE_POINT_FIELDS order (for the compiled kernel)."""
     return np.array([float(reference_point[field]) for field in TURBOPROP_REFERENCE_POINT_FIELDS])
 
-@njit(cache=True)
+# not cached: numba's cache does not notice changes to the compiled functions it calls from other files, so a cached
+# copy could keep running an old version of them; compiling takes about half a second per process
+@njit
 def free_turbine_mass_flow_residual(pi_tL, gas_generator_pressure_ratio, gamma_t, Rt, eta_tL, pi_tLR, tau_tLR, mfp_ref_M9):
     """
     Residual of the free-turbine/core-nozzle mass-flow match (Mattingly, Elements of Propulsion, 2006, Eq. 8.52w) at a trial
@@ -64,7 +66,7 @@ def free_turbine_mass_flow_residual(pi_tL, gas_generator_pressure_ratio, gamma_t
         return -np.inf
     return pi_tL - pi_tLR * np.sqrt(tau_tL / tau_tLR) * (mfp_ref_M9 / mass_flow_parameter_kernel(M9, gamma_t, Rt))
 
-@njit(cache=True)
+@njit
 def solve_free_turbine_pressure_ratio(gas_generator_pressure_ratio, gamma_t, Rt, eta_tL, pi_tLR, tau_tLR, mfp_ref_M9):
     """
     Free-turbine pressure ratio matching the core nozzle mass flow (Mattingly, Elements of Propulsion, 2006,
@@ -89,7 +91,7 @@ def solve_free_turbine_pressure_ratio(gas_generator_pressure_ratio, gamma_t, Rt,
             upper = middle
     return upper
 
-@njit(cache=True)
+@njit
 def solve_turboprop_offdesign_kernel(design, reference, mach_number, T0, P0, Tt4, tolerance, max_iterations,
                                      guess_tau_c, guess_tau_tL, guess_pi_tL, shaft_power_offtake):
     """

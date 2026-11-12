@@ -38,7 +38,9 @@ def pack_turbojet_reference_point(reference_point):
     """Reference point as a float array in TURBOJET_REFERENCE_POINT_FIELDS order (for the compiled kernel)."""
     return np.array([float(reference_point[field]) for field in TURBOJET_REFERENCE_POINT_FIELDS])
 
-@njit(cache=True)
+# not cached: numba's cache does not notice changes to the compiled functions it calls from other files, so a cached
+# copy could keep running an old version of them; compiling takes about half a second per process
+@njit
 def solve_turbojet_offdesign_kernel(design, reference, M0, T0, P0, Tt4, tolerance, max_iterations, relaxation_factor,
                                     guess_tau_c, guess_tau_tL, guess_pi_tL, shaft_power_offtake):
     """
