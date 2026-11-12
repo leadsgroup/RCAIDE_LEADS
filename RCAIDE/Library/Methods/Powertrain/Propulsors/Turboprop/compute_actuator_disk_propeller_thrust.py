@@ -11,6 +11,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Ma
 
 # Python package imports
 import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  actuator_disk_propeller_thrust
@@ -95,7 +96,14 @@ def compute_actuator_disk_propeller_thrust(shaft_power, velocity, density, disk_
     -------
     thrust : numpy.ndarray
         Propeller thrust [N], in the broadcast shape of the inputs.
+
+    Notes
+    -----
+    On JAX the cubic is solved by Newton's method for every point at once and differentiated by the implicit
+    function theorem (jax.lax.custom_root); the points are independent, so the tangent solve is diagonal.
     """
+    if array_namespace(shaft_power, velocity, density) is not np:
+        return actuator_disk_propeller_thrust_jax(shaft_power, velocity, density, disk_area, polytropic_efficiency)
     shaft_power, velocity, density = np.broadcast_arrays(np.asarray(shaft_power, dtype=float),
                                                          np.asarray(velocity, dtype=float),
                                                          np.asarray(density, dtype=float))
@@ -104,6 +112,29 @@ def compute_actuator_disk_propeller_thrust(shaft_power, velocity, density, disk_
         thrust[index] = actuator_disk_propeller_thrust(shaft_power[index], velocity[index], density[index],
                                                        disk_area, polytropic_efficiency)
     return thrust
+
+def actuator_disk_propeller_thrust_jax(shaft_power, velocity, density, disk_area, polytropic_efficiency):
+    """actuator_disk_propeller_thrust for arrays on JAX: zero thrust at no shaft power, as on NumPy."""
+    import jax
+    import jax.numpy as jnp
+    shaft_power, velocity, density = jnp.broadcast_arrays(shaft_power, velocity, density)
+    powered = shaft_power > 0.0
+    c       = 4.0 * polytropic_efficiency * jnp.where(powered, shaft_power, 1.0) / (density * disk_area)
+
+    # far-wake velocity sum s = 2 V0 + w solves s^2 (s - 2 V0) = c
+    def residual(s):
+        return s * s * (s - 2.0 * velocity) - c
+
+    def solve(residual, s):
+        def body(i, s):
+            return s - (s * s * (s - 2.0 * velocity) - c) / (3.0 * s * s - 4.0 * velocity * s)
+        return jax.lax.fori_loop(0, 100, body, s)
+
+    def tangent_solve(linear_map, y):
+        return y / linear_map(jnp.ones_like(y))
+
+    s = jax.lax.custom_root(residual, 2.0 * velocity + c ** (1.0 / 3.0), solve, tangent_solve)
+    return jnp.where(powered, 0.5 * density * disk_area * s * (s - 2.0 * velocity), 0.0)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  propeller_polytropic_efficiency_from_design_point

@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports      
 
-from RCAIDE.Framework.Core                                             import Data 
+from RCAIDE.Framework.Core                                             import Data, array_namespace
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                  import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor            import compute_combustor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor           import compute_compressor_performance
@@ -19,6 +19,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop            import co
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Common import compute_gas_generator_shaft_power_offtake
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.Turboprop_OffDesign_Matching import (
     solve_turboprop_offdesign_robust, OffDesignMatchingError, pack_turboprop_design_constants, pack_turboprop_reference_point)
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.solve_turboprop_offdesign_jax import solve_turboprop_offdesign_jax
 
 # python imports 
 import numpy as np
@@ -395,13 +396,14 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
     conditions.energy.converters[high_pressure_turbine.tag].copy_values(conditions.energy.converters[high_pressure_turbine_0.tag])
     conditions.energy.converters[core_nozzle.tag].copy_values(conditions.energy.converters[core_nozzle_0.tag])
     # compute moment  
-    moment_vector      = 0*state.ones_row(3)
-    thrust_vector      = 0*state.ones_row(3)
-    thrust_vector[:,0] = conditions.energy.propulsors[turboprop.tag].thrust[:,0] 
-    moment_vector[:,0] = turboprop.origin[0][0] -   center_of_gravity[0][0] 
-    moment_vector[:,1] = turboprop.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2] = turboprop.origin[0][2]  -  center_of_gravity[0][2]
-    moment             = np.cross(moment_vector,thrust_vector)    
+    thrust             = conditions.energy.propulsors[turboprop.tag].thrust[:,0]
+    xp                 = array_namespace(thrust)
+    zero               = 0 * thrust
+    thrust_vector      = xp.stack([thrust, zero, zero], axis=1)
+    moment_vector      = xp.stack([zero + (turboprop.origin[0][0] - center_of_gravity[0][0]),
+                                   zero + (turboprop.origin[0][1] - center_of_gravity[0][1]),
+                                   zero + (turboprop.origin[0][2] - center_of_gravity[0][2])], axis=1)
+    moment             = xp.cross(moment_vector, thrust_vector)
 
     power                                              = conditions.energy.propulsors[turboprop.tag].outputs.power.propulsive
     conditions.energy.propulsors[turboprop.tag].moment = moment
@@ -487,7 +489,8 @@ def compute_turboprop_performance_offdesign(turboprop, state, center_of_gravity=
     """
     conditions           = state.conditions
     turboprop_conditions = conditions.energy.propulsors[turboprop.tag]
-    noise_conditions      = conditions.aeroacoustics.propulsors[turboprop.tag]
+    noise_conditions     = conditions.aeroacoustics.propulsors[turboprop.tag]
+    xp                   = array_namespace(turboprop_conditions.throttle, conditions.freestream.mach_number)
 
     altitude            = conditions.freestream.altitude[:, 0]
     mach_number         = conditions.freestream.mach_number[:, 0]
@@ -495,114 +498,148 @@ def compute_turboprop_performance_offdesign(turboprop, state, center_of_gravity=
     static_pressure     = conditions.freestream.pressure[:, 0]
     velocity            = conditions.freestream.velocity[:, 0]
     throttle            = turboprop_conditions.throttle[:, 0] * turboprop.rated_takeoff_temperature_ratio  # design-point Tt4 fraction
-
-    design_constants = turboprop.offdesign_matching.design_constants
-    reference_point  = turboprop.offdesign_matching.reference_point
-    idle_fallback    = getattr(turboprop.offdesign_matching, 'idle_fallback', None)
-
-    n = len(mach_number)
-    thrust_N              = np.zeros(n)
-    fuel_mass_flow_rate    = np.zeros(n)
-    shaft_power            = np.zeros(n)
-    core_nozzle_exit_velocity               = np.full(n, np.nan)
-    core_nozzle_exit_static_temperature     = np.full(n, np.nan)
-    core_nozzle_exit_static_pressure        = np.full(n, np.nan)
-    core_nozzle_exit_stagnation_temperature = np.full(n, np.nan)
-    core_nozzle_exit_stagnation_pressure    = np.full(n, np.nan)
-    # feed total_*_reference below
-    tau_r_out             = np.full(n, np.nan)
-    pi_r_out              = np.full(n, np.nan)
-    pi_d_out              = np.full(n, np.nan)
-
-    packed_design_constants = pack_turboprop_design_constants(design_constants)
-    packed_reference_point  = pack_turboprop_reference_point(reference_point)
+    n                   = mach_number.shape[0]
 
     # gas-generator shaft power to/from the integrated drive motor or generator; the design-point
     # offtake when neither is being evaluated
     compressor_conditions       = conditions.energy.converters[turboprop.compressor.tag]
-    compressor_conditions.omega = turboprop.compressor.design_angular_velocity * throttle.reshape(-1, 1)
+    compressor_conditions.omega = turboprop.compressor.design_angular_velocity * xp.reshape(throttle, (-1, 1))
     external_shaft_power, motor_electrical_power, generator_electrical_power, in_mission = \
         compute_gas_generator_shaft_power_offtake(turboprop, state, compressor_conditions.omega)
-    shaft_power_offtake = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
-    for i in range(n):
-        combustor_exit_temperature = reference_point.Tt4 * throttle[i]
-        try:
-            result = solve_turboprop_offdesign_robust(
-                design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
-                combustor_exit_temperature, packed_design_constants=packed_design_constants,
-                packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
-        except OffDesignMatchingError:
-            if idle_fallback is None:
-                raise
-            F, FF = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
-                                         throttle=np.array([throttle[i]]))
-            thrust_N[i]             = F[0]
-            fuel_mass_flow_rate[i]  = FF[0]
-            shaft_power[i]          = np.nan
-            continue
-        thrust_N[i]                                 = result.thrust
-        fuel_mass_flow_rate[i]                       = result.fuel_mass_flow_rate
-        shaft_power[i]                              = result.shaft_power
-        core_nozzle_exit_velocity[i]                = result.core_nozzle_exit_velocity
-        core_nozzle_exit_static_temperature[i]      = result.core_nozzle_exit_static_temperature
-        core_nozzle_exit_static_pressure[i]         = result.core_nozzle_exit_static_pressure
-        core_nozzle_exit_stagnation_temperature[i]  = result.core_nozzle_exit_stagnation_temperature
-        core_nozzle_exit_stagnation_pressure[i]     = result.core_nozzle_exit_stagnation_pressure
-        tau_r_out[i]                                = result.tau_r
-        pi_r_out[i]                                 = result.pi_r
-        pi_d_out[i]                                 = result.pi_d
+    shaft_power_offtake = xp.ravel(external_shaft_power) * xp.ones(n) if in_mission else None
 
-    thrust_vector      = np.zeros((n, 3))
-    thrust_vector[:,0] = thrust_N
+    flight = (altitude, mach_number, static_temperature, static_pressure, throttle, shaft_power_offtake)
+    if xp is np:
+        result = solve_turboprop_points_numpy(turboprop, *flight)
+    else:
+        result = solve_turboprop_points_jax(turboprop, *flight)
 
-    TSFC           = np.zeros(n)
+    thrust_N            = result['thrust']
+    fuel_mass_flow_rate = result['fuel_mass_flow_rate']
+    zero                = 0 * thrust_N
+    thrust_vector       = xp.stack([thrust_N, zero, zero], axis=1)
+
     positive       = thrust_N > 0
     gravity        = conditions.freestream.gravity[:, 0] if hasattr(conditions.freestream, 'gravity') \
-                     else 9.80665 * np.ones(n)
-    TSFC[positive] = fuel_mass_flow_rate[positive] * gravity[positive] / thrust_N[positive]
+                     else 9.80665 * xp.ones(n)
+    TSFC           = xp.where(positive, fuel_mass_flow_rate * gravity / xp.where(positive, thrust_N, 1.0), 0.0)
 
     power_propulsive = thrust_N * velocity
 
     # Compute forces and moments
-    moment_vector      = 0*state.ones_row(3)
-    moment_vector[:,0] = turboprop.origin[0][0] - center_of_gravity[0][0]
-    moment_vector[:,1] = turboprop.origin[0][1] - center_of_gravity[0][1]
-    moment_vector[:,2] = turboprop.origin[0][2] - center_of_gravity[0][2]
-    moment              = np.cross(moment_vector, thrust_vector)
+    moment_vector  = xp.stack([zero + (turboprop.origin[0][0] - center_of_gravity[0][0]),
+                               zero + (turboprop.origin[0][1] - center_of_gravity[0][1]),
+                               zero + (turboprop.origin[0][2] - center_of_gravity[0][2])], axis=1)
+    moment         = xp.cross(moment_vector, thrust_vector)
 
     turboprop_conditions.thrust                            = thrust_vector
-    turboprop_conditions.fuel_mass_flow_rate                = fuel_mass_flow_rate.reshape(-1,1)
-    turboprop_conditions.thrust_specific_fuel_consumption   = TSFC.reshape(-1,1)
-    turboprop_conditions.moment                             = moment
-    turboprop_conditions.outputs.thrust                     = thrust_vector
-    turboprop_conditions.outputs.moment                     = moment
-    turboprop_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
-    turboprop_conditions.outputs.power.mechanical            = shaft_power.reshape(-1,1)
-    turboprop_conditions.outputs.power.electrical            = generator_electrical_power
-    turboprop_conditions.inputs.power.electrical             = motor_electrical_power
+    turboprop_conditions.fuel_mass_flow_rate               = xp.reshape(fuel_mass_flow_rate, (-1,1))
+    turboprop_conditions.thrust_specific_fuel_consumption  = xp.reshape(TSFC, (-1,1))
+    turboprop_conditions.moment                            = moment
+    turboprop_conditions.outputs.thrust                    = thrust_vector
+    turboprop_conditions.outputs.moment                    = moment
+    turboprop_conditions.outputs.power.propulsive          = xp.reshape(power_propulsive, (-1,1))
+    turboprop_conditions.outputs.power.mechanical          = xp.reshape(result['shaft_power'], (-1,1))
+    turboprop_conditions.outputs.power.electrical          = generator_electrical_power
+    turboprop_conditions.inputs.power.electrical           = motor_electrical_power
 
     # same fields the analytical path sets (tau_r only, no tau_c -- matches its compressor
     # *inputs* convention); NaN at idle_fallback points
-    turboprop_conditions.total_temperature_reference = (tau_r_out*static_temperature).reshape(-1,1)
-    turboprop_conditions.total_pressure_reference     = (pi_r_out*pi_d_out*static_pressure).reshape(-1,1)
+    turboprop_conditions.total_temperature_reference = xp.reshape(result['tau_r']*static_temperature, (-1,1))
+    turboprop_conditions.total_pressure_reference    = xp.reshape(result['pi_r']*result['pi_d']*static_pressure, (-1,1))
 
     if turboprop.combustor is not None and turboprop.combustor.fuel_data is not None:
         turboprop_conditions.inputs.power.chemical = \
-            (fuel_mass_flow_rate * turboprop.combustor.fuel_data.lower_heating_value).reshape(-1,1)
+            xp.reshape(fuel_mass_flow_rate * turboprop.combustor.fuel_data.lower_heating_value, (-1,1))
         # uses specific_energy, not lower_heating_value used just above -- different fields
         turboprop_conditions.overall_efficiency = \
-            (thrust_N * velocity / (fuel_mass_flow_rate * turboprop.combustor.fuel_data.specific_energy)).reshape(-1,1)
+            xp.reshape(thrust_N * velocity / (fuel_mass_flow_rate * turboprop.combustor.fuel_data.specific_energy), (-1,1))
     # thermal_efficiency not set: needs internal enthalpies the offdesign solver doesn't return
 
     noise_conditions.core_nozzle = Data(
-        exit_static_temperature      = core_nozzle_exit_static_temperature.reshape(-1,1),
-        exit_static_pressure         = core_nozzle_exit_static_pressure.reshape(-1,1),
-        exit_stagnation_temperature  = core_nozzle_exit_stagnation_temperature.reshape(-1,1),
-        exit_stagnation_pressure     = core_nozzle_exit_stagnation_pressure.reshape(-1,1),
-        exit_velocity                = core_nozzle_exit_velocity.reshape(-1,1),
+        exit_static_temperature      = xp.reshape(result['core_nozzle_exit_static_temperature'], (-1,1)),
+        exit_static_pressure         = xp.reshape(result['core_nozzle_exit_static_pressure'], (-1,1)),
+        exit_stagnation_temperature  = xp.reshape(result['core_nozzle_exit_stagnation_temperature'], (-1,1)),
+        exit_stagnation_pressure     = xp.reshape(result['core_nozzle_exit_stagnation_pressure'], (-1,1)),
+        exit_velocity                = xp.reshape(result['core_nozzle_exit_velocity'], (-1,1)),
     )
 
     stored_results_flag   = True
     stored_propulsor_tag  = turboprop.tag
 
     return turboprop_conditions.inputs, turboprop_conditions.outputs, stored_results_flag, stored_propulsor_tag
+
+# fields of the matched point that compute_turboprop_performance_offdesign reads
+OFFDESIGN_POINT_FIELDS = ['thrust', 'fuel_mass_flow_rate', 'shaft_power', 'tau_r', 'pi_r', 'pi_d',
+                          'core_nozzle_exit_velocity', 'core_nozzle_exit_static_temperature', 'core_nozzle_exit_static_pressure',
+                          'core_nozzle_exit_stagnation_temperature', 'core_nozzle_exit_stagnation_pressure']
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  solve_turboprop_points_numpy
+# ----------------------------------------------------------------------------------------------------------------------
+def solve_turboprop_points_numpy(turboprop, altitude, mach_number, static_temperature, static_pressure, throttle,
+                                 shaft_power_offtake):
+    """
+    Matched off-design point at each control point on NumPy: the numba kernel through solve_turboprop_offdesign_robust,
+    one point at a time, and the idle fallback deck at points the matching cannot solve.
+
+    Inputs:
+       turboprop           turboprop with offdesign_matching
+       altitude, mach_number, static_temperature, static_pressure, throttle (Tt4 fraction)   1-D arrays
+       shaft_power_offtake 1-D array, or None for the design-point offtake
+
+    Outputs:
+       result              dict of 1-D arrays named as OFFDESIGN_POINT_FIELDS; NaN station data at idle fallback points
+    """
+    design_constants = turboprop.offdesign_matching.design_constants
+    reference_point  = turboprop.offdesign_matching.reference_point
+    idle_fallback    = getattr(turboprop.offdesign_matching, 'idle_fallback', None)
+    n                = len(throttle)
+
+    result                        = {field: np.full(n, np.nan) for field in OFFDESIGN_POINT_FIELDS}
+    result['thrust']              = np.zeros(n)
+    result['fuel_mass_flow_rate'] = np.zeros(n)
+    result['shaft_power']         = np.zeros(n)
+
+    packed_design_constants = pack_turboprop_design_constants(design_constants)
+    packed_reference_point  = pack_turboprop_reference_point(reference_point)
+    offtake = [None] * n if shaft_power_offtake is None else shaft_power_offtake
+    for i in range(n):
+        combustor_exit_temperature = reference_point.Tt4 * throttle[i]
+        try:
+            point = solve_turboprop_offdesign_robust(
+                design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
+                combustor_exit_temperature, packed_design_constants=packed_design_constants,
+                packed_reference_point=packed_reference_point, shaft_power_offtake=offtake[i])
+        except OffDesignMatchingError:
+            if idle_fallback is None:
+                raise
+            F, FF = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
+                                         throttle=np.array([throttle[i]]))
+            result['thrust'][i]              = F[0]
+            result['fuel_mass_flow_rate'][i] = FF[0]
+            result['shaft_power'][i]         = np.nan
+            continue
+        for field in OFFDESIGN_POINT_FIELDS:
+            result[field][i] = point[field]
+    return result
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  solve_turboprop_points_jax
+# ----------------------------------------------------------------------------------------------------------------------
+def solve_turboprop_points_jax(turboprop, altitude, mach_number, static_temperature, static_pressure, throttle,
+                               shaft_power_offtake):
+    """
+    Matched off-design point at every control point at once on JAX (solve_turboprop_offdesign_jax), differentiable.
+    Points no solver matches are NaN: the idle fallback deck is not available on JAX.
+
+    Inputs and outputs as solve_turboprop_points_numpy.
+    """
+    import jax.numpy as jnp
+    design_constants = turboprop.offdesign_matching.design_constants
+    reference_point  = turboprop.offdesign_matching.reference_point
+    if shaft_power_offtake is None:
+        shaft_power_offtake = design_constants.shaft_work_specific_design * reference_point.m0 * jnp.ones_like(throttle)
+    point, matched = solve_turboprop_offdesign_jax(design_constants, reference_point, mach_number, static_temperature,
+                                                   static_pressure, reference_point.Tt4 * throttle, shaft_power_offtake)
+    return {field: point[field] for field in OFFDESIGN_POINT_FIELDS}
