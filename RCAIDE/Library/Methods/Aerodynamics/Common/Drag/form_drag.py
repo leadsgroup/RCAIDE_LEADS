@@ -8,6 +8,8 @@ import RCAIDE
 from RCAIDE.Library.Methods.Utilities         import Cubic_Spline_Blender
 import  numpy as  np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Form Drag 
 # ----------------------------------------------------------------------------------------------------------------------   
@@ -146,7 +148,8 @@ def form_drag(state,settings,geometry):
     CL               = conditions.aerodynamics.coefficients.lift.total
     high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number
     low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number
-    CD_form          = np.zeros_like(Mach)
+    xp               = array_namespace(Mach, CL)
+    CD_form          = xp.zeros_like(Mach)
 
     # supersonic smoothing
     sup_spline = Cubic_Spline_Blender(low_mach_cutoff,high_mach_cutoff)
@@ -172,7 +175,7 @@ def form_drag(state,settings,geometry):
         is_bwb = isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body)
         if not wing.vertical and not is_bwb:
             CD_form_wing = 0
-            CD_sep       = np.interp(CL, CD_sep_CL, CD_sep_data)
+            CD_sep       = xp.interp(CL, CD_sep_CL, CD_sep_data)
             segs = list(wing.segments.keys())
             for i in range(len(wing.segments) - 1):
                 CD_form_wing += CD_sep * wing.segments[segs[i]].areas.reference

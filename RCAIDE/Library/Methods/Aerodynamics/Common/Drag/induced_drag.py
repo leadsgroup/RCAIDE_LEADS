@@ -9,6 +9,8 @@
 # package imports
 import numpy as np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ----------------------------------------------------------------------
 #  Induced Drag Aircraft
 # ---------------------------------------------------------------------- 
@@ -164,7 +166,7 @@ def induced_drag(state,settings,geometry):
         # Calculate the induced drag       
         total_induced_drag = CL **2 / (np.pi*AR*e_osw)
         total_viscous_induced_drag = total_induced_drag - CDi
-        e_osw                      = e_osw * np.ones_like(CL)
+        e_osw                      = e_osw * array_namespace(CL).ones_like(CL)
         
     aero.drag.induced.total                    = total_induced_drag
     aero.drag.induced.viscous                  = total_viscous_induced_drag 

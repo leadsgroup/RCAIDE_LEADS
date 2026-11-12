@@ -6,7 +6,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
-import numpy as np 
+import numpy as np
+
+from RCAIDE.Framework.Core import array_namespace 
  
 # package imports
 import numpy as np  
@@ -121,10 +123,11 @@ def parasite_total(state,settings,geometry):
     
     #compute parasite drag total
     parasite                     = conditions.aerodynamics.coefficients.drag.parasite
-    total_wing_parasite_drag     = np.zeros_like(conditions.freestream.mach_number)
-    total_boom_parasite_drag     = np.zeros_like(conditions.freestream.mach_number)
-    total_fuselage_parasite_drag = np.zeros_like(conditions.freestream.mach_number)
-    total_nacelle_parasite_drag  = np.zeros_like(conditions.freestream.mach_number)
+    xp                           = array_namespace(conditions.freestream.mach_number)
+    total_wing_parasite_drag     = xp.zeros_like(conditions.freestream.mach_number)
+    total_boom_parasite_drag     = xp.zeros_like(conditions.freestream.mach_number)
+    total_fuselage_parasite_drag = xp.zeros_like(conditions.freestream.mach_number)
+    total_nacelle_parasite_drag  = xp.zeros_like(conditions.freestream.mach_number)
     
     # renormalize parasite drag from wings using reference area of aircraft 
     for wing in geometry.wings:

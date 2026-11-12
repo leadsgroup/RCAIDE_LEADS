@@ -3,6 +3,8 @@
 # 
 # Created:  Jul 2023, M. Clarke 
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Update Aerodynamics
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -47,21 +49,20 @@ def aerodynamics(segment):
     CD = conditions.aerodynamics.coefficients.drag.total
     CY = conditions.static_stability.coefficients.Y
 
-    CL[q<=0.0] = 0.0
-    CD[q<=0.0] = 0.0
-    CL[CL>CLmax] = CLmax
-    CL[CL< -CLmax] = -CLmax
+    xp = array_namespace(CL, q)
+    CL = xp.where(q <= 0.0, 0.0, CL)
+    CD = xp.where(q <= 0.0, 0.0, CD)
+    CL = xp.clip(CL, -CLmax, CLmax)
 
     # dimensionalize
-    F      = segment.state.ones_row(3) * 0.0
-    F[:,2] = ( -CL * q * Sref )[:,0]
-    F[:,1] = (  CY * q * Sref  )[:,0]  
-    F[:,0] = ( -CD * q * Sref )[:,0]
+    F      = xp.concatenate([-CD * q * Sref,
+                              CY * q * Sref,
+                             -CL * q * Sref], axis=1)
 
     # rewrite aerodynamic CL and CD
     conditions.aerodynamics.coefficients.lift.total  = CL
     conditions.aerodynamics.coefficients.drag.total  = CD
-    conditions.frames.wind.force_vector[:,:]         = F[:,:]
+    conditions.frames.wind.force_vector              = F
 
     # -----------------------------------------------------------------
     # Moments
@@ -70,15 +71,15 @@ def aerodynamics(segment):
     C_M = conditions.static_stability.coefficients.M
     C_N = conditions.static_stability.coefficients.N
 
-    C_M[q<=0.0] = 0.0
+    C_M = xp.where(q <= 0.0, 0.0, C_M)
+    conditions.static_stability.coefficients.M = C_M
 
     # dimensionalize
-    M      = segment.state.ones_row(3) * 0.0
-    M[:,0] = (C_L[:,0] * q[:,0] * Sref * span)
-    M[:,1] = (C_M[:,0] * q[:,0] * Sref * MAC)
-    M[:,2] = (C_N[:,0] * q[:,0] * Sref * span)
+    M      = xp.stack([C_L[:,0] * q[:,0] * Sref * span,
+                       C_M[:,0] * q[:,0] * Sref * MAC,
+                       C_N[:,0] * q[:,0] * Sref * span], axis=1)
 
     # pack conditions
-    conditions.frames.wind.moment_vector[:,:] = M[:,:] 
+    conditions.frames.wind.moment_vector = M 
 
     return

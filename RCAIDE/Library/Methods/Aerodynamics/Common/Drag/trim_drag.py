@@ -11,6 +11,8 @@ from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compute_flap_profile_drag import compute_flap_profile_drag
 import numpy as np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Spolier Drag 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -111,7 +113,7 @@ def trim_drag(state,settings,geometry):
     CD_0  =  parasite_total + induced_total  + compressibility_total + form_drag
     
     # control surface drag 
-    control_surface_drag = np.zeros_like(CD_0)
+    control_surface_drag = array_namespace(CD_0).zeros_like(CD_0)
     for wing in geometry.wings: 
         for cs in wing.control_surfaces:
             if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler:

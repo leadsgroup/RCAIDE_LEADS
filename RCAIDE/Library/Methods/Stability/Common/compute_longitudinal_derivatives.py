@@ -10,6 +10,8 @@ from RCAIDE.Library.Methods.Stability.Common.lift_carries_weight import lift_car
 
 import numpy as np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_longitudinal_derivatives
 # ----------------------------------------------------------------------------------------------------------------------
@@ -58,7 +60,7 @@ def compute_longitudinal_derivatives(state, settings, vehicle):
     overrides = state.analyses.aerodynamics.stability_derivatives
     for name, value in values.items():
         override = getattr(overrides, name)
-        derivatives[name] = value if override is None else override * np.ones_like(CL_0)
+        derivatives[name] = value if override is None else override * array_namespace(CL_0).ones_like(CL_0)
     return
 
 
@@ -71,12 +73,12 @@ def thrust_coefficient_derivative(conditions, vehicle):
     Propulsors = RCAIDE.Library.Components.Powertrain.Propulsors
     jets       = (Propulsors.Turbofan, Propulsors.Turbojet)
     q_S        = conditions.freestream.dynamic_pressure * vehicle.reference_area
-    C_T_u      = np.zeros_like(q_S)
+    xp         = array_namespace(q_S)
+    C_T_u      = xp.zeros_like(q_S)
     for network in vehicle.networks:
         for propulsor in network.propulsors:
             if propulsor.tag not in conditions.energy.propulsors:
                 continue
-            C_T    = np.divide(conditions.energy.propulsors[propulsor.tag].outputs.thrust[:, 0:1], q_S,
-                               out=np.zeros_like(q_S), where=q_S > 0)
+            C_T    = xp.where(q_S > 0, conditions.energy.propulsors[propulsor.tag].outputs.thrust[:, 0:1] / xp.where(q_S > 0, q_S, 1.), 0.)
             C_T_u  = C_T_u - (2 if isinstance(propulsor, jets) else 3) * C_T
-    return np.where(lift_carries_weight(conditions, vehicle), C_T_u, 0.)
+    return xp.where(lift_carries_weight(conditions, vehicle), C_T_u, 0.)

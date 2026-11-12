@@ -15,6 +15,8 @@ from RCAIDE.Library.Methods.Utilities         import Cubic_Spline_Blender
 # python imports 
 import numpy as np
 
+from RCAIDE.Framework.Core import array_namespace
+
 # ---------------------------------------------------------------------------------------------------------------------- 
 #   Parasite Drag Fuselage
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -157,56 +159,32 @@ def parasite_drag_fuselage(state,settings,fuselage):
     cf_fus, k_comp, k_reyn = compressible_turbulent_flat_plate(Re_fus,Mach,T)       
     d_d = d_fus/l_fus
  
-    if np.all((Mach<=1.0) == True): 
-        # compute form factor for cylindrical bodies 
-        D             = np.zeros_like(Mach)    
-        D[Mach < 0.95]  = np.sqrt(1 - (1-Mach[Mach < 0.95]**2) * d_d**2)
-        D[Mach >= 0.95] = np.sqrt(1 - d_d**2)
-    
-        a             = np.zeros_like(Mach)    
-        a[Mach < 0.95]  = 2 * (1-Mach[Mach < 0.95]**2) * (d_d**2) *(np.arctanh(D[Mach < 0.95])-D[Mach < 0.95]) / (D[Mach < 0.95]**3)
-        a[Mach >= 0.95] = 2  * (d_d**2) *(np.arctanh(D[Mach >= 0.95])-D[Mach >= 0.95]) / (D[Mach >= 0.95]**3)
-    
-        du_max_u               = np.zeros_like(Mach)    
-        du_max_u[Mach < 0.95]  = a[Mach < 0.95] / ( (2-a[Mach < 0.95]) * (1-Mach[Mach < 0.95]**2)**0.5 ) 
-        du_max_u[Mach >= 0.95] = a[Mach >= 0.95] / ( (2-a[Mach >= 0.95]) )
-        
-        k_fus                  = (1 + form_factor*du_max_u)**2 
-        fuselage_parasite_drag = k_fus * cf_fus * Swet / Sref
-        
-    else: 
-        
-        # supersonic condition  
-        D_low        = np.zeros_like(Mach)
-        a_low        = np.zeros_like(Mach)
-        du_max_u_low = np.zeros_like(Mach)
-        
-        D_high        = np.zeros_like(Mach)
-        a_high        = np.zeros_like(Mach)
-        du_max_u_high = np.zeros_like(Mach) 
-        k_fus         = np.zeros_like(Mach)
-        
-        low_inds      = Mach < high_cutoff
-        high_inds     = Mach > low_cutoff
-        
-        D_low[low_inds]        = np.sqrt(1 - (1-Mach[low_inds]**2) * d_d**2)
-        a_low[low_inds]        = 2 * (1-Mach[low_inds]**2) * (d_d**2) *(np.arctanh(D_low[low_inds])-D_low[low_inds]) / (D_low[low_inds]**3)
-        du_max_u_low[low_inds] = a_low[low_inds] / ( (2-a_low[low_inds]) * (1-Mach[low_inds]**2)**0.5 )
-        
-        D_high[high_inds]        = np.sqrt(1 - d_d**2)
-        a_high[high_inds]        = 2  * (d_d**2) *(np.arctanh(D_high[high_inds])-D_high[high_inds]) / (D_high[high_inds]**3)
-        du_max_u_high[high_inds] = a_high[high_inds] / ( (2-a_high[high_inds]) )
-        
-        spline = Cubic_Spline_Blender(low_cutoff,high_cutoff)
-        h00    = lambda M:spline.compute(M)
-        
-        du_max_u = du_max_u_low*(h00(Mach)) + du_max_u_high*(1-h00(Mach))    
-        
-        k_fus = (1 + form_factor*du_max_u)**2
-    
-        fuselage_parasite_drag = k_fus * cf_fus * Swet / Sref
-         
-    # Store data 
+    xp = array_namespace(Mach)
+
+    # every point subsonic: the 0.95 Mach switch. Masked values keep the unused forms finite for gradients
+    low      = Mach < 0.95
+    M_low    = xp.where(low, Mach, 0.)
+    D        = xp.where(low, xp.sqrt(1 - (1-M_low**2) * d_d**2), xp.sqrt(1 - d_d**2))
+    a        = xp.where(low, 2 * (1-M_low**2) * (d_d**2) *(xp.arctanh(D)-D) / (D**3), 2  * (d_d**2) *(xp.arctanh(D)-D) / (D**3))
+    du_sub   = xp.where(low, a / ( (2-a) * (1-M_low**2)**0.5 ), a / ( (2-a) ))
+
+    # otherwise: blend the low and high speed forms between the cutoffs
+    low_inds      = Mach < high_cutoff
+    high_inds     = Mach > low_cutoff
+    M_blend       = xp.where(low_inds, Mach, 0.)
+    D_low         = xp.sqrt(1 - (1-M_blend**2) * d_d**2)
+    a_low         = 2 * (1-M_blend**2) * (d_d**2) *(xp.arctanh(D_low)-D_low) / (D_low**3)
+    du_max_u_low  = xp.where(low_inds, a_low / ( (2-a_low) * (1-M_blend**2)**0.5 ), 0.)
+    D_high        = xp.sqrt(1 - d_d**2)
+    a_high        = 2  * (d_d**2) *(xp.arctanh(D_high)-D_high) / (D_high**3)
+    du_max_u_high = xp.where(high_inds, a_high / ( (2-a_high) ), 0.)
+    spline        = Cubic_Spline_Blender(low_cutoff,high_cutoff)
+    du_blend      = du_max_u_low*(spline.compute(Mach)) + du_max_u_high*(1-spline.compute(Mach))
+
+    du_max_u               = xp.where(xp.all(Mach <= 1.0), du_sub, du_blend)
+    k_fus                  = (1 + form_factor*du_max_u)**2
+    fuselage_parasite_drag = k_fus * cf_fus * Swet / Sref
+
     state.conditions.aerodynamics.coefficients.drag.parasite.copy_values({fuselage.tag: Data(
         wetted_area               = Swet   , 
         reference_area            = Sref   , 
