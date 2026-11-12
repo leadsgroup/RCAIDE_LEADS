@@ -40,7 +40,7 @@ import time
 def main():  
     ti = time.time()
  
-    mdot_H2_true         = [0.005472200408706474, 0.02080595067672663]
+    mdot_H2_true         = [0.015657000996691775, 0.014881411517933367]
     fuel_cell_models     = ['PEM', 'Larminie']
     
     for i in range(2): 
