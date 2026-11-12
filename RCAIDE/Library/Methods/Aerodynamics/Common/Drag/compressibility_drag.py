@@ -329,7 +329,7 @@ def transonic_lift_wave_drag(conditions, vortex_distribution, geometry):
     
     **Major Assumptions**
         * Surrogate model is valid for Mach 0.7-0.95 range
-        * Shock wave formation depends on local pressure coefficient
+        * A shock forms where the local Mach number from the pressure coefficient exceeds one
         * Normalized curvature factor is constant (0.23)
         * Spanwise analysis accounts for sweep effects
     
@@ -362,6 +362,7 @@ def transonic_lift_wave_drag(conditions, vortex_distribution, geometry):
     ----------
     [1] Lock, R. C. (1986). "The Prediction of the Drag of Aerofoils and Wings at High Subsonic Speeds." Aeronautical Journal.
     [2] Harris, C. D. (1990). "NASA Supercritical Airfoils." NASA TP 2969.
+    [3] Anderson, J. D. Modern Compressible Flow, Sec. 3.6, Eq. 3.60: a normal shock requires M1 >= 1.
 
     """
     Mach              = conditions.freestream.mach_number  
@@ -386,17 +387,20 @@ def transonic_lift_wave_drag(conditions, vortex_distribution, geometry):
     # Wave Drag Calculation
     # ------------------------------------------------------------------
 
-    # Calculate the local mach number right before the shock wave
-    # where Cp > -0.6 there is likely no shock and the drag is set to zero below; M1 = 1 there keeps that unused form finite
-    no_shock  = Cp_shock > -0.6
-    M1_0_star = xp.sqrt(xp.where(no_shock, 1., (5+Mach**2*xp.cos(delta[0])**2)/(1+0.7*Mach**2*xp.where(no_shock, 0., Cp_shock))**(2/7) - 5))
+    # Local Mach number right before the shock wave, from the local pressure (isentropic, normal to the sweep).
+    # A normal shock needs a supersonic upstream Mach number: for M1 < 1 the entropy would decrease across it
+    # (Anderson, Modern Compressible Flow, Sec. 3.6, Eq. 3.60). Where M1 <= 1 there is no shock and no wave drag;
+    # M1 = 1 there keeps the unused form finite, and the wave drag goes to zero smoothly at M1 = 1.
+    M1_squared = (5+Mach**2*xp.cos(delta[0])**2)/(1+0.7*Mach**2*Cp_shock)**(2/7) - 5
+    shock      = M1_squared > 1
+    M1_0_star  = xp.sqrt(xp.where(shock, M1_squared, 1.))
     
     # Calculate the wave drag coefficient
     constant = (xp.cos(delta[0])**4)/c_kappa * 0.243*((1+0.2*Mach*xp.cos(delta[0]))/(Mach*xp.cos(delta[0])))**3 # note, delta is assumed to remain constant across all conditions. 
     CD_wave_segment = constant*(M1_0_star - 1)**4*(2-M1_0_star)/(M1_0_star*(1+0.2*M1_0_star**2)) * 0.5
     
-    # Set the wave drag coefficient to 0 if there is no shock wave
-    CD_wave_segment = xp.where(no_shock, 0.0, CD_wave_segment)
+    # no wave drag without a shock
+    CD_wave_segment = xp.where(shock, CD_wave_segment, 0.0)
 
     S_segment        = chords[0]*dy[0]
     CD_wave_transonic = xp.sum(CD_wave_segment*S_segment/S_ref, axis=1, keepdims=True) 
