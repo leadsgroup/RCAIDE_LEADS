@@ -186,8 +186,8 @@ def design_fuel_cell(fuel_cell_stack):
         set_rated_current_density(fuel_cell_stack, rated_current_density, rated_power_density)
 
         fuel_cell_stack_conditions.current_density[0] = rated_current_density
-        m_dot_H2, V_fuel_cell, P_fuel_cell, _, _, _, _, _,_  =  evaluate_PEM(fuel_cell_stack,fuel_cell_stack_conditions)
-        m_dot_H2, V_fuel_cell, P_fuel_cell = m_dot_H2[0], V_fuel_cell[0], P_fuel_cell[0]
+        pem = evaluate_PEM(fuel_cell_stack, fuel_cell_stack_conditions, fuel_cell_stack_conditions.current_density[:, 0])
+        m_dot_H2, V_fuel_cell, P_fuel_cell = pem.mdot_H2[0], pem.voltage[0], pem.net_power[0]
 
         # store properties
         area_square_meters                          = fuel_cell.interface_area * 0.0001
