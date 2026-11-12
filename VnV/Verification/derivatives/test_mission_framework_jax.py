@@ -51,6 +51,13 @@ def main():
     check_mission_on_jax("tiltwing", tiltwing_mission(), check_derivatives,
                          frozen_steps=())
 
+    # every other powertrain: turbojet (numba matching stops at a 1e-8 change, as the turbofan), turboprop, piston
+    # engines, electric ducted fan, fuel cells, and series, parallel and all-electric hybrid networks
+    for name, folder, build, value_tolerance in powertrain_missions():
+        os.chdir(os.path.join(vnv_folder, "Verification", folder))
+        sys.path.insert(0, os.getcwd())
+        check_mission_on_jax(name, build(), check_derivatives, frozen_steps=(), value_tolerance=value_tolerance)
+
     os.chdir(start_folder)
     return
 
@@ -194,6 +201,65 @@ def tiltwing_mission():
     vehicle  = vtol.TW_vehicle_setup(False)
     analyses = vtol.TW_analyses_setup(vtol.TW_configs_setup(vehicle))
     return vtol.missions_setup(vtol.TW_mission_setup(analyses)).base_mission
+
+
+def powertrain_missions():
+    """(name, VnV folder, mission builder, value tolerance) for the powertrains beyond the 787 and the VTOLs."""
+    return [("concorde",              "network_turbojet",                   concorde_mission,           1e-6),
+            ("atr_72",                "network_turboprop",                  atr_72_mission,             1e-12),
+            ("cessna_172",            "network_internal_combustion_engine", cessna_mission,             1e-12),
+            ("cessna_constant_speed", "network_internal_combustion_engine", constant_speed_mission,     1e-12),
+            ("x_48",                  "network_electric",                   x_48_mission,               1e-12),
+            ("fuel_cell_pem",         "network_fuel_cell",                  lambda: fuel_cell_mission('PEM'),      1e-12),
+            ("fuel_cell_larminie",    "network_fuel_cell",                  lambda: fuel_cell_mission('Larminie'), 1e-12),
+            ("atr_72_series_hybrid",  "network_hybrid",                     lambda: hybrid_mission('series_hybrid'),   1e-12),
+            ("atr_72_parallel_hybrid","network_hybrid",                     lambda: hybrid_mission('parallel_hybrid'), 1e-12),
+            ("atr_72_all_electric",   "network_hybrid",                     lambda: hybrid_mission('all_electric'),    1e-12)]
+
+
+def vnv_mission(test, vehicle):
+    """The base mission of a VnV test script, for a vehicle it set up."""
+    analyses = test.analyses_setup(test.configs_setup(vehicle))
+    return test.missions_setup(test.mission_setup(analyses)).base_mission
+
+
+def concorde_mission():
+    import turbojet_network_test as test
+    return vnv_mission(test, test.vehicle_setup())
+
+
+def atr_72_mission():
+    import turboprop_network_test as test
+    return vnv_mission(test, test.vehicle_setup())
+
+
+def cessna_mission():
+    import ICE_test as test
+    return vnv_mission(test, test.vehicle_setup())
+
+
+def constant_speed_mission():
+    import ICE_constant_speed_test as test
+    vehicle  = test.ICE_CS(test.vehicle_setup())
+    analyses = test.analyses_setup(test.configs_setup(vehicle))
+    return test.missions_setup(analyses).base_mission
+
+
+def x_48_mission():
+    import electric_ducted_fan_aircraft_test as test
+    return vnv_mission(test, test.vehicle_setup(True, 'Rankine_Froude_Momentum_Theory'))
+
+
+def fuel_cell_mission(model):
+    import hydrogen_fuel_cell_aircraft_test as test
+    return vnv_mission(test, test.vehicle_setup(model))
+
+
+def hybrid_mission(kind):
+    import hybrid_network_test as test
+    vehicle  = getattr(test, kind + '_vehicle_setup')()
+    analyses = test.analyses_setup(getattr(test, kind + '_configs_setup')(vehicle), weights_method='electric')
+    return test.missions_setup(analyses, 'optimize', 'energy').base_mission
 
 
 if __name__ == '__main__':
