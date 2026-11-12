@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Compute Net Convected Heat
@@ -83,27 +84,30 @@ def air_cooled_performance(HAS,battery_module,coolant_line, Q_heat_gen,T_cell,st
 
         T        = (T_ambient+T_cell)/2
         Re_max   = V_max*D_cell/nu_coolant
-        if np.all(Re_max > 10E2):
-            C = 0.35*((S_T/S_L)**0.2)
-            m = 0.6
-        else:
-            C = 0.51
-            m = 0.5
+        # one correlation range for every point, as chosen by the lowest Reynolds number
+        xp       = array_namespace(Re_max, T_cell)
+        upper    = xp.all(Re_max > 10E2)
+        C        = xp.where(upper, 0.35*((S_T/S_L)**0.2), 0.51)
+        m        = xp.where(upper, 0.6, 0.5)
 
         Pr_w_coolant          = HAS.cooling_fluid.compute_prandtl_number(T)
         Nu                    = C*(Re_max**m)*(Pr_coolant**0.36)*((Pr_coolant/Pr_w_coolant)**0.25)
         h                     = Nu*K_coolant/D_cell
         Tw_Ti                 = (T - T_ambient)
-        Tw_To                 = Tw_Ti * np.exp((-np.pi*D_cell*n_total_module*h)/(rho_coolant*V_coolant*Nn*S_T*Cp_coolant))
-        dT_lm                 = (Tw_Ti - Tw_To)/np.log(Tw_Ti/Tw_To)
-        Q_convec              = heat_transfer_efficiency*h*np.pi*D_cell*H_cell*n_total_module*dT_lm
-        Q_convec[Tw_Ti == 0.] = 0.
+        decay                 = xp.exp((-np.pi*D_cell*n_total_module*h)/(rho_coolant*V_coolant*Nn*S_T*Cp_coolant))
+        Tw_To                 = Tw_Ti * decay
+        # no temperature difference, no heat; a unit difference keeps the unused log-mean finite
+        uniform               = Tw_Ti == 0.
+        Tw_Ti_safe            = xp.where(uniform, 1., Tw_Ti)
+        Tw_To_safe            = Tw_Ti_safe * decay
+        dT_lm                 = (Tw_Ti_safe - Tw_To_safe)/xp.log(Tw_Ti_safe/Tw_To_safe)
+        Q_convec              = xp.where(uniform, 0., heat_transfer_efficiency*h*np.pi*D_cell*H_cell*n_total_module*dT_lm)
         Q_heat_gen_tot        = Q_heat_gen*n_total_module
         T_outlet              = T_ambient + Tw_To
 
     Q_net                     = Q_heat_gen_tot - Q_convec
     dT_dt                     = Q_net/(cell_mass*n_total_module*Cp)
-    effectiveness             = (T_outlet - T_ambient) / np.where(T_cell == T_ambient, 1., T_cell - T_ambient)
+    effectiveness             = (T_outlet - T_ambient) / array_namespace(T_cell, T_ambient).where(T_cell == T_ambient, 1., T_cell - T_ambient)
 
     HAS_conditions            = state.conditions.energy.distributors[coolant_line.tag][HAS.tag]
     HAS_conditions.heat_removed  = Q_convec
