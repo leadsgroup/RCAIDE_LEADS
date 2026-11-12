@@ -32,6 +32,15 @@ from concurrent.futures                import ThreadPoolExecutor
 from RCAIDE.Framework.Core            import Data, orientation_transpose
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_induced_velocity_soa, initialize_wake_geometry, initialize_lifting_line
 
+# One module-level ThreadPoolExecutor, created on first use and reused across every
+# free_wake() call for the rest of the process -- free_wake() used to create and
+# shutdown() a fresh pool on every call (every outer CT iteration of every
+# evaluate_bound_vortex_circulation() call), paying thread-creation/teardown cost on top of
+# the actual (i,cp,j) task dispatch every single time. free_wake() is only ever called from
+# evaluate_bound_vortex_circulation()'s single-threaded outer loop (never concurrently with
+# itself), so one shared pool is safe with no locking.
+_executor = ThreadPoolExecutor()
+
 def free_wake(rotor, wake_inputs, conditions):
     """Relaxes the wake of every rotor whose wake_inputs.free_wake is True (default True), with
     induction from the bound vortices and wakes of ALL rotors passed in. Rotors with
@@ -99,9 +108,8 @@ def free_wake(rotor, wake_inputs, conditions):
     blade_src = [[(to_frame(i, s, gs.Bgrid_start), to_frame(i, s, gs.Bgrid_end)) for s, gs in enumerate(G)] for i in range(n_rot)]
 
     # Each (i,cp,j) task below is fully independent and writes to a disjoint V_ind slice, so
-    # this is safe to run across threads with no locking. One ThreadPoolExecutor is created
-    # here and reused for every compute_V_ind call in this invocation.
-    _executor = ThreadPoolExecutor()
+    # this is safe to run across threads with no locking. Uses the module-level _executor
+    # (created once, reused across every free_wake() call in the process -- see top of file).
 
     # Gamma_c/rc_c/sign depend only on (source rotor s, control point cp) -- NOT on the
     # azimuth column j -- but _compute_one used to re-concatenate them from scratch on every
@@ -110,12 +118,32 @@ def free_wake(rotor, wake_inputs, conditions):
     # are only n_rot*ctrl_pts (<=48 on this vehicle) distinct values. Precomputed once here
     # instead; purely a caching change, no math changes (same concatenation, same sign flip,
     # just computed once per (s,cp) instead of once per (i,cp,j,s)).
+    # rc_sq_c/rc_qd_c = rc_c**2/rc_c**4 -- biot_savart_induced_velocity_soa recomputed these
+    # from rc_c via np.atleast_1d/np.asarray/**2/**4 on every one of the ~8.3M (i,cp,j,s) calls
+    # even though rc_c itself is this same (s,cp)-only-dependent cached array (py-spy --gil
+    # sample, 2026-11-11, scratchpad/gil_raw.txt: 246 GIL-held samples land inside that
+    # wrapper). Same class of fix as Gamma_c/rc_c above -- precomputed once here, passed
+    # through as optional rc_sq/rc_qd kwargs so every other call site (which doesn't have
+    # them cached) is unaffected.
     _Gamma_rc_sign_cache = {}
     for s, gs in enumerate(G):
         for cp in range(ctrl_pts):
             Gamma_c = np.concatenate((gs.Gamma_w_flat[cp], gs.Gamma_b_flat[cp]))
             rc_c    = np.concatenate((gs.rcvf_flat[cp],    gs.rcb_flat[cp]))
-            _Gamma_rc_sign_cache[(s, cp)] = (Gamma_c, rc_c, bool(gs.CW[cp]))
+            _Gamma_rc_sign_cache[(s, cp)] = (Gamma_c, rc_c, rc_c**2, rc_c**4, bool(gs.CW[cp]))
+
+    # Data.__getattribute__ (RCAIDE's custom attribute accessor) is a real, measurable
+    # per-call cost (py-spy --gil sampling of a live Vertical_Climb run, 2026-11-11,
+    # scratchpad/gil_raw.txt: samples land directly on Data.__getattribute__ called from
+    # _compute_one). gi.B/gi.N_wake/gs.B/gs.N_wake/gs.Nr_s are fixed rotor-geometry ints
+    # that never change across this whole free_wake() call, but _compute_one re-fetched
+    # them through that accessor up to 8 times per (i,cp,j,s) task. Cached once here as
+    # plain Python ints/lists instead -- same values, zero math change.
+    _B       = [g.B for g in G]
+    _Nwake1  = [g.N_wake + 1 for g in G]
+    _BxNwake = [g.B * g.N_wake for g in G]
+    _BxNrs   = [g.B * g.Nr_s for g in G]
+    _vc      = [g.vc_correction for g in G]
 
     def compute_V_ind(field_grids, source_grids):
         """Induced velocity at the wake nodes of every relaxed rotor i (its own hub frame),
@@ -125,27 +153,34 @@ def free_wake(rotor, wake_inputs, conditions):
         wake_src = {i: [to_frame(i, s, source_grids[s]) for s in range(n_rot)] for i in free_idx}
 
         def _compute_one(i, cp, j):
-            gi = G[i]
-            M  = gi.B*(gi.N_wake+1)
+            M  = _B[i]*_Nwake1[i]
             # P is the same field-point set for every rotor s and for both the wake and blade
             # contribution below -- split to contiguous SoA components once per task instead of
             # inside biot_savart_induced_velocity on every one of the 2*n_rot calls that used to
             # happen per task (was the single largest GIL-held, un-parallelizable cost left after
             # the Biot-Savart kernels themselves were made nogil -- see commit ee5e13a3e3 and the
             # real-mission cProfile it was based on).
-            P_xyz = field_grids[i][cp, :, j, :, :].reshape(M, 3)
-            Px = np.ascontiguousarray(P_xyz[:, 0])
-            Py = np.ascontiguousarray(P_xyz[:, 1])
-            Pz = np.ascontiguousarray(P_xyz[:, 2])
+            # field_grids[i][cp,:,j,:,:] is a non-contiguous view (cp/j are fixed out of a 5D
+            # array, so the remaining B/(N_wake+1) axes aren't adjacent in memory) -- the old
+            # .reshape(M,3) therefore forced a full M*3-element copy, and the three
+            # ascontiguousarray() calls on its columns each copied another M elements on top
+            # of that (6*M total). Extracting each component straight from the 5D view instead
+            # copies only the M elements that component actually needs (3*M total, the minimum
+            # possible for 3 separate SoA output arrays); each per-component ascontiguousarray
+            # result is already laid out (B, N_wake+1) C-contiguous, so .reshape(M) after it is
+            # a free view, not a copy. Same elements, same values, half the memory traffic.
+            Px = np.ascontiguousarray(field_grids[i][cp, :, j, :, 0]).reshape(M)
+            Py = np.ascontiguousarray(field_grids[i][cp, :, j, :, 1]).reshape(M)
+            Pz = np.ascontiguousarray(field_grids[i][cp, :, j, :, 2]).reshape(M)
             sumx = np.zeros(M); sumy = np.zeros(M); sumz = np.zeros(M)
-            for s, gs in enumerate(G):
+            for s in range(n_rot):
                 k = colmap[i][s][j]
                 wake_s    = wake_src[i][s][cp, :, k, :, :]
-                r_w_start = wake_s[:, :-1, :].reshape(gs.B*gs.N_wake, 3)
-                r_w_end   = wake_s[:,  1:, :].reshape(gs.B*gs.N_wake, 3)
+                r_w_start = wake_s[:, :-1, :].reshape(_BxNwake[s], 3)
+                r_w_end   = wake_s[:,  1:, :].reshape(_BxNwake[s], 3)
                 A_s, B_s = blade_src[i][s]
-                A_blade  = A_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
-                B_blade  = B_s[cp, :, k].reshape(gs.B*gs.Nr_s, 3)
+                A_blade  = A_s[cp, :, k].reshape(_BxNrs[s], 3)
+                B_blade  = B_s[cp, :, k].reshape(_BxNrs[s], 3)
                 # Fused Biot-Savart + contraction, SoA entry point (skips materializing the
                 # (M,N,3) influence tensor, its separate einsum pass, AND the (M,3) stack this
                 # function's non-SoA sibling would otherwise do on every call) -- bit-identical
@@ -177,7 +212,7 @@ def free_wake(rotor, wake_inputs, conditions):
                 # Gamma_c/rc_c/CW depend only on (s,cp), not j -- precomputed once above
                 # instead of re-concatenated on every (i,cp,j) task (see
                 # _Gamma_rc_sign_cache's comment).
-                Gamma_c, rc_c, is_cw = _Gamma_rc_sign_cache[(s, cp)]
+                Gamma_c, rc_c, rc_sq_c, rc_qd_c, is_cw = _Gamma_rc_sign_cache[(s, cp)]
                 # Cx/Cy/Cz/Dx/Dy/Dz are np.concatenate(...) results -- already freshly
                 # allocated and C-contiguous by construction, so the ascontiguousarray()
                 # this used to wrap them in was a pure no-op paying for a redundant check
@@ -185,15 +220,15 @@ def free_wake(rotor, wake_inputs, conditions):
                 # 2026-11-11). Removed; same arrays, same memory layout, zero behavior change.
                 vx, vy, vz = biot_savart_induced_velocity_soa(
                     Px, Py, Pz, Cx, Cy, Cz, Dx, Dy, Dz,
-                    Gamma_c, rc_c, gs.vc_correction)
+                    Gamma_c, rc_c, _vc[s], rc_sq=rc_sq_c, rc_qd=rc_qd_c)
 
                 if is_cw:
                     sumx -= vx; sumy -= vy; sumz -= vz
                 else:
                     sumx += vx; sumy += vy; sumz += vz
-            V_ind[i][cp, :, j, :, 0] = sumx.reshape(gi.B, gi.N_wake+1)
-            V_ind[i][cp, :, j, :, 1] = sumy.reshape(gi.B, gi.N_wake+1)
-            V_ind[i][cp, :, j, :, 2] = sumz.reshape(gi.B, gi.N_wake+1)
+            V_ind[i][cp, :, j, :, 0] = sumx.reshape(_B[i], _Nwake1[i])
+            V_ind[i][cp, :, j, :, 1] = sumy.reshape(_B[i], _Nwake1[i])
+            V_ind[i][cp, :, j, :, 2] = sumz.reshape(_B[i], _Nwake1[i])
 
         tasks = [(i, cp, j) for i in free_idx for cp in range(ctrl_pts) for j in range(G[i].J)]
         list(_executor.map(lambda t: _compute_one(*t), tasks))
@@ -207,31 +242,28 @@ def free_wake(rotor, wake_inputs, conditions):
     grids    = [g.r_wake_grid for g in G]
 
     converged = False
-    try:
-        for n in range(max_iter):
-            V_ind1 = compute_V_ind(grids, grids)
-            r_pred = list(grids)
-            for i in free_idx:
-                r_pred[i] = _pseudoimplicit_update(G[i], grids[i], V_ind1[i])
+    for n in range(max_iter):
+        V_ind1 = compute_V_ind(grids, grids)
+        r_pred = list(grids)
+        for i in free_idx:
+            r_pred[i] = _pseudoimplicit_update(G[i], grids[i], V_ind1[i])
 
-            V_ind2 = compute_V_ind(r_pred, r_pred)
-            residuals = {}
-            new_grids = list(grids)
-            for i in free_idx:
-                gi    = G[i]
-                V_avg = 0.5*(V_ind1[i] + V_ind2[i])
-                r_new = _pseudoimplicit_update(gi, grids[i], V_avg)
-                r_new = gi.relax*r_new + (1.0-gi.relax)*grids[i]
-                residuals[i] = np.sqrt(np.mean((r_new[gi.valid_cp] - grids[i][gi.valid_cp])**2)) / gi.R if np.any(gi.valid_cp) else 0.0
-                new_grids[i] = r_new
-            grids = new_grids
+        V_ind2 = compute_V_ind(r_pred, r_pred)
+        residuals = {}
+        new_grids = list(grids)
+        for i in free_idx:
+            gi    = G[i]
+            V_avg = 0.5*(V_ind1[i] + V_ind2[i])
+            r_new = _pseudoimplicit_update(gi, grids[i], V_avg)
+            r_new = gi.relax*r_new + (1.0-gi.relax)*grids[i]
+            residuals[i] = np.sqrt(np.mean((r_new[gi.valid_cp] - grids[i][gi.valid_cp])**2)) / gi.R if np.any(gi.valid_cp) else 0.0
+            new_grids[i] = r_new
+        grids = new_grids
 
-            residual = max(residuals.values())
-            if all(residuals[i] < G[i].tol for i in free_idx):
-                converged = True
-                break
-    finally:
-        _executor.shutdown()
+        residual = max(residuals.values())
+        if all(residuals[i] < G[i].tol for i in free_idx):
+            converged = True
+            break
 
     tags = ', '.join(G[i].tag for i in free_idx)
     if converged:

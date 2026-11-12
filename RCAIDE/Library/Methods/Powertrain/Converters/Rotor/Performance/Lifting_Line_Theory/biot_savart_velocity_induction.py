@@ -684,7 +684,7 @@ def _dispatch_soa_kernel(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, rc_qd_ar
         return _biot_savart_kernel_2d_contracted_vc4_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, rc_sq_arr, tol_f, Gamma_arr)
 
 
-def biot_savart_induced_velocity_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, Gamma, rc=1e-6, vc_correction=1, tol=1e-6):
+def biot_savart_induced_velocity_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, Gamma, rc=1e-6, vc_correction=1, tol=1e-6, rc_sq=None, rc_qd=None):
     """Same computation as biot_savart_induced_velocity, for a caller that already
     has P/A/B split into contiguous (M,)/(N,) per-axis arrays (free_wake.py's
     _compute_one, which builds its field/source/blade points in this layout up
@@ -696,18 +696,28 @@ def biot_savart_induced_velocity_soa(Px, Py, Pz, Ax, Ay, Az, Bx, By, Bz, Gamma, 
     wise -- and pay for exactly one np.stack at the point it actually needs an
     (M,3) array, rather than stacking here just to be re-split there.
 
+    rc_sq/rc_qd: optional pre-squared/pre-4th-powered rc, for a caller (free_wake.py's
+    _compute_one) that already has rc fixed across many calls and cached rc**2/rc**4
+    once rather than paying for np.atleast_1d/np.asarray/**2/**4 on rc again on every
+    call -- same values as computing them from rc here, just not recomputed. rc itself
+    is still accepted/used when either is omitted, so every other call site is unaffected.
+
     Only the Numba/SoA fast path is implemented here (no numpy fallback): every
     call site for this function already requires Numba (free_wake.py's own
     ThreadPoolExecutor-based parallelism assumes the GIL-releasing Numba kernels
     are in use), so there is no scenario where this gets called without
     _NUMBA_AVAILABLE being true.
     """
-    N = Ax.shape[0]
-    rc_1d = np.atleast_1d(np.asarray(rc, dtype=float))
-    if rc_1d.shape[0] == 1 and N > 1:
-        rc_1d = np.full(N, rc_1d[0])
-    rc_sq_arr = rc_1d**2
-    rc_qd_arr = rc_1d**4
+    if rc_sq is not None and rc_qd is not None:
+        rc_sq_arr = rc_sq
+        rc_qd_arr = rc_qd
+    else:
+        N = Ax.shape[0]
+        rc_1d = np.atleast_1d(np.asarray(rc, dtype=float))
+        if rc_1d.shape[0] == 1 and N > 1:
+            rc_1d = np.full(N, rc_1d[0])
+        rc_sq_arr = rc_1d**2
+        rc_qd_arr = rc_1d**4
     Gamma_arr = np.asarray(Gamma, dtype=float)
     vc_int = int(vc_correction)
     tol_f  = float(tol)
