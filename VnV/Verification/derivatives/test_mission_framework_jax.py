@@ -7,10 +7,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import os
 import sys
-import copy
 import numpy as np
 
-from RCAIDE.Framework.Core import Data, array_namespace
+from RCAIDE.Framework.Core import array_namespace
+from RCAIDE.Library.Mission.Solver.compiled_residual import compile_segment, residual_of_inputs, segment_inputs, read_input, unknowns_vector
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  main
@@ -21,7 +21,10 @@ def main():
     # electric rotor network (rotor, motor, ESC, bus, battery) and every other powertrain are written once for NumPy
     # and JAX. For each distinct kind of segment across the missions below (segment type, propulsors, flight regime;
     # see segment_signature), this runs the segment's own iterate steps on JAX and checks compiled values and forward
-    # and reverse derivatives against the NumPy path. RCAIDE_JAX_EVERY_SEGMENT=1 checks every segment instead.
+    # and reverse derivatives against the NumPy path, with respect to the unknowns and to every float input the
+    # residual reads (vehicle, surrogate tables, engine design, initials). It also checks that no input is frozen into
+    # the compiled residual, so one compiled residual serves every design with the same structure.
+    # RCAIDE_JAX_EVERY_SEGMENT=1 checks every segment instead.
     try:
         import jax
     except ImportError:
@@ -40,25 +43,21 @@ def main():
     sys.path.insert(0, os.getcwd())
     # every iterate step of the 787 runs on JAX; the NumPy engine matching stops at a 1e-8 change and the JAX one
     # converges fully (its implicit derivative needs the matched state), so values agree to about 1e-7
-    check_mission_on_jax("boeing_787", boeing_787_mission(), check_derivatives,
-                         frozen_steps=(), value_tolerance=1e-6)
+    check_mission_on_jax("boeing_787", boeing_787_mission(), check_derivatives, value_tolerance=1e-6)
 
     # every iterate step of the tiltrotor, stopped rotor and tilt wing runs on JAX
     os.chdir(os.path.join(vnv_folder, "Verification", "network_vtol"))
     sys.path.insert(0, os.getcwd())
-    check_mission_on_jax("tiltrotor", tiltrotor_mission(), check_derivatives,
-                         frozen_steps=())
-    check_mission_on_jax("stopped_rotor", stopped_rotor_mission(), check_derivatives,
-                         frozen_steps=())
-    check_mission_on_jax("tiltwing", tiltwing_mission(), check_derivatives,
-                         frozen_steps=())
+    check_mission_on_jax("tiltrotor", tiltrotor_mission(), check_derivatives)
+    check_mission_on_jax("stopped_rotor", stopped_rotor_mission(), check_derivatives)
+    check_mission_on_jax("tiltwing", tiltwing_mission(), check_derivatives)
 
     # every other powertrain: turbojet (numba matching stops at a 1e-8 change, as the turbofan), turboprop, piston
     # engines, electric ducted fan, fuel cells, and series, parallel and all-electric hybrid networks
     for name, folder, build, value_tolerance in powertrain_missions():
         os.chdir(os.path.join(vnv_folder, "Verification", folder))
         sys.path.insert(0, os.getcwd())
-        check_mission_on_jax(name, build(), check_derivatives, frozen_steps=(), value_tolerance=value_tolerance)
+        check_mission_on_jax(name, build(), check_derivatives, value_tolerance=value_tolerance)
 
     os.chdir(start_folder)
     return
@@ -66,7 +65,7 @@ def main():
 # ----------------------------------------------------------------------------------------------------------------------
 #  Checks
 # ----------------------------------------------------------------------------------------------------------------------
-def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_only=(), value_tolerance=1e-12):
+def check_mission_on_jax(name, mission, check_derivatives, value_tolerance=1e-12):
     mission.process.initialize(mission)
 
     # initialize each segment from the previous one and iterate it once with NumPy, as a mission solve starts
@@ -85,15 +84,67 @@ def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_
             continue
         CHECKED_SIGNATURES.add(signature)
 
-        residual = Segment_Residual(segment, frozen_steps)
-        report   = check_derivatives(residual, (residual.x0,), value_tolerance=value_tolerance, derivative_tolerance=1e-6)
-        # unknowns that change the residual through the steps checked here; with none, the derivative check is empty
+        # values and derivatives with respect to the unknowns, against NumPy
+        compiled, inputs = compile_segment(segment)
+        x0       = unknowns_vector(segment.state.unknowns)
+        def residual(x):
+            xp = array_namespace(x)
+            return residual_of_inputs(segment, x, compiled.paths, [xp.asarray(value) for value in inputs])
+        report   = check_derivatives(residual, (x0,), value_tolerance=value_tolerance, derivative_tolerance=1e-6)
         reaching = int(np.count_nonzero(report.input_sensitivity[0]))
-        print(f"  {name} {tag} {signature}: {reaching} of {residual.x0.size} unknowns reach the residual, "
-              f"values {report.value_error:.1e}, derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
+
+        # the compiled residual shared by every design with this structure: no input frozen in, and its derivative
+        # with respect to the inputs
+        frozen   = check_no_frozen_input(segment, compiled, x0)
+        along    = check_input_derivative(compiled, x0, inputs)
+        print(f"  {name} {tag} {signature}: {reaching} of {x0.size} unknowns and {len(compiled.paths)} inputs reach the residual, "
+              f"values {report.value_error:.1e}, derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}, "
+              f"every input changed {frozen:.1e}, input derivative {along:.1e}")
         assert report.passed, f"{name} {tag}: JAX check failed, {report}"
-        assert (reaching == 0) == (tag in values_only), f"{name} {tag}: {reaching} unknowns reach the residual"
+        assert reaching > 0, f"{name} {tag}: no unknown reaches the residual"
+        assert frozen <= max(value_tolerance, 1e-10), f"{name} {tag}: an input is frozen into the compiled residual, {frozen}"
+        assert along <= 1e-6, f"{name} {tag}: derivative with respect to the inputs, {along}"
     return
+
+
+def check_no_frozen_input(segment, compiled, x0):
+    """
+    Changes every float input of the segment by about 1e-4 and compares NumPy with the compiled residual, which is
+    given only the inputs its trace reads. An input that NumPy reads but the compiled residual holds as a constant
+    shows as a difference. Also checks that asking for the compiled residual again does not compile again.
+    """
+    references = segment_inputs(segment)[0]
+    rng        = np.random.default_rng(0)
+    paths      = [reference[3] for reference in references]
+    values     = [np.asarray(read_input(reference), dtype=float) * (1 + 1e-4 * rng.uniform(0.5, 1.0)) for reference in references]
+    expected   = residual_of_inputs(segment, x0, paths, values)
+
+    by_path    = dict(zip(paths, values))
+    result     = np.asarray(compiled.residual(x0, tuple(by_path[path] for path in compiled.paths)))
+
+    again, inputs = compile_segment(segment)
+    traces        = compiled.traces
+    compiled.residual(x0, inputs)
+    assert again is compiled and compiled.traces == traces, "the compiled residual was compiled again for the same segment"
+    return float(np.max(np.abs(result - expected)) / max(np.max(np.abs(expected)), 1e-300))
+
+
+def check_input_derivative(compiled, x0, inputs):
+    """
+    The compiled derivative of the residual along a random relative change of every input it reads, against central
+    differences of the compiled residual. The inputs are first moved by about 1e-3, off the knots of the
+    piecewise-linear tables some of them sit on (a flap deflection at a tabulated angle).
+    """
+    rng       = np.random.default_rng(1)
+    base      = tuple(value * (1 + 1e-3 * rng.uniform(0.5, 1.0, value.shape)) for value in inputs)
+    direction = tuple(value * rng.standard_normal(value.shape) for value in base)
+    exact     = np.asarray(compiled.input_derivative(x0, base, direction))
+    errors    = []
+    for h in (1e-4, 1e-5, 1e-6):
+        plus   = np.asarray(compiled.residual(x0, tuple(value + h * change for value, change in zip(base, direction))))
+        minus  = np.asarray(compiled.residual(x0, tuple(value - h * change for value, change in zip(base, direction))))
+        errors.append(float(np.max(np.abs(exact - (plus - minus) / (2 * h))) / max(np.max(np.abs(exact)), 1e-300)))
+    return min(errors)
 
 
 def powertrain_component_types(vehicle):
@@ -125,89 +176,6 @@ def segment_signature(segment):
     mach       = float(np.max(segment.state.conditions.freestream.mach_number))
     regime     = 'subsonic' if mach < 0.7 else ('transonic' if mach < 1.0 else 'supersonic')
     return (type(segment).__name__, tuple(propulsors), regime)
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  The residual of one segment as a function of its unknowns
-# ----------------------------------------------------------------------------------------------------------------------
-class Segment_Residual:
-    """residual(x): the segment's iterate steps on a fresh copy of its state, with unknowns x, NumPy or JAX. The
-    frozen steps (not yet written for JAX) are skipped, so their outputs stay at the values of the NumPy iterate."""
-
-    def __init__(self, segment, frozen_steps):
-        self.segment = segment
-        self.state   = segment.state
-        self.steps   = iterate_steps(segment.process.iterate, frozen_steps)
-        self.x0      = np.concatenate([np.ravel(value) for value in float_leaves(self.state.unknowns)])
-
-    def __call__(self, x):
-        xp      = array_namespace(x)
-        segment = self.segment
-
-        # fresh copy of the state each call: a JAX evaluation must not write into the NumPy state
-        fresh = copy_state(self.state, xp.asarray if xp is not np else np.array)
-        set_unknowns(fresh.unknowns, self.state.unknowns, x)
-
-        # segment.conditions is an alias of segment.state.conditions, so both are swapped
-        segment.state, segment.conditions = fresh, fresh.conditions
-        try:
-            for step in self.steps:
-                step(segment)
-            return xp.concatenate([xp.ravel(value) for value in float_leaves(fresh.residuals)])
-        finally:
-            segment.state, segment.conditions = self.state, self.state.conditions
-
-
-def iterate_steps(process, frozen_steps, frozen=False):
-    """The iterate process as a flat list of functions, in order, without the frozen steps."""
-    steps = []
-    for key, step in process.items():
-        skip = frozen or key in frozen_steps
-        if hasattr(step, 'items'):
-            steps += iterate_steps(step, frozen_steps, skip)
-        elif not skip:
-            steps.append(step)
-    return steps
-
-
-def float_leaves(tree):
-    """Float arrays of a state branch, in a fixed order."""
-    leaves = []
-    for key, value in dict.items(tree):
-        if isinstance(value, dict):
-            leaves += float_leaves(value)
-        elif array_namespace(value) is not np or (isinstance(value, np.ndarray) and value.dtype.kind == 'f'):
-            leaves.append(value)
-    return leaves
-
-
-def set_unknowns(tree, numpy_tree, x):
-    """Writes the flat vector x into the unknowns of tree, in the order and shapes of the NumPy unknowns."""
-    start = 0
-    for key, value in dict.items(numpy_tree):
-        if isinstance(value, dict):
-            start += set_unknowns(tree[key], value, x[start:])
-        elif isinstance(value, np.ndarray) and value.dtype.kind == 'f':
-            dict.__setitem__(tree, key, x[start:start + value.size].reshape(value.shape))
-            start += value.size
-    return start
-
-
-def copy_state(state, convert):
-    """A copy of the state tree with its float arrays passed through convert; initials are shared, not copied."""
-    new = type(state)()
-    dict.clear(new)
-    # object attributes too (such as the conditions size), but not the binding to the preallocated layout
-    new.__dict__.update({key: value for key, value in state.__dict__.items() if key != 'segment_layout'})
-    for key, value in dict.items(state):
-        if key == 'initials':
-            dict.__setitem__(new, key, value)
-        elif isinstance(value, Data):
-            dict.__setitem__(new, key, copy_state(value, convert))
-        elif isinstance(value, np.ndarray) and value.dtype.kind == 'f':
-            dict.__setitem__(new, key, convert(value))
-        else:
-            dict.__setitem__(new, key, copy.copy(value))
-    return new
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Missions

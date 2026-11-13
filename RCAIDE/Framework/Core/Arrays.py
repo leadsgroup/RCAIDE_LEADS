@@ -30,6 +30,12 @@ def set_at(A, index, value):
     import jax.numpy as jnp
     return jnp.asarray(A).at[index].set(value)
  
+def safe_sqrt(A):
+    """Square root with a zero derivative at zero, where the exact one is infinite and makes JAX gradients NaN."""
+    xp       = array_namespace(A)
+    positive = A > 0
+    return xp.where(positive, xp.sqrt(xp.where(positive, A, 1.)), 0.)
+
 def atleast_2d_col(A):
     """Makes a 2D array in column format
 

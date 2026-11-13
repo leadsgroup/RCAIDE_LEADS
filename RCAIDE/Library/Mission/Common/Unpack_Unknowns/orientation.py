@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
 
-from RCAIDE.Framework.Core import array_namespace, set_at
+from RCAIDE.Framework.Core import array_namespace, set_at, safe_sqrt
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Unpack Unknowns
@@ -143,7 +143,7 @@ def sideslip_angle(segment):
         # beta = arcsin(v/V), Etkin & Reid (1.6,4); zero where the vehicle is not moving
         V  = segment.state.conditions.frames.inertial.velocity_vector
         xp = array_namespace(V)
-        V  = xp.linalg.norm(V, axis=1)
+        V  = safe_sqrt(xp.sum(V**2, axis=1))
         # divide only where the vehicle moves; V_safe keeps the unused division finite, since JAX differentiates
         # both branches of a where and a division by zero there would make the gradient NaN
         moving = V > 0.

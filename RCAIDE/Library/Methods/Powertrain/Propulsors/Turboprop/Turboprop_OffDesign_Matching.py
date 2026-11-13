@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.pack_fields import pack_fields
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
     mfp, compressor_pressure_ratio, nozzle_state, OffDesignMatchingError, njit, constant_efficiency_pressure_ratio_kernel,
     nozzle_state_kernel, mass_flow_parameter_kernel)
@@ -46,11 +47,11 @@ TURBOPROP_KERNEL_OUTPUT_FIELDS   = ['tau_r', 'pi_r', 'pi_d', 'tau_lambda', 'tau_
 
 def pack_turboprop_design_constants(design_constants):
     """Design constants as a float array in TURBOPROP_DESIGN_CONSTANT_FIELDS order (for the compiled kernel)."""
-    return np.array([float(getattr(design_constants, field, 0.0)) for field in TURBOPROP_DESIGN_CONSTANT_FIELDS])
+    return pack_fields([getattr(design_constants, field, 0.0) for field in TURBOPROP_DESIGN_CONSTANT_FIELDS])
 
 def pack_turboprop_reference_point(reference_point):
     """Reference point as a float array in TURBOPROP_REFERENCE_POINT_FIELDS order (for the compiled kernel)."""
-    return np.array([float(reference_point[field]) for field in TURBOPROP_REFERENCE_POINT_FIELDS])
+    return pack_fields([reference_point[field] for field in TURBOPROP_REFERENCE_POINT_FIELDS])
 
 # not cached: numba's cache does not notice changes to the compiled functions it calls from other files, so a cached
 # copy could keep running an old version of them; compiling takes about half a second per process

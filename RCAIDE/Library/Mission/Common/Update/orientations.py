@@ -75,7 +75,9 @@ def orientations(segment):
 
     # calculate angle of attack
     xp    = array_namespace(V_inertial, body_inertial_rotations)
-    alpha = xp.arctan2(V_stability[:,2],V_stability[:,0])[:,None] 
+    # at zero airspeed (hover) the angle is undefined and its derivative is 0/0: it is set to zero there
+    at_rest = (V_stability[:,2] == 0) & (V_stability[:,0] == 0)
+    alpha   = xp.arctan2(V_stability[:,2], xp.where(at_rest, 1., V_stability[:,0]))[:,None] 
 
     # pack aerodynamics angles
     conditions.aerodynamics.angles.alpha = alpha

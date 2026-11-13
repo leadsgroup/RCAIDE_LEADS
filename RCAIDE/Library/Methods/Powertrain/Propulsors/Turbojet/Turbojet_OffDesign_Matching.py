@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 from RCAIDE.Framework.Core import Data, array_namespace
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.pack_fields import pack_fields
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
     compressor_pressure_ratio, OffDesignMatchingError, njit, constant_efficiency_pressure_ratio_kernel)
 
@@ -32,11 +33,11 @@ TURBOJET_KERNEL_OUTPUT_FIELDS   = ['tau_r', 'pi_r', 'pi_d', 'tau_lambda', 'tau_c
 
 def pack_turbojet_design_constants(design_constants):
     """Design constants as a float array in TURBOJET_DESIGN_CONSTANT_FIELDS order (for the compiled kernel)."""
-    return np.array([float(getattr(design_constants, field, 0.0)) for field in TURBOJET_DESIGN_CONSTANT_FIELDS])
+    return pack_fields([getattr(design_constants, field, 0.0) for field in TURBOJET_DESIGN_CONSTANT_FIELDS])
 
 def pack_turbojet_reference_point(reference_point):
     """Reference point as a float array in TURBOJET_REFERENCE_POINT_FIELDS order (for the compiled kernel)."""
-    return np.array([float(reference_point[field]) for field in TURBOJET_REFERENCE_POINT_FIELDS])
+    return pack_fields([reference_point[field] for field in TURBOJET_REFERENCE_POINT_FIELDS])
 
 # not cached: numba's cache does not notice changes to the compiled functions it calls from other files, so a cached
 # copy could keep running an old version of them; compiling takes about half a second per process
@@ -410,8 +411,8 @@ def apply_turbojet_afterburner(result, design_constants, afterburner, working_fl
     ----------
     [1] Mattingly, J. D., "Elements of Gas Turbine Propulsion", McGraw-Hill, 1996, Sec. 8-4.
     """
-    xp  = array_namespace(result.thrust, static_temperature, static_pressure)
     Tt7 = afterburner.turbine_inlet_temperature
+    xp  = array_namespace(result.thrust, static_temperature, static_pressure, Tt7)
     T0, P0 = static_temperature, static_pressure
     Tt5 = result.tau_lambda * design_constants.tau_tH * result.tau_tL * design_constants.cpc * T0 / design_constants.cpt
     # the afterburner acts where it heats the turbine exit flow of a matched point; elsewhere the result is unchanged
@@ -421,8 +422,8 @@ def apply_turbojet_afterburner(result, design_constants, afterburner, working_fl
     gamma_c    = dc.gamma_c
     Rc         = (gamma_c - 1) / gamma_c * dc.cpc
     V0         = xp.sqrt(gamma_c * Rc * T0) * xp.sqrt(2 / (gamma_c - 1) * (result.tau_r - 1))
-    cp_AB      = float(np.ravel(working_fluid.compute_cp(Tt7))[0])
-    gamma_AB   = float(np.ravel(working_fluid.compute_gamma(Tt7))[0])
+    cp_AB      = xp.ravel(xp.asarray(working_fluid.compute_cp(Tt7)))[0]
+    gamma_AB   = xp.ravel(xp.asarray(working_fluid.compute_gamma(Tt7)))[0]
     R_AB       = (gamma_AB - 1) / gamma_AB * cp_AB                                                   # (8-45r)
     tau_lambda_AB = cp_AB * Tt7 / (dc.cpc * T0)                                                      # (8-45s)
     f_AB = (tau_lambda_AB - result.tau_lambda * dc.tau_tH * result.tau_tL) / \

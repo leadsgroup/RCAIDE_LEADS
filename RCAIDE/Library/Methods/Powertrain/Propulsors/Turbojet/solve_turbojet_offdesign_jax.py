@@ -21,8 +21,8 @@ STATE_SIZE   = len(STATE_FIELDS)
 
 def unpack(design, reference):
     """Packed design constants and reference point as named floats."""
-    d = dict(zip(TURBOJET_DESIGN_CONSTANT_FIELDS, [float(value) for value in design]))
-    r = dict(zip(TURBOJET_REFERENCE_POINT_FIELDS, [float(value) for value in reference]))
+    d = dict(zip(TURBOJET_DESIGN_CONSTANT_FIELDS, list(design)))
+    r = dict(zip(TURBOJET_REFERENCE_POINT_FIELDS, list(reference)))
     return d, r
 
 def compressors(state, inputs, d, r, xp):
@@ -147,18 +147,22 @@ def solve_turbojet_offdesign_jax(design_constants, reference_point, mach_number,
     def residual(flat):
         return step(flat)[0] - flat
 
+    # the robust solver runs on concrete values: the packed design and reference point travel as callback inputs
     def solve_point(i, values):
-        M0, T0, P0, Tt4, offtake = (value[i] for value in values)
-        return solve_turbojet_offdesign_robust(design_constants, reference_point, M0, T0, P0, Tt4, packed_design_constants=design,
-                                               packed_reference_point=reference, shaft_power_offtake=offtake)
+        M0, T0, P0, Tt4, offtake = (value[i] for value in values[:5])
+        packed_design, packed_reference = values[5], values[6]
+        design_point    = Data(zip(TURBOJET_DESIGN_CONSTANT_FIELDS, map(float, packed_design)))
+        reference_state = Data(zip(TURBOJET_REFERENCE_POINT_FIELDS, map(float, packed_reference)))
+        return solve_turbojet_offdesign_robust(design_point, reference_state, M0, T0, P0, Tt4, packed_design_constants=packed_design,
+                                               packed_reference_point=packed_reference, shaft_power_offtake=offtake)
     robust_states = robust_states_from_points(solve_point, STATE_FIELDS, STATE_SIZE, n)
 
     initial       = jnp.concatenate([value * jnp.ones(n) for value in reference[np.array([4, 5, 6, 10])]])
-    flat, matched = solve_offdesign_matching_jax(step, residual, initial, robust_states, inputs, STATE_SIZE, n)
+    flat, matched = solve_offdesign_matching_jax(step, residual, initial, robust_states, inputs + (design, reference), STATE_SIZE, n)
 
     # as in the robust NumPy solver: a combustor exit temperature not above the inlet stagnation temperature has
     # no matched operating point, though the iteration may still find a fixed point there
-    gamma_c = float(design_constants.gamma_c)
+    gamma_c = design[TURBOJET_DESIGN_CONSTANT_FIELDS.index('gamma_c')]
     matched = matched & (combustor_exit_temperature > static_temperature * (1 + (gamma_c - 1) / 2 * mach_number ** 2))
 
     outputs = turbojet_matching_outputs(tuple(flat.reshape(STATE_SIZE, n)), inputs, design, reference)

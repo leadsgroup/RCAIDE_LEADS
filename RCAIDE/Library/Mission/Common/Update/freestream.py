@@ -11,7 +11,7 @@
 # RCAIDE imports 
 import numpy as np
 
-from RCAIDE.Framework.Core import array_namespace 
+from RCAIDE.Framework.Core import array_namespace, safe_sqrt
     
 # ----------------------------------------------------------------------------------------------------------------------
 #  Update Freestream
@@ -50,7 +50,7 @@ def freestream(segment):
     # velocity magnitude
     xp    = array_namespace(V)
     Vmag2 = xp.sum( V**2, axis=1)[:,None]  
-    Vmag  = xp.sqrt(Vmag2)
+    Vmag  = safe_sqrt(Vmag2)   # zero airspeed in hover
 
     # dynamic pressure
     q = 0.5 * rho * Vmag2 # Pa

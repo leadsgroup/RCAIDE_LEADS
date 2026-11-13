@@ -485,7 +485,7 @@ def supersonic_lift_wave_drag(conditions,configuration,geometry):
     """
     # Initalize cd arrays 
     Mach         = conditions.freestream.mach_number
-    xp           = array_namespace(Mach)
+    xp           = array_namespace(Mach, conditions.aerodynamics.coefficients.lift.total)
     cd_lift_wave = xp.zeros_like(Mach)
     supersonic   = Mach > 1
     M_sup        = xp.where(supersonic, Mach, 2.)   # a supersonic stand-in keeps the unused form finite for gradients

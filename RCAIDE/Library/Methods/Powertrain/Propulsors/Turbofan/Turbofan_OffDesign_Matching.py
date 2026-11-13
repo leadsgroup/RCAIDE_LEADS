@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 from RCAIDE.Framework.Core import Data, array_namespace
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.pack_fields import pack_fields
 
 # Python package imports
 import numpy as np
@@ -144,12 +145,7 @@ def pack_reference_point(reference_point):
     """Reference point as a float array in REFERENCE_POINT_FIELDS order (for the compiled kernel)."""
     return pack_fields([reference_point[field] for field in REFERENCE_POINT_FIELDS])
 
-def pack_fields(values):
-    """Scalars as one float array, on the backend they are on (a JAX array when the design is a JAX input)."""
-    xp = array_namespace(*values)
-    if xp is np:
-        return np.array([float(value) for value in values])
-    return xp.stack([xp.reshape(xp.asarray(value, dtype=float), ()) for value in values])
+
 
 @njit(cache=True)
 def mass_flow_parameter_kernel(mach_number, gamma, gas_constant):
