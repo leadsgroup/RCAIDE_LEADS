@@ -23,6 +23,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.Turbojet_OffDesign_Ma
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.solve_turbojet_offdesign_jax import solve_turbojet_offdesign_jax
 
 # python imports 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_propulsor_moment import compute_propulsor_moment
 import  numpy as  np 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -357,13 +358,9 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     compute_thrust(turbojet,conditions)
     
     # Compute forces and moments
-    moment_vector              = 0*state.ones_row(3)
-    thrust_vector              = 0*state.ones_row(3)
-    thrust_vector[:,0]         = turbojet_conditions.thrust[:,0]
-    moment_vector[:,0]         = turbojet.origin[0][0] -   center_of_gravity[0][0] 
-    moment_vector[:,1]         = turbojet.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2]         = turbojet.origin[0][2]  -  center_of_gravity[0][2]
-    M                          = np.cross(moment_vector, thrust_vector)   
+    thrust_x                   = turbojet_conditions.thrust[:,0]
+    thrust_vector              = array_namespace(thrust_x).stack([thrust_x, 0*thrust_x, 0*thrust_x], axis=1)
+    M = compute_propulsor_moment(turbojet.origin, center_of_gravity, thrust_vector)
     moment                     = M 
     power                      = turbojet_conditions.power 
     turbojet_conditions.moment = moment 
@@ -468,10 +465,7 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     xp                 = array_namespace(thrust)
     zero               = 0 * thrust
     thrust_vector      = xp.stack([thrust, zero, zero], axis=1)
-    moment_vector      = xp.stack([zero + (turbojet.origin[0][0] - center_of_gravity[0][0]),
-                                   zero + (turbojet.origin[0][1] - center_of_gravity[0][1]),
-                                   zero + (turbojet.origin[0][2] - center_of_gravity[0][2])], axis=1)
-    moment             = xp.cross(moment_vector, thrust_vector)
+    moment = compute_propulsor_moment(turbojet.origin, center_of_gravity, thrust_vector)
   
     power                                             = conditions.energy.propulsors[turbojet.tag].power 
     conditions.energy.propulsors[turbojet.tag].moment = moment
@@ -609,10 +603,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     power_propulsive = thrust_N * velocity
 
     # Compute forces and moments
-    moment_vector  = xp.stack([zero + (turbojet.origin[0][0] - center_of_gravity[0][0]),
-                               zero + (turbojet.origin[0][1] - center_of_gravity[0][1]),
-                               zero + (turbojet.origin[0][2] - center_of_gravity[0][2])], axis=1)
-    moment         = xp.cross(moment_vector, thrust_vector)
+    moment = compute_propulsor_moment(turbojet.origin, center_of_gravity, thrust_vector)
 
     turbojet_conditions.thrust                            = thrust_vector
     turbojet_conditions.fuel_mass_flow_rate               = xp.reshape(fuel_mass_flow_rate, (-1,1))

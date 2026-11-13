@@ -12,6 +12,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performanc
 from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.compute_ducted_fan_performance              import * 
 
 # pacakge imports  
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_propulsor_moment import compute_propulsor_moment
 import numpy as np
 from RCAIDE.Framework.Core import array_namespace 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -125,11 +126,7 @@ def compute_electric_ducted_fan_performance(propulsor, state, center_of_gravity=
     compute_ducted_fan_performance(ducted_fan,conditions)
 
     # Compute moment 
-    moment_vector      = 0*state.ones_row(3)
-    moment_vector[:,0] = ducted_fan.origin[0][0]  -  center_of_gravity[0][0] 
-    moment_vector[:,1] = ducted_fan.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2] = ducted_fan.origin[0][2]  -  center_of_gravity[0][2]
-    moment             =  array_namespace(conditions.energy.converters[ducted_fan.tag].thrust).cross(moment_vector, conditions.energy.converters[ducted_fan.tag].thrust) 
+    moment = compute_propulsor_moment(ducted_fan.origin, center_of_gravity, conditions.energy.converters[ducted_fan.tag].thrust)
     
     # Detemine esc current 
     conditions.energy.modulators[esc.tag].outputs.current = conditions.energy.converters[motor.tag].inputs.current
@@ -189,9 +186,5 @@ def reuse_stored_electric_ducted_fan_data(propulsor,state,network,stored_propuls
 
     # the moment depends on this propulsor's position
     thrust_vector           = conditions.energy.converters[ducted_fan.tag].thrust
-    moment_vector           = 0*state.ones_row(3)
-    moment_vector[:,0]      = ducted_fan.origin[0][0]  -  center_of_gravity[0][0]
-    moment_vector[:,1]      = ducted_fan.origin[0][1]  -  center_of_gravity[0][1]
-    moment_vector[:,2]      = ducted_fan.origin[0][2]  -  center_of_gravity[0][2]
-    conditions.energy.propulsors[propulsor.tag].outputs.moment = array_namespace(thrust_vector).cross(moment_vector, thrust_vector)
+    conditions.energy.propulsors[propulsor.tag].outputs.moment = compute_propulsor_moment(ducted_fan.origin, center_of_gravity, thrust_vector)
     return conditions.energy.propulsors[propulsor.tag].inputs, conditions.energy.propulsors[propulsor.tag].outputs

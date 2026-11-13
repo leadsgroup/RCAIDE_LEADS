@@ -22,6 +22,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.Turboprop_OffDesign_
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.solve_turboprop_offdesign_jax import solve_turboprop_offdesign_jax
 
 # python imports 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_propulsor_moment import compute_propulsor_moment
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -297,13 +298,9 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     compute_thrust(turboprop,conditions) 
 
     # Compute forces and moments
-    moment_vector      = 0*state.ones_row(3)
-    thrust_vector      = 0*state.ones_row(3)
-    thrust_vector[:,0] = turboprop_conditions.thrust[:,0]
-    moment_vector[:,0] = turboprop.origin[0][0] -   center_of_gravity[0][0] 
-    moment_vector[:,1] = turboprop.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2] = turboprop.origin[0][2]  -  center_of_gravity[0][2]
-    M                  = np.cross(moment_vector, thrust_vector)   
+    thrust_x                   = turboprop_conditions.thrust[:,0]
+    thrust_vector              = array_namespace(thrust_x).stack([thrust_x, 0*thrust_x, 0*thrust_x], axis=1)
+    M = compute_propulsor_moment(turboprop.origin, center_of_gravity, thrust_vector)
     moment             = M 
     power              = turboprop_conditions.power 
   
@@ -400,10 +397,7 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
     xp                 = array_namespace(thrust)
     zero               = 0 * thrust
     thrust_vector      = xp.stack([thrust, zero, zero], axis=1)
-    moment_vector      = xp.stack([zero + (turboprop.origin[0][0] - center_of_gravity[0][0]),
-                                   zero + (turboprop.origin[0][1] - center_of_gravity[0][1]),
-                                   zero + (turboprop.origin[0][2] - center_of_gravity[0][2])], axis=1)
-    moment             = xp.cross(moment_vector, thrust_vector)
+    moment = compute_propulsor_moment(turboprop.origin, center_of_gravity, thrust_vector)
 
     power                                              = conditions.energy.propulsors[turboprop.tag].outputs.power.propulsive
     conditions.energy.propulsors[turboprop.tag].moment = moment
@@ -527,10 +521,7 @@ def compute_turboprop_performance_offdesign(turboprop, state, center_of_gravity=
     power_propulsive = thrust_N * velocity
 
     # Compute forces and moments
-    moment_vector  = xp.stack([zero + (turboprop.origin[0][0] - center_of_gravity[0][0]),
-                               zero + (turboprop.origin[0][1] - center_of_gravity[0][1]),
-                               zero + (turboprop.origin[0][2] - center_of_gravity[0][2])], axis=1)
-    moment         = xp.cross(moment_vector, thrust_vector)
+    moment = compute_propulsor_moment(turboprop.origin, center_of_gravity, thrust_vector)
 
     turboprop_conditions.thrust                            = thrust_vector
     turboprop_conditions.fuel_mass_flow_rate               = xp.reshape(fuel_mass_flow_rate, (-1,1))

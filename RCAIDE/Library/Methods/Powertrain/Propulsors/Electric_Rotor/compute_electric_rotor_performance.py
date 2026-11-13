@@ -14,6 +14,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performanc
 from RCAIDE.Framework.Core import array_namespace
 
 # pacakge imports  
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_propulsor_moment import compute_propulsor_moment
 import numpy as np 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_electric_rotor_performance
@@ -113,11 +114,7 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
         compute_rotor_performance(rotor,conditions,network.wing_vortex_distribution(state))
  
     # Compute moment 
-    moment_vector           = 0*state.ones_row(3)
-    moment_vector[:,0]      = rotor.origin[0][0]  -  center_of_gravity[0][0] 
-    moment_vector[:,1]      = rotor.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2]      = rotor.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  array_namespace(conditions.energy.converters[rotor.tag].thrust).cross(moment_vector, conditions.energy.converters[rotor.tag].thrust)     
+    moment = compute_propulsor_moment(rotor.origin, center_of_gravity, conditions.energy.converters[rotor.tag].thrust)
     
     # Detemine esc current 
     conditions.energy.modulators[esc.tag].outputs.current = conditions.energy.converters[motor.tag].inputs.current
@@ -205,11 +202,7 @@ def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_ta
     P_mech                  = conditions.energy.converters[rotor.tag].power 
     P_elec                  = conditions.energy.modulators[esc.tag].inputs.power.electrical    
     
-    moment_vector           = 0*state.ones_row(3) 
-    moment_vector[:,0]      = rotor.origin[0][0]  -  center_of_gravity[0][0] 
-    moment_vector[:,1]      = rotor.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2]      = rotor.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  array_namespace(thrust_vector).cross(moment_vector, thrust_vector)
+    moment = compute_propulsor_moment(rotor.origin, center_of_gravity, thrust_vector)
      
     conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive   = P_mech  
     conditions.energy.propulsors[propulsor.tag].outputs.thrust             = thrust_vector  

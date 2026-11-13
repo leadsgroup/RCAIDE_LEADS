@@ -140,8 +140,8 @@ def miscellaneous_drag(state,settings,geometry):
         for wing in geometry.wings:
             for control_surface in wing.control_surfaces:
                 if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
-                    flap_deg = max(flap_deg, abs(control_surface.deflection) / Units.degrees)
-        landing_gear_drag = landing_gear_drag + flat_plate / S_ref * max(0.0, 1 - 0.454545 * flap_deg / 50)
+                    flap_deg = xp.maximum(flap_deg, xp.abs(control_surface.deflection) / Units.degrees)
+        landing_gear_drag = landing_gear_drag + flat_plate / S_ref * xp.maximum(0.0, 1 - 0.454545 * flap_deg / 50)
          
     # subsonic 
     miscellaneous_drag =  xp.zeros_like(Mach) 

@@ -379,7 +379,9 @@ class Rotor(Converter):
         xp         = array_namespace(commanded_thrust_vector)
         tilt       = xp.reshape(commanded_thrust_vector, (-1, 1))
         zero       = xp.zeros_like(tilt)
-        rots       = np.array(self.orientation_euler_angles)[None, :] * 1. + xp.concatenate([zero, tilt, zero], axis=1)
+        xp         = array_namespace(commanded_thrust_vector, *self.orientation_euler_angles)
+        angles     = xp.stack([xp.asarray(angle, dtype=float) for angle in self.orientation_euler_angles])
+        rots       = angles[None, :] * 1. + xp.concatenate([zero, tilt, zero], axis=1)
 
         vehicle_2_prop_vec = extrinsic_xyz_rotation(rots)
 

@@ -6,6 +6,7 @@
 # Imports
 # ----------------------------------------------------------------------------------------------------------------------
 from RCAIDE.Framework.Core import array_namespace
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_fan_angular_velocity
@@ -47,7 +48,8 @@ def compute_fan_angular_velocity(fan, total_temperature_rise):
     ----------
     [1] Mattingly, J. D., "Elements of Gas Turbine Propulsion", McGraw-Hill, 1996, Sec. 8.7, Eq. (8-92a).
     """
-    if fan.design_total_temperature_rise <= 0:
+    # checked on concrete values only: when the design is a JAX input it was already checked on NumPy at setup
+    if array_namespace(fan.design_total_temperature_rise) is np and fan.design_total_temperature_rise <= 0:
         raise ValueError(f"Fan '{fan.tag}' has no design_total_temperature_rise; the turbofan must be sized "
                          "with design_turbofan before its fan angular velocity can be computed.")
     xp               = array_namespace(total_temperature_rise)

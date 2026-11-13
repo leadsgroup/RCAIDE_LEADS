@@ -204,7 +204,7 @@ def solve_turboprop_offdesign_jax(design_constants, reference_point, mach_number
                                                 packed_reference_point=reference, shaft_power_offtake=offtake)
     robust_states = robust_states_from_points(solve_point, STATE_FIELDS, STATE_SIZE, n)
 
-    initial       = jnp.concatenate([value * jnp.ones(n) for value in reference[[4, 6, 9]]])
+    initial       = jnp.concatenate([value * jnp.ones(n) for value in reference[np.array([4, 6, 9])]])
     flat, matched = solve_offdesign_matching_jax(step, residual, initial, robust_states, inputs, STATE_SIZE, n)
 
     # as in the robust NumPy solver: a combustor exit temperature not above the inlet stagnation temperature has

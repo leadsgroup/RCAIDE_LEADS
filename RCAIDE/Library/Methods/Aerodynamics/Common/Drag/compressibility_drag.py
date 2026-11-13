@@ -591,9 +591,10 @@ def supersonic_volume_wave_drag(conditions, settings, vehicle):
     Amax  = vehicle.maximum_cross_sectional_area
      
     # compute volume drag referenced to frontal area
+    xp   = array_namespace(L, S_ref, *[fuselage.width for fuselage in vehicle.fuselages])
     Rmax = 0
     for fuselage in vehicle.fuselages:
-        Rmax =  np.maximum(Rmax, fuselage.width)
+        Rmax =  xp.maximum(Rmax, fuselage.width)
     volume      =  (3 / 16) * (np.pi ** 2) * (Rmax ** 2)  *  L 
     CD_wave_vol_frontal = 24 *volume /(L **3)
     

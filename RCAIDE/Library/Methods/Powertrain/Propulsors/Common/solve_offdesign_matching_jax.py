@@ -63,7 +63,7 @@ def solve_offdesign_matching_jax(step, residual, initial_state, robust_states, i
         flat, done = iterate(guess)
         def rescue(flat):
             shape  = jax.ShapeDtypeStruct(flat.shape, jnp.float64)
-            states = jax.pure_callback(robust_states, shape, flat, done, *inputs)
+            states = jax.pure_callback(robust_states, shape, flat, done, *inputs, vmap_method='sequential')
             return iterate(states)[0]
         return jax.lax.cond(jnp.all(done), lambda flat: flat, rescue, flat)
 

@@ -115,10 +115,11 @@ def compressible_mixed_flat_plate(Re,Ma,Tc,xt):
 
     """
     
-    if xt < 0.0 or xt > 1.0:
+    xp  = array_namespace(Re, xt)
+    # checked on concrete values only: when xt is a JAX input it was already checked on NumPy at setup
+    if xp is np and (xt < 0.0 or xt > 1.0):
         raise ValueError("Turbulent transition must be between 0 and 1")
 
-    xp  = array_namespace(Re)
     Rex = Re*xt
     Rex = xp.where(Rex == 0.0, 0.0001, Rex)
 
@@ -139,10 +140,10 @@ def compressible_mixed_flat_plate(Re,Ma,Tc,xt):
     cf_turb = 10**xp.interp(xp.log10(Rext), log_x, log_y)
     cf_lam   = 1.328/(Rex**0.5)
     
-    if xt > 0.0:
-        cf_start = 10**xp.interp(xp.log10(Re*xeff), log_x, log_y)
-    else:
-        cf_start = 0.0
+    # turbulent skin friction at the effective start of the turbulent region; none for a fully turbulent plate
+    # (xt = 0), where Re in place of Re*xeff = 0 keeps the unused logarithm finite
+    laminar_start = xt > 0.0
+    cf_start      = xp.where(laminar_start, 10**xp.interp(xp.log10(xp.where(laminar_start, Re*xeff, Re)), log_x, log_y), 0.0)
     
     cf_inc = cf_lam*xt + cf_turb*(1-xt+xeff) - cf_start*xeff
     

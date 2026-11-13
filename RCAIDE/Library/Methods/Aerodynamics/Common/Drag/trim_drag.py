@@ -120,7 +120,8 @@ def trim_drag(state,settings,geometry):
                 control_surface_drag += CD_0 * (0.0011 * (cs.deflection / Units.degrees))  
                 state.conditions.aerodynamics.coefficients.lift.total  +=  -0.0075 *(cs.deflection / Units.degrees)  
                 state.conditions.static_stability.coefficients.M       +=  0.0053 *(cs.deflection / Units.degrees)
-            if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap and cs.deflection != 0:
+            if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
+                # zero at zero deflection, so a stowed flap adds nothing
                 control_surface_drag += compute_flap_profile_drag(wing, cs, geometry.reference_area)
     state.conditions.aerodynamics.coefficients.drag.trim.total =  control_surface_drag 
     return  

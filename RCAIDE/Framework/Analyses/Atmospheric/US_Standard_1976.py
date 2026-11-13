@@ -101,9 +101,9 @@ class US_Standard_1976(Atmospheric):
         delta_isa = temperature_deviation
         
         # check properties
-        if not gas == Air():
+        if not isinstance(gas, Air):
             warn('US Standard Atmosphere not using Air fluid properties')
-        if not planet == Earth():
+        if not isinstance(planet, Earth):
             warn('US Standard Atmosphere not using Earth planet properties')          
         
         # convert input if necessary
