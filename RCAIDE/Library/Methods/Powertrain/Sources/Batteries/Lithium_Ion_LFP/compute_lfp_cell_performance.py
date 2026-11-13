@@ -7,7 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Units
+from RCAIDE.Framework.Core import Units, set_at, array_namespace, regular_grid_interpolation
 import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_lfp_cell_performance
@@ -79,7 +79,8 @@ def compute_lfp_cell_performance(battery_module, battery, state, network):
     E_scale = E_module_max
 
     T_cell_scaled = T_cell_unkn / T_scale
-    SOC_bounded   = np.clip(SOC_cell_unkn, 1e-4, 1.0)
+    xp            = array_namespace(SOC_cell_unkn, T_cell_unkn, I_module)
+    SOC_bounded   = xp.clip(SOC_cell_unkn, 1e-4, 1.0)
 
     # ---------------------------------------------------------------------------------
     # Thermal Management System via assigned_distributors
@@ -106,12 +107,12 @@ def compute_lfp_cell_performance(battery_module, battery, state, network):
     # ---------------------------------------------------------------------------------
     # Voltage
     # ---------------------------------------------------------------------------------
-    T_cell_bounded = np.clip(T_cell_unkn, 263.15, 333.15)
-    V_ul_cell       = compute_lfp_cell_state(battery_module, battery_module_data, SOC_bounded.copy(), T_cell_bounded.copy(), np.abs(I_cell).copy())
+    T_cell_bounded = xp.clip(T_cell_unkn, 263.15, 333.15)
+    V_ul_cell       = compute_lfp_cell_state(battery_module, battery_module_data, SOC_bounded, T_cell_bounded, xp.abs(I_cell))
     V_ul_module     = V_ul_cell*n_series
 
     # Power draw including the heat generated (mirrors the pre-existing LFP power model)
-    P_module = battery_module_conditions.power_draw + np.abs(Q_heat_module)
+    P_module = battery_module_conditions.power_draw + xp.abs(Q_heat_module)
     P_cell   = P_module/n_total
 
     # ---------------------------------------------------------------------------------
@@ -124,25 +125,28 @@ def compute_lfp_cell_performance(battery_module, battery, state, network):
     else:
         dT_dt = Q_heat_cell/(cell_mass*Cp)
     dT_dt_scaled = dT_dt/T_scale
-    R_temp       = np.dot(D, T_cell_scaled)[:, 0] - dT_dt_scaled[:, 0]
-    R_temp[0]    = T_cell_scaled[0,0] - battery_module_conditions.cell.temperature[0, 0]/T_scale
-    state.residuals.network[battery.tag + '_' + battery_module.tag + '_cell_temperature'][:, 0] = R_temp
+    R_temp       = xp.matmul(D, T_cell_scaled)[:, 0] - dT_dt_scaled[:, 0]
+    R_temp       = set_at(R_temp, 0, T_cell_scaled[0,0] - battery_module_conditions.cell.temperature[0, 0]/T_scale)
+    key = battery.tag + '_' + battery_module.tag + '_cell_temperature'
+    state.residuals.network[key] = set_at(state.residuals.network[key], np.s_[:, 0], R_temp)
 
     # ---------------------------------------------------------------------------------
     # State of charge residual
     # ---------------------------------------------------------------------------------
     dE_dt        = -P_module
     dE_dt_scaled = dE_dt / E_scale
-    R_soc        = np.dot(D, SOC_cell_unkn)[:, 0] - dE_dt_scaled[:, 0]
-    R_soc[0]     = SOC_cell_unkn[0,0] - battery_module_conditions.cell.state_of_charge[0, 0]
-    state.residuals.network[battery.tag + '_' + battery_module.tag + '_cell_state_of_charge'][:, 0] = R_soc
+    R_soc        = xp.matmul(D, SOC_cell_unkn)[:, 0] - dE_dt_scaled[:, 0]
+    R_soc        = set_at(R_soc, 0, SOC_cell_unkn[0,0] - battery_module_conditions.cell.state_of_charge[0, 0])
+    key = battery.tag + '_' + battery_module.tag + '_cell_state_of_charge'
+    state.residuals.network[key] = set_at(state.residuals.network[key], np.s_[:, 0], R_soc)
 
     # ---------------------------------------------------------------------------------
     # Charge throughput
     # ---------------------------------------------------------------------------------
-    dt      = np.diff(state.numerics.time.control_points[:,0])
+    time    = state.numerics.time.control_points[:,0]
+    dt      = array_namespace(time).diff(time)
     avg_I   = (I_cell[:-1, 0] + I_cell[1:, 0]) / 2
-    Q_Ah    = np.atleast_2d(np.concatenate(([0.0], np.cumsum(dt*avg_I)))).T / Units.hr + battery_module_conditions.cell.charge_throughput[0]
+    Q_Ah    = xp.concatenate([xp.zeros(1), xp.cumsum(dt*avg_I)])[:, None] / Units.hr + battery_module_conditions.cell.charge_throughput[0]
 
     # ---------------------------------------------------------------------------------
     # Store results
@@ -151,9 +155,9 @@ def compute_lfp_cell_performance(battery_module, battery, state, network):
     battery_module_conditions.current                    = I_module
     battery_module_conditions.heat_energy_generated       = Q_heat_module
     battery_module_conditions.voltage_under_load          = V_ul_module
-    battery_module_conditions.state_of_charge[1:,0]       = SOC_cell_unkn[1:,0]
-    battery_module_conditions.temperature[1:,0]           = T_cell_unkn[1:,0]
-    battery_module_conditions.energy[1:,0]                = SOC_cell_unkn[1:,0] * E_module_max
+    battery_module_conditions.state_of_charge             = set_at(battery_module_conditions.state_of_charge, np.s_[1:,0], SOC_cell_unkn[1:,0])
+    battery_module_conditions.temperature                 = set_at(battery_module_conditions.temperature, np.s_[1:,0], T_cell_unkn[1:,0])
+    battery_module_conditions.energy                      = set_at(battery_module_conditions.energy, np.s_[1:,0], SOC_cell_unkn[1:,0] * E_module_max)
     battery_module_conditions.depth_of_discharge          = 1. - battery_module_conditions.state_of_charge
     battery_module_conditions.outputs.power.electrical    = P_module
 
@@ -192,8 +196,8 @@ def compute_lfp_cell_state(battery_module, battery_module_data, SOC, T, I):
         The battery module containing LFP cells with the following attributes:
             - cell.nominal_capacity : float
                 Nominal capacity of the cell [Ah]
-    battery_module_data : function
-        Look-up function that maps C-rate, temperature, and discharge capacity to voltage
+    battery_module_data : Data
+        Regular-grid voltage table over C-rate, temperature and discharge capacity (grid, values)
     SOC : numpy.ndarray
         State of charge of the cell [unitless, 0-1]
     T : numpy.ndarray
@@ -228,24 +232,21 @@ def compute_lfp_cell_state(battery_module, battery_module_data, SOC, T, I):
     """
 
     # Make sure things do not break by limiting current, temperature and current
+    xp            = array_namespace(SOC, T, I)
     capacity      = battery_module.cell.nominal_capacity
-    SOC[SOC < 0.]   = 0.
-    SOC[SOC > 1.]   = 1.
+    SOC             = xp.clip(SOC, 0., 1.)
     DOD             = 1 - SOC
     discharge_capacity = DOD*capacity
 
+    # Operating Limits of the cell: the model does not fit below -10 or above 60 degrees
+    T              = xp.clip(T-273, -10, 60)
 
-    T              = T-273
-    # Operating Limits of the cell
-    T[T<-10]       = -10 # model does not fit for below -10  degrees
-    T[T>60]        =  60 # model does not fit for above 60 degrees
+    I             = xp.clip(I, 0.0, 52.0)
+    # within the table's C-rates: at rest the lowest-rate curve stands in for the open-circuit voltage
+    c_rates, temperatures, capacities = battery_module_data.grid
+    C_rate        = xp.clip(I/capacity, c_rates[0], c_rates[-1])
 
-
-    I[I<0.0]      = 0.0
-    I[I>52.0]     = 52.0
-    C_rate        = I/capacity
-
-
-    V_ul  = battery_module_data(C_rate, T, discharge_capacity)
+    points = xp.concatenate([C_rate, T, discharge_capacity], axis=1)
+    V_ul   = regular_grid_interpolation(battery_module_data.grid, battery_module_data.values, points)[:, None]
 
     return V_ul

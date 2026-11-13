@@ -11,6 +11,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model import  compute_power, compute_voltage
+from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_current_density import compute_maximum_power_current_density
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance import  evaluate_PEM ,  evaluate_max_gross_power, set_rated_current_density
 import  scipy as  sp
 import  numpy as  np
@@ -81,23 +82,46 @@ def design_fuel_cell(fuel_cell_stack):
     fuel_cell = fuel_cell_stack.fuel_cell
 
     if type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack:
-        lb                                     = 0.0001/(Units.cm**2.)    #lower bound on fuel cell current density
-        ub                                     = 1.2/(Units.cm**2.)
-        sign                                   = -1. # used to minimize -power
-        maximum_current_density                = sp.optimize.fminbound(compute_power, lb, ub, args=(fuel_cell, sign))
+        # the cell power is concave in current density: its maximum is where its slope falls through zero
+        maximum_current_density                = float(compute_maximum_power_current_density(fuel_cell))
         P_fuel_cell                            = compute_power(maximum_current_density,fuel_cell)      # single-cell power at its max-power point [W]
         V_fuel_cell                            = compute_voltage(fuel_cell,maximum_current_density)    # single-cell voltage at that point [V]
 
-        if fuel_cell_stack.design_voltage is not None and fuel_cell_stack.design_power is not None:
-            # size this stack from its design point -- see docstring Notes. Only triggers
-            # when both are explicitly set, so stacks that hand-set series/parallel directly
-            # (the class default is 1x1, not None) are unaffected.
-            n_series   = int(np.ceil(fuel_cell_stack.design_voltage / V_fuel_cell))
-            n_parallel = int(np.ceil(fuel_cell_stack.design_power / (n_series * P_fuel_cell)))
-            fuel_cell_stack.electrical_configuration.series        = n_series
-            fuel_cell_stack.electrical_configuration.parallel      = n_parallel
-            fuel_cell_stack.geometric_configuration.normal_count   = n_series
-            fuel_cell_stack.geometric_configuration.parallel_count = n_parallel
+    elif type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell:
+        # one cell at its rated current density (maximum gross power), at sea level
+        design_altitude =  0
+
+        # call the atmospheric model to get the conditions at the specified altitude
+        atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+        atmo_data  = atmosphere.compute_values(design_altitude)
+
+        segment                                     = RCAIDE.Framework.Mission.Segments.Segment()
+        segment.state.conditions                    = RCAIDE.Framework.Mission.Common.Results()
+
+        fuel_cell_stack.append_operating_conditions(segment)
+
+        # compute fuel cell performance
+        fuel_cell_stack_conditions                                               = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
+        fuel_cell_stack_conditions.stagnation_temperature[0, 0]                  = atmo_data.temperature[0, 0]
+        fuel_cell_stack_conditions.stagnation_pressure[0, 0]                     = atmo_data.pressure[0, 0]
+        fuel_cell_stack_conditions.pressure_drop[0, 0]                           = fuel_cell.rated_p_drop_fc
+        fuel_cell_stack_conditions.stack_temperature[0, 0]                       = fuel_cell.stack_temperature
+        rated_current_density, rated_power_density                               = evaluate_max_gross_power(fuel_cell_stack,fuel_cell_stack_conditions,0)
+        set_rated_current_density(fuel_cell_stack, rated_current_density, rated_power_density)
+
+        fuel_cell_stack_conditions.current_density[0] = rated_current_density
+        pem = evaluate_PEM(fuel_cell_stack, fuel_cell_stack_conditions, fuel_cell_stack_conditions.current_density[:, 0])
+        m_dot_H2, V_fuel_cell, P_fuel_cell = pem.mdot_H2[0], pem.voltage[0], pem.net_power[0]
+
+    # size the stack from its design point -- see docstring Notes. Only when both are explicitly set, so stacks
+    # that hand-set series/parallel directly (the class default is 1x1, not None) are unaffected.
+    if fuel_cell_stack.design_voltage is not None and fuel_cell_stack.design_power is not None:
+        n_series   = int(np.ceil(fuel_cell_stack.design_voltage / V_fuel_cell))
+        n_parallel = int(np.ceil(fuel_cell_stack.design_power / (n_series * P_fuel_cell)))
+        fuel_cell_stack.electrical_configuration.series        = n_series
+        fuel_cell_stack.electrical_configuration.parallel      = n_parallel
+        fuel_cell_stack.geometric_configuration.normal_count   = n_series
+        fuel_cell_stack.geometric_configuration.parallel_count = n_parallel
 
     series_e           = fuel_cell_stack.electrical_configuration.series
     parallel_e         = fuel_cell_stack.electrical_configuration.parallel
@@ -165,30 +189,6 @@ def design_fuel_cell(fuel_cell_stack):
 
     elif type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell:
 
-        # check if mach number and temperature are passed
-        design_altitude =  0
-
-        # call the atmospheric model to get the conditions at the specified altitude
-        atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-        atmo_data  = atmosphere.compute_values(design_altitude)
-
-        segment                                     = RCAIDE.Framework.Mission.Segments.Segment()
-        segment.state.conditions                    = RCAIDE.Framework.Mission.Common.Results()
-
-        fuel_cell_stack.append_operating_conditions(segment)
-
-        # compute fuel cell performance
-        fuel_cell_stack_conditions                                               = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
-        fuel_cell_stack_conditions.stagnation_temperature[0, 0]                  = atmo_data.temperature[0, 0]
-        fuel_cell_stack_conditions.stagnation_pressure[0, 0]                     = atmo_data.pressure[0, 0]
-        fuel_cell_stack_conditions.pressure_drop[0, 0]                           = fuel_cell.rated_p_drop_fc
-        fuel_cell_stack_conditions.stack_temperature[0, 0]                       = fuel_cell.stack_temperature
-        rated_current_density, rated_power_density                               = evaluate_max_gross_power(fuel_cell_stack,fuel_cell_stack_conditions,0)
-        set_rated_current_density(fuel_cell_stack, rated_current_density, rated_power_density)
-
-        fuel_cell_stack_conditions.current_density[0] = rated_current_density
-        m_dot_H2, V_fuel_cell, P_fuel_cell, _, _, _, _, _,_  =  evaluate_PEM(fuel_cell_stack,fuel_cell_stack_conditions)
-        m_dot_H2, V_fuel_cell, P_fuel_cell = m_dot_H2[0], V_fuel_cell[0], P_fuel_cell[0]
 
         # store properties
         area_square_meters                          = fuel_cell.interface_area * 0.0001

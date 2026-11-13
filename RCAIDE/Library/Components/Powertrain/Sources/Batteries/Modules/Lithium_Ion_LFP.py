@@ -17,7 +17,6 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_u
 # package imports 
 import numpy as np  
 import os
-from scipy.interpolate  import NearestNDInterpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Lithium_Ion_LFP
@@ -75,8 +74,8 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
                 Radial thermal conductivity [W/mK] (default: 0.475)
             - axial_thermal_conductivity : float
                 Axial thermal conductivity [W/mK] (default: 37.6)
-            - discharge_performance_map : NearestNDInterpolator
-                Interpolator for voltage vs discharge characteristics
+            - discharge_performance_map : Data
+                Regular-grid table of voltage over C-rate, temperature and discharge capacity
 
     Notes
     -----
@@ -212,35 +211,37 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         update_lfp_cell_age(self,battery,segment,increment_battery_age_by_one_day)
         return 
     
-def create_discharge_performance_map(raw_data):
+def create_discharge_performance_map(raw_data, cutoff_voltage = 2.0, charge_voltage = 3.6, capacity_points = 361):
     """
-    Creates an interpolator for battery discharge voltage characteristics
-    
-    This function processes raw battery test data to create an interpolation
-    function that predicts battery voltage based on C-rate, temperature,
-    and discharge capacity.
+    Creates the regular-grid table of battery discharge voltage over C-rate, temperature and discharge capacity.
 
     Parameters
     ----------
     raw_data : dict
         Dictionary containing battery test data with structure:
         {c_rate: {temperature: {'discharge': [...], 'voltage': [...]}}}
+    cutoff_voltage : float
+        Discharge cut-off voltage of the cell [V]; 2.0 V, the minimum voltage of the ANR26650M1B [2].
+    charge_voltage : float
+        Highest voltage of the cell [V]; 3.6 V, the recommended (fast) charge voltage of the ANR26650M1B [2], which a
+        discharging cell does not exceed.
+    capacity_points : int
+        Number of discharge capacity points of the common capacity grid.
 
     Returns
     -------
-    battery_data : NearestNDInterpolator
-        Interpolator function that takes [C-rate, temperature, discharge_capacity]
-        and returns voltage
+    battery_data : Data
+        grid   : (C-rates, temperatures [deg C], discharge capacities [Ah]), increasing
+        values : voltage on that grid [V], shape (C-rates, temperatures, capacities)
 
     Notes
     -----
-    The function creates a 3D interpolation of voltage as a function of:
-    - C-rate (discharge current relative to capacity)
-    - Temperature
-    - Discharge capacity (state of charge)
-    
-    Uses nearest neighbor interpolation for computational efficiency. Linear
-    interpolation is possible but increases computation time by ~30x.
+    Every discharge curve is resampled onto one capacity grid from zero to the largest capacity in the data, so the
+    table is regular and is interpolated multilinearly (regular_grid_interpolation) on NumPy and JAX. Each curve
+    ends where the cell would stop discharging: from its first point below the cut-off voltage, or above the charge
+    voltage, it holds the cut-off voltage. Beyond that point the data at high C-rates and deep discharge is not
+    physical (voltages from -600 V to +36 V). The small voltage recovery of cold cells at high rates, as they heat
+    up, stays within these limits and is kept.
 
     References
     ----------
@@ -248,34 +249,30 @@ def create_discharge_performance_map(raw_data):
         "An Electro-Thermal Model for the A123 26650 LiFePO4 Battery."
         University of Michigan.
         https://hdl.handle.net/2027.42/97341
-    """    
-    # Prepare lists for the data needed for interpolation
-    c_rates = []
-    temperatures = []
-    discharge_capacities = []
-    voltages = []
+    [2] Lithium Werks, "26650 Power Cell, ANR26650M1B" datasheet (2022): Minimum Voltage / HPPC Pulse 2 V / 1.6 V;
+        Recommended Fast Charge Voltage 3.6 V.
+        https://lithiumwerks.com/wp-content/uploads/2022/08/26650-Power-Cell-080322.pdf
+    """
+    c_rates      = np.array(sorted(float(c_rate_key) for c_rate_key in raw_data.keys()))
+    first_c_rate = next(iter(raw_data.values()))
+    temperatures = np.array(sorted(int(temp_key.split()[-1]) for temp_key in first_c_rate.keys()))
+    max_capacity = max(np.max(data['discharge']) for temp_data in raw_data.values() for data in temp_data.values())
+    capacities   = np.linspace(0., max_capacity, capacity_points)
 
-    # Iterate through the data structure to populate the lists
+    voltages = np.full((len(c_rates), len(temperatures), capacity_points), np.nan)
     for c_rate_key, temp_data in raw_data.items():
-        c_rate = float(c_rate_key)  # Convert C-rate to float
-
+        i = int(np.flatnonzero(c_rates == float(c_rate_key))[0])
         for temp_key, data in temp_data.items():
-            initial_temp = int(temp_key.split()[-1])  # Extract temperature as an integer
+            j         = int(np.flatnonzero(temperatures == int(temp_key.split()[-1]))[0])
+            discharge = np.asarray(data['discharge'], dtype=float)
+            voltage   = np.asarray(data['voltage'], dtype=float)
+            # the curve ends at its first point outside [cut-off, charge voltage]; the cell holds the cut-off after
+            outside = (voltage < cutoff_voltage) | (voltage > charge_voltage)
+            if np.any(outside):
+                voltage = np.where(np.arange(len(voltage)) >= np.argmax(outside), cutoff_voltage, voltage)
+            voltages[i, j] = np.interp(capacities, discharge, voltage)
 
-            # Extend lists with the discharge, voltage, and other data
-            discharge_capacities.extend(data['discharge'])
-            voltages.extend(data['voltage'])
-            c_rates.extend([c_rate] * len(data['discharge']))
-            temperatures.extend([initial_temp] * len(data['discharge']))
-
-    # Convert lists to numpy arrays
-    points = np.array([c_rates, temperatures, discharge_capacities]).T
-    values = np.array(voltages)
-
-    # Create the interpolant
-    battery_data = NearestNDInterpolator(points, values) # Can be replaced by a Linear Interpolator for a better fit but computation time increases by 30 times. 
-
-    return battery_data
+    return Data(grid = (c_rates, temperatures.astype(float), capacities), values = voltages)
 
 def load_battery_results(): 
     '''Load experimental raw data of LFP cells 

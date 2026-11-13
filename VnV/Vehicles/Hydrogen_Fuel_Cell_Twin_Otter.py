@@ -362,16 +362,13 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
 
     if fuel_cell_model == 'PEM':
         fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell()
-        fuel_cell_stack.electrical_configuration.series             = 940
-        fuel_cell_stack.electrical_configuration.parallel           = 7
-        fuel_cell_stack.geometric_configuration.normal_count        = 940
-        fuel_cell_stack.geometric_configuration.parallel_count      = 7
     if fuel_cell_model == 'Larminie':
         fuel_cell_stack   = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()
-        # Design point matches the previous hand-picked 1020x1 cell count (~509 V, ~339 kW)
-        # -- same stack, just sized from a target instead of a guessed cell count.
-        fuel_cell_stack.design_voltage    = 509.0
-        fuel_cell_stack.design_power      = 339E3
+    # both stacks sized for the mission's peak electrical demand of about 1.31 MW (climb) with a 25% margin, at the
+    # ~509 V bus voltage of the previous hand-picked stacks (940 x 7 PEM cells, 1020 x 1 Larminie cells, which gave
+    # only ~190 kW and ~339 kW, so the stacks ran at maximum power throughout the mission)
+    fuel_cell_stack.design_voltage    = 509.0
+    fuel_cell_stack.design_power      = 1.65E6
 
     # explicit call still needed here (not just belt-and-suspenders): bus_nominal_voltage
     # below reads fuel_cell_stack.voltage immediately, before Pre_Process.energy's automatic

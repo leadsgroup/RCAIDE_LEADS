@@ -18,9 +18,10 @@ from RCAIDE.Framework.Core import Data, array_namespace
 def main():
     # The mission framework (unknown unpacking, frames, kinematics, atmosphere, freestream, forces, moments and the
     # flight dynamics residuals), aerodynamics, stability, the fuel network with the off-design turbofan and the
-    # electric rotor network (rotor, motor, ESC, bus, battery) are written once for NumPy and JAX. For every segment
-    # of the 787 and the VTOL missions, this runs the segment's own iterate steps on JAX and checks values, compiled
-    # values and derivatives against the NumPy path.
+    # electric rotor network (rotor, motor, ESC, bus, battery) and every other powertrain are written once for NumPy
+    # and JAX. For each distinct kind of segment across the missions below (segment type, propulsors, flight regime;
+    # see segment_signature), this runs the segment's own iterate steps on JAX and checks compiled values and forward
+    # and reverse derivatives against the NumPy path. RCAIDE_JAX_EVERY_SEGMENT=1 checks every segment instead.
     try:
         import jax
     except ImportError:
@@ -28,6 +29,7 @@ def main():
         return
     jax.config.update("jax_enable_x64", True)
     from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
+    CHECKED_SIGNATURES.clear()
 
     vnv_folder = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
     sys.path.insert(0, os.path.join(vnv_folder, "Vehicles"))
@@ -51,6 +53,13 @@ def main():
     check_mission_on_jax("tiltwing", tiltwing_mission(), check_derivatives,
                          frozen_steps=())
 
+    # every other powertrain: turbojet (numba matching stops at a 1e-8 change, as the turbofan), turboprop, piston
+    # engines, electric ducted fan, fuel cells, and series, parallel and all-electric hybrid networks
+    for name, folder, build, value_tolerance in powertrain_missions():
+        os.chdir(os.path.join(vnv_folder, "Verification", folder))
+        sys.path.insert(0, os.getcwd())
+        check_mission_on_jax(name, build(), check_derivatives, frozen_steps=(), value_tolerance=value_tolerance)
+
     os.chdir(start_folder)
     return
 
@@ -58,7 +67,6 @@ def main():
 #  Checks
 # ----------------------------------------------------------------------------------------------------------------------
 def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_only=(), value_tolerance=1e-12):
-    import jax
     mission.process.initialize(mission)
 
     # initialize each segment from the previous one and iterate it once with NumPy, as a mission solve starts
@@ -71,16 +79,52 @@ def check_mission_on_jax(name, mission, check_derivatives, frozen_steps, values_
         segment.process.iterate(segment)
         previous = segment.state
 
+        # each distinct kind of segment is checked once, unless every segment is asked for
+        signature = segment_signature(segment)
+        if signature in CHECKED_SIGNATURES and not os.environ.get("RCAIDE_JAX_EVERY_SEGMENT"):
+            continue
+        CHECKED_SIGNATURES.add(signature)
+
         residual = Segment_Residual(segment, frozen_steps)
         report   = check_derivatives(residual, (residual.x0,), value_tolerance=value_tolerance, derivative_tolerance=1e-6)
         # unknowns that change the residual through the steps checked here; with none, the derivative check is empty
-        jacobian = np.asarray(jax.jacfwd(residual)(jax.numpy.asarray(residual.x0)))
-        reaching = int(np.sum(np.any(jacobian != 0., axis=0)))
-        print(f"  {name} {tag}: {reaching} of {residual.x0.size} unknowns reach the residual, values {report.value_error:.1e}, "
-              f"compiled {report.compiled_error:.1e}, derivatives {report.jvp_error:.1e}")
+        reaching = int(np.count_nonzero(report.input_sensitivity[0]))
+        print(f"  {name} {tag} {signature}: {reaching} of {residual.x0.size} unknowns reach the residual, "
+              f"values {report.value_error:.1e}, derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
         assert report.passed, f"{name} {tag}: JAX check failed, {report}"
         assert (reaching == 0) == (tag in values_only), f"{name} {tag}: {reaching} unknowns reach the residual"
     return
+
+
+def powertrain_component_types(vehicle):
+    """Class names of every powertrain component on the vehicle's networks, including battery modules and their heat
+    acquisition systems."""
+    names = set()
+    for network in vehicle.networks:
+        for group in ('propulsors', 'converters', 'sources', 'distributors'):
+            for component in getattr(network, group, {}).values() if hasattr(getattr(network, group, None), 'values') else []:
+                names.add(type(component).__name__)
+                for module in getattr(component, 'modules', {}).values() if hasattr(getattr(component, 'modules', None), 'values') else []:
+                    names.add(type(module).__name__)
+                    if getattr(module, 'heat_acquisition_system', None) is not None:
+                        names.add(type(module.heat_acquisition_system).__name__)
+    return names
+
+
+# kinds of segment already checked in this run (see segment_signature)
+CHECKED_SIGNATURES = set()
+
+def segment_signature(segment):
+    """
+    What distinguishes one segment's code path from another's: its type, the powertrain component types it flies on
+    (propulsors, converters, sources, and the battery modules and their heat acquisition systems), and its flight
+    regime (subsonic, transonic or supersonic, which switch drag and engine models), read from the NumPy iterate.
+    Segments with the same signature run the same code, so one of them is checked.
+    """
+    propulsors = sorted(powertrain_component_types(segment.analyses.vehicle))
+    mach       = float(np.max(segment.state.conditions.freestream.mach_number))
+    regime     = 'subsonic' if mach < 0.7 else ('transonic' if mach < 1.0 else 'supersonic')
+    return (type(segment).__name__, tuple(propulsors), regime)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  The residual of one segment as a function of its unknowns
@@ -194,6 +238,65 @@ def tiltwing_mission():
     vehicle  = vtol.TW_vehicle_setup(False)
     analyses = vtol.TW_analyses_setup(vtol.TW_configs_setup(vehicle))
     return vtol.missions_setup(vtol.TW_mission_setup(analyses)).base_mission
+
+
+def powertrain_missions():
+    """(name, VnV folder, mission builder, value tolerance) for the powertrains beyond the 787 and the VTOLs."""
+    return [("concorde",              "network_turbojet",                   concorde_mission,           1e-6),
+            ("atr_72",                "network_turboprop",                  atr_72_mission,             1e-12),
+            ("cessna_172",            "network_internal_combustion_engine", cessna_mission,             1e-12),
+            ("cessna_constant_speed", "network_internal_combustion_engine", constant_speed_mission,     1e-12),
+            ("x_48",                  "network_electric",                   x_48_mission,               1e-12),
+            ("fuel_cell_pem",         "network_fuel_cell",                  lambda: fuel_cell_mission('PEM'),      1e-12),
+            ("fuel_cell_larminie",    "network_fuel_cell",                  lambda: fuel_cell_mission('Larminie'), 1e-12),
+            ("atr_72_series_hybrid",  "network_hybrid",                     lambda: hybrid_mission('series_hybrid'),   1e-12),
+            ("atr_72_parallel_hybrid","network_hybrid",                     lambda: hybrid_mission('parallel_hybrid'), 1e-12),
+            ("atr_72_all_electric",   "network_hybrid",                     lambda: hybrid_mission('all_electric'),    1e-12)]
+
+
+def vnv_mission(test, vehicle):
+    """The base mission of a VnV test script, for a vehicle it set up."""
+    analyses = test.analyses_setup(test.configs_setup(vehicle))
+    return test.missions_setup(test.mission_setup(analyses)).base_mission
+
+
+def concorde_mission():
+    import turbojet_network_test as test
+    return vnv_mission(test, test.vehicle_setup())
+
+
+def atr_72_mission():
+    import turboprop_network_test as test
+    return vnv_mission(test, test.vehicle_setup())
+
+
+def cessna_mission():
+    import ICE_test as test
+    return vnv_mission(test, test.vehicle_setup())
+
+
+def constant_speed_mission():
+    import ICE_constant_speed_test as test
+    vehicle  = test.ICE_CS(test.vehicle_setup())
+    analyses = test.analyses_setup(test.configs_setup(vehicle))
+    return test.missions_setup(analyses).base_mission
+
+
+def x_48_mission():
+    import electric_ducted_fan_aircraft_test as test
+    return vnv_mission(test, test.vehicle_setup(True, 'Rankine_Froude_Momentum_Theory'))
+
+
+def fuel_cell_mission(model):
+    import hydrogen_fuel_cell_aircraft_test as test
+    return vnv_mission(test, test.vehicle_setup(model))
+
+
+def hybrid_mission(kind):
+    import hybrid_network_test as test
+    vehicle  = getattr(test, kind + '_vehicle_setup')()
+    analyses = test.analyses_setup(getattr(test, kind + '_configs_setup')(vehicle), weights_method='electric')
+    return test.missions_setup(analyses, 'optimize', 'energy').base_mission
 
 
 if __name__ == '__main__':

@@ -7,7 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
 # package imports
-import numpy as np 
+import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 from RCAIDE.Library.Methods.Gas_Dynamics.fm_id import fm_id
 
 # exceptions/warnings
@@ -146,37 +147,29 @@ def compute_expansion_nozzle_performance(expansion_nozzle, conditions):
     ht_out   = Cp*Tt_out
     
     # A cap so pressure doesn't go negative
-    Pt_out[Pt_out<P0] = P0[Pt_out<P0]
-    
-    # Compute the output Mach number, static quantities and the output velocity
-    Mach          = np.sqrt((((Pt_out/P0)**((gamma-1)/gamma))-1)*2/(gamma-1)) 
-    
-    #initializing the Pout array
-    P_out         = np.ones_like(Mach)
-    
-    # Computing output pressure and Mach number for the case Mach <1.0
-    i_low         = Mach < 1.0
-    P_out[i_low]  = P0[i_low]
-    Mach[i_low]   = np.sqrt((((Pt_out[i_low]/P0[i_low])**((gamma[i_low]-1.)/gamma[i_low]))-1.)*2./(gamma[i_low]-1.))
-    
-    # Computing output pressure and Mach number for the case Mach >=1.0     
-    i_high        = Mach >=1.0   
-    Mach[i_high]  = Mach[i_high]/Mach[i_high]
-    P_out[i_high] = Pt_out[i_high]/(1.+(gamma[i_high]-1.)/2.*Mach[i_high]*Mach[i_high])**(gamma[i_high]/(gamma[i_high]-1.))
-    
-    # A cap to make sure Mach doesn't go to zero:
-    if np.any(Mach<=0.0):
+    xp            = array_namespace(Pt_out, P0)
+    Pt_out        = xp.where(Pt_out < P0, P0, Pt_out)
+
+    # Fully expanded exit Mach number; a nozzle that would exceed Mach 1 is choked at Mach 1, above ambient pressure.
+    # With no pressure to expand (the cap above) the Mach number is held at 0.001; the square root is kept away
+    # from zero there, where its derivative is infinite
+    Mach_squared  = (((Pt_out/P0)**((gamma-1)/gamma))-1)*2/(gamma-1)
+    stalled       = Mach_squared <= 0.0
+    if xp is np and np.any(stalled):
         warn('Pressures Result in Negative Mach Number, making positive',RuntimeWarning)
-        Mach[Mach<=0.0] = 0.001
+    Mach          = xp.sqrt(xp.where(stalled, 1.0, Mach_squared))
+    choked        = (Mach >= 1.0) & ~stalled
+    Mach          = xp.where(stalled, 0.001, xp.where(choked, 1.0, Mach))
+    P_out         = xp.where(choked, Pt_out/(1.+(gamma-1.)/2.)**(gamma/(gamma-1.)), P0)
     
     # Compute the output temperature,enthalpy,velocity and density
     T_out         = Tt_out/(1+(gamma-1)/2*Mach*Mach)
     h_out         = T_out * Cp
-    u_out         = np.sqrt(2*(ht_out-h_out))
+    u_out         = xp.sqrt(2*(ht_out-h_out))
     #rho_out       = P_out/(R*T_out)
     
     # Compute the freestream to nozzle area ratio  
-    area_ratio    = (fm_id(M0,gamma)/fm_id(Mach,gamma)*(1/(Pt_out/Pt0))*(np.sqrt(Tt_out/Tt0)))
+    area_ratio    = (fm_id(M0,gamma)/fm_id(Mach,gamma)*(1/(Pt_out/Pt0))*(xp.sqrt(Tt_out/Tt0)))
     
     #pack computed quantities into outputs
     nozzle_conditions.outputs.area_ratio              = area_ratio

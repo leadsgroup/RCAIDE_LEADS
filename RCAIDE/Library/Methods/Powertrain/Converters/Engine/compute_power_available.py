@@ -10,6 +10,7 @@ import RCAIDE
 
 # package imports
 import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_power_available
@@ -48,7 +49,8 @@ def compute_power_available(engine, altitude, delta_isa):
     """
     atmosphere       = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     rho0             = atmosphere.compute_values(0, 0).density[0, 0]
-    altitude_virtual = np.maximum(altitude - engine.flat_rate_altitude, 0.)
+    xp               = array_namespace(altitude, delta_isa)
+    altitude_virtual = xp.maximum(altitude - engine.flat_rate_altitude, 0.)
     sigma            = atmosphere.compute_values(altitude_virtual, delta_isa).density / rho0
     PSLS             = engine.sealevel_static_power
-    return np.where(engine.flat_rate_altitude > altitude, PSLS, PSLS * (sigma - 0.117) / 0.883)
+    return xp.where(engine.flat_rate_altitude > altitude, PSLS, PSLS * (sigma - 0.117) / 0.883)

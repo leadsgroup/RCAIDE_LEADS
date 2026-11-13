@@ -8,11 +8,12 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core              import Data
+from RCAIDE.Framework.Core              import Data, array_namespace
 from .Converter                         import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Ducted_Fan.append_ducted_fan_conditions import  append_ducted_fan_conditions
 import numpy as np
 import scipy as sp
+from RCAIDE.Library.Components.Powertrain.Converters.Rotor import extrinsic_xyz_rotation
  
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Ducted_Fan
@@ -296,19 +297,19 @@ class Ducted_Fan(Converter):
         body_2_vehicle = sp.spatial.transform.Rotation.from_rotvec([0,np.pi,0]).as_matrix()
 
         # Go from vehicle frame to ducted fan vehicle frame: rot 1 including the extra body rotation
-        cpts       = len(np.atleast_1d(commanded_thrust_vector))
-        rots       = np.array(self.orientation_euler_angles) * 1.
-        rots       = np.repeat(rots[None,:], cpts, axis=0) 
-        rots[:,1] += commanded_thrust_vector[:,0] 
-        
-        vehicle_2_duct_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()
+        xp         = array_namespace(commanded_thrust_vector)
+        tilt       = xp.reshape(commanded_thrust_vector, (-1, 1))
+        zero       = xp.zeros_like(tilt)
+        rots       = np.array(self.orientation_euler_angles)[None, :] * 1. + xp.concatenate([zero, tilt, zero], axis=1)
+
+        vehicle_2_duct_vec = extrinsic_xyz_rotation(rots)
 
         # GO from the ducted fan vehicle frame to the ducted fan velocity frame: rot 2
         duct_vec_2_duct_vel = self.vec_to_vel()
 
         # Do all the matrix multiplies
-        rot1    = np.matmul(body_2_vehicle,vehicle_2_duct_vec)
-        rot_mat = np.matmul(rot1,duct_vec_2_duct_vel)
+        rot1    = xp.matmul(body_2_vehicle,vehicle_2_duct_vec)
+        rot_mat = xp.matmul(rot1,duct_vec_2_duct_vel)
  
         return rot_mat , rots
 
@@ -359,11 +360,9 @@ class Ducted_Fan(Converter):
         * Thrust vector rotation is applied about the Y-axis
         """
 
-        body2ductvel,rots = self.body_to_duct_vel(commanded_thrust_vector)
-
-        r = sp.spatial.transform.Rotation.from_matrix(body2ductvel)
-        r = r.inv()
-        rot_mat = r.as_matrix()
+        # the inverse of a rotation is its transpose
+        body2ductvel,rots = self.body_to_prop_vel(commanded_thrust_vector)
+        rot_mat           = array_namespace(body2ductvel).swapaxes(body2ductvel, -1, -2)
 
         return rot_mat, rots
     

@@ -13,7 +13,7 @@ from RCAIDE.Framework.Core import Data, array_namespace
 #  check_derivatives
 # ----------------------------------------------------------------------------------------------------------------------
 def check_derivatives(function, inputs, steps=(1e-4, 1e-5, 1e-6), n_directions=3, value_tolerance=1e-12,
-                      derivative_tolerance=1e-6, seed=0):
+                      derivative_tolerance=1e-6, seed=0, compiled=True):
     """Checks a function written once for NumPy and JAX against itself and against finite differences.
 
     Parameters
@@ -36,11 +36,17 @@ def check_derivatives(function, inputs, steps=(1e-4, 1e-5, 1e-6), n_directions=3
         of the NumPy path, and between u . (J v) from forward mode and (J^T u) . v from reverse mode.
     seed : int
         Seed for the random directions.
+    compiled : bool
+        True (default): the JAX value, forward and reverse products are each compiled once and reused for every
+        direction, which is far faster on large functions; False: they run uncompiled (eagerly), and the uncompiled
+        value is also checked.
 
     Returns
     -------
     report : Data
-        value_error, compiled_error, jvp_errors (per direction, per step), jvp_error, vjp_consistency_error, passed.
+        value_error (uncompiled JAX vs NumPy; the compiled error when compiled), compiled_error, jvp_errors (per
+        direction, per step), jvp_error, vjp_consistency_error, passed, and input_sensitivity: |J^T u| for one random
+        u, one array per input, whose nonzero entries are the inputs that reach the output.
 
     Notes
     -----
@@ -61,11 +67,18 @@ def check_derivatives(function, inputs, steps=(1e-4, 1e-5, 1e-6), n_directions=3
     x_jax    = tuple(jnp.asarray(x) for x in x_np)
     flat     = lambda *x: flatten(function(*x))
 
+    # forward and reverse products, compiled once and reused for every direction unless compiled is False
+    def forward(x, v):
+        return jax.jvp(flat, x, v)[1]
+    def reverse(x, u):
+        return jax.vjp(flat, *x)[1](u)
+    if compiled:
+        forward, reverse = jax.jit(forward), jax.jit(reverse)
+
     report                = Data()
     y_np                  = flat(*x_np)
-    y_jax                 = np.asarray(flat(*x_jax))
-    report.value_error    = relative_error(y_jax, y_np)
     report.compiled_error = relative_error(np.asarray(jax.jit(flat)(*x_jax)), y_np)
+    report.value_error    = report.compiled_error if compiled else relative_error(np.asarray(flat(*x_jax)), y_np)
 
     jvp_errors = []
     vjp_errors = []
@@ -73,7 +86,7 @@ def check_derivatives(function, inputs, steps=(1e-4, 1e-5, 1e-6), n_directions=3
         # random direction, each element scaled by the size of its input
         v      = tuple(rng.standard_normal(x.shape) * np.maximum(1.0, np.abs(x)) for x in x_np)
         u      = rng.standard_normal(y_np.shape)
-        jv     = np.asarray(jax.jvp(flat, x_jax, tuple(jnp.asarray(d) for d in v))[1])
+        jv     = np.asarray(forward(x_jax, tuple(jnp.asarray(d) for d in v)))
         errors = []
         for h in steps:
             plus  = flat(*(x + h * d for x, d in zip(x_np, v)))
@@ -81,12 +94,12 @@ def check_derivatives(function, inputs, steps=(1e-4, 1e-5, 1e-6), n_directions=3
             errors.append(relative_error(jv, (plus - minus) / (2 * h)))
         jvp_errors.append(errors)
 
-        y, pullback = jax.vjp(flat, *x_jax)
-        jtu         = pullback(jnp.asarray(u))
+        jtu         = reverse(x_jax, jnp.asarray(u))
         lhs         = float(np.dot(u, jv))
         rhs         = float(sum(np.sum(np.asarray(g) * d) for g, d in zip(jtu, v)))
         vjp_errors.append(abs(lhs - rhs) / max(abs(lhs), abs(rhs), 1e-300))
 
+    report.input_sensitivity     = [np.abs(np.asarray(g)) for g in jtu]
     report.jvp_errors            = jvp_errors
     report.jvp_error             = max(min(e) for e in jvp_errors)
     report.vjp_consistency_error = max(vjp_errors)

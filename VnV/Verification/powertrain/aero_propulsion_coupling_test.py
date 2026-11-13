@@ -65,7 +65,7 @@ def main():
     assert np.abs(thrust[1] / thrust[0] - 1) > 1e-3
 
     # regression
-    power_true = 94985.80192421269
+    power_true = 94325.75726206989
     diff_power = np.abs(power_on[0] - power_true) / power_true
     print('Power: ', power_on[0], ' difference: ', diff_power)
     assert diff_power < 1e-2

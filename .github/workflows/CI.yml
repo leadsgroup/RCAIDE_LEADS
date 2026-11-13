@@ -40,8 +40,41 @@ jobs:
           pip install -e .
 
       - name: Run tests with coverage
+        # the JAX derivative checks run in the parallel job below
         run: |
-          pytest --cov=RCAIDE --cov-report=xml --cov-config=.coveragerc -v
+          pytest --cov=RCAIDE --cov-report=xml --cov-config=.coveragerc -v -k "not jax"
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: leadsgroup/RCAIDE_LEADS
+
+  # Job for Pull Requests: the JAX derivative checks, in parallel with the NumPy tests above
+  test-pr-jax:
+    name: Test JAX derivatives on Ubuntu (PR)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov coverage
+          pip install jax
+          pip install -e .
+
+      - name: Run JAX derivative checks with coverage
+        run: |
+          pytest --cov=RCAIDE --cov-report=xml --cov-config=.coveragerc -v -k jax
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5

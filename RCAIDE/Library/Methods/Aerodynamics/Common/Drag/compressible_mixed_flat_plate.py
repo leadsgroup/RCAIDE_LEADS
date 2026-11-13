@@ -72,8 +72,8 @@ def compressible_mixed_flat_plate(Re,Ma,Tc,xt):
 
     :math:`C_{f,lam} = \\frac{1.328}{\\sqrt{Re_{x_t}}}`
 
-    The turbulent skin friction coefficient is interpolated from empirical data
-    accounting for typical transport aircraft surface roughness.
+    The turbulent skin friction coefficient is interpolated, linearly in log10(Re) and
+    log10(cf), from Shevell's Figure 11.2 for typical transport aircraft surface roughness.
 
     The mixed flow skin friction coefficient is:
 
@@ -128,15 +128,19 @@ def compressible_mixed_flat_plate(Re,Ma,Tc,xt):
     
     #cf_turb  = 0.455/(np.log10(Rext)**2.58) # Schlichting empircal formula for turbulent flat plate. note that this correlation is meant for smooth surfaces.
 
-    # Turbulent flat plate correlation from Shevell's Fundamentals of Flight. Accounts for typical roughness of a transport aircraft
-    # in increasing Reynolds number, as interpolation requires
+    # Turbulent flat plate skin friction for typical transport aircraft roughness, Shevell [2] Figure 11.2, read in
+    # increasing Reynolds number. The figure is on log-log axes, where the curve is close to a straight line, so the
+    # table is interpolated in log10(Re) and log10(cf). Assumption: the Re = 1e4 point lies below the figure's range
+    # (1e5 to 1e9) and has no source.
     y = np.array([0.01273, 0.0090077, 0.00716019, 0.0058721317, 0.0049416, 0.003744045, 0.00316321, 0.002506763, 0.002064, 0.0016604122])
     x = np.array([10000, 115300, 281300, 675100, 1492600, 6040200, 14920400, 58584300, 193593000, 897594100])
-    cf_turb = xp.interp(Rext, x, y) # Data is from Figure 11.2 of Shevell's Fundamentals of Flight.
+    log_x   = np.log10(x)
+    log_y   = np.log10(y)
+    cf_turb = 10**xp.interp(xp.log10(Rext), log_x, log_y)
     cf_lam   = 1.328/(Rex**0.5)
     
     if xt > 0.0:
-        cf_start = xp.interp(Re*xeff, x, y)  
+        cf_start = 10**xp.interp(xp.log10(Re*xeff), log_x, log_y)
     else:
         cf_start = 0.0
     
