@@ -31,8 +31,7 @@ def compile_segment(segment):
        segment     an initialized segment (expand_state and initialize have run)
 
     Outputs:
-       compiled    Compiled_Segment with residual(x, inputs), jacobian(x, inputs) and
-                   input_derivative(x, inputs, direction)
+       compiled    Compiled_Segment (residual, jacobian, input_derivative, state_derivative)
        inputs      tuple of arrays, the float inputs of this segment that the residual reads, one per compiled.paths
     """
     references, signature = segment_inputs(segment)
@@ -53,6 +52,9 @@ class Compiled_Segment:
        residual(x, inputs)                      residual
        jacobian(x, inputs)                      derivative of the residual with respect to x
        input_derivative(x, inputs, direction)   derivative of the residual along a direction of the inputs
+       state_derivative(x, inputs, x_direction, direction)
+                                                derivative of the state arrays (state_paths) along a direction of
+                                                the unknowns and the inputs
     """
 
     def __init__(self, segment, references):
@@ -81,9 +83,15 @@ class Compiled_Segment:
             return residual_of_inputs(self.segment, x, self.paths, list(inputs))
         def input_derivative(x, inputs, direction):
             return jax.jvp(lambda inputs: residual(x, inputs), (inputs,), (direction,))[1]
+        def state(x, inputs):
+            self.state_paths, arrays = state_of_inputs(self.segment, x, self.paths, list(inputs))
+            return [jnp.asarray(array, dtype=float) for array in arrays]
+        def state_derivative(x, inputs, x_direction, direction):
+            return jax.jvp(state, (x, inputs), (x_direction, direction))[1]
         self.residual         = jax.jit(residual)
         self.jacobian         = jax.jit(jax.jacfwd(residual))
         self.input_derivative = jax.jit(input_derivative)
+        self.state_derivative = jax.jit(state_derivative)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  The residual as a function of the unknowns and the inputs
@@ -93,6 +101,19 @@ def residual_of_inputs(segment, x, paths, values):
     Residual of the segment's iterate steps with unknowns x and the float inputs at paths replaced by values, on NumPy
     or JAX. The steps run on a copy of the state, and the analyses are restored afterwards.
     """
+    return evaluate_segment(segment, x, paths, values)[0]
+
+
+def state_of_inputs(segment, x, paths, values):
+    """
+    The float arrays of the segment's state after its iterate steps and its position update, as (state paths, arrays):
+    what the next segment and the mission outputs read. Same arguments as residual_of_inputs.
+    """
+    return evaluate_segment(segment, x, paths, values)[1:]
+
+
+def evaluate_segment(segment, x, paths, values):
+    """Runs the iterate steps and the position update on a copy of the state; residual, state paths and state arrays."""
     state = segment.state
     fresh = copy_state(state, np.array)
     if state.initials:
@@ -114,19 +135,43 @@ def residual_of_inputs(segment, x, paths, values):
         set_unknowns(fresh.unknowns, state.unknowns, x)
         for step in iterate_steps(segment.process.iterate):
             step(segment)
-        xp = array_namespace(x, *values)
-        return xp.concatenate([xp.ravel(value) for value in float_leaves(fresh.residuals)])
+        xp       = array_namespace(x, *values)
+        residual = xp.concatenate([xp.ravel(value) for value in float_leaves(fresh.residuals)])
+        update_position(segment)
+        located  = state_arrays(fresh)
+        return residual, [path for container, key, path in located], [container[key] for container, key, path in located]
     finally:
         segment.state, segment.conditions = state, state.conditions
         for reference, value in zip(replaced, saved):
             write_input(reference, value)
+
+
+def update_position(segment):
+    """The post-process step that integrates the horizontal position, which the next segment starts from."""
+    if 'inertial_position' in segment.process.post_process:
+        segment.process.post_process.inertial_position(segment)
+    return
+
+
+def state_arrays(state, path='state'):
+    """One (container, key, path) per float array of a state, NumPy or JAX, without the initials."""
+    located = []
+    for key, value in dict.items(state):
+        if key == 'initials':
+            continue
+        if isinstance(value, dict):
+            located += state_arrays(value, f"{path}.{key}")
+        elif array_namespace(value) is not np or (isinstance(value, np.ndarray) and value.dtype.kind == 'f'):
+            located.append((state, key, f"{path}.{key}"))
+    return located
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Inputs and signature of a segment
 # ----------------------------------------------------------------------------------------------------------------------
 def segment_inputs(segment):
     """
-    Walks the analyses, the state and the initials of a segment (one level, not the chain of earlier segments).
+    Walks the segment's settings, its analyses, its state and its initials (one level, not the chain of earlier
+    segments).
 
     Outputs:
        references   one (container, key, kind, path) per float input: finite floats and finite float arrays
@@ -136,20 +181,37 @@ def segment_inputs(segment):
     references = []
     static     = [('segment', type(segment).__qualname__)]
     static    += [('step', describe(step)) for step in iterate_steps(segment.process.iterate)]
+    static    += [('unknown', path, np.shape(container[key])) for container, key, path in unknown_entries(segment.state.unknowns)]
+    # the segment's own settings (speeds, altitudes, distances); its tags name it and its converged flag is a result
+    collect_inputs(segment, 'segment', references, static, set(),
+                   skip=('analyses', 'state', 'conditions', 'process', 'tag', 'mission_tag', 'converged'))
     collect_inputs(segment.analyses, 'analyses', references, static, set())
-    collect_inputs(segment.state, 'state', references, static, set(), skip_initials=True)
+    collect_inputs(segment.state, 'state', references, static, set(), skip=('initials',))
     if segment.state.initials:
-        collect_inputs(segment.state.initials, 'initials', references, static, set(), skip_initials=True)
+        collect_inputs(segment.state.initials, 'initials', references, static, set(), skip=('initials',))
     return references, tuple(static)
 
 
-def collect_inputs(item, path, references, static, seen, skip_initials=False):
-    """Appends the float inputs under item to references and everything else to static."""
+def signature_difference(segment, other, limit=5):
+    """The first entries in which the signatures of two segments differ, as text."""
+    first  = {entry[0]: entry[1:] for entry in segment_inputs(segment)[1]}
+    second = {entry[0]: entry[1:] for entry in segment_inputs(other)[1]}
+    lines  = [f"{path}: {str(first.get(path))[:60]} against {str(second.get(path))[:60]}"
+              for path in list(first) + [path for path in second if path not in first] if first.get(path) != second.get(path)]
+    return "; ".join(lines[:limit])
+
+
+def collect_inputs(item, path, references, static, seen, skip=()):
+    """Appends the float inputs under item to references and everything else to static; skip names keys of item itself."""
     if id(item) in seen:
         static.append((path, 'seen'))
         return
     seen.add(id(item))
     static.append((path, type(item).__qualname__))
+
+    # the unknowns are arguments of the residual; what the solve writes about itself (convergence, counters) is a result
+    if path in ('state.unknowns', 'state.numerics.mission_solver'):
+        return
 
     if isinstance(item, Linear_Interpolator):
         for i in range(len(item.axes)):
@@ -157,7 +219,7 @@ def collect_inputs(item, path, references, static, seen, skip_initials=False):
         collect_value(item, 'values', item.values, 'attribute', f"{path}.values", references, static, seen)
     elif isinstance(item, dict):
         for key, value in dict.items(item):
-            if not (skip_initials and key == 'initials'):
+            if key not in skip and not (path == 'state' and str(key).startswith('number_of_')):
                 collect_value(item, key, value, 'item', f"{path}.{key}", references, static, seen)
         # object attributes of a Data (such as the conditions size), not the binding to the preallocated layout
         for key, value in getattr(item, '__dict__', {}).items():
@@ -261,20 +323,35 @@ def float_leaves(tree):
     return leaves
 
 
+def unknown_entries(unknowns, path='unknowns'):
+    """One (container, key, path) per unknown, in a fixed order: float arrays and scalars (a segment time)."""
+    entries = []
+    for key, value in dict.items(unknowns):
+        if isinstance(value, dict):
+            entries += unknown_entries(value, f"{path}.{key}")
+        elif isinstance(value, np.ndarray) and value.dtype.kind == 'f':
+            entries.append((unknowns, key, f"{path}.{key}"))
+        elif isinstance(value, (int, float, np.number)) and not isinstance(value, bool):
+            entries.append((unknowns, key, f"{path}.{key}"))
+    return entries
+
+
 def unknowns_vector(unknowns):
     """The unknowns of a state as one flat NumPy vector."""
-    return np.concatenate([np.ravel(value) for value in float_leaves(unknowns)])
+    return np.concatenate([np.ravel(np.asarray(container[key], dtype=float)) for container, key, path in unknown_entries(unknowns)])
 
 
 def set_unknowns(tree, numpy_tree, x):
     """Writes the flat vector x into the unknowns of tree, in the order and shapes of the NumPy unknowns."""
-    start = 0
-    for key, value in dict.items(numpy_tree):
-        if isinstance(value, dict):
-            start += set_unknowns(tree[key], value, x[start:])
-        elif isinstance(value, np.ndarray) and value.dtype.kind == 'f':
-            dict.__setitem__(tree, key, x[start:start + value.size].reshape(value.shape))
-            start += value.size
+    by_path = {path: container for container, key, path in unknown_entries(tree)}
+    start   = 0
+    for container, key, path in unknown_entries(numpy_tree):
+        shape = np.shape(container[key])
+        size  = int(np.prod(shape))
+        value = x[start:start + size].reshape(shape)
+        # a NumPy scalar unknown stays a float
+        dict.__setitem__(by_path[path], key, float(value) if isinstance(value, np.ndarray) and shape == () else value)
+        start += size
     return start
 
 

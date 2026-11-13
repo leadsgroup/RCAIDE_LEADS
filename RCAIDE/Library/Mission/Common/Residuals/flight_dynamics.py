@@ -151,7 +151,7 @@ def flight_dynamics(segment):
             
     if ground_seg_flag:
         vf = segment.velocity_end
-        if vf == 0.0: vf = 0.01
+        vf = array_namespace(vf).where(vf == 0.0, 0.01, vf)   # a full stop is approached, not reached
         segment.state.residuals.mission.force_x = (FT_i[1:,0]/m[1:,0] - a_i[1:,0])[:,None]
         segment.state.residuals.mission.final_velocity_error = xp.asarray(v[-1,0] - vf)
     elif taxi_seg_flag:

@@ -102,7 +102,7 @@ def orientation(segment):
     rotations = segment.state.conditions.frames.body.inertial_rotations   # columns: roll, pitch, heading
 
     # Body Angle Control
-    if segment.lift_coefficient !=  None:
+    if segment.lift_coefficient is not None:
         segment.state.conditions.aerodynamics.coefficients.lift.total          = segment.lift_coefficient * segment.state.ones_row(1)
         segment.state.conditions.aerodynamics.coefficients.lift.inviscid.total = segment.lift_coefficient / segment.analyses.aerodynamics.settings.fuselage_lift_correction   * segment.state.ones_row(1)
     else:
@@ -139,14 +139,15 @@ def sideslip_angle(segment):
     """Sideslip angle at each control point: a solver unknown, or from a crosswind, or prescribed on the segment."""
     if segment.assigned_control_variables.sideslip_angle.active:
         return segment.state.unknowns.mission.sideslip_angle[:,0]
-    if segment.crosswind_speed != 0.0:
-        # beta = arcsin(v/V), Etkin & Reid (1.6,4); zero where the vehicle is not moving
-        V  = segment.state.conditions.frames.inertial.velocity_vector
-        xp = array_namespace(V)
-        V  = safe_sqrt(xp.sum(V**2, axis=1))
-        # divide only where the vehicle moves; V_safe keeps the unused division finite, since JAX differentiates
-        # both branches of a where and a division by zero there would make the gradient NaN
-        moving = V > 0.
-        V_safe = xp.where(moving, V, 1.)
-        return xp.arcsin(xp.clip(xp.where(moving, segment.crosswind_speed / V_safe, 0.), -1.0, 1.0))
-    return segment.sideslip_angle
+    # with a crosswind, beta = arcsin(v/V), Etkin & Reid (1.6,4), zero where the vehicle is not moving; without one,
+    # the angle prescribed on the segment
+    crosswind = segment.crosswind_speed
+    V         = segment.state.conditions.frames.inertial.velocity_vector
+    xp        = array_namespace(V, crosswind, segment.sideslip_angle)
+    V         = safe_sqrt(xp.sum(V**2, axis=1))
+    # divide only where the vehicle moves; V_safe keeps the unused division finite, since JAX differentiates
+    # both branches of a where and a division by zero there would make the gradient NaN
+    moving    = V > 0.
+    V_safe    = xp.where(moving, V, 1.)
+    beta      = xp.arcsin(xp.clip(xp.where(moving, crosswind / V_safe, 0.), -1.0, 1.0))
+    return xp.where(crosswind != 0.0, beta, segment.sideslip_angle)
