@@ -175,6 +175,8 @@ def add_segment(mission, segment, analyses):
     """Force balance along and normal to the flight path, with the throttle and the pitch angle as controls."""
     segment.analyses.extend(analyses.base)
     segment.state.numerics.number_of_control_points                 = 8
+    # a derivative is taken about the converged state, and the missions solved again must resolve a small change
+    segment.state.numerics.mission_solver.tolerance                 = 1e-10
     segment.flight_dynamics.force_x                                 = True
     segment.flight_dynamics.force_z                                 = True
     segment.assigned_control_variables.throttle.active              = True
