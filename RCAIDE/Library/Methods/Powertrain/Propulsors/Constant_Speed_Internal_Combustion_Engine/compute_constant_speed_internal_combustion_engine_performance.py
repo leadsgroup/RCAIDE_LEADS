@@ -12,6 +12,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Engine import compute_throttle
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import  compute_rotor_performance
  
 # pacakge imports  
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_propulsor_moment import compute_propulsor_moment
 import numpy as np  
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -105,11 +106,7 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor, sta
     compute_rotor_performance(propeller,conditions,None if network is None else network.wing_vortex_distribution(state))
 
     # Compute moment 
-    moment_vector           = 0*state.ones_row(3)
-    moment_vector[:,0]      = propeller.origin[0][0]  -  center_of_gravity[0][0] 
-    moment_vector[:,1]      = propeller.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2]      = propeller.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  array_namespace(conditions.energy.converters[propeller.tag].thrust).cross(moment_vector, conditions.energy.converters[propeller.tag].thrust)       
+    moment = compute_propulsor_moment(propeller.origin, center_of_gravity, conditions.energy.converters[propeller.tag].thrust)
         
 
     # Run the engine to calculate the throttle setting and the fuel burn
@@ -168,11 +165,7 @@ def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,
     # compute moment
     thrust                  = conditions.energy.converters[propeller.tag].thrust
     power                   = conditions.energy.converters[propeller.tag].power
-    moment_vector           = 0*state.ones_row(3)
-    moment_vector[:,0]      = propeller.origin[0][0]  -  center_of_gravity[0][0]
-    moment_vector[:,1]      = propeller.origin[0][1]  -  center_of_gravity[0][1]
-    moment_vector[:,2]      = propeller.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  array_namespace(thrust).cross(moment_vector, thrust)
+    moment = compute_propulsor_moment(propeller.origin, center_of_gravity, thrust)
 
     # pack results
     conditions.energy.propulsors[propulsor.tag].outputs.thrust    = thrust

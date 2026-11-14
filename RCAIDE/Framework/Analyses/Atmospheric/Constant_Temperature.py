@@ -95,9 +95,9 @@ class Constant_Temperature(Atmospheric):
         R         = gas.gas_specific_constant
         
         # check properties
-        if not gas == Air():
+        if not isinstance(gas, Air):
             warn('Constant_Temperature Atmosphere not using Air fluid properties')
-        if not planet == Earth():
+        if not isinstance(planet, Earth):
             warn('Constant_Temperature Atmosphere not using Earth planet properties')          
         
         # convert input if necessary

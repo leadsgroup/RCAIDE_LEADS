@@ -7,7 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
-from RCAIDE.Framework.Core import Data
+from RCAIDE.Framework.Core import Data, array_namespace
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.pack_fields import pack_fields
 
 # Python package imports
 import numpy as np
@@ -138,11 +139,13 @@ KERNEL_OUTPUT_FIELDS   = ['tau_r', 'pi_r', 'pi_d', 'tau_lambda', 'tau_cH', 'pi_c
 
 def pack_design_constants(design_constants):
     """Design constants as a float array in DESIGN_CONSTANT_FIELDS order (for the compiled kernel)."""
-    return np.array([float(getattr(design_constants, field, 0.0)) for field in DESIGN_CONSTANT_FIELDS])
+    return pack_fields([getattr(design_constants, field, 0.0) for field in DESIGN_CONSTANT_FIELDS])
 
 def pack_reference_point(reference_point):
     """Reference point as a float array in REFERENCE_POINT_FIELDS order (for the compiled kernel)."""
-    return np.array([float(reference_point[field]) for field in REFERENCE_POINT_FIELDS])
+    return pack_fields([reference_point[field] for field in REFERENCE_POINT_FIELDS])
+
+
 
 @njit(cache=True)
 def mass_flow_parameter_kernel(mach_number, gamma, gas_constant):

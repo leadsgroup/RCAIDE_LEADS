@@ -5,10 +5,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from RCAIDE.Framework.Core import array_namespace
+from RCAIDE.Framework.Core import Data, array_namespace
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.solve_offdesign_matching_jax import solve_offdesign_matching_jax, robust_states_from_points
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_OffDesign_Matching import (
-    pack_design_constants, pack_reference_point, solve_turbofan_offdesign_robust)
+    pack_design_constants, pack_reference_point, solve_turbofan_offdesign_robust, DESIGN_CONSTANT_FIELDS, REFERENCE_POINT_FIELDS)
 
 import numpy as np
 
@@ -46,9 +46,9 @@ def unpack(design, reference):
     """Packed design constants and reference point as named floats."""
     d = dict(zip(['gamma_c', 'gamma_t', 'cpc', 'cpt', 'pi_dmax', 'fuel_heating_value', 'eta_b', 'pi_b', 'pi_tH', 'tau_tH',
                   'pi_n', 'pi_fn', 'eta_cH', 'eta_f', 'eta_f_alone', 'fan_temperature_rise_fraction', 'eta_tL',
-                  'shaft_work_specific_design'], [float(value) for value in design]))
+                  'shaft_work_specific_design'], list(design)))
     r = dict(zip(['M0', 'T0', 'P0', 'Tt4', 'tau_f', 'tau_tL', 'pi_tL', 'alpha', 'pi_cH', 'tau_cH', 'pi_f', 'M19', 'M9', 'm0'],
-                 [float(value) for value in reference]))
+                 list(reference)))
     return d, r
 
 def flight_terms(M0, T0, Tt4, d, xp):
@@ -62,10 +62,12 @@ def flight_terms(M0, T0, Tt4, d, xp):
     return tau_r, pi_r, pi_d, tau_lambda
 
 def reference_terms(d, r):
-    """The same terms at the reference point, as floats."""
+    """The same terms at the reference point (inputs themselves when the design is a JAX input)."""
+    xp          = array_namespace(r['M0'], d['gamma_c'])
     tau_rR      = 1 + (d['gamma_c'] - 1) / 2 * r['M0'] ** 2
     pi_rR       = tau_rR ** (d['gamma_c'] / (d['gamma_c'] - 1))
-    eta_rR      = 1.0 if r['M0'] <= 1 else 1 - 0.075 * (r['M0'] - 1) ** 1.35
+    supersonic  = r['M0'] > 1
+    eta_rR      = xp.where(supersonic, 1 - 0.075 * xp.where(supersonic, r['M0'] - 1, 1.0) ** 1.35, 1.0)
     pi_dR       = d['pi_dmax'] * eta_rR
     tau_lambdaR = d['cpt'] * r['Tt4'] / (d['cpc'] * r['T0'])
     return tau_rR, pi_rR, pi_dR, tau_lambdaR
@@ -125,7 +127,7 @@ def turbofan_matching_step(state, inputs, design, reference, relaxation_factor=0
     # bypass ratio and mass flow, then the relaxed fan and low pressure turbine updates
     alpha_new = r['alpha'] * (r['pi_cH'] / s['pi_cH']) * xp.sqrt(xp.maximum(
                 (s['tau_lambda'] / (s['tau_r'] * tau_f)) / (s['tau_lambdaR'] / (s['tau_rR'] * r['tau_f'])), 1e-12)) * \
-                (mass_flow_parameter(s['M19'], gamma_c, R_c, xp) / mass_flow_parameter(r['M19'], gamma_c, R_c, np))
+                (mass_flow_parameter(s['M19'], gamma_c, R_c, xp) / mass_flow_parameter(r['M19'], gamma_c, R_c, xp))
     mass_flow_estimate_new = r['m0'] * ((1 + alpha_new) / (1 + r['alpha'])) * \
                 (P0 * s['pi_r'] * s['pi_d'] * s['pi_f'] * s['pi_cH']) / (r['P0'] * s['pi_rR'] * s['pi_dR'] * r['pi_f'] * r['pi_cH']) * \
                 xp.sqrt(r['Tt4'] / xp.maximum(Tt4, 1e-6))
@@ -136,7 +138,7 @@ def turbofan_matching_step(state, inputs, design, reference, relaxation_factor=0
     collapsed      = (s['M9'] == 0.0) | (s['M19'] == 0.0)
     M9             = xp.where(collapsed, 1.0, s['M9'])
     pi_tL_computed = r['pi_tL'] * xp.sqrt(tau_tL_new / r['tau_tL']) * \
-                     (mass_flow_parameter(r['M9'], gamma_t, R_t, np) / mass_flow_parameter(M9, gamma_t, R_t, xp))
+                     (mass_flow_parameter(r['M9'], gamma_t, R_t, xp) / mass_flow_parameter(M9, gamma_t, R_t, xp))
     pi_tL_new      = pi_tL + relaxation_factor * (pi_tL_computed - pi_tL)
     return (tau_f_new, tau_tL_new, pi_tL_new, alpha_new, mass_flow_estimate_new), collapsed
 
@@ -232,18 +234,22 @@ def solve_turbofan_offdesign_jax(design_constants, reference_point, mach_number,
     def residual(flat):
         return step(flat)[0] - flat
 
+    # the robust solver runs on concrete values: the packed design and reference point travel as callback inputs
     def solve_point(i, values):
-        M0, T0, P0, Tt4, offtake = (value[i] for value in values)
-        return solve_turbofan_offdesign_robust(design_constants, reference_point, M0, T0, P0, Tt4, packed_design_constants=design,
-                                               packed_reference_point=reference, shaft_power_offtake=offtake)
+        M0, T0, P0, Tt4, offtake = (value[i] for value in values[:5])
+        packed_design, packed_reference = values[5], values[6]
+        design_point    = Data(zip(DESIGN_CONSTANT_FIELDS, map(float, packed_design)))
+        reference_state = Data(zip(REFERENCE_POINT_FIELDS, map(float, packed_reference)))
+        return solve_turbofan_offdesign_robust(design_point, reference_state, M0, T0, P0, Tt4, packed_design_constants=packed_design,
+                                               packed_reference_point=packed_reference, shaft_power_offtake=offtake)
     robust_states = robust_states_from_points(solve_point, STATE_FIELDS, STATE_SIZE, n)
 
-    initial = jnp.concatenate([value * jnp.ones(n) for value in reference[[4, 5, 6, 7, 13]]])
-    flat, matched = solve_offdesign_matching_jax(step, residual, initial, robust_states, inputs, STATE_SIZE, n)
+    initial = jnp.concatenate([value * jnp.ones(n) for value in reference[np.array([4, 5, 6, 7, 13])]])
+    flat, matched = solve_offdesign_matching_jax(step, residual, initial, robust_states, inputs + (design, reference), STATE_SIZE, n)
 
     # as in the robust NumPy solver: a combustor exit temperature not above the inlet stagnation temperature has
     # no matched operating point, though the iteration may still find a fixed point there
-    gamma_c = float(design_constants.gamma_c)
+    gamma_c = design[DESIGN_CONSTANT_FIELDS.index('gamma_c')]
     matched = matched & (combustor_exit_temperature > static_temperature * (1 + (gamma_c - 1) / 2 * mach_number ** 2))
 
     outputs = turbofan_matching_outputs(tuple(flat.reshape(STATE_SIZE, n)), inputs, design, reference)

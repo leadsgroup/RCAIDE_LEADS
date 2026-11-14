@@ -11,6 +11,7 @@ from RCAIDE.Framework.Core import Units
 
 # Python package imports
 import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 import warnings
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -125,36 +126,39 @@ def compute_flap_profile_drag(wing, flap, reference_area):
         warnings.warn(f"Unrecognized flap type '{flap_type}'; using the single_slotted flap profile drag chart.")
         flap_type = 'single_slotted'
 
-    delta_deg = np.abs(flap.deflection) / Units.degrees
+    xp        = array_namespace(flap.deflection, flap.chord_fraction, wing.thickness_to_chord, wing.areas.reference,
+                                wing.areas.affected, reference_area)
+    delta_deg = xp.abs(flap.deflection) / Units.degrees
     if flap_type == 'plain':
-        cd_2D = takeoff_landing_increment(PLAIN_FLAP_PROFILE_DRAG_DATA, flap.chord_fraction, delta_deg)
+        cd_2D = takeoff_landing_increment(PLAIN_FLAP_PROFILE_DRAG_DATA, flap.chord_fraction, delta_deg, xp)
     elif flap_type == 'split':
         ratios = sorted(SPLIT_FLAP_PROFILE_DRAG_DATA.keys())
-        values = [takeoff_landing_increment(SPLIT_FLAP_PROFILE_DRAG_DATA[t_c], flap.chord_fraction, delta_deg) for t_c in ratios]
-        cd_2D  = np.interp(wing.thickness_to_chord, ratios, values)
+        values = xp.stack([takeoff_landing_increment(SPLIT_FLAP_PROFILE_DRAG_DATA[t_c], flap.chord_fraction, delta_deg, xp) for t_c in ratios])
+        cd_2D  = xp.interp(wing.thickness_to_chord, np.array(ratios), values)
     else:
         curves = FLAP_PROFILE_DRAG_DATA[flap_type]
         ratios = np.array([0.0] + sorted(curves.keys()))
-        values = [0.0]
+        values = [0.0 * delta_deg]
         for ratio in sorted(curves.keys()):
             deflections, increments = curves[ratio]
-            values.append(np.interp(delta_deg, [0.0] + deflections, [0.0] + increments))
-        cd_2D = np.interp(flap.chord_fraction, ratios, values)
+            values.append(xp.interp(delta_deg, np.array([0.0] + deflections), np.array([0.0] + increments)))
+        cd_2D = xp.interp(flap.chord_fraction, ratios, xp.stack(values))
 
     sweep        = wing.sweeps.quarter_chord if wing.sweeps.quarter_chord is not None else 0.0
     # flapped wing area; the flap's spanwise share of the wing area when it is not set
-    flapped_area = wing.areas.affected if wing.areas.affected > 0 else wing.areas.reference * (flap.span_fraction_end - flap.span_fraction_start)
-    return (1 + FLAP_INTERFERENCE_FACTOR[flap_type]) * cd_2D * np.cos(sweep) * flapped_area / reference_area
+    flapped_area = xp.where(wing.areas.affected > 0, wing.areas.affected, wing.areas.reference * (flap.span_fraction_end - flap.span_fraction_start))
+    return (1 + FLAP_INTERFERENCE_FACTOR[flap_type]) * cd_2D * xp.cos(sweep) * flapped_area / reference_area
 
 
-def takeoff_landing_increment(chart, chord_fraction, delta_deg):
+def takeoff_landing_increment(chart, chord_fraction, delta_deg, xp=np):
     """
     Increment from a chart given at 15 and 60 deg: each deflection is interpolated in flap chord ratio (toward zero
     at zero chord), then the quadratic in deflection through zero and the two values is evaluated, held at 60 deg.
     """
     at = {}
     for deflection, (ratios, increments) in chart.items():
-        at[deflection] = np.interp(chord_fraction, [0.0] + ratios, [0.0] + increments)
-    d    = min(delta_deg, 60.0)
-    a, b = np.linalg.solve([[15.0, 15.0**2], [60.0, 60.0**2]], [at[15.0], at[60.0]])
-    return max(0.0, a * d + b * d**2)
+        at[deflection] = xp.interp(chord_fraction, np.array([0.0] + ratios), np.array([0.0] + increments))
+    d    = xp.minimum(delta_deg, 60.0)
+    # quadratic through the 15 and 60 degree charts: the matrix is fixed, so its inverse is applied to the chart values
+    a, b = np.linalg.inv(np.array([[15.0, 15.0**2], [60.0, 60.0**2]])) @ xp.stack([at[15.0], at[60.0]])
+    return xp.maximum(0.0, a * d + b * d**2)

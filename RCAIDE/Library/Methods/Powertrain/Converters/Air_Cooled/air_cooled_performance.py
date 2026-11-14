@@ -79,17 +79,16 @@ def air_cooled_performance(HAS,battery_module,coolant_line, Q_heat_gen,T_cell,st
         S_T             = battery_module.geometric_configuration.normal_spacing
         S_L             = battery_module.geometric_configuration.parallel_spacing
 
-        S_D = np.sqrt(S_T**2+S_L**2)
-        if 2*(S_D-D_cell) < (S_T-D_cell):
-            V_max = V_coolant*(S_T/(2*(S_D-D_cell)))
-        else:
-            V_max = V_coolant*(S_T/(S_T-D_cell))
+        S_D = (S_T**2+S_L**2)**0.5
+        # the maximum velocity is in the diagonal gap when that is the narrower one
+        xp       = array_namespace(V_coolant, T_cell, S_T, S_L, D_cell)
+        diagonal = 2*(S_D-D_cell) < (S_T-D_cell)
+        V_max    = V_coolant*xp.where(diagonal, S_T/(2*(S_D-D_cell)), S_T/(S_T-D_cell))
 
         # the cells are isothermal, so the tube-bank wall temperature is the cell temperature [Clarke & Alonso Eqs. 7, 10-11]
         T_wall   = T_cell
         Re_max   = V_max*D_cell/nu_coolant
         # one correlation range for every point, as chosen by the lowest Reynolds number
-        xp       = array_namespace(Re_max, T_cell)
         upper    = xp.all(Re_max > 10E2)
         C        = xp.where(upper, 0.35*((S_T/S_L)**0.2), 0.51)
         m        = xp.where(upper, 0.6, 0.5)

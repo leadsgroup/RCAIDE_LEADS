@@ -20,3 +20,5 @@ from .compute_gas_generator_shaft_power_offtake import compute_gas_generator_sha
 from .compute_matching_floor                    import compute_matching_floor
 from .extend_thrust_below_floor                 import extend_thrust_below_floor
 from .append_propulsor_conditions               import append_propulsor_conditions
+from .compute_propulsor_moment                 import compute_propulsor_moment
+from .pack_fields                              import pack_fields

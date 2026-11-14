@@ -181,7 +181,8 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_vortex_distribution=None)
     Vv      = conditions.frames.inertial.velocity_vector
     nu      = mu/rho
     rho_0   = rho 
-    xp      = array_namespace(commanded_TV, pitch_c, eta, omega, rho, Vv, conditions.frames.body.transform_to_inertial)
+    xp      = array_namespace(commanded_TV, pitch_c, eta, omega, rho, Vv, conditions.frames.body.transform_to_inertial,
+                              r_1d, c, beta_0, R, sweep)
 
     # Number of radial stations and segment control points
     Nr       = len(c)
@@ -204,23 +205,20 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_vortex_distribution=None)
 
     # Non-dimensional radial distribution and differential radius
     chi           = r_1d/R
-    diff_r        = np.diff(r_1d)
-    deltar        = np.zeros(len(r_1d))
-    deltar[1:-1]  = diff_r[0:-1]/2 + diff_r[1:]/2
-    deltar[0]     = diff_r[0]/2
-    deltar[-1]    = diff_r[-1]/2
+    diff_r        = xp.diff(r_1d)
+    deltar        = xp.concatenate([diff_r[:1]/2, diff_r[0:-1]/2 + diff_r[1:]/2, diff_r[-1:]/2])
 
     # Calculating rotational parameters
     omegar   = omega*r_1d    # (ctrl_pts, Nr)
     n        = omega/(2.*pi)   # Rotations per second
 
     # 2 dimensional radial distribution non dimensionalized
-    chi_2d         = np.tile(chi[:, None],(1,Na))
-    chi_2d         = np.repeat(chi_2d[None,:,:], ctrl_pts, axis=0)
-    r_dim_2d       = np.tile(r_1d[:, None] ,(1,Na))
-    r_dim_2d       = np.repeat(r_dim_2d[None,:,:], ctrl_pts, axis=0)
-    c_2d           = np.tile(c[:, None] ,(1,Na))
-    c_2d           = np.repeat(c_2d[None,:,:], ctrl_pts, axis=0)
+    chi_2d         = xp.tile(chi[:, None],(1,Na))
+    chi_2d         = xp.repeat(chi_2d[None,:,:], ctrl_pts, axis=0)
+    r_dim_2d       = xp.tile(r_1d[:, None] ,(1,Na))
+    r_dim_2d       = xp.repeat(r_dim_2d[None,:,:], ctrl_pts, axis=0)
+    c_2d           = xp.tile(c[:, None] ,(1,Na))
+    c_2d           = xp.repeat(c_2d[None,:,:], ctrl_pts, axis=0)
 
     # Azimuthal distribution of stations (in direction of rotation)
     psi            = np.linspace(0,2*pi,Na+1)[:-1]
@@ -230,7 +228,9 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_vortex_distribution=None)
     total_blade_pitch = beta_0  +  pitch_c
     
     # apply blade sweep to azimuthal position
-    if np.any(np.array([sweep])!=0):
+    # nonzero sweep switches to the azimuthal (2D) analysis, a different code path: decided from the concrete sweep;
+    # when the sweep is itself a JAX input, the rotor's use_2d_analysis setting decides
+    if array_namespace(sweep) is np and np.any(np.array([sweep])!=0):
         use_2d_analysis     = True
         sweep_2d            = np.repeat(sweep[:, None], (1,Na))
         sweep_offset_angles = np.tan(sweep_2d/r_dim_2d)
@@ -307,9 +307,9 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_vortex_distribution=None)
         else:
             beta = xp.tile(total_blade_pitch[:,:,None],(ctrl_pts,1,Na ))
 
-        r    = np.tile(r_1d[None,:,None], (ctrl_pts, 1, Na))
-        c    = np.tile(c[None,:,None], (ctrl_pts, 1, Na))
-        deltar = np.tile(deltar[None,:,None], (ctrl_pts, 1, Na))
+        r    = xp.tile(r_1d[None,:,None], (ctrl_pts, 1, Na))
+        c    = xp.tile(c[None,:,None], (ctrl_pts, 1, Na))
+        deltar = xp.tile(deltar[None,:,None], (ctrl_pts, 1, Na))
 
         # 2-D atmospheric properties
         a   = xp.tile(a,(1,Nr))
@@ -324,7 +324,7 @@ def BEMT_Helmholtz_performance(rotor, conditions, wing_vortex_distribution=None)
     else:
         # total velocities
         r      = r_1d
-        Ua     = (V + ua)*np.ones_like(r)    # (ctrl_pts, Nr)
+        Ua     = (V + ua)*xp.ones_like(r)    # (ctrl_pts, Nr)
         beta   = total_blade_pitch
 
     # Total velocities

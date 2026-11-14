@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_propulsor_moment import compute_propulsor_moment
 import numpy as np
 
 from RCAIDE.Framework.Core import Data
@@ -68,11 +69,7 @@ def compute_turbofan_performance_surrogate(turbofan, state, network=None, center
     power_propulsive = thrust_N * velocity
 
     # Compute forces and moments
-    moment_vector      = 0*state.ones_row(3)
-    moment_vector[:,0] = turbofan.origin[0][0] - center_of_gravity[0][0]
-    moment_vector[:,1] = turbofan.origin[0][1] - center_of_gravity[0][1]
-    moment_vector[:,2] = turbofan.origin[0][2] - center_of_gravity[0][2]
-    moment              = np.cross(moment_vector, thrust_vector)
+    moment = compute_propulsor_moment(turbofan.origin, center_of_gravity, thrust_vector)
 
     # Pack turbofan outputs
     turbofan_conditions.thrust                            = thrust_vector

@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_propulsor_moment import compute_propulsor_moment
 import RCAIDE
 from RCAIDE.Framework.Core import Data, array_namespace
 from RCAIDE.Library.Methods.Utilities import Linear_Interpolator
@@ -399,14 +400,10 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     compute_thrust(turbofan,conditions)
 
     # Compute forces and moments
-    moment_vector              = 0*state.ones_row(3)
-    thrust_vector              = 0*state.ones_row(3)
-    thrust_vector[:,0]         =  turbofan_conditions.thrust[:,0]
+    thrust_x                   = turbofan_conditions.thrust[:,0]
+    thrust_vector              = array_namespace(thrust_x).stack([thrust_x, 0*thrust_x, 0*thrust_x], axis=1)
     center_of_gravity = [[0.0, 0.0,0.0]] 
-    moment_vector[:,0]         =  turbofan.origin[0][0] -   center_of_gravity[0][0]
-    moment_vector[:,1]         =  turbofan.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2]         =  turbofan.origin[0][2]  -  center_of_gravity[0][2]
-    M                          =  np.cross(moment_vector, thrust_vector)   
+    M                          = compute_propulsor_moment(turbofan.origin, center_of_gravity, thrust_vector)
     moment                     = M 
     power                      = turbofan_conditions.outputs.power.propulsive
     turbofan_conditions.moment = moment 
@@ -531,10 +528,7 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     xp                 = array_namespace(thrust)
     zero               = 0 * thrust
     thrust_vector      = xp.stack([thrust, zero, zero], axis=1)
-    moment_vector      = xp.stack([zero + (turbofan.origin[0][0] - center_of_gravity[0][0]),
-                                   zero + (turbofan.origin[0][1] - center_of_gravity[0][1]),
-                                   zero + (turbofan.origin[0][2] - center_of_gravity[0][2])], axis=1)
-    moment             = xp.cross(moment_vector, thrust_vector)
+    moment = compute_propulsor_moment(turbofan.origin, center_of_gravity, thrust_vector)
    
     conditions.energy.propulsors[turbofan.tag].outputs.moment = moment
     
@@ -688,10 +682,7 @@ def compute_turbofan_performance_offdesign(turbofan, state, network=None, center
     power_propulsive = thrust_N * velocity
 
     # Compute forces and moments
-    moment_vector  = xp.stack([zero + (turbofan.origin[0][0] - center_of_gravity[0][0]),
-                               zero + (turbofan.origin[0][1] - center_of_gravity[0][1]),
-                               zero + (turbofan.origin[0][2] - center_of_gravity[0][2])], axis=1)
-    moment         = xp.cross(moment_vector, thrust_vector)
+    moment = compute_propulsor_moment(turbofan.origin, center_of_gravity, thrust_vector)
 
     # Pack turbofan outputs -- same fields as compute_turbofan_performance/_surrogate
     turbofan_conditions.thrust                            = thrust_vector

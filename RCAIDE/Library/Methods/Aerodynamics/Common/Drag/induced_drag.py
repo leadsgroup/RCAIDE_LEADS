@@ -143,9 +143,10 @@ def induced_drag(state,settings,geometry):
         for wing in wings: 
             AR_wing    = wing.aspect_ratio
             S_wing     = aero.drag.parasite[wing.tag].reference_area  
-            if S_wing > area:
-                area = S_wing
-                AR   = AR_wing
+            # the largest wing, chosen with where so that a design-dependent choice is not a Python branch
+            larger = S_wing > area
+            AR     = array_namespace(S_wing, area).where(larger, AR_wing, AR)
+            area   = array_namespace(S_wing, area).where(larger, S_wing, area)
         
         # compute total induced drag 
         total_induced_drag = total_viscous_induced_drag +  CDi

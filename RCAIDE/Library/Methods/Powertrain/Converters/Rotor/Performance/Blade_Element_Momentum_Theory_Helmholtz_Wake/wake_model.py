@@ -173,6 +173,27 @@ def wake_convergence(rotor,wake_inputs):
 WAKE_ARRAYS = ('velocity_total', 'velocity_axial', 'velocity_tangential', 'twist_distribution',
                'chord_distribution', 'radius_distribution', 'speed_of_sounds', 'dynamic_viscosities')
 
+# the rotor values the residual and the station-wise solve read
+ROTOR_VALUES = ('tip_radius', 'thickness_to_chord', 'number_of_blades', 'sol_tolerance')
+POLAR_ARRAYS  = ('reynolds_numbers', 'angle_of_attacks', 'lift_coefficients', 'drag_coefficients')
+
+def rotor_values(rotor, n_airfoils):
+    """The rotor values followed by the polar tables of each airfoil, in a fixed order."""
+    values = [rotor[name] for name in ROTOR_VALUES]
+    for airfoil in list(rotor.airfoils)[:n_airfoils]:
+        values += [airfoil.polars[name] for name in POLAR_ARRAYS]
+    return values
+
+def numpy_rotor(values, polar_stations, n_airfoils, tag):
+    """A NumPy rotor holding what the residual and the station-wise solve read, rebuilt from rotor_values."""
+    rotor = Data(tag=tag, airfoil_polar_stations=polar_stations, airfoils=[])
+    for name, value in zip(ROTOR_VALUES, values):
+        rotor[name] = np.asarray(value)[()]
+    for k in range(n_airfoils):
+        tables = values[len(ROTOR_VALUES) + k*len(POLAR_ARRAYS):len(ROTOR_VALUES) + (k + 1)*len(POLAR_ARRAYS)]
+        rotor.airfoils.append(Data(polars=Data(zip(POLAR_ARRAYS, [np.asarray(table) for table in tables]))))
+    return rotor
+
 def inflow_angle_jax(shape, wake_inputs, rotor):
     """
     Inflow angles on JAX, with derivatives by the implicit function theorem.
@@ -185,15 +206,23 @@ def inflow_angle_jax(shape, wake_inputs, rotor):
     import jax
     import jax.numpy as jnp
 
+    # everything numeric the NumPy solve reads travels as a callback argument, so nothing of the rotor or the wake
+    # inputs is frozen at the values of the design the function was compiled with
+    static_inputs  = {name: wake_inputs[name] for name in ('ctrl_pts', 'Nr', 'Na', 'use_2d_analysis')}
+    polar_stations = list(rotor.airfoil_polar_stations)
+    n_airfoils     = len(rotor.airfoils) if len(polar_stations) != 0 else 0
+    tag            = rotor.tag
+
     def solve_numpy(*values):
-        numpy_inputs = Data(wake_inputs)
+        numpy_inputs = Data(static_inputs)
         for name, value in zip(WAKE_ARRAYS, values):
             numpy_inputs[name] = np.asarray(value)
-        return stationwise_newton(np.ones(shape), numpy_inputs, rotor)
+        return stationwise_newton(np.ones(shape), numpy_inputs, numpy_rotor(values[len(WAKE_ARRAYS):], polar_stations, n_airfoils, tag))
 
     def solve(f, guess):
         arrays = [jnp.asarray(wake_inputs[name], dtype=jnp.float64) for name in WAKE_ARRAYS]
-        return jax.pure_callback(solve_numpy, jax.ShapeDtypeStruct(shape, jnp.float64), *arrays)
+        arrays = arrays + [jnp.asarray(value, dtype=jnp.float64) for value in rotor_values(rotor, n_airfoils)]
+        return jax.pure_callback(solve_numpy, jax.ShapeDtypeStruct(shape, jnp.float64), *arrays, vmap_method='sequential')
 
     def tangent_solve(g, y):
         # g is the linearized residual; with a diagonal Jacobian, g(ones) is that diagonal

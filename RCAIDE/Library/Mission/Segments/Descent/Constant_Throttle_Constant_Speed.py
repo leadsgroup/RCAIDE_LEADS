@@ -205,9 +205,9 @@ def update_velocity_vector_from_wind_angle(segment):
     gamma = theta-alpha
 
     # process
-    xp  = array_namespace(alpha, theta)   # numpy, or jax.numpy when the unknowns are JAX arrays
-    v_x =   np.cos(beta) *v_mag * xp.cos(gamma)
-    v_y =   np.sin(beta) *v_mag * xp.cos(gamma)
+    xp  = array_namespace(alpha, theta, beta)   # numpy, or jax.numpy when the unknowns are JAX arrays
+    v_x =   xp.cos(beta) *v_mag * xp.cos(gamma)
+    v_y =   xp.sin(beta) *v_mag * xp.cos(gamma)
     v_z = -v_mag * xp.sin(gamma) # z points down
 
     # pack
