@@ -182,7 +182,10 @@ def wing_planform(wing):
         
         
         single_side_aerodynamic_center = (np.array(aerodynamic_center)*1.)
-        single_side_aerodynamic_center[0] = single_side_aerodynamic_center[0] - MAC*.25    
+        single_side_aerodynamic_center[0] = single_side_aerodynamic_center[0] - MAC*.25
+        # a vertical surface spans along z, as its segment origins do
+        if vertical:
+            aerodynamic_center[1], aerodynamic_center[2] = aerodynamic_center[2], aerodynamic_center[1]
         if sym== True:
             aerodynamic_center[1] = 0 
             
