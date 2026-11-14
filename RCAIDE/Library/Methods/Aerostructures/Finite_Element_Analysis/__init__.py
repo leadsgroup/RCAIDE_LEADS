@@ -18,4 +18,4 @@ from .compute_wingbox_properties       import compute_wingbox_properties
 from .discretize_wing                  import discretize_wing
 
   
-from .static_aeroelastic_model         import build_static_aeroelastic_model, solve_static_aeroelastic_model
+from .static_aeroelastic_model         import build_static_aeroelastic_model, solve_static_aeroelastic_model, divergence_dynamic_pressure

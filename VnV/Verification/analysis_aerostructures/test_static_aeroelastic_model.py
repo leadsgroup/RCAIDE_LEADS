@@ -106,6 +106,13 @@ def check_one_way_matches_the_beam_solve(model):
         scale = np.max(np.abs(direct[tag].rotation[0]))
         error = np.max(np.abs(result[tag].rotation - direct[tag].rotation[0])) / scale
         assert error < 1e-6, (tag, error)
+
+        # and so are the stresses recovered from it
+        for field in ('normal_stress', 'shear_stress'):
+            scale = np.max(np.abs(direct[tag][field][0]))
+            error = np.max(np.abs(result[tag][field] - direct[tag][field][0])) / scale
+            assert error < 1e-6, (tag, field, error)
+        assert np.allclose(result[tag].margin_of_safety, direct[tag].margin_of_safety[0], rtol=1e-6)
     return
 
 
@@ -125,6 +132,10 @@ def check_coupled_matches_the_coupled_iteration(model):
     lift_coefficient        = result.CLift
     direct_lift_coefficient = direct.lift_coefficient[0, 0]
     assert abs(lift_coefficient - direct_lift_coefficient) < 0.01 * abs(direct_lift_coefficient), (lift_coefficient, direct_lift_coefficient)
+
+    peak_stress        = np.max(result.main_wing.normal_stress)
+    direct_peak_stress = np.max(direct.main_wing.normal_stress[0])
+    assert abs(peak_stress - direct_peak_stress) < 0.01 * direct_peak_stress, (peak_stress, direct_peak_stress)
 
     # the feedback is not negligible here, so the agreement above is a real check
     one_way = solve_static_aeroelastic_model(model, MACH, dynamic_pressure(), ALPHA, fuel_masses=FUEL_MASSES, coupled=False)

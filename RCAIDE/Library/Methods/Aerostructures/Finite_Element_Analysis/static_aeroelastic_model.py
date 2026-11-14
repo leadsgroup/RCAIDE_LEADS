@@ -9,7 +9,7 @@ import RCAIDE
 from RCAIDE.Framework.Core                                                                      import Data
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM                              import VLM
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution     import generate_vortex_distribution
-from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.FEA                          import assemble_beam, panel_forces, point_loads_to_element_loads, self_weight_load, nodal_force_vector, solve_beam
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.FEA                          import assemble_beam, panel_forces, point_loads_to_element_loads, self_weight_load, nodal_force_vector, solve_beam, recover_stresses
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.discretize_wing              import discretize_wing, deform_vortex_distribution
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.assign_component_masses      import assign_component_masses
 
@@ -55,8 +55,13 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
     Returns:
         model : Data used by solve_static_aeroelastic_model
     """
-    mach_numbers     = np.atleast_1d(np.array(mach_numbers, dtype=float))
-    angles_of_attack = np.atleast_1d(np.array(angles_of_attack, dtype=float))
+    mach_numbers              = np.atleast_1d(np.array(mach_numbers, dtype=float))
+    angles_of_attack          = np.atleast_1d(np.array(angles_of_attack, dtype=float))
+    feedback_angles_of_attack = np.atleast_1d(np.array(feedback_angles_of_attack, dtype=float))
+    if np.any(np.diff(mach_numbers) <= 0) or np.any(np.diff(angles_of_attack) <= 0):
+        raise ValueError('mach_numbers and angles_of_attack must be increasing')
+    if len(feedback_angles_of_attack) != 2 or feedback_angles_of_attack[0] == feedback_angles_of_attack[1]:
+        raise ValueError('feedback_angles_of_attack must be two different angles')
     n_mach           = len(mach_numbers)
     n_alpha          = len(angles_of_attack)
 
@@ -67,13 +72,15 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
         beam      = assemble_beam(wing, node_data, structural_settings)
         masses    = assign_component_masses(vehicle, wing, node_data)
 
-        w              = Data()
-        w.node_data    = node_data
-        w.beam         = beam
-        w.u_fixed, w.u_fuel = inertial_responses(wing, node_data, beam, masses)
+        w               = Data()
+        w.wing          = wing
+        w.node_data     = node_data
+        w.beam          = beam
+        w.station_nodes = np.zeros(0, dtype=int)
+        w.u_fixed, w.u_fuel, w.load_fixed, w.load_fuel = inertial_responses(wing, node_data, beam, masses)
         wings[wing.tag] = w
 
-    # twist stations: (wing tag, node index), and the shape of each station's unit twist along its wing
+    # stations: (wing tag, station, degree of freedom), and the shape of each station's unit displacement along its wing
     stations = []
     for wing in vehicle.wings.values():
         if wing.vertical:
@@ -87,9 +94,13 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
                 stations.append((wing.tag, k, component))
     n_stations = len(stations)
 
+    # element loads (w_x, w_y, w_z, t_y) per unit dynamic pressure, and the beam's response to them
     for w in wings.values():
-        w.u_rigid  = np.zeros((n_mach, n_alpha, w.beam.total_dof))      # response to the rigid-wing loads, per unit q
-        w.G        = np.zeros((n_mach, 2, w.beam.total_dof, n_stations))   # response to the loads of each unit station displacement, per unit q
+        n_elements   = len(w.node_data.Le)
+        w.load_rigid = np.zeros((n_mach, n_alpha, 4, n_elements))          # rigid wing
+        w.u_rigid    = np.zeros((n_mach, n_alpha, w.beam.total_dof))
+        w.load_G     = np.zeros((n_mach, 2, 4, n_elements, n_stations))    # unit displacement of each station
+        w.G          = np.zeros((n_mach, 2, w.beam.total_dof, n_stations))
 
     dCLift_deta = np.zeros((n_mach, 2, n_stations))
     dCM_deta    = np.zeros((n_mach, 2, n_stations))
@@ -100,9 +111,10 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
         # rigid wing at each angle of attack
         jig_VD = generate_vortex_distribution(aerodynamic_conditions(mach, angles_of_attack[0]), aerodynamics_settings, vehicle)
         for a, alpha in enumerate(angles_of_attack):
-            F, results = aerodynamic_forces(mach, alpha, jig_VD, aerodynamics_settings, vehicle, wings)
+            loads, results = aerodynamic_loads(mach, alpha, jig_VD, aerodynamics_settings, vehicle, wings)
             for tag, w in wings.items():
-                w.u_rigid[m, a] = solve_beam(w.beam, F[tag])
+                w.load_rigid[m, a] = loads[tag]
+                w.u_rigid[m, a]    = beam_response(w, loads[tag])
             CLift_rigid[m, a] = results.CLift[0, 0]
             CM_rigid[m, a]    = results.CM[0, 0]
 
@@ -110,10 +122,11 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
         for r, alpha in enumerate(feedback_angles_of_attack):
             for k, (station_tag, station_k, component) in enumerate(stations):
                 step                   = translation_step if component < 3 else rotation_step
-                F_plus,  results_plus  = aerodynamic_forces(mach, alpha, deformed_mesh(jig_VD, vehicle, wings, station_tag, station_k, component,  step), aerodynamics_settings, vehicle, wings)
-                F_minus, results_minus = aerodynamic_forces(mach, alpha, deformed_mesh(jig_VD, vehicle, wings, station_tag, station_k, component, -step), aerodynamics_settings, vehicle, wings)
+                loads_plus,  results_plus  = aerodynamic_loads(mach, alpha, deformed_mesh(jig_VD, vehicle, wings, station_tag, station_k, component,  step), aerodynamics_settings, vehicle, wings)
+                loads_minus, results_minus = aerodynamic_loads(mach, alpha, deformed_mesh(jig_VD, vehicle, wings, station_tag, station_k, component, -step), aerodynamics_settings, vehicle, wings)
                 for tag, w in wings.items():
-                    w.G[m, r, :, k] = solve_beam(w.beam, (F_plus[tag] - F_minus[tag]) / (2 * step))
+                    w.load_G[m, r, :, :, k] = (loads_plus[tag] - loads_minus[tag]) / (2 * step)
+                    w.G[m, r, :, k]         = beam_response(w, w.load_G[m, r, :, :, k])
                 dCLift_deta[m, r, k] = (results_plus.CLift[0, 0] - results_minus.CLift[0, 0]) / (2 * step)
                 dCM_deta[m, r, k]    = (results_plus.CM[0, 0]    - results_minus.CM[0, 0])    / (2 * step)
 
@@ -137,6 +150,9 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
     """
     Deformation of the wings at one flight condition.
 
+    The model is linear in the deformation. Against the coupled iteration that rebuilds the mesh it is within 1%
+    while the tip deflection stays below about 6% of the semi-span.
+
     The one-way response u_0 = K^-1 [q f(alpha) + P] is exact for the beam. The aerodynamic feedback
     is added through the displacements eta at the stations: u = u_0 + q G eta, with eta = (I - q S G)^-1 S u_0
     and S the fed-back degrees of freedom at the station nodes.
@@ -144,7 +160,7 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
     Args:
         model            : Data from build_static_aeroelastic_model
         mach             : Mach number
-        dynamic_pressure : [Pa]
+        dynamic_pressure : [Pa], below the divergence dynamic pressure
         alpha            : angle of attack [rad]
         load_factor      : inertial load factor
         gravity          : [m/s^2]
@@ -152,8 +168,8 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
         coupled          : False gives the one-way response
 
     Returns:
-        results : Data by wing tag with deflection (nodes, 3), rotation (nodes, 3) and elastic_twist (nodes,),
-                  plus eta, CLift and CM
+        results : Data by wing tag with deflection (nodes, 3), rotation (nodes, 3), elastic_twist (nodes,),
+                  normal_stress, shear_stress and margin_of_safety (elements,), plus eta, CLift and CM
     """
     q           = dynamic_pressure
     fuel_masses = fuel_masses or {}
@@ -173,16 +189,20 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
 
     # one-way response of each wing
     inertial_scale = load_factor * gravity / STANDARD_GRAVITY
-    u_0 = {}
-    G   = {}
+    u_0    = {}
+    load_0 = {}
+    G      = {}
     for tag, w in model.wings.items():
-        u_inertial = w.u_fixed.copy()
-        for tank_tag, u_per_kg in w.u_fuel.items():
-            u_inertial += fuel_masses.get(tank_tag, 0.0) * u_per_kg
-        u_0[tag] = q * at_mach_and_alpha(w.u_rigid) + inertial_scale * u_inertial
-        G[tag]   = feedback_at_mach_and_alpha(w.G)
+        u_inertial    = w.u_fixed.copy()
+        load_inertial = w.load_fixed.copy()
+        for tank_tag in w.u_fuel:
+            u_inertial    += fuel_masses.get(tank_tag, 0.0) * w.u_fuel[tank_tag]
+            load_inertial += fuel_masses.get(tank_tag, 0.0) * w.load_fuel[tank_tag]
+        u_0[tag]    = q * at_mach_and_alpha(w.u_rigid)    + inertial_scale * u_inertial
+        load_0[tag] = q * at_mach_and_alpha(w.load_rigid) + inertial_scale * load_inertial
+        G[tag]      = feedback_at_mach_and_alpha(w.G)
 
-    # twist at the stations, with the aerodynamic feedback
+    # displacements at the stations, with the aerodynamic feedback
     n_stations = len(model.stations)
     eta_0      = np.zeros(n_stations)
     S_G        = np.zeros((n_stations, n_stations))
@@ -191,18 +211,28 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
         eta_0[k]   = u_0[tag][dof]
         S_G[k, :]  = G[tag][dof, :]
     if coupled and n_stations > 0:
-        eta = np.linalg.solve(np.eye(n_stations) - q * S_G, eta_0)
+        # the determinant of (I - q S G) is positive below the divergence dynamic pressure and changes sign at it
+        system = np.eye(n_stations) - q * S_G
+        if np.linalg.slogdet(system)[0] <= 0:
+            raise ValueError(f'Dynamic pressure {q:.0f} Pa is at or above the divergence dynamic pressure of the wings')
+        eta = np.linalg.solve(system, eta_0)
     else:
         eta = np.zeros(n_stations)
 
     results     = Data()
     results.eta = eta if coupled else eta_0
     for tag, w in model.wings.items():
-        u                           = u_0[tag] + q * G[tag] @ eta
-        results[tag]                = Data()
-        results[tag].deflection     = np.column_stack((u[0::6], u[1::6], u[2::6]))
-        results[tag].rotation       = np.column_stack((u[3::6], u[4::6], u[5::6]))
-        results[tag].elastic_twist  = u[3::6] * np.sin(w.node_data.sweep_nodes) + u[4::6] * np.cos(w.node_data.sweep_nodes)
+        u                             = u_0[tag] + q * G[tag] @ eta
+        w_x, w_y, w_z, t_y            = load_0[tag] + q * feedback_at_mach_and_alpha(w.load_G) @ eta
+        normal_stress, shear_stress, margin_of_safety = recover_stresses(w.wing, w.node_data, w.beam, u, w_x, w_y, w_z, t_y)
+
+        results[tag]                  = Data()
+        results[tag].deflection       = np.column_stack((u[0::6], u[1::6], u[2::6]))
+        results[tag].rotation         = np.column_stack((u[3::6], u[4::6], u[5::6]))
+        results[tag].elastic_twist    = u[3::6] * np.sin(w.node_data.sweep_nodes) + u[4::6] * np.cos(w.node_data.sweep_nodes)
+        results[tag].normal_stress    = normal_stress
+        results[tag].shear_stress     = shear_stress
+        results[tag].margin_of_safety = margin_of_safety
     results.CLift = at_mach_and_alpha(model.CLift_rigid) + feedback_at_mach_and_alpha(model.dCLift_deta) @ eta
     results.CM    = at_mach_and_alpha(model.CM_rigid)    + feedback_at_mach_and_alpha(model.dCM_deta)    @ eta
     return results
@@ -211,6 +241,28 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
 # ----------------------------------------------------------------------
 #  Helpers
 # ----------------------------------------------------------------------
+def divergence_dynamic_pressure(model, mach, alpha=0.0):
+    """
+    Lowest dynamic pressure [Pa] at which the wings diverge, where (I - q S G) becomes singular, or infinity if
+    there is none. This is the divergence eigenvalue problem of the MSC Nastran Aeroelastic Analysis User's Guide
+    (2023.1, Eq. 2-145) on the station degrees of freedom.
+    """
+    m_lo, m_hi, m_w = bracket(model.mach, mach, hold_ends=True)
+    f_w             = (alpha - model.feedback_alpha[0]) / (model.feedback_alpha[1] - model.feedback_alpha[0])
+    n_stations      = len(model.stations)
+    S_G             = np.zeros((n_stations, n_stations))
+    for k, (tag, station_k, component) in enumerate(model.stations):
+        G_table   = model.wings[tag].G
+        G_at_mach = (1 - m_w) * G_table[m_lo] + m_w * G_table[m_hi]
+        dof       = 6 * model.wings[tag].station_nodes[station_k] + component
+        S_G[k, :] = (1 - f_w) * G_at_mach[0][dof, :] + f_w * G_at_mach[1][dof, :]
+    eigenvalues = np.linalg.eigvals(S_G)
+    positive    = eigenvalues.real[(np.abs(eigenvalues.imag) < 1e-9 * np.max(np.abs(eigenvalues))) & (eigenvalues.real > 0)]
+    if len(positive) == 0:
+        return np.inf
+    return 1.0 / np.max(positive)
+
+
 def bracket(table, value, hold_ends):
     """Indices of the two table entries around value and the weight of the upper one."""
     if len(table) == 1:
@@ -230,29 +282,38 @@ def inertial_responses(wing, node_data, beam, masses):
     """
     g = STANDARD_GRAVITY
 
-    def response(w_z, point_pts, point_masses):
+    def element_loads(w_z, point_pts, point_masses):
         zeros = np.zeros_like(node_data.Le)
         w_x, w_y, t_y = zeros, zeros, zeros
         if len(point_masses) > 0:
-            loads              = np.column_stack((np.zeros((len(point_masses), 2)), -np.array(point_masses) * g))
+            loads               = np.column_stack((np.zeros((len(point_masses), 2)), -np.array(point_masses) * g))
             w_x, w_y, w_zp, t_y = point_loads_to_element_loads(wing, node_data, np.array(point_pts).reshape(-1, 3), loads)
-            w_z                = w_z + w_zp
-        return solve_beam(beam, nodal_force_vector(beam, node_data, w_x, w_y, w_z, t_y))
+            w_z                 = w_z + w_zp
+        return np.array([w_x, w_y, w_z, t_y])
 
     # one kilogram of contents in each tank, on this half wing
-    u_fuel     = {}
+    load_fuel  = {}
     tank_mass  = {}
     for (point, fuel_tag, mass, share, tank_tag) in masses.fuel_points:
-        u_fuel[tank_tag]    = response(np.zeros_like(node_data.Le), [point], [share])
+        load_fuel[tank_tag] = element_loads(np.zeros_like(node_data.Le), [point], [share])
         tank_mass[tank_tag] = mass
     for (fuel_tag, mass, share, element_fraction, tank_tag) in masses.fuel_spread:
-        u_fuel[tank_tag]    = response(-share * element_fraction / node_data.Le * g, [], [])
+        load_fuel[tank_tag] = element_loads(-share * element_fraction / node_data.Le * g, [], [])
         tank_mass[tank_tag] = mass
 
-    u_fixed = response(self_weight_load(wing, node_data, beam), masses.point_pts, masses.point_masses)
-    for tank_tag in u_fuel:
-        u_fixed += tank_mass[tank_tag] * u_fuel[tank_tag]
-    return u_fixed, u_fuel
+    load_fixed = element_loads(self_weight_load(wing, node_data, beam), masses.point_pts, masses.point_masses)
+    for tank_tag in load_fuel:
+        load_fixed += tank_mass[tank_tag] * load_fuel[tank_tag]
+
+    w_beam  = Data(beam=beam, node_data=node_data)
+    u_fixed = beam_response(w_beam, load_fixed)
+    u_fuel  = {tank_tag: beam_response(w_beam, load_fuel[tank_tag]) for tank_tag in load_fuel}
+    return u_fixed, u_fuel, load_fixed, load_fuel
+
+
+def beam_response(w, loads):
+    """Nodal displacements of a wing's beam under element loads (w_x, w_y, w_z, t_y)."""
+    return solve_beam(w.beam, nodal_force_vector(w.beam, w.node_data, loads[0], loads[1], loads[2], loads[3]))
 
 
 def station_shapes(y_local, station_nodes):
@@ -299,19 +360,19 @@ def aerodynamic_conditions(mach, alpha):
     return conditions
 
 
-def aerodynamic_forces(mach, alpha, VD, aerodynamics_settings, vehicle, wings):
-    """Nodal forces on each wing's beam per unit dynamic pressure, from a vortex lattice solve on the mesh VD."""
+def aerodynamic_loads(mach, alpha, VD, aerodynamics_settings, vehicle, wings):
+    """Element loads (w_x, w_y, w_z, t_y) on each wing's beam per unit dynamic pressure, from a vortex lattice solve
+    on the mesh VD."""
     results = VLM(aerodynamic_conditions(mach, alpha), aerodynamics_settings, vehicle, precomputed_VD=VD)
     VD      = results.VD
 
     panels_per_wing = VD.n_sw[0] * VD.n_cw[0]
     breaks          = np.concatenate(([0], np.cumsum(panels_per_wing)))
     vd_idx          = 0
-    forces          = {}
+    loads           = {}
     for wing in vehicle.wings.values():
         w                    = wings[wing.tag]
         aero_pts, aero_loads = panel_forces(results, VD, 0, 0, int(breaks[vd_idx]), int(breaks[vd_idx + 1]), 1.0)
-        w_x, w_y, w_z, t_y   = point_loads_to_element_loads(wing, w.node_data, aero_pts, aero_loads)
-        forces[wing.tag]     = nodal_force_vector(w.beam, w.node_data, w_x, w_y, w_z, t_y)
+        loads[wing.tag]      = np.array(point_loads_to_element_loads(wing, w.node_data, aero_pts, aero_loads))
         vd_idx += 2 if wing.xz_plane_symmetric else 1
-    return forces, results
+    return loads, results
