@@ -81,6 +81,7 @@ modules = [
     'Verification/derivatives/test_core_functions_jax.py',
     'Verification/derivatives/test_mission_framework_jax.py',
     'Verification/derivatives/test_mission_derivative_jax.py',
+    'Verification/derivatives/test_mission_solver_jacobian_jax.py',
     'Verification/solver_numerics/test_segment_layout_vehicles.py',
     'Verification/solver_numerics/test_solver_layout_io.py',
     'Verification/framework_core/test_data_copy_values.py',

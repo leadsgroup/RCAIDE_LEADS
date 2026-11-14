@@ -136,7 +136,7 @@ def evaluate_segment(segment, x, paths, values):
         for step in iterate_steps(segment.process.iterate):
             step(segment)
         xp       = array_namespace(x, *values)
-        residual = xp.concatenate([xp.ravel(value) for value in float_leaves(fresh.residuals)])
+        residual = xp.concatenate([xp.ravel(value, order='F') for value in float_leaves(fresh.residuals)])
         update_position(segment)
         located  = state_arrays(fresh)
         return residual, [path for container, key, path in located], [container[key] for container, key, path in located]
@@ -337,8 +337,8 @@ def unknown_entries(unknowns, path='unknowns'):
 
 
 def unknowns_vector(unknowns):
-    """The unknowns of a state as one flat NumPy vector."""
-    return np.concatenate([np.ravel(np.asarray(container[key], dtype=float)) for container, key, path in unknown_entries(unknowns)])
+    """The unknowns of a state as one flat NumPy vector, column-major like Data.pack_array and the solver."""
+    return np.concatenate([np.ravel(np.asarray(container[key], dtype=float), order='F') for container, key, path in unknown_entries(unknowns)])
 
 
 def set_unknowns(tree, numpy_tree, x):
@@ -348,7 +348,7 @@ def set_unknowns(tree, numpy_tree, x):
     for container, key, path in unknown_entries(numpy_tree):
         shape = np.shape(container[key])
         size  = int(np.prod(shape))
-        value = x[start:start + size].reshape(shape)
+        value = x[start:start + size].reshape(shape, order='F')
         # a NumPy scalar unknown stays a float
         dict.__setitem__(by_path[path], key, float(value) if isinstance(value, np.ndarray) and shape == () else value)
         start += size

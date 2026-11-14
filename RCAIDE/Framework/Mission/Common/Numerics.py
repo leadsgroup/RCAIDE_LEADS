@@ -68,6 +68,7 @@ class Numerics(Conditions):
         self.mission_solver.print_output                        = True
         self.mission_solver.max_evaluations                     = 200
         self.mission_solver.step_size                           = 1E-8
+        self.mission_solver.jacobian                            = "finite_difference"   # or "compiled" (root_finder, needs JAX)
         self.mission_solver.verbose                             = False
            
         # network solver    
