@@ -135,8 +135,17 @@ def converge(segment):
             def scaled_iterate(x_scaled):
                 return iterate_root_finder(x_scaled * unknown_scale, segment, layout) / residual_scale
 
+            # finite differences of scaled_iterate by default, or the segment's compiled Jacobian
+            scaled_jacobian = None
+            if numerics.mission_solver.jacobian == "compiled":
+                scaled_jacobian = compiled_root_finder_jacobian(unknowns, segment, layout, unknown_scale, residual_scale)
+            elif numerics.mission_solver.jacobian != "finite_difference":
+                raise ValueError(f"Unsupported mission_solver.jacobian '{numerics.mission_solver.jacobian}'. Supported "
+                                 f"values are 'finite_difference', 'compiled'.")
+
             x_scaled,infodict,ier,error_message = scipy.optimize.fsolve(scaled_iterate,
                                                  unknowns / unknown_scale,
+                                                 fprime = scaled_jacobian,
                                                  xtol   = numerics.mission_solver.tolerance,
                                                  maxfev = numerics.mission_solver.max_evaluations,
                                                  epsfcn = numerics.mission_solver.step_size,
@@ -215,15 +224,57 @@ def iterate_root_finder(unknowns, segment, layout):
     Properties Used:
     N/A
     """
-    network = segment.state.numerics.network_solver.type is None
-    lower   = segment.state.unknowns_lower_bounds.mission.pack_array()
-    upper   = segment.state.unknowns_upper_bounds.mission.pack_array()
-    if network:
-        lower = np.concatenate([lower, segment.state.unknowns_lower_bounds.network.pack_array()])
-        upper = np.concatenate([upper, segment.state.unknowns_upper_bounds.network.pack_array()])
+    network      = segment.state.numerics.network_solver.type is None
+    lower, upper = unknown_bounds(segment)
 
     unknown_slice, residual_slice = solver_slices(layout, network)
     return segment_residual(reflect_into_bounds(unknowns, lower, upper), segment, layout, unknown_slice, residual_slice)
+
+
+def unknown_bounds(segment):
+    """Lower and upper bounds of the solver's unknowns: the mission group, then the network group when the network is
+    solved with the mission."""
+    lower = segment.state.unknowns_lower_bounds.mission.pack_array()
+    upper = segment.state.unknowns_upper_bounds.mission.pack_array()
+    if segment.state.numerics.network_solver.type is None:
+        lower = np.concatenate([lower, segment.state.unknowns_lower_bounds.network.pack_array()])
+        upper = np.concatenate([upper, segment.state.unknowns_upper_bounds.network.pack_array()])
+    return lower, upper
+
+
+def compiled_root_finder_jacobian(unknowns, segment, layout, unknown_scale, residual_scale):
+    """
+    The Jacobian of the scaled residual for fsolve, from the segment's compiled residual (compile_segment): exact
+    derivatives in place of one residual evaluation per unknown. The first segment of each structure compiles it;
+    later segments and later designs with the same structure reuse it.
+
+    Inputs:
+       unknowns                         unknowns at the start of the solve
+       segment, layout                  segment and its layout, as for iterate_root_finder
+       unknown_scale, residual_scale    scales of the solve
+
+    Outputs:
+       scaled_jacobian(x_scaled)        d(residual / residual_scale) / d(x_scaled), shape (residuals, unknowns)
+    """
+    from RCAIDE.Library.Mission.Solver.compiled_residual import compile_segment, residual_of_inputs
+
+    if segment.state.numerics.network_solver.type is not None:
+        raise ValueError(f"{segment.tag}: the compiled Jacobian needs the network solved with the mission "
+                         f"(numerics.network_solver.type = None)")
+    compiled, inputs = compile_segment(segment)
+    lower, upper     = unknown_bounds(segment)
+
+    # the compiled residual takes the unknowns and returns the residuals in the solver's order: checked once on NumPy
+    expected = iterate_root_finder(unknowns, segment, layout)
+    computed = residual_of_inputs(segment, reflect_into_bounds(unknowns, lower, upper), compiled.paths, list(inputs))
+    if computed.shape != expected.shape or not np.allclose(computed, expected, rtol=1e-9, atol=1e-12):
+        raise ValueError(f"{segment.tag}: the compiled residual does not reproduce the solver's residual")
+
+    def scaled_jacobian(x_scaled):
+        x        = x_scaled * unknown_scale
+        jacobian = np.asarray(compiled.jacobian(reflect_into_bounds(x, lower, upper), inputs))
+        return jacobian * (reflection_slope(x, lower, upper) * unknown_scale)[None, :] / residual_scale[:, None]
+    return scaled_jacobian
 
 
 def reflect_into_bounds(x, lower, upper):
@@ -239,6 +290,15 @@ def reflect_into_bounds(x, lower, upper):
     mirrored = np.where(both, in_both, np.where(x < lower, in_lower, in_upper))
     outside  = (x < lower) | (x > upper)
     return np.where(outside, mirrored, x)
+
+
+def reflection_slope(x, lower, upper):
+    """Derivative of reflect_into_bounds with respect to x: -1 where x is mirrored an odd number of times, 1 elsewhere."""
+    both     = np.isfinite(lower) & np.isfinite(upper)
+    width    = np.where(both, upper - lower, 1.)
+    folded   = np.mod(x - np.where(both, lower, 0.), 2.*width)
+    mirrored = np.where(both, folded > width, (x < lower) | (x > upper))
+    return np.where(mirrored, -1., 1.)
 
 
 def segment_residual(unknowns, segment, layout, unknown_slice, residual_slice):
