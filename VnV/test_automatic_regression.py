@@ -55,6 +55,7 @@ modules = [
     'Verification/geometry/airfoil_import_test.py',
     'Verification/geometry/airfoil_interpolation_test.py',
     'Verification/geometry/fuselage_planform_compute.py',
+    'Verification/geometry/test_wing_planform.py',
     'Verification/geometry/populate_control_sections_test.py',
     'Verification/future_capability_coverage/coverage_test.py', 
     'Verification/network_vtol/vtol_aircraft_test.py',     
