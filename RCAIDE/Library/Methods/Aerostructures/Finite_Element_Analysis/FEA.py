@@ -20,7 +20,7 @@ from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.assign_compon
 import numpy as np
 import pyvista as pv
 from scipy.sparse         import coo_matrix
-from scipy.sparse.linalg  import spsolve
+from scipy.sparse.linalg  import splu
 
 # --- Global PyVista Theme ---
 pv.global_theme.font.family             = 'times'
@@ -34,23 +34,20 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     """
     Main Aero-Structural integration bridge.
     """
-    # compute freestream properties 
-    rho           = conditions.freestream.density
-    V             = conditions.freestream.velocity   
-    q_dyn         = conditions.freestream.dynamic_pressure 
-    n             = settings.load_factor  
-    
+    q_dyn         = conditions.freestream.dynamic_pressure
+    n             = settings.load_factor
+
     n_cpts = len(VLM_results.CLift)
-    
+
     # Discretize Geometry
     num_elements       = settings.discretiation
-    num_nodes          = num_elements + 1 
-    
-    # generate structural node distribution  
+    num_nodes          = num_elements + 1
+
+    # generate structural node distribution
     structural_results = conditions.aerostructures
     for wing in geometry.wings.values():
         structural_results[wing.tag]                      = Data()
-        structural_results[wing.tag].structural_node_data = discretize_wing(wing, num_elements)     
+        structural_results[wing.tag].structural_node_data = discretize_wing(wing, num_elements)
         structural_results[wing.tag].load                 = np.zeros((n_cpts,num_nodes,3))   # load x,y,z (formally w_z_load)
         structural_results[wing.tag].deflection           = np.zeros((n_cpts,num_nodes,3))   # deflection x,y,z
         structural_results[wing.tag].elastic_twist        = np.zeros((n_cpts,num_nodes,1))   # twist x,y,z
@@ -59,11 +56,14 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         structural_results[wing.tag].normal_stress        = np.zeros((n_cpts,num_elements))  # combined axial + bending, per element
         structural_results[wing.tag].shear_stress         = np.zeros((n_cpts,num_elements))  # torsional shear (thinnest wall), per element
         structural_results[wing.tag].margin_of_safety     = np.zeros((n_cpts,num_elements))  # min(yield/normal, yield_shear/shear) - 1
- 
-    # Component masses carried by each wing's half-wing model; fuel masses are read per control point
+
+    # Beam model and component masses of each wing's half-wing model; fuel masses are read per control point
+    beams            = Data()
     component_masses = Data()
     for wing in geometry.wings.values():
-        component_masses[wing.tag] = assign_component_masses(geometry, wing, structural_results[wing.tag].structural_node_data)
+        node_data                  = structural_results[wing.tag].structural_node_data
+        beams[wing.tag]            = assemble_beam(wing, node_data, settings)
+        component_masses[wing.tag] = assign_component_masses(geometry, wing, node_data)
 
     # Loop over control points
     for ti in range(n_cpts):
@@ -73,37 +73,18 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         panels_per_wing = VD.n_sw[vd_ti] * VD.n_cw[vd_ti]
         b_pts = np.concatenate(([0], np.cumsum(panels_per_wing)))
         vd_idx = 0
-         
+
         for wing in geometry.wings.values():
-            VD_structural_wing = structural_results[wing.tag].structural_node_data
-            
-            # Adding vehicle frame to the FEA geometry
-            fea_pts = np.column_stack((VD_structural_wing.X_elems, VD_structural_wing.Y_elems, VD_structural_wing.Z_elems)) + np.array(wing.origin[0])
-            
-            # Extract VLM control points 
+            node_data = structural_results[wing.tag].structural_node_data
+            beam      = beams[wing.tag]
+            masses    = component_masses[wing.tag]
+
+            # Aerodynamic panel forces of this wing
             start_idx = int(b_pts[vd_idx])
-            end_idx   = int(b_pts[vd_idx+1]) 
-            
-            # Extract VLM forces
-            Delta_CP    = VLM_results.CP[ti, start_idx:end_idx]
-            Normals     = VD.normals[vd_ti, start_idx:end_idx]
-            Panel_Areas = VD.panel_areas[vd_ti, start_idx:end_idx]
-
-            # Force (N) = Cp * Normal_Vector * q_dyn * Area
-            F_vec      = np.tile(Delta_CP[:, np.newaxis], (1, 3)) * Normals * q_dyn[ti,0] * Panel_Areas[:, np.newaxis]
-            aero_loads = F_vec
-
-            # Kutta-Joukowski panel forces act on the bound vortex at 1/4 of the panel
-            def corners(A, B):
-                return np.column_stack(((VD['X' + A][vd_ti, start_idx:end_idx] + VD['X' + B][vd_ti, start_idx:end_idx]) / 2,
-                                        (VD['Y' + A][vd_ti, start_idx:end_idx] + VD['Y' + B][vd_ti, start_idx:end_idx]) / 2,
-                                        (VD['Z' + A][vd_ti, start_idx:end_idx] + VD['Z' + B][vd_ti, start_idx:end_idx]) / 2))
-            panel_LE   = corners('A1', 'B1')
-            panel_TE   = corners('A2', 'B2')
-            aero_pts   = panel_LE + 0.25 * (panel_TE - panel_LE)
+            end_idx   = int(b_pts[vd_idx+1])
+            aero_pts, aero_loads = panel_forces(VLM_results, VD, ti, vd_ti, start_idx, end_idx, q_dyn[ti,0])
 
             # Point masses on this wing: constant components, then fuel tanks at this control point
-            masses     = component_masses[wing.tag]
             mass_pts   = [masses.point_pts]
             mass_loads = [np.column_stack((np.zeros((len(masses.point_masses), 2)), -masses.point_masses * g_n))]
             for (point, fuel_tag, tank_mass, share) in masses.fuel_points:
@@ -114,135 +95,27 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             total_loads = np.concatenate([aero_loads] + mass_loads, axis=0)
             total_pts   = np.concatenate([aero_pts]   + mass_pts,   axis=0)
 
-            # Map aerodynamic loads to structure and convert to distributed (N/m)
-            fea_forces, fea_moments = map_panel_forces_to_fea(total_pts, total_loads, fea_pts)
-            w_x_aero = fea_forces[:, 0] / VD_structural_wing.Le
-            w_y_aero = fea_forces[:, 1] / VD_structural_wing.Le
-            w_z_aero = fea_forces[:, 2] / VD_structural_wing.Le
-
-            # Project eccentricity moments onto the elastic axis for torsion
-            M_x = fea_moments[:, 0] / VD_structural_wing.Le
-            M_y = fea_moments[:, 1] / VD_structural_wing.Le
-            M_z = fea_moments[:, 2] / VD_structural_wing.Le
-            load_t_y_aero = (M_x * np.sin(VD_structural_wing.sweep_mid_elems) * np.cos(VD_structural_wing.dihedral_elems) +
-                             M_y * np.cos(VD_structural_wing.sweep_mid_elems) * np.cos(VD_structural_wing.dihedral_elems) +
-                             M_z * np.sin(VD_structural_wing.dihedral_elems))
-
-            # Run structural solver 
-            E    = wing.structural.material.youngs_modulus      
-            G    = wing.structural.material.shear_modulus     
-            Rho  = wing.structural.material.density       
-            
-            # Pass the VD_struct object to your properties calculator
-            A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr = compute_wingbox_properties(wing, VD_structural_wing, settings.spar_cutouts)
+            # Point loads moved to the beam axis as distributed loads (N/m) and torque (N m/m)
+            w_x, w_y, w_z, t_y = point_loads_to_element_loads(wing, node_data, total_pts, total_loads)
 
             # Verification-only: override the aero load with a uniform pressure.
             if getattr(settings, 'verification_pressure', None) is not None:
-                w_x_aero      = np.zeros_like(w_box_arr)
-                w_y_aero      = np.zeros_like(w_box_arr)
-                w_z_aero      = settings.verification_pressure * w_box_arr * np.cos(VD_structural_wing.sweep_mid_elems)
-                load_t_y_aero = np.zeros_like(w_box_arr)
+                w_x = np.zeros_like(beam.w_box)
+                w_y = np.zeros_like(beam.w_box)
+                w_z = settings.verification_pressure * beam.w_box * np.cos(node_data.sweep_mid_elems)
+                t_y = np.zeros_like(beam.w_box)
 
-            # Gravity & Mass Loads
-            w_z_struct         = -A_arr * Rho * 9.81 * n 
-            airfoil_Area       = 0.7 * VD_structural_wing.chord_elems * VD_structural_wing.t_elems # approximation 
-            Rib_Mass_Per_Meter = (airfoil_Area * wing.structural.rib_thickness  * Rho) / wing.structural.rib_spacing
-            w_z_ribs           = -Rib_Mass_Per_Meter * 9.81 * n 
-
-            # Fuel spread along integral tanks at this control point
-            w_z_fuel = np.zeros_like(w_z_struct)
+            # Structure, ribs, and fuel spread along integral tanks at this control point
+            w_z_distributed = self_weight_load(wing, node_data, beam) * n
             for (fuel_tag, tank_mass, share, element_fraction) in masses.fuel_spread:
                 fuel_mass = (conditions.weights.components.mass[fuel_tag][ti, 0] + tank_mass) * share
-                w_z_fuel -= fuel_mass * element_fraction / VD_structural_wing.Le * g_n
+                w_z_distributed -= fuel_mass * element_fraction / node_data.Le * g_n
+            w_z = w_z + w_z_distributed
 
-            # Total Distributed Loads
-            load_w_z_distributed = w_z_struct + w_z_ribs + w_z_fuel
-            
-            # Matrices Assembly
-            T_all         = compute_3d_transformation_matrix(VD_structural_wing.sweep_mid_elems, VD_structural_wing.dihedral_elems, VD_structural_wing.twist_elems, num_elements)
-            K_local       = compute_element_stiffness_arrays(E, G, A_arr, J_arr, Ixx_arr, Izz_arr, VD_structural_wing.Le, num_elements)
-
-            # K_global = T @ K_local @ T^T, consistent with u_global = T @ u_local.
-            K_temp        = np.matmul(K_local, np.transpose(T_all, (0, 2, 1)))
-            K_global_elem = np.matmul(T_all, K_temp)
-            
-            # All loads routed through T for correct bending-torsion coupling
-            F_global_elem = compute_force_vector(w_x=w_x_aero, w_y=w_y_aero, w_z=w_z_aero + load_w_z_distributed, t_y=load_t_y_aero, Le=VD_structural_wing.Le, num_elem=num_elements, T=T_all)
-            
-            # Sparse assembly: this beam-chain stiffness matrix is banded, so a
-            # dense solve wastes effort on structural zeros. COO sums duplicate
-            # (row,col) entries on conversion to CSC, same as np.add.at did.
-            num_nodes     = num_elements + 1
-            dofs_per_node = 6
-            total_dof     = dofs_per_node * num_nodes
-            F_global      = np.zeros(total_dof)
-
-            global_indices        = np.zeros((num_elements, 12), dtype=int)
-            node_indices          = np.arange(num_nodes)
-            dof_indices           = np.arange(dofs_per_node)
-            global_indices[:, :6] = dofs_per_node * node_indices[:-1, np.newaxis] + dof_indices
-            global_indices[:, 6:] = dofs_per_node * node_indices[1:, np.newaxis] + dof_indices
-
-            rows     = np.repeat(global_indices, 12, axis=1).ravel()
-            cols     = np.tile(global_indices, 12).ravel()
-            K_global = coo_matrix((K_global_elem.ravel(), (rows, cols)),
-                                   shape=(total_dof, total_dof)).tocsc()
-            np.add.at(F_global, global_indices, F_global_elem)
-
-            # Cantilever: node 0's 6 DOFs are the fixed root, so the free block is a contiguous slice.
-            K_reduced        = K_global[6:, 6:]
-            F_reduced        = F_global[6:]
-
-            u_reduced        = spsolve(K_reduced, F_reduced)
-            u_full           = np.zeros(total_dof)
-            u_full[6:]       = u_reduced
-            twist_local      = ( u_full[3::6] * np.sin(VD_structural_wing.sweep_nodes) + u_full[4::6] * np.cos(VD_structural_wing.sweep_nodes))
-
-            # ------------------------------------------------------------
-            # Internal loads and stress recovery (per element)
-            # ------------------------------------------------------------
-            # Member-end actions (local) = K_local @ u_local - F_local (fixed-end load vector).
-            Le               = VD_structural_wing.Le
-            loads_global_e   = np.column_stack((w_x_aero, w_y_aero, w_z_aero + load_w_z_distributed))
-            R_blocks         = T_all[:, 0:3, 0:3]
-            loads_local_e    = np.einsum('eji,ej->ei', R_blocks, loads_global_e)
-            w_u_l, w_v_l, w_w_l = loads_local_e[:, 0], loads_local_e[:, 1], loads_local_e[:, 2]
-
-            F_local_fe        = np.zeros((num_elements, 12))
-            F_local_fe[:, 0]  = w_u_l * Le / 2;         F_local_fe[:, 6]  = w_u_l * Le / 2
-            F_local_fe[:, 5]  = -w_u_l * Le**2 / 12;    F_local_fe[:, 11] = w_u_l * Le**2 / 12
-            F_local_fe[:, 1]  = w_v_l * Le / 2;         F_local_fe[:, 7]  = w_v_l * Le / 2
-            F_local_fe[:, 2]  = w_w_l * Le / 2;         F_local_fe[:, 8]  = w_w_l * Le / 2
-            F_local_fe[:, 3]  = w_w_l * Le**2 / 12;     F_local_fe[:, 9]  = -w_w_l * Le**2 / 12
-            F_local_fe[:, 4]  = load_t_y_aero * Le / 2; F_local_fe[:, 10] = load_t_y_aero * Le / 2
-
-            u_elem_global    = u_full[global_indices]
-            u_elem_local     = np.einsum('eij,ej->ei', np.transpose(T_all, (0, 2, 1)), u_elem_global)
-            q_local          = np.einsum('eij,ej->ei', K_local, u_elem_local) - F_local_fe
-
-            N_axial   = q_local[:, 1]  # axial force, local spanwise axis
-            M_bend_x  = q_local[:, 3]  # bending moment about local x -> vertical (Ixx) bending
-            M_bend_z  = q_local[:, 5]  # bending moment about local z -> chordwise (Izz) bending
-            M_torsion = q_local[:, 4]  # torsion moment about local spanwise axis
-
-            h_arr = VD_structural_wing.chord_elems * VD_structural_wing.t_c_elems  # wingbox height, matches compute_wingbox_properties
-            sigma_axial  = N_axial / A_arr
-            sigma_bend_x = np.abs(M_bend_x) * (h_arr / 2.0) / Ixx_arr
-            sigma_bend_z = np.abs(M_bend_z) * (w_box_arr / 2.0) / Izz_arr
-            # Conservative: assumes the worst bending corner coincides with peak axial stress.
-            normal_stress = np.abs(sigma_axial) + sigma_bend_x + sigma_bend_z
-
-            # Bredt-Batho: uniform shear flow, so peak stress is at the thinnest wall.
-            skin_t_top = wing.structural.top_skin_thickness    + wing.structural.stringer_smeared_thickness
-            skin_t_bot = wing.structural.bottom_skin_thickness + wing.structural.stringer_smeared_thickness
-            t_min = np.minimum(np.minimum(skin_t_top, skin_t_bot),
-                                np.minimum(wing.structural.front_spar.t_web, wing.structural.rear_spar.t_web))
-            Am_enclosed  = w_box_arr * h_arr
-            shear_stress = np.abs(M_torsion) / (2.0 * Am_enclosed * t_min)
-
-            margin_normal = wing.structural.material.yield_tensile_strength / np.maximum(normal_stress, 1e-6) - 1.0
-            margin_shear  = wing.structural.material.yield_shear_strength   / np.maximum(shear_stress,  1e-6) - 1.0
-            margin_of_safety = np.minimum(margin_normal, margin_shear)
+            # Solve the beam and recover the stresses
+            F_global = nodal_force_vector(beam, node_data, w_x, w_y, w_z, t_y)
+            u_full   = solve_beam(beam, F_global)
+            normal_stress, shear_stress, margin_of_safety = recover_stresses(wing, node_data, beam, u_full, w_x, w_y, w_z, t_y)
 
             # store results
             # Build spanwise loading directly from VLM strips (sum over chordwise panels per strip)
@@ -257,10 +130,10 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             vlm_dy[0]     =  vlm_strip_Y[1]  - vlm_strip_Y[0]
             vlm_dy[-1]    =  vlm_strip_Y[-1] - vlm_strip_Y[-2]
             vlm_strip_wz  = vlm_strip_Fz / np.maximum(vlm_dy, 1e-6)
-            node_aero_loads = np.interp(VD_structural_wing.y_local, vlm_strip_Y, vlm_strip_wz)
+            node_aero_loads = np.interp(node_data.y_local, vlm_strip_Y, vlm_strip_wz)
 
             structural_results[wing.tag].load[ti,:,2]           = node_aero_loads
-            structural_results[wing.tag].elastic_twist[ti,:,0]  = twist_local
+            structural_results[wing.tag].elastic_twist[ti,:,0]  = u_full[3::6] * np.sin(node_data.sweep_nodes) + u_full[4::6] * np.cos(node_data.sweep_nodes)
             structural_results[wing.tag].deflection[ti,:,0]     = u_full[0::6]  # X deflection (Chordwise)
             structural_results[wing.tag].deflection[ti,:,1]     = u_full[1::6]  # Y deflection (Spanwise)
             structural_results[wing.tag].deflection[ti,:,2]     = u_full[2::6]  # Z deflection (Vertical)
@@ -271,9 +144,191 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             structural_results[wing.tag].normal_stress[ti,:]    = normal_stress
             structural_results[wing.tag].shear_stress[ti,:]     = shear_stress
             structural_results[wing.tag].margin_of_safety[ti,:] = margin_of_safety
- 
+
             vd_idx += 1
             if wing.xz_plane_symmetric:
                 vd_idx += 1
-            
+
     return structural_results
+
+
+# ----------------------------------------------------------------------
+#  Beam model
+# ----------------------------------------------------------------------
+def assemble_beam(wing, node_data, settings):
+    """
+    Section properties, element matrices and factorized stiffness of one wing's cantilever beam.
+    """
+    num_elements = len(node_data.Le)
+    E            = wing.structural.material.youngs_modulus
+    G            = wing.structural.material.shear_modulus
+
+    A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr = compute_wingbox_properties(wing, node_data, settings.spar_cutouts)
+
+    T_all         = compute_3d_transformation_matrix(node_data.sweep_mid_elems, node_data.dihedral_elems, node_data.twist_elems, num_elements)
+    K_local       = compute_element_stiffness_arrays(E, G, A_arr, J_arr, Ixx_arr, Izz_arr, node_data.Le, num_elements)
+
+    # K_global = T @ K_local @ T^T, consistent with u_global = T @ u_local.
+    K_temp        = np.matmul(K_local, np.transpose(T_all, (0, 2, 1)))
+    K_global_elem = np.matmul(T_all, K_temp)
+
+    # Sparse assembly: this beam-chain stiffness matrix is banded. COO sums duplicate (row,col) entries on conversion to CSC.
+    num_nodes     = num_elements + 1
+    dofs_per_node = 6
+    total_dof     = dofs_per_node * num_nodes
+
+    global_indices        = np.zeros((num_elements, 12), dtype=int)
+    node_indices          = np.arange(num_nodes)
+    dof_indices           = np.arange(dofs_per_node)
+    global_indices[:, :6] = dofs_per_node * node_indices[:-1, np.newaxis] + dof_indices
+    global_indices[:, 6:] = dofs_per_node * node_indices[1:, np.newaxis] + dof_indices
+
+    rows     = np.repeat(global_indices, 12, axis=1).ravel()
+    cols     = np.tile(global_indices, 12).ravel()
+    K_global = coo_matrix((K_global_elem.ravel(), (rows, cols)), shape=(total_dof, total_dof)).tocsc()
+
+    # Cantilever: node 0's 6 DOFs are the fixed root, so the free block is a contiguous slice.
+    K_reduced = K_global[6:, 6:].tocsc()
+
+    beam                = Data()
+    beam.A              = A_arr
+    beam.Ixx            = Ixx_arr
+    beam.Izz            = Izz_arr
+    beam.J              = J_arr
+    beam.w_box          = w_box_arr
+    beam.T              = T_all
+    beam.K_local        = K_local
+    beam.global_indices = global_indices
+    beam.total_dof      = total_dof
+    beam.K_reduced      = K_reduced
+    beam.factorization  = splu(K_reduced)
+    return beam
+
+
+def panel_forces(VLM_results, VD, ti, vd_ti, start_idx, end_idx, q_dyn):
+    """
+    Force [N] on each vortex lattice panel of one wing and the point it acts at.
+    """
+    Delta_CP    = VLM_results.CP[ti, start_idx:end_idx]
+    Normals     = VD.normals[vd_ti, start_idx:end_idx]
+    Panel_Areas = VD.panel_areas[vd_ti, start_idx:end_idx]
+
+    # Force (N) = Cp * Normal_Vector * q_dyn * Area
+    aero_loads  = np.tile(Delta_CP[:, np.newaxis], (1, 3)) * Normals * q_dyn * Panel_Areas[:, np.newaxis]
+
+    # Kutta-Joukowski panel forces act on the bound vortex at 1/4 of the panel
+    def corners(A, B):
+        return np.column_stack(((VD['X' + A][vd_ti, start_idx:end_idx] + VD['X' + B][vd_ti, start_idx:end_idx]) / 2,
+                                (VD['Y' + A][vd_ti, start_idx:end_idx] + VD['Y' + B][vd_ti, start_idx:end_idx]) / 2,
+                                (VD['Z' + A][vd_ti, start_idx:end_idx] + VD['Z' + B][vd_ti, start_idx:end_idx]) / 2))
+    panel_LE   = corners('A1', 'B1')
+    panel_TE   = corners('A2', 'B2')
+    aero_pts   = panel_LE + 0.25 * (panel_TE - panel_LE)
+    return aero_pts, aero_loads
+
+
+def point_loads_to_element_loads(wing, node_data, pts, loads):
+    """
+    Point loads [N] at pts (vehicle frame) moved to the beam axis through rigid links, as distributed loads
+    w_x, w_y, w_z [N/m] and torque about the beam axis t_y [N m/m] on each element.
+    """
+    fea_pts = np.column_stack((node_data.X_elems, node_data.Y_elems, node_data.Z_elems)) + np.array(wing.origin[0])
+
+    fea_forces, fea_moments = map_panel_forces_to_fea(pts, loads, fea_pts)
+    w_x = fea_forces[:, 0] / node_data.Le
+    w_y = fea_forces[:, 1] / node_data.Le
+    w_z = fea_forces[:, 2] / node_data.Le
+
+    # Project eccentricity moments onto the elastic axis for torsion
+    M_x = fea_moments[:, 0] / node_data.Le
+    M_y = fea_moments[:, 1] / node_data.Le
+    M_z = fea_moments[:, 2] / node_data.Le
+    t_y = (M_x * np.sin(node_data.sweep_mid_elems) * np.cos(node_data.dihedral_elems) +
+           M_y * np.cos(node_data.sweep_mid_elems) * np.cos(node_data.dihedral_elems) +
+           M_z * np.sin(node_data.dihedral_elems))
+    return w_x, w_y, w_z, t_y
+
+
+def self_weight_load(wing, node_data, beam):
+    """
+    Vertical load [N/m] of the wingbox structure and ribs on each element at a load factor of one.
+    """
+    Rho                = wing.structural.material.density
+    w_z_struct         = -beam.A * Rho * 9.81
+    airfoil_Area       = 0.7 * node_data.chord_elems * node_data.t_elems # approximation
+    Rib_Mass_Per_Meter = (airfoil_Area * wing.structural.rib_thickness  * Rho) / wing.structural.rib_spacing
+    w_z_ribs           = -Rib_Mass_Per_Meter * 9.81
+    return w_z_struct + w_z_ribs
+
+
+def nodal_force_vector(beam, node_data, w_x, w_y, w_z, t_y):
+    """
+    Global nodal force vector from the distributed element loads. All loads are routed through T for correct
+    bending-torsion coupling.
+    """
+    num_elements  = len(node_data.Le)
+    F_global_elem = compute_force_vector(w_x=w_x, w_y=w_y, w_z=w_z, t_y=t_y, Le=node_data.Le, num_elem=num_elements, T=beam.T)
+    F_global      = np.zeros(beam.total_dof)
+    np.add.at(F_global, beam.global_indices, F_global_elem)
+    return F_global
+
+
+def solve_beam(beam, F_global):
+    """
+    Nodal displacements and rotations of the cantilever beam under F_global.
+    """
+    u_full     = np.zeros(beam.total_dof)
+    u_full[6:] = beam.factorization.solve(F_global[6:])
+    return u_full
+
+
+def recover_stresses(wing, node_data, beam, u_full, w_x, w_y, w_z, t_y):
+    """
+    Normal stress, torsional shear stress and margin of safety of each element.
+    """
+    num_elements = len(node_data.Le)
+    T_all        = beam.T
+
+    # Member-end actions (local) = K_local @ u_local - F_local (fixed-end load vector).
+    Le               = node_data.Le
+    loads_global_e   = np.column_stack((w_x, w_y, w_z))
+    R_blocks         = T_all[:, 0:3, 0:3]
+    loads_local_e    = np.einsum('eji,ej->ei', R_blocks, loads_global_e)
+    w_u_l, w_v_l, w_w_l = loads_local_e[:, 0], loads_local_e[:, 1], loads_local_e[:, 2]
+
+    F_local_fe        = np.zeros((num_elements, 12))
+    F_local_fe[:, 0]  = w_u_l * Le / 2;         F_local_fe[:, 6]  = w_u_l * Le / 2
+    F_local_fe[:, 5]  = -w_u_l * Le**2 / 12;    F_local_fe[:, 11] = w_u_l * Le**2 / 12
+    F_local_fe[:, 1]  = w_v_l * Le / 2;         F_local_fe[:, 7]  = w_v_l * Le / 2
+    F_local_fe[:, 2]  = w_w_l * Le / 2;         F_local_fe[:, 8]  = w_w_l * Le / 2
+    F_local_fe[:, 3]  = w_w_l * Le**2 / 12;     F_local_fe[:, 9]  = -w_w_l * Le**2 / 12
+    F_local_fe[:, 4]  = t_y * Le / 2;           F_local_fe[:, 10] = t_y * Le / 2
+
+    u_elem_global    = u_full[beam.global_indices]
+    u_elem_local     = np.einsum('eij,ej->ei', np.transpose(T_all, (0, 2, 1)), u_elem_global)
+    q_local          = np.einsum('eij,ej->ei', beam.K_local, u_elem_local) - F_local_fe
+
+    N_axial   = q_local[:, 1]  # axial force, local spanwise axis
+    M_bend_x  = q_local[:, 3]  # bending moment about local x -> vertical (Ixx) bending
+    M_bend_z  = q_local[:, 5]  # bending moment about local z -> chordwise (Izz) bending
+    M_torsion = q_local[:, 4]  # torsion moment about local spanwise axis
+
+    h_arr = node_data.chord_elems * node_data.t_c_elems  # wingbox height, matches compute_wingbox_properties
+    sigma_axial  = N_axial / beam.A
+    sigma_bend_x = np.abs(M_bend_x) * (h_arr / 2.0) / beam.Ixx
+    sigma_bend_z = np.abs(M_bend_z) * (beam.w_box / 2.0) / beam.Izz
+    # Conservative: assumes the worst bending corner coincides with peak axial stress.
+    normal_stress = np.abs(sigma_axial) + sigma_bend_x + sigma_bend_z
+
+    # Bredt-Batho: uniform shear flow, so peak stress is at the thinnest wall.
+    skin_t_top = wing.structural.top_skin_thickness    + wing.structural.stringer_smeared_thickness
+    skin_t_bot = wing.structural.bottom_skin_thickness + wing.structural.stringer_smeared_thickness
+    t_min = np.minimum(np.minimum(skin_t_top, skin_t_bot),
+                        np.minimum(wing.structural.front_spar.t_web, wing.structural.rear_spar.t_web))
+    Am_enclosed  = beam.w_box * h_arr
+    shear_stress = np.abs(M_torsion) / (2.0 * Am_enclosed * t_min)
+
+    margin_normal = wing.structural.material.yield_tensile_strength / np.maximum(normal_stress, 1e-6) - 1.0
+    margin_shear  = wing.structural.material.yield_shear_strength   / np.maximum(shear_stress,  1e-6) - 1.0
+    margin_of_safety = np.minimum(margin_normal, margin_shear)
+    return normal_stress, shear_stress, margin_of_safety
