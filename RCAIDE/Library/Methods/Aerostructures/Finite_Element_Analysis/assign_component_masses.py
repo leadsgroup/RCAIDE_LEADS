@@ -24,7 +24,8 @@ def assign_component_masses(geometry, wing, node_data):
     An integral tank on a symmetric wing spans both halves, with its centre of gravity on the centreline. Each
     half carries half its fuel, spread over the elements between the tank's bounding segments in proportion to
     the local section area (chord times depth), which assumes a uniform fuel level across the tank. Other tanks
-    are point masses at their centre of gravity.
+    are point masses at their centre of gravity. A tank with xz_plane_symmetric set stands for the left and right
+    tanks together, with their combined mass, so each half of a symmetric wing carries half of it.
 
     Returns:
         Data with
@@ -52,7 +53,9 @@ def assign_component_masses(geometry, wing, node_data):
                 else:
                     point = (np.array(source.origin[0]) + np.array(source.mass_properties.center_of_gravity)).reshape(3)
                     if on_this_half(point, symmetric, y_origin):
-                        fuel_points.append((point, source.fuel.tag, source.mass_properties.mass, 1.0, source.tag))
+                        # a symmetric tank is the left and right tanks together, so this half carries half of it
+                        share = 0.5 if (symmetric and source.xz_plane_symmetric) else 1.0
+                        fuel_points.append((point, source.fuel.tag, source.mass_properties.mass, share, source.tag))
 
             elif isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
                 for battery_module in source.modules:

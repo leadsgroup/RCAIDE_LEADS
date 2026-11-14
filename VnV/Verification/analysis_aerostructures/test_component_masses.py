@@ -26,6 +26,7 @@ def main():
     check_integral_tank_fuel_is_spread_over_its_bay()
     check_components_on_the_other_half_are_skipped()
     check_tail_carries_no_main_wing_components()
+    check_symmetric_wing_tank_is_shared_between_the_halves()
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -93,6 +94,29 @@ def check_tail_carries_no_main_wing_components():
     vehicle   = build_vehicle()
     masses, _ = masses_on(vehicle, 'horizontal_stabilizer')
     assert len(masses.point_masses) == 0 and len(masses.fuel_points) == 0 and len(masses.fuel_spread) == 0
+    return
+
+
+def check_symmetric_wing_tank_is_shared_between_the_halves():
+    # a non-integral wing tank flagged symmetric is the left and right tanks together, with their combined mass
+    for flag, expected_share in [(True, 0.5), (False, 1.0)]:
+        vehicle = vehicle_setup()
+        network = list(vehicle.networks.values())[0]
+        tank    = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
+        tank.tag                               = 'wing_pod_tank'
+        tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A()
+        tank.origin                            = [[15.0, 5.0, -0.5]]
+        tank.mass_properties.center_of_gravity = [[0.5, 0.0, 0.0]]
+        tank.mass_properties.mass              = 400.0
+        tank.xz_plane_symmetric                = flag
+        network.sources.append(tank)
+
+        masses, nodes = masses_on(vehicle, 'main_wing')
+        assert len(masses.fuel_points) == 1
+        point, fuel_tag, tank_mass, share, tank_tag = masses.fuel_points[0]
+        assert tank_tag == 'wing_pod_tank' and tank_mass == 400.0
+        assert share == expected_share, (flag, share)
+        assert np.allclose(point, [15.5, 5.0, -0.5])
     return
 
 
