@@ -29,8 +29,8 @@ def assign_component_masses(geometry, wing, node_data):
     Returns:
         Data with
           point_pts, point_masses : constant point masses [m], [kg]
-          fuel_points             : list of (point, fuel_tag, tank_mass, share)
-          fuel_spread             : list of (fuel_tag, tank_mass, share, element_fraction)
+          fuel_points             : list of (point, fuel_tag, tank_mass, share, tank_tag)
+          fuel_spread             : list of (fuel_tag, tank_mass, share, element_fraction, tank_tag)
     """
     symmetric = wing.xz_plane_symmetric
     y_origin  = wing.origin[0][1]
@@ -48,11 +48,11 @@ def assign_component_masses(geometry, wing, node_data):
                 if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank):
                     share = 0.5 if symmetric else 1.0
                     fuel_spread.append((source.fuel.tag, source.mass_properties.mass, share,
-                                        integral_tank_element_fraction(source, wing, node_data)))
+                                        integral_tank_element_fraction(source, wing, node_data), source.tag))
                 else:
                     point = (np.array(source.origin[0]) + np.array(source.mass_properties.center_of_gravity)).reshape(3)
                     if on_this_half(point, symmetric, y_origin):
-                        fuel_points.append((point, source.fuel.tag, source.mass_properties.mass, 1.0))
+                        fuel_points.append((point, source.fuel.tag, source.mass_properties.mass, 1.0, source.tag))
 
             elif isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
                 for battery_module in source.modules:

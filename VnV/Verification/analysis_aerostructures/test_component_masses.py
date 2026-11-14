@@ -63,8 +63,9 @@ def check_integral_tank_fuel_is_spread_over_its_bay():
 
     # each half of a symmetric wing carries half of each tank, spread only between its bounding segments
     mean_Y = []
-    for (fuel_tag, tank_mass, share, fraction), bounds in zip(masses.fuel_spread, [('root', 'yehudi'), ('yehudi', 'section_2')]):
+    for (fuel_tag, tank_mass, share, fraction, tank_tag), bounds, expected_tag in zip(masses.fuel_spread, [('root', 'yehudi'), ('yehudi', 'section_2')], ['integral_tank', 'integral_tank2']):
         assert share == 0.5
+        assert tank_tag == expected_tag, tank_tag
         assert abs(np.sum(fraction) - 1.0) < 1e-12
         y_in  = wing.segments[bounds[0]].percent_span_location * nodes.total_span
         y_out = wing.segments[bounds[1]].percent_span_location * nodes.total_span

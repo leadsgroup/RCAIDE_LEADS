@@ -87,7 +87,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             # Point masses on this wing: constant components, then fuel tanks at this control point
             mass_pts   = [masses.point_pts]
             mass_loads = [np.column_stack((np.zeros((len(masses.point_masses), 2)), -masses.point_masses * g_n))]
-            for (point, fuel_tag, tank_mass, share) in masses.fuel_points:
+            for (point, fuel_tag, tank_mass, share, tank_tag) in masses.fuel_points:
                 fuel_mass = (conditions.weights.components.mass[fuel_tag][ti, 0] + tank_mass) * share
                 mass_pts.append(point.reshape(1, 3))
                 mass_loads.append(np.array([[0.0, 0.0, -fuel_mass * g_n]]))
@@ -107,7 +107,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
 
             # Structure, ribs, and fuel spread along integral tanks at this control point
             w_z_distributed = self_weight_load(wing, node_data, beam) * n
-            for (fuel_tag, tank_mass, share, element_fraction) in masses.fuel_spread:
+            for (fuel_tag, tank_mass, share, element_fraction, tank_tag) in masses.fuel_spread:
                 fuel_mass = (conditions.weights.components.mass[fuel_tag][ti, 0] + tank_mass) * share
                 w_z_distributed -= fuel_mass * element_fraction / node_data.Le * g_n
             w_z = w_z + w_z_distributed
