@@ -34,7 +34,7 @@
             "instruments": 416.6793566290362,
             "total": 15801.732130449314
         },
-        "total": 91710.65540209328
+        "total": 91704.33146121858
     },
     "payload": {
         "total": 30005.135275500004,
@@ -43,13 +43,13 @@
         "cargo": 0
     },
     "operational_items": {
-        "misc": 387.55038417307975,
+        "misc": 381.22644329837067,
         "flight_crew": 306.17484975,
         "flight_attendants": 743.8914868,
         "passenger_service": 0.0,
         "cargo_containers": 635.029318,
-        "total": 2072.6460387230795
+        "total": 2066.3220978483705
     },
-    "zero_fuel_weight": 121715.7906775933,
+    "zero_fuel_weight": 121709.46673671858,
     "max_takeoff": 227930
 }
