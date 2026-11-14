@@ -133,14 +133,16 @@ def check_input_derivative(compiled, x0, inputs):
     """
     The compiled derivative of the residual along a random relative change of every input it reads, against central
     differences of the compiled residual. The inputs are first moved by about 1e-3, off the knots of the
-    piecewise-linear tables some of them sit on (a flap deflection at a tabulated angle).
+    piecewise-linear tables some of them sit on (a flap deflection at a tabulated angle). A value computed along the
+    way (a blade section's angle of attack) can still fall next to a knot of a table, where a difference that
+    straddles the knot is the average of two slopes, so the steps go down to 1e-7 and the best one is taken.
     """
     rng       = np.random.default_rng(1)
     base      = tuple(value * (1 + 1e-3 * rng.uniform(0.5, 1.0, value.shape)) for value in inputs)
     direction = tuple(value * rng.standard_normal(value.shape) for value in base)
     exact     = np.asarray(compiled.input_derivative(x0, base, direction))
     errors    = []
-    for h in (1e-4, 1e-5, 1e-6):
+    for h in (1e-4, 1e-5, 1e-6, 1e-7):
         plus   = np.asarray(compiled.residual(x0, tuple(value + h * change for value, change in zip(base, direction))))
         minus  = np.asarray(compiled.residual(x0, tuple(value - h * change for value, change in zip(base, direction))))
         errors.append(float(np.max(np.abs(exact - (plus - minus) / (2 * h))) / max(np.max(np.abs(exact)), 1e-300)))
