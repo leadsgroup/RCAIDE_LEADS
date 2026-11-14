@@ -156,7 +156,7 @@ def wing_planform(wing):
         ct = chords_dim[-1]
         
         # Calculate an average t/c weighted by area
-        t_c = np.sum(As*t_cs[:-1])/(ref_area/2)
+        t_c = np.sum(As*t_cs[:-1])/(ref_area/(1+sym))
         
         # Calculate the segment leading edge sweeps
         r_offsets = chords_dim[:-1]/4
