@@ -36,6 +36,19 @@ def safe_sqrt(A):
     positive = A > 0
     return xp.where(positive, xp.sqrt(xp.where(positive, A, 1.)), 0.)
 
+def gradient(f, x):
+    """np.gradient(f, x) for samples f at unevenly spaced points x, both one-dimensional, on NumPy or JAX."""
+    xp = array_namespace(f, x)
+    if xp is np:
+        return np.gradient(f, x)
+    # second order inside, first order at the two ends, as np.gradient
+    before   = x[1:-1] - x[:-2]
+    after    = x[2:] - x[1:-1]
+    inside   = (before**2 * f[2:] + (after**2 - before**2) * f[1:-1] - after**2 * f[:-2]) / (before * after * (before + after))
+    first    = (f[1] - f[0]) / (x[1] - x[0])
+    last     = (f[-1] - f[-2]) / (x[-1] - x[-2])
+    return xp.concatenate([first[None], inside, last[None]])
+
 def atleast_2d_col(A):
     """Makes a 2D array in column format
 

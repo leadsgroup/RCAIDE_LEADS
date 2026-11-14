@@ -150,8 +150,7 @@ def mission_setup(analyses):
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "descent_1" 
     segment.analyses.extend( analyses.descent ) 
-    segment.altitude_start                                = 10.5 * Units.km 
-    segment.altitude_end                                  = 6.0    * Units.km
+    segment.altitude_end                                  = 8.0    * Units.km
     segment.air_speed                                     = 220.0 * Units['m/s']
     segment.descent_rate                                  = 4.5   * Units['m/s']  
     
@@ -175,7 +174,7 @@ def mission_setup(analyses):
     segment.tag  = "descent_2" 
     segment.analyses.extend( analyses.descent ) 
     segment.altitude_end                                  = 6.0   * Units.km
-    segment.altitude_end                                  = 170.0 * Units['m/s']
+    segment.air_speed_end                                 = 170.0 * Units['m/s']
     segment.descent_rate                                  = 5.0   * Units['m/s']  
     
     # define flight dynamics to model 

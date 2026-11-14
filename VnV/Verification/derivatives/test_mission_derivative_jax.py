@@ -20,7 +20,9 @@ def main():
     # linear solve per segment with the compiled Jacobian, passed from segment to segment. Here the fuel burned by a
     # Cessna 172 over a climb, a cruise and a descent is differentiated with respect to a segment setting, a vehicle
     # value and a geometry value that passes through the aerodynamic surrogate, and each is compared with central
-    # differences of missions solved again.
+    # differences of missions solved again. The range flown is differentiated with respect to the cruise distance, which
+    # passes through the position update after each segment. The structure of a segment, which decides whether two
+    # designs share a compiled residual, must not change with data the compiled residual does not read.
     try:
         import jax
     except ImportError:
@@ -42,6 +44,7 @@ def main():
     check_fuel_derivative(mission, 'cruise_distance',   tolerance=1e-6)
     check_fuel_derivative(mission, 'takeoff_mass',      tolerance=1e-6)
     check_fuel_derivative(mission, 'wing_aspect_ratio', tolerance=1e-5)
+    check_structure_of_inputs()
 
     os.chdir(start_folder)
     return
@@ -56,21 +59,55 @@ def check_fuel_derivative(mission, parameter, tolerance, relative_step=1e-4):
     step  = relative_step * value
 
     # without solving again: the mission built at the two moved designs, not solved
-    derivative = mission_derivative(mission, build_mission(parameter, value + step), step, build_mission(parameter, value - step))
+    derivative = mission_derivative(mission, build_mission({parameter: value + step}), step, build_mission({parameter: value - step}))
     mass       = 'state.conditions.weights.vehicle.mass'
+    distance   = 'state.conditions.frames.inertial.aircraft_range'
     computed   = float(derivative[0].state[mass][0, 0] - derivative[-1].state[mass][-1, 0])
+    range_computed = float(derivative[-1].state[distance][-1, 0])
 
     # central differences of the mission solved at the two moved designs
-    fuel = []
+    fuel         = []
+    range_flown  = []
     for moved_value in (value + step, value - step):
-        moved = build_mission(parameter, moved_value)
+        moved = build_mission({parameter: moved_value})
         moved.evaluate()
         fuel.append(fuel_burned(moved))
-    expected = (fuel[0] - fuel[1]) / (2 * step)
+        range_flown.append(float(moved.segments.descent.conditions.frames.inertial.aircraft_range[-1, 0]))
+    expected       = (fuel[0] - fuel[1]) / (2 * step)
+    range_expected = (range_flown[0] - range_flown[1]) / (2 * step)
 
     error = abs(computed - expected) / abs(expected)
     print(f"  d(fuel burned)/d({parameter}): mission derivative {computed:.8e}, solved again {expected:.8e}, relative difference {error:.1e}")
     assert error <= tolerance, f"{parameter}: mission derivative {computed} against {expected}"
+
+    # the range changes with the cruise distance alone: a meter of cruise is a meter of range
+    if parameter == 'cruise_distance':
+        range_error = abs(range_computed - range_expected) / abs(range_expected)
+        print(f"  d(range)/d({parameter}): mission derivative {range_computed:.8e}, solved again {range_expected:.8e}, relative difference {range_error:.1e}")
+        assert range_error <= tolerance, f"range against {parameter}: mission derivative {range_computed} against {range_expected}"
+    return
+
+
+def check_structure_of_inputs():
+    from RCAIDE.Framework.Core import Data
+    from RCAIDE.Library.Mission.Solver.compiled_residual import collect_inputs
+
+    # two engines that differ in their float values, in their idle fallback deck (read on NumPy only) and in a map the
+    # object keeps to its own container: the floats are inputs, and the structure is the same
+    signatures = []
+    for thrust in (1000., 2000.):
+        engine                       = Data()
+        engine.design_thrust         = thrust
+        engine.stages                = Data()
+        engine.stages.pressure_ratio = np.array([1.5, thrust])
+        engine.idle_fallback         = {'deck': np.array([thrust, 2 * thrust])}
+        object.__setattr__(engine, 'stage_map', {float: engine.stages})
+        references, static           = [], []
+        collect_inputs(engine, 'engine', references, static, set())
+        signatures.append((tuple(static), [reference[3] for reference in references]))
+    assert signatures[0][0] == signatures[1][0], "the structure changed with values the compiled residual does not read"
+    assert signatures[0][1] == ['engine.design_thrust', 'engine.stages.pressure_ratio'], f"inputs {signatures[0][1]}"
+    print(f"  structure unchanged by the idle fallback deck and the object's own map; inputs {signatures[0][1]}")
     return
 
 
@@ -90,17 +127,17 @@ def parameter_value(mission, parameter):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Mission
 # ----------------------------------------------------------------------------------------------------------------------
-def build_mission(parameter=None, value=None):
-    """Climb, cruise and descent of the Cessna 172, with one design parameter set to value."""
+def build_mission(design={}):
+    """Climb, cruise and descent of the Cessna 172 at a design: {parameter name: value}, the others at their base values."""
     import ICE_test as test
 
     vehicle = test.vehicle_setup()
     # design values are floats: an integer would be part of the structure, not an input
     vehicle.mass_properties.takeoff = float(vehicle.mass_properties.takeoff)
-    if parameter == 'takeoff_mass':
-        vehicle.mass_properties.takeoff = value
-    if parameter == 'wing_aspect_ratio':
-        vehicle.wings.main_wing.aspect_ratio = value
+    if 'takeoff_mass' in design:
+        vehicle.mass_properties.takeoff = design['takeoff_mass']
+    if 'wing_aspect_ratio' in design:
+        vehicle.wings.main_wing.aspect_ratio = design['wing_aspect_ratio']
     analyses = test.analyses_setup(test.configs_setup(vehicle))
 
     mission      = RCAIDE.Framework.Mission.Sequential_Segments()
@@ -121,8 +158,8 @@ def build_mission(parameter=None, value=None):
     segment.altitude        = 10000. * Units.feet
     segment.air_speed       = 119. * Units.knots
     segment.distance        = 10. * Units.nautical_mile
-    if parameter == 'cruise_distance':
-        segment.distance    = value
+    if 'cruise_distance' in design:
+        segment.distance    = design['cruise_distance']
     add_segment(mission, segment, analyses)
 
     segment                 = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)

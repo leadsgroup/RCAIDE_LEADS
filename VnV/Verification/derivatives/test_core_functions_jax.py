@@ -8,7 +8,7 @@
 import numpy as np
 
 import RCAIDE
-from RCAIDE.Framework.Core import set_at, angles_to_dcms, orientation_product, orientation_transpose
+from RCAIDE.Framework.Core import set_at, gradient, angles_to_dcms, orientation_product, orientation_transpose
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  main
@@ -26,6 +26,7 @@ def main():
     jax.config.update("jax_enable_x64", True)
     from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
     check_set_at_jax()
+    check_gradient()
     check_rotations(check_derivatives)
     check_atmosphere(check_derivatives)
     return
@@ -47,6 +48,16 @@ def check_set_at_jax():
     assert B is not A and np.all(np.asarray(B)[:, 1] == 2.0) and np.all(np.asarray(A) == 0.0)   # JAX arrays are immutable
     C = set_at(np.zeros((4, 3)), np.s_[:, 2], jnp.ones(4))                                        # NumPy array, JAX value
     assert type(C).__module__.startswith(('jax', 'jaxlib')) and np.all(np.asarray(C)[:, 2] == 1.0)
+    return
+
+
+def check_gradient():
+    import jax.numpy as jnp
+    # samples at uneven spacing: the JAX path writes out the formulas of np.gradient, which the NumPy path calls
+    x = np.cumsum(np.random.default_rng(0).uniform(0.5, 2.0, 16))
+    f = np.sin(x)
+    assert np.array_equal(gradient(f, x), np.gradient(f, x))
+    assert np.allclose(np.asarray(gradient(jnp.asarray(f), jnp.asarray(x))), np.gradient(f, x), rtol=1e-13, atol=1e-15)
     return
 
 
