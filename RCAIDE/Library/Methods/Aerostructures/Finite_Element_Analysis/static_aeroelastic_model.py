@@ -17,6 +17,11 @@ import numpy as np
 
 STANDARD_GRAVITY = 9.81   # [m/s^2] used by self_weight_load
 
+# Tip deflection over semi-span up to which the model's tip deflection, tip twist and lift coefficient are within
+# about 1% of the coupled iteration that rebuilds the mesh. Measured on a straight wing and on the uCRM wing
+# (RCAIDE_DEV_NOTES/aerostructural_surrogate_physics_and_numerics.md, section 14); twist is the first to degrade.
+VALIDATED_TIP_DEFLECTION_RATIO = 0.10
+
 # ----------------------------------------------------------------------
 #  build_static_aeroelastic_model
 # ----------------------------------------------------------------------
@@ -150,8 +155,13 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
     """
     Deformation of the wings at one flight condition.
 
-    The model is linear in the deformation. Against the coupled iteration that rebuilds the mesh it is within 1%
-    while the tip deflection stays below about 6% of the semi-span.
+    The model is linear in the deformation, and it always returns the linear solution. Two measures say how far
+    to trust it, and both are smooth, so an optimizer can constrain them:
+      tip_deflection_ratio   : tip deflection over semi-span of each wing. Up to VALIDATED_TIP_DEFLECTION_RATIO
+                               the model is within about 1% of the coupled iteration that rebuilds the mesh.
+      divergence_determinant : det(I - q S G), one at zero dynamic pressure, zero at the divergence dynamic
+                               pressure and negative just above it, where the solution has no physical meaning.
+    within_validated_range combines the two.
 
     The one-way response u_0 = K^-1 [q f(alpha) + P] is exact for the beam. The aerodynamic feedback
     is added through the displacements eta at the stations: u = u_0 + q G eta, with eta = (I - q S G)^-1 S u_0
@@ -160,7 +170,7 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
     Args:
         model            : Data from build_static_aeroelastic_model
         mach             : Mach number
-        dynamic_pressure : [Pa], below the divergence dynamic pressure
+        dynamic_pressure : [Pa]
         alpha            : angle of attack [rad]
         load_factor      : inertial load factor
         gravity          : [m/s^2]
@@ -169,7 +179,8 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
 
     Returns:
         results : Data by wing tag with deflection (nodes, 3), rotation (nodes, 3), elastic_twist (nodes,),
-                  normal_stress, shear_stress and margin_of_safety (elements,), plus eta, CLift and CM
+                  normal_stress, shear_stress, margin_of_safety (elements,) and tip_deflection_ratio, plus eta,
+                  CLift, CM, divergence_determinant and within_validated_range
     """
     q           = dynamic_pressure
     fuel_masses = fuel_masses or {}
@@ -210,11 +221,8 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
         dof        = 6 * model.wings[tag].station_nodes[station_k] + component
         eta_0[k]   = u_0[tag][dof]
         S_G[k, :]  = G[tag][dof, :]
+    system = np.eye(n_stations) - q * S_G
     if coupled and n_stations > 0:
-        # the determinant of (I - q S G) is positive below the divergence dynamic pressure and changes sign at it
-        system = np.eye(n_stations) - q * S_G
-        if np.linalg.slogdet(system)[0] <= 0:
-            raise ValueError(f'Dynamic pressure {q:.0f} Pa is at or above the divergence dynamic pressure of the wings')
         eta = np.linalg.solve(system, eta_0)
     else:
         eta = np.zeros(n_stations)
@@ -233,6 +241,10 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
         results[tag].normal_stress    = normal_stress
         results[tag].shear_stress     = shear_stress
         results[tag].margin_of_safety = margin_of_safety
+        results[tag].tip_deflection_ratio = np.linalg.norm(results[tag].deflection[-1]) / w.node_data.total_span
+    results.divergence_determinant = np.linalg.det(system) if coupled else 1.0
+    largest_ratio                  = max(results[tag].tip_deflection_ratio for tag in model.wings.keys())
+    results.within_validated_range = bool((results.divergence_determinant > 0) & (largest_ratio <= VALIDATED_TIP_DEFLECTION_RATIO))
     results.CLift = at_mach_and_alpha(model.CLift_rigid) + feedback_at_mach_and_alpha(model.dCLift_deta) @ eta
     results.CM    = at_mach_and_alpha(model.CM_rigid)    + feedback_at_mach_and_alpha(model.dCM_deta)    @ eta
     return results

@@ -11,7 +11,7 @@ from RCAIDE.Library.Methods.Geometry.Planform                                   
 from RCAIDE.Library.Mission.Common.Pre_Process                                                  import geometry_preprocess_routine
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates             import _converge_aeroelastic
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution     import generate_vortex_distribution
-from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.static_aeroelastic_model     import build_static_aeroelastic_model, solve_static_aeroelastic_model, divergence_dynamic_pressure, aerodynamic_conditions
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.static_aeroelastic_model     import build_static_aeroelastic_model, solve_static_aeroelastic_model, divergence_dynamic_pressure, aerodynamic_conditions, VALIDATED_TIP_DEFLECTION_RATIO
 
 import numpy as np
 
@@ -33,7 +33,7 @@ def main():
     check_divergence_pressure_is_above_strip_theory(model, analyses, q_D)
     check_response_grows_toward_divergence(model, q_D)
     check_model_matches_the_coupled_iteration(model, analyses, q_D)
-    check_solve_refuses_dynamic_pressures_above_divergence(model, q_D)
+    check_solve_flags_dynamic_pressures_above_divergence(model, q_D)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -134,13 +134,22 @@ def check_model_matches_the_coupled_iteration(model, analyses, q_D):
     return
 
 
-def check_solve_refuses_dynamic_pressures_above_divergence(model, q_D):
-    tip_twist(model, 0.99 * q_D)
-    try:
-        tip_twist(model, 1.01 * q_D)
-    except ValueError:
-        return
-    raise AssertionError('solve above the divergence dynamic pressure did not raise')
+def check_solve_flags_dynamic_pressures_above_divergence(model, q_D):
+    # the solve never raises; the determinant passes through zero at q_D and the flag follows it
+    def solve(q):
+        return solve_static_aeroelastic_model(model, MACH, q, ALPHA, load_factor=0.0)
+    assert abs(solve(0.0).divergence_determinant - 1.0) < 1e-12
+    assert solve(0.99 * q_D).divergence_determinant > 0.0
+    assert solve(1.01 * q_D).divergence_determinant < 0.0
+    assert solve(0.5 * q_D).within_validated_range
+    assert not solve(1.01 * q_D).within_validated_range
+
+    # below divergence, a deflection past the validated ratio is flagged too, and the solution is still returned
+    large = solve_static_aeroelastic_model(model, MACH, 0.3 * q_D, 4.0 * Units.degrees, load_factor=0.0)
+    assert large.divergence_determinant > 0.0
+    assert large.main_wing.tip_deflection_ratio > VALIDATED_TIP_DEFLECTION_RATIO and not large.within_validated_range
+    assert np.all(np.isfinite(large.main_wing.deflection))
+    return
 
 
 if __name__ == '__main__':
