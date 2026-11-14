@@ -148,7 +148,7 @@ def evaluate_segment(segment, x, paths, values):
 
 def update_position(segment):
     """The post-process step that integrates the horizontal position, which the next segment starts from."""
-    if 'inertial_position' in segment.process.post_process:
+    if 'inertial_position' in segment.process.post_process.keys():
         segment.process.post_process.inertial_position(segment)
     return
 
@@ -201,6 +201,10 @@ def signature_difference(segment, other, limit=5):
     return "; ".join(lines[:limit])
 
 
+# data only the NumPy path reads, so neither an input nor part of the structure of the compiled residual: the idle
+# fallback deck of a gas turbine (the JAX matching returns NaN at a point NumPy would route to it)
+NUMPY_ONLY = ('idle_fallback',)
+
 def collect_inputs(item, path, references, static, seen, skip=()):
     """Appends the float inputs under item to references and everything else to static; skip names keys of item itself."""
     if id(item) in seen:
@@ -219,12 +223,13 @@ def collect_inputs(item, path, references, static, seen, skip=()):
         collect_value(item, 'values', item.values, 'attribute', f"{path}.values", references, static, seen)
     elif isinstance(item, dict):
         for key, value in dict.items(item):
-            if key not in skip and not (path == 'state' and str(key).startswith('number_of_')):
+            if key not in skip and key not in NUMPY_ONLY and not (path == 'state' and str(key).startswith('number_of_')):
                 collect_value(item, key, value, 'item', f"{path}.{key}", references, static, seen)
-        # object attributes of a Data (such as the conditions size), not the binding to the preallocated layout
+        # object attributes of a Data (the conditions size, a vehicle's maps to its own containers), walked after its
+        # items so a container held both ways is walked once; not the binding to the preallocated layout
         for key, value in getattr(item, '__dict__', {}).items():
             if key != 'segment_layout':
-                static.append((f"{path}:{key}", describe(value)))
+                collect_value(item, key, value, 'attribute', f"{path}:{key}", references, static, seen)
     else:
         for i, value in enumerate(item):
             collect_value(item, i, value, 'item', f"{path}[{i}]", references, static, seen)

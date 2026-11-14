@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 import RCAIDE
+from RCAIDE.Framework.Core import array_namespace, set_at, gradient
 
 # Package imports 
 import numpy as np
@@ -37,29 +38,29 @@ def linear_inertial_horizontal_position(segment):
     """        
 
     conditions = segment.state.conditions
+    inertial   = conditions.frames.inertial
     psi        = segment.true_course       # sign convetion is clockwise positive
-    cpts       = int(segment.state.numerics.number_of_control_points)
-    x0         = conditions.frames.inertial.position_vector[0,None,0:1+1]
-    R0         = conditions.frames.inertial.aircraft_range[0,None,0:1+1]
-    vx         = conditions.frames.inertial.velocity_vector[:,0:1+1]
-    I          = segment.state.numerics.time.integrate  
-    trajectory = np.repeat( np.atleast_2d(np.array([np.cos(psi),np.sin(psi)])),cpts , axis = 0) 
+    I          = segment.state.numerics.time.integrate
+    xp         = array_namespace(I, inertial.velocity_vector, inertial.position_vector, inertial.aircraft_range, inertial.time, psi)
+    x0         = inertial.position_vector[0,None,0:1+1]
+    R0         = inertial.aircraft_range[0,0]
+    vx         = inertial.velocity_vector[:,0:1+1]
+    trajectory = xp.stack([xp.cos(psi), xp.sin(psi)])[None,:]
 
-    # integrate to compute position credit 
-    x = np.dot(I,vx)
-    x[:,1] = x[:,0] 
-    conditions.frames.inertial.position_vector[:,0:1+1] = x0 + x[:,:]*trajectory        
+    # integrate to compute position credit: the distance along the course
+    distance   = xp.dot(I,vx)[:,0]
+    inertial.position_vector = set_at(inertial.position_vector, (slice(None), slice(0,2)), x0 + distance[:,None]*trajectory)
 
     # do not apply apply range credit for loiter  
     if type(segment) ==  RCAIDE.Framework.Mission.Segments.Cruise.Constant_Dynamic_Pressure_Constant_Altitude_Loiter or  \
        type(segment) ==  RCAIDE.Framework.Mission.Segments.Cruise.Constant_Mach_Constant_Altitude_Loiter or \
        type(segment) ==  RCAIDE.Framework.Mission.Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter:
            
-        conditions.frames.inertial.aircraft_range[:,0]  = R0[0]  
+        inertial.aircraft_range = set_at(inertial.aircraft_range, (slice(None), 0), R0 + 0.*distance)
     else: 
-        conditions.frames.inertial.aircraft_range[:,0]  = R0 + x[:,0]
+        inertial.aircraft_range = set_at(inertial.aircraft_range, (slice(None), 0), R0 + distance)
     
     # compute climb rate 
-    conditions.frames.inertial.climb_rate[:,0] = np.gradient(-conditions.frames.inertial.position_vector[:,2],conditions.frames.inertial.time[:,0] )
+    inertial.climb_rate = set_at(inertial.climb_rate, (slice(None), 0), gradient(-inertial.position_vector[:,2], inertial.time[:,0]))
     
     return
