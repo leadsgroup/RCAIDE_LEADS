@@ -204,6 +204,7 @@ class Wing(Component):
         self.airfoil                                = None 
         
         self.segments                               = Container()
+        self.segments_from_planform                 = False   # root and tip segments set by wing_planform from area, aspect ratio and taper
         self.control_surfaces                       = Container()
    
         self.structural                             = Data()  
