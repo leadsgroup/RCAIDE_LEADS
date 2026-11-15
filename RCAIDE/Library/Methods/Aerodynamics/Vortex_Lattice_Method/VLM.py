@@ -83,7 +83,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
 
     settings.use_surrogate                     [Unitless]
     settings.use_VORLAX_matrix_calculation     [boolean]
-    induced_velocity_cache                     [dict], optional; reuses C_mn across calls with the same geometry and Mach
+    induced_velocity_cache                     [dict], optional; reuses the influence matrix across calls with the same geometry and Mach
 
     conditions.aerodynamics.angles.alpha       [radians]
     conditions.aerodynamics.angles.beta        [radians]
@@ -181,31 +181,29 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     RHS     = rhs.RHS*1 # this matches numpy=1.26 in terms of dimension
     ONSET   = rhs.ONSET*1
 
-    # Build induced velocity matrix, C_mn
+    # Build the aerodynamic influence coefficient matrix A of the flow tangency condition. With VORLAX's matrix
+    # calculation it is the VORLAX velocity EW on every row; otherwise EW is kept on the leading-edge rows only.
+    use_VORLAX_induced_velocity = settings.use_VORLAX_matrix_calculation
     mach_key = mach.tobytes()
     if induced_velocity_cache is not None and mach_key in induced_velocity_cache:
         cached = induced_velocity_cache[mach_key]
-        C_mn, s, RFLAG, EW = cached['C_mn'], cached['s'], cached['RFLAG'], cached['EW']
+        A, s, RFLAG, EW = cached['A'], cached['s'], cached['RFLAG'], cached['EW']
     else:
-        C_mn, s, RFLAG, EW = compute_wing_induced_velocity(VD,mach,compute_EW=True)
+        if use_VORLAX_induced_velocity:
+            _, s, RFLAG, EW = compute_wing_induced_velocity(VD,mach,compute_EW=True)
+            A               = EW
+            EW              = EW[LE_ind].reshape(len(mach),-1,np.shape(EW)[2])
+        else:
+            A, s, RFLAG, EW = compute_wing_induced_velocity(VD,mach,compute_EW=True,delta=delta,phi=phi)
         if induced_velocity_cache is not None:
             induced_velocity_cache.clear()  # keep only the latest Mach to bound memory
-            induced_velocity_cache[mach_key] = {'C_mn': C_mn, 's': s, 'RFLAG': RFLAG, 'EW': EW}
+            induced_velocity_cache[mach_key] = {'A': A, 's': s, 'RFLAG': RFLAG, 'EW': EW}
 
     # Turn off sonic vortices when Mach>1
     RHS = RHS*RFLAG
 
     # To ensure compatibility for np.linalg.solve across numpy1.0 and numpy2.0
     RHS = np.atleast_3d(RHS)
-
-    # Build Aerodynamic Influence Coefficient Matrix
-    use_VORLAX_induced_velocity = settings.use_VORLAX_matrix_calculation
-    if not use_VORLAX_induced_velocity:
-        A =   np.multiply(C_mn[:,:,:,0],np.atleast_3d(np.sin(delta)*np.cos(phi))) \
-            + np.multiply(C_mn[:,:,:,1],np.atleast_3d(np.cos(delta)*np.sin(phi))) \
-            - np.multiply(C_mn[:,:,:,2],np.atleast_3d(np.cos(phi)*np.cos(delta)))   # validated from book eqn 7.42
-    else:
-        A = EW
 
     # Compute vortex strength; with a cache (one case per call), A's LU factorization is reused across the Mach group
     if induced_velocity_cache is not None and len(mach) == 1:
@@ -396,7 +394,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     CDC    = BFZ * SINALF +  (BFX *COPSI + BFY *SINPSI) * COSALF
     CDC    = CDC * CHORD_strip
 
-    ES     = 2*s[:,0,:][LE_ind].reshape(dim_1,dim_2)
+    ES     = 2*s[LE_ind].reshape(dim_1,dim_2)
     STRIP  = ES *CHORD_strip
     LIFT   = (BFZ *COSALF - (BFX *COPSI + BFY *SINPSI) *SINALF)*STRIP
     MOMENT = STRIP * (BMY *COPSI - BMX *SINPSI)
@@ -493,9 +491,9 @@ def compute_rotation_effects(VD, settings, EW_large, GAMMA, X, CHORD, XLE, XBAR,
     dim_2    = np.sum(LE_ind, axis=1)[0]
     dim_3    = len(LE_ind[0])
 
-    # Rotational (pitch/roll/yaw) effects on LE suction: pick each strip's LE value of EW,
+    # Rotational (pitch/roll/yaw) effects on LE suction: EW_large holds each strip's LE row of EW,
     # reshape GAMMA -> gamma to match.
-    EW    = EW_large[LE_ind, :].reshape(dim_1, dim_2, dim_3)
+    EW    = EW_large
     gamma = np.array(np.split(np.repeat(GAMMA, dim_2, axis=0), dim_1))
     CLE   = (EW*gamma).sum(axis=2)
 

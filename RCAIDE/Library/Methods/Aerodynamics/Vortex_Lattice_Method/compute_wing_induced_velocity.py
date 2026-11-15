@@ -26,7 +26,7 @@ CASE_INDEXED_VD_FIELDS = [
 # entries of one working array of the influence calculation: 8 MB in double precision
 ROW_BLOCK_ENTRIES = 1000000
 
-def compute_wing_induced_velocity(VD,mach,compute_EW=False):
+def compute_wing_induced_velocity(VD,mach,compute_EW=False,delta=None,phi=None):
     """ This computes the induced velocities at each control point of the vehicle vortex lattice
 
     Assumptions:
@@ -51,7 +51,7 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
 
     Outputs:
     C_mn     - total induced velocity matrix                  [Unitless]
-    s        - semispan of the horshoe vortex                 [m]
+    s        - semispan of the horshoe vortex of each panel   [m]
     t        - tangent of the horshoe vortex                  [-]
     CHORD    - chord length for a panel                       [m]
     RFLAG    - sonic vortex flag                               [boolean]
@@ -62,9 +62,8 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
     """
     n_mach     = len(mach)
     chunk_size = 1
-
     if n_mach <= chunk_size:
-        return compute_wing_induced_velocity_chunk(VD,mach,compute_EW)
+        return compute_wing_induced_velocity_chunk(VD,mach,compute_EW,delta,phi)
 
     C_mn_parts, s_parts, RFLAG_parts, EW_parts = [], [], [], []
     for i0 in range(0, n_mach, chunk_size):
@@ -72,8 +71,9 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
         VD_chunk = Data()
         for field in CASE_INDEXED_VD_FIELDS:
             VD_chunk[field] = VD[field][i0:i1]
-
-        C_mn_c, s_c, RFLAG_c, EW_c = compute_wing_induced_velocity_chunk(VD_chunk,mach[i0:i1],compute_EW)
+        delta_chunk = None if delta is None else delta[i0:i1]
+        phi_chunk   = None if phi   is None else phi[i0:i1]
+        C_mn_c, s_c, RFLAG_c, EW_c = compute_wing_induced_velocity_chunk(VD_chunk,mach[i0:i1],compute_EW,delta_chunk,phi_chunk)
         C_mn_parts.append(C_mn_c)
         s_parts.append(s_c)
         RFLAG_parts.append(RFLAG_c)
@@ -84,11 +84,9 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
     s     = np.concatenate(s_parts,    axis=0)
     RFLAG = np.concatenate(RFLAG_parts,axis=0)
     EW    = np.concatenate(EW_parts,   axis=0) if compute_EW else np.nan
-
     return C_mn, s, RFLAG, EW
 
-
-def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False):
+def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=None):
     """ Computes compute_wing_induced_velocity()'s result for one slice of the
     mach/case dimension. Body is the original, unchunked implementation --
     unchanged other than the name -- see compute_wing_induced_velocity() for why
@@ -183,17 +181,33 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False):
     sub = (B2<0)[:,0,0]
     sup = (B2>=0)[:,0,0]
 
-    n_panels = np.shape(XC)[1]
-    C_mn     = np.empty((n_mach,n_panels,n_panels,3),dtype=float)
-    EW       = np.empty((n_mach,n_panels,n_panels),dtype=float) if compute_EW == True else np.nan
+    # the receiving points are the control points of the lattice, or other points (a rotor disc)
+    n_points = np.shape(XC)[1]
+    n_panels = np.shape(XAH)[1]
     RFLAG    = np.ones((n_mach,n_panels),dtype=np.int8)
+
+    # With the camber angle delta and the dihedral angle phi of the control points, the result is the influence
+    # matrix of the flow tangency condition and the VORLAX velocity EW on the leading-edge rows only: one array of
+    # panels by panels. Without them it is the velocity itself, three such arrays, and EW on every row.
+    tangency = delta is not None
+    if tangency:
+        C_mn             = np.empty((n_mach,n_points,n_panels),dtype=float)
+        normal_x         = np.atleast_3d(np.sin(delta)*np.cos(phi))
+        normal_y         = np.atleast_3d(np.cos(delta)*np.sin(phi))
+        normal_z         = np.atleast_3d(np.cos(phi)*np.cos(delta))
+        leading_edge     = LE_ind[0]
+        EW               = np.empty((n_mach,int(np.sum(leading_edge)),n_panels),dtype=float) if compute_EW == True else np.nan
+        leading_edge_row = 0
+    else:
+        C_mn = np.empty((n_mach,n_points,n_panels,3),dtype=float)
+        EW   = np.empty((n_mach,n_points,n_panels),dtype=float) if compute_EW == True else np.nan
 
     # The receiving (control) points are taken a block of rows at a time, so the working arrays have a fixed size
     # and only the result grows with the square of the number of panels. A supersonic case looks across the whole
     # lattice and is computed in one block.
-    rows_per_block = n_panels if np.sum(sup)>0 else max(1, ROW_BLOCK_ENTRIES//n_panels)
-    for first_row in range(0, n_panels, rows_per_block):
-        rows = slice(first_row, min(first_row + rows_per_block, n_panels))
+    rows_per_block = n_points if np.sum(sup)>0 else max(1, ROW_BLOCK_ENTRIES//n_panels)
+    for first_row in range(0, n_points, rows_per_block):
+        rows = slice(first_row, min(first_row + rows_per_block, n_points))
 
         # This is the receiving point, or the control points
         xo = XC[:,rows,None]
@@ -249,18 +263,30 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False):
                                                         X1,Y1,X2,Y2,RTV1,RTV2,CUTOFF,CHORD,RNMAX,n_cp,TE_ind,LE_ind)
             U[sup], V[sup], W[sup], RFLAG[sup,:]  = U_sup[sup], V_sup[sup], W_sup[sup], RFLAG_sup[sup,:]
 
-        # Rotate into the vehicle frame and pack into a velocity matrix
-        C_mn[:,rows] = np.stack([U, V*costheta - W*sintheta, V*sintheta + W*costheta],axis=-1)
+        # Rotate into the vehicle frame
+        if tangency:
+            # velocity normal to the camber surface at each control point (validated from book eqn 7.42)
+            C_mn[:,rows] =   np.multiply(U                        ,normal_x[:,rows]) \
+                           + np.multiply(V*costheta - W*sintheta  ,normal_y[:,rows]) \
+                           - np.multiply(V*sintheta + W*costheta  ,normal_z[:,rows])
+        else:
+            C_mn[:,rows] = np.stack([U, V*costheta - W*sintheta, V*sintheta + W*costheta],axis=-1)
 
         if compute_EW == True:
             # Calculate the W velocity in the VORLAX frame for later calcs
             # The angles are Dihedral angle of the current panel - dihedral angle of the influencing panel
             COS1   = np.cos(DL[:,rows,None] - DL[:,None,:])
             SIN1   = np.sin(DL[:,rows,None] - DL[:,None,:])
-            EW[:,rows] = W*COS1-V*SIN1
+            if tangency:
+                block_leading_edge = leading_edge[rows]
+                number_in_block    = int(np.sum(block_leading_edge))
+                EW[:,leading_edge_row:leading_edge_row + number_in_block] = (W*COS1-V*SIN1)[:,block_leading_edge]
+                leading_edge_row  += number_in_block
+            else:
+                EW[:,rows] = W*COS1-V*SIN1
 
-    # semispan of every horseshoe vortex, repeated for every receiving point
-    s = np.repeat(np.abs(y1bar),n_panels,axis=1)
+    # semispan of the horseshoe vortex of each panel
+    s = np.abs(y1bar)[:,0,:]
 
     return C_mn, s, RFLAG, EW
 
