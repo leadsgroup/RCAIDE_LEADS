@@ -4,6 +4,11 @@
 # Created:  Jul 2023, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Library.Mission.Common.Pre_Process.configurations import apply_configuration
+
+# ----------------------------------------------------------------------------------------------------------------------
 #  emissions
 # ----------------------------------------------------------------------------------------------------------------------  
 def emissions(mission):
@@ -60,6 +65,7 @@ def emissions(mission):
         
     last_tag = None
     for tag,segment in mission.segments.items():
+        apply_configuration(segment.analyses.vehicle, segment.configuration)
         if segment.analyses.emissions != None:
             if last_tag and  'compute' in mission.segments[last_tag].analyses.emissions.process: 
                 segment.analyses.emissions.process.emissions = mission.segments[last_tag].analyses.emissions.process.emissions

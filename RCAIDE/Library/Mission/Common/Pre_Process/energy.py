@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Mission.Common.Pre_Process.configurations import apply_configuration
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  energy
@@ -74,6 +75,7 @@ def energy(mission):
 
     for seg_i ,segment in enumerate(mission.segments):
         verbose = segment.analyses.energy.verbose
+        apply_configuration(segment.analyses.vehicle, segment.configuration)
         for network in segment.analyses.vehicle.networks: 
 
             # ----------------------------------------------------------------

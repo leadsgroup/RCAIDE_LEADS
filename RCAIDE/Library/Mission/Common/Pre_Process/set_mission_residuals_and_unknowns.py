@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Mission.Common.Pre_Process.configurations import apply_configuration
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -33,6 +34,7 @@ def set_mission_residuals_and_unknowns(mission):
         Updates mission segment states directly.
     """
     for segment in mission.segments:
+        apply_configuration(segment.analyses.vehicle, segment.configuration)
         ones_row    = segment.state.ones_row
         ones_row_m1 = segment.state.ones_row_m1
         ctrls       = segment.assigned_control_variables

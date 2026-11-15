@@ -61,6 +61,8 @@ def compute_distributor_center_of_gravity(component,vehicle, length=0):
      
     for network in  vehicle.networks: 
         for propulsor in network.propulsors:
+            # the line runs to the engine's center of gravity, so it is placed before the line is routed
+            propulsor.compute_center_of_gravity(vehicle)
             c_list.append(propulsor.tag)
             c_symm.append(propulsor.xz_plane_symmetric) 
             c_loc  = np.array(propulsor.origin) + np.array(propulsor.mass_properties.center_of_gravity)

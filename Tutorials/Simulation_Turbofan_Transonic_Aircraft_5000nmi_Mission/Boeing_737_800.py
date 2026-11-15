@@ -779,15 +779,15 @@ def configs_setup(vehicle):
     config.wings['main_wing'].control_surfaces.slat.deflection                       = 30. * Units.deg 
     config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity      =  3470. * Units.rpm
     config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity           =  3470. * Units.rpm            
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.rotation              = 3470. # N1 speed
-    config.networks.fuel.propulsors['port_propulsor'].fan.rotation                   = 3470. # N1 speed
-    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.noise_speed    = 315.
-    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.noise_speed         = 315.
-    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.noise_speed   = 415.
-    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.noise_speed        = 415. 
+    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity              = 3470. * Units.rpm # N1 speed
+    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity                   = 3470. * Units.rpm # N1 speed
+    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity    = 315.
+    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity         = 315.
+    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity   = 415.
+    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity        = 415. 
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
-    config.V2_VS_ratio = 1.21
+    config.flight_envelope.V2_VS_ratio = 1.21
     configs.append(config) 
 
     # ------------------------------------------------------------------
@@ -799,12 +799,12 @@ def configs_setup(vehicle):
     config.wings['main_wing'].control_surfaces.slat.deflection                     = 20. * Units.deg
     config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    =  2780. * Units.rpm
     config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         =  2780. * Units.rpm        
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.rotation            = 2780.  
-    config.networks.fuel.propulsors['port_propulsor'].fan.rotation                 = 2780. 
-    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.noise_speed  = 210.
-    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.noise_speed       = 210.
-    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.noise_speed = 360.
-    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.noise_speed      = 360.
+    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity            = 2780. * Units.rpm  
+    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity                 = 2780. * Units.rpm 
+    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 210.
+    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 210.
+    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 360.
+    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 360.
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)    
@@ -819,12 +819,12 @@ def configs_setup(vehicle):
     config.wings['main_wing'].control_surfaces.slat.deflection                     = 25. * Units.deg
     config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity    = 2780. * Units.rpm
     config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity         = 2780. * Units.rpm     
-    config.networks.fuel.propulsors['starboard_propulsor'].fan.rotation            = 2780.  
-    config.networks.fuel.propulsors['port_propulsor'].fan.rotation                 = 2780. 
-    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.noise_speed = 92.
-    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.noise_speed      = 92.
-    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.noise_speed  = 109.3
-    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.noise_speed       = 109.3 
+    config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity            = 2780. * Units.rpm  
+    config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity                 = 2780. * Units.rpm 
+    config.networks.fuel.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 92.
+    config.networks.fuel.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 92.
+    config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 109.3
+    config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 109.3 
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True  
     configs.append(config)   

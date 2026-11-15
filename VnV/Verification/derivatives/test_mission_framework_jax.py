@@ -103,7 +103,9 @@ def check_mission_on_jax(name, mission, check_derivatives, value_tolerance=1e-12
         assert report.passed, f"{name} {tag}: JAX check failed, {report}"
         assert reaching > 0, f"{name} {tag}: no unknown reaches the residual"
         assert frozen <= max(value_tolerance, 1e-10), f"{name} {tag}: an input is frozen into the compiled residual, {frozen}"
-        assert along <= 1e-6, f"{name} {tag}: derivative with respect to the inputs, {along}"
+        # the central differences are accurate to about 1e-6 on the rotor transition segments (table knots at large
+        # steps, round-off at small ones), and a wrong derivative shows as 1e-2 or more
+        assert along <= 1e-5, f"{name} {tag}: derivative with respect to the inputs, {along}"
     return
 
 

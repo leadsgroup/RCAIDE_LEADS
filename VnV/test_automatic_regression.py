@@ -87,6 +87,7 @@ modules = [
     'Verification/solver_numerics/test_segment_layout_vehicles.py',
     'Verification/solver_numerics/test_solver_layout_io.py',
     'Verification/framework_core/test_data_copy_values.py',
+    'Verification/framework_core/test_configurations.py',
     'Verification/plots/plot_test.py', 
     'Verification/powertrain/rotor_performance_test.py',
     'Verification/powertrain/test_compute_power_available.py',

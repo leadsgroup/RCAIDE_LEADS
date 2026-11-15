@@ -690,7 +690,7 @@ def configs_setup(vehicle):
     config.tag = 'takeoff'
     config.wings['main_wing'].control_surfaces.flap.deflection   = 20. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection   = 25. * Units.deg  
-    config.V2_VS_ratio                                           = 1.21
+    config.flight_envelope.V2_VS_ratio                                           = 1.21
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)

@@ -7,6 +7,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 import  RCAIDE  
+from RCAIDE.Library.Mission.Common.Pre_Process.configurations import apply_configuration
 import os, sys
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -64,6 +65,7 @@ def aerodynamics(mission):
     """                    
     last_tag = None
     for tag,segment in mission.segments.items(): 
+        apply_configuration(segment.analyses.vehicle, segment.configuration)
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Climb or  \
            type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Hover or \
            type(segment) ==  RCAIDE.Framework.Mission.Segments.Vertical_Flight.Descent:

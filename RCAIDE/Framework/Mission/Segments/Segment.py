@@ -10,6 +10,7 @@
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Framework.Analyses                    import Analysis, Settings, Process   
 from RCAIDE.Framework.Mission.Common     import State 
+from RCAIDE.Library.Mission.Common.Pre_Process.configurations import apply_configuration, set_segment_configuration
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  ANALYSES
@@ -40,6 +41,7 @@ class Segment(Analysis):
         self.settings                      = Settings() 
         self.state                         = State() 
         self.analyses                      = Analysis.Container() 
+        self.configuration                 = None
         self.process                       = Process() 
         self.process.initialize            = Process()
           
@@ -162,6 +164,8 @@ class Segment(Analysis):
         """          
         if state is None:
             state = self.state
+        if self.configuration is not None:
+            apply_configuration(self.analyses.vehicle, self.configuration)
         self.process(self)
         return self
     
@@ -339,6 +343,7 @@ class Container(Segment):
             Properties Used:
             None
         """          
+        set_segment_configuration(segment)
         self.segments.append(segment)
         return    
         
