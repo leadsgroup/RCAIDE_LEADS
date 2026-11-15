@@ -10,6 +10,11 @@
 
 # package imports 
 import numpy as np
+from RCAIDE.Framework.Core import array_namespace
+
+# panel corners and points of the lattice that the derived quantities are computed from
+PANEL_FIELDS = ('XA1','YA1','ZA1','XA2','YA2','ZA2','XB1','YB1','ZB1','XB2','YB2','ZB2','XAH','YAH','ZAH','XBH','YBH','ZBH',
+                'XAC','YAC','ZAC','XBC','YBC','ZBC','XC','YC','ZC')
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  postprocess_vortex_distribution
@@ -35,142 +40,94 @@ def postprocess_vortex_distribution(VD, settings):
 
     Properties Used:
     N/A
-    """     
-    #unpack
+    """
+    xp         = array_namespace(*[VD[name] for name in PANEL_FIELDS])
     LE_ind     = VD.leading_edge_indices
     TE_ind     = VD.trailing_edge_indices
-    strip_n_cw = VD.panels_per_strip[LE_ind]
 
-    # Compute Panel Areas and Normals
-    VD.panel_areas = np.array(compute_panel_area(VD))
-    VD.normals     = np.array(compute_unit_normal(VD))  
-    
-    # Reshape chord_lengths
-    VD.chord_lengths = np.atleast_2d(VD.chord_lengths) #need to be 2D for later calculations
-    
-    # Compute panel-wise variables used in VORLAX
+    # the first and last panel of each chordwise strip, and the strip each panel belongs to
+    leading_edge   = np.flatnonzero(LE_ind)
+    trailing_edge  = np.flatnonzero(TE_ind)
+    strip_n_cw     = VD.panels_per_strip[LE_ind]
+    strip_of_panel = np.repeat(np.arange(len(leading_edge)), strip_n_cw)
+
+    VD.normals     = compute_unit_normal(VD)
+
+    # Compute Panel Slopes
     X1c   = (VD.XA1+VD.XB1)/2
     X2c   = (VD.XA2+VD.XB2)/2
     Z1c   = (VD.ZA1+VD.ZB1)/2
     Z2c   = (VD.ZA2+VD.ZB2)/2
     SLOPE = (Z2c - Z1c)/(X2c - X1c)
-    SLE   = SLOPE[LE_ind]    
-    D     = np.sqrt((VD.YAH-VD.YBH)**2+(VD.ZAH-VD.ZBH)**2)[LE_ind]
-    
-    # Leading edge sweeps 
-    panel_sweeps = np.arctan((VD.XA1-VD.XB1) /(VD.YA1-VD.YB1))
-    panel_sweeps[VD.YA1 > VD.YB1] = -panel_sweeps[VD.YA1 > VD.YB1]
-    # Sweeps, strip widths and strip chords feed transonic wave drag, which takes cosines and powers of them.
-    # They are stored in 64-bit so those results do not depend on how a library rounds 32-bit math.
-    VD.leading_edge_sweeps =  panel_sweeps[LE_ind].astype(np.float64) 
+    D     = xp.sqrt((VD.YAH-VD.YBH)**2+(VD.ZAH-VD.ZBH)**2)[leading_edge]
 
-    # Strip widths: projected spanwise extent of each strip (A inboard, B outboard; abs for the mirrored half)
-    Del_Y =  np.abs(VD.YB1-VD.YA1)
-    VD.chord_widths  = Del_Y[LE_ind].astype(np.float64)   # 64-bit, see above
-    
-    # Compute strip-wise values
-    LE_X           = X1c[LE_ind]
-    LE_Z           = Z1c[LE_ind]
-    TE_X           = X2c[TE_ind]
-    TE_Z           = Z2c[TE_ind]
-    tan_incidence  = np.repeat((LE_Z-TE_Z)/(LE_X-TE_X), strip_n_cw) # ZETA  in vorlax
-    strip_chords   = np.sqrt((TE_X-LE_X)**2 + (TE_Z-LE_Z)**2)
-    chord_adjusted = np.repeat(strip_chords, strip_n_cw) # CHORD in vorlax
-    
-    XC_TE_wings  = np.repeat(VD.XC [TE_ind], strip_n_cw)
-    YC_TE_wings  = np.repeat(VD.YC [TE_ind], strip_n_cw)
-    ZC_TE_wings  = np.repeat(VD.ZC [TE_ind], strip_n_cw)
-    XA_TE_wings  = np.repeat(VD.XA2[TE_ind], strip_n_cw)
-    YA_TE_wings  = np.repeat(VD.YA2[TE_ind], strip_n_cw)
-    ZA_TE_wings  = np.repeat(VD.ZA2[TE_ind], strip_n_cw)
-    XB_TE_wings  = np.repeat(VD.XB2[TE_ind], strip_n_cw)
-    YB_TE_wings  = np.repeat(VD.YB2[TE_ind], strip_n_cw)
-    ZB_TE_wings  = np.repeat(VD.ZB2[TE_ind], strip_n_cw)    
-    
-    # Compute wing-only values
-    Y_SW = VD.YC[TE_ind]
-    
-    # Pack VORLAX variables
+    # Compute Panel Sweeps
+    panel_sweeps = arctangent_of_ratio(VD.XA1-VD.XB1, VD.YA1-VD.YB1)
+    panel_sweeps = xp.where(VD.YA1 > VD.YB1, -panel_sweeps, panel_sweeps)
+    VD.leading_edge_sweeps =  panel_sweeps[leading_edge]
+
+    # Compute Panel Chord Widths
+    Del_Y =  xp.abs(VD.YB1-VD.YA1)
+    VD.chord_widths  = Del_Y[leading_edge]
+
+    # Chord of each strip and its incidence, repeated for every panel of the strip
+    LE_X           = X1c[leading_edge]
+    LE_Z           = Z1c[leading_edge]
+    TE_X           = X2c[trailing_edge]
+    TE_Z           = Z2c[trailing_edge]
+    tan_incidence  = ((LE_Z-TE_Z)/(LE_X-TE_X))[strip_of_panel] # ZETA  in vorlax
+    strip_chords   = xp.sqrt((TE_X-LE_X)**2 + (TE_Z-LE_Z)**2)
+    chord_adjusted = strip_chords[strip_of_panel] # CHORD in vorlax
+
+    # trailing edge of the strip of each panel
+    trailing_edge_of_panel = trailing_edge[strip_of_panel]
+
     VD.SLOPE                   = SLOPE
-    VD.SLE                     = SLE
-    VD.D                       = D         
+    VD.D                       = D
     VD.tangent_incidence_angle = tan_incidence
-    VD.chord_lengths           = np.atleast_2d(chord_adjusted)   # per panel
-    VD.strip_chord_lengths     = strip_chords.astype(np.float64)  # per spanwise strip, 64-bit
-    VD.Y_SW                    = Y_SW
-    
-    VD.XC_TE  = XC_TE_wings
-    VD.YC_TE  = YC_TE_wings
-    VD.ZC_TE  = ZC_TE_wings
-    VD.XA_TE  = XA_TE_wings
-    VD.YA_TE  = YA_TE_wings
-    VD.ZA_TE  = ZA_TE_wings
-    VD.XB_TE  = XB_TE_wings
-    VD.YB_TE  = YB_TE_wings
-    VD.ZB_TE  = ZB_TE_wings 
-    return VD 
+    VD.chord_lengths           = xp.atleast_2d(chord_adjusted)   # per panel
+    VD.strip_chord_lengths     = strip_chords                    # per spanwise strip
+    VD.Y_SW                    = VD.YC[trailing_edge]
+    VD.XA_TE  = VD.XA2[trailing_edge_of_panel]
+    VD.YA_TE  = VD.YA2[trailing_edge_of_panel]
+    VD.ZA_TE  = VD.ZA2[trailing_edge_of_panel]
+    VD.XB_TE  = VD.XB2[trailing_edge_of_panel]
+    VD.YB_TE  = VD.YB2[trailing_edge_of_panel]
+    VD.ZB_TE  = VD.ZB2[trailing_edge_of_panel]
 
-# ----------------------------------------------------------------------
-#  Panel Computations
-# ---------------------------------------------------------------------- 
-def compute_panel_area(VD):
-    """ This computes the area of the panels on the lifting surface of the vehicle 
+    return VD
 
-    Assumptions: 
-    None
 
-    Source:   
-    None
-    
-    Inputs:   
-    VD                   - vortex distribution    
-    
-    Properties Used:
-    N/A
-    """     
-    
-    # create vectors for panel corders
-    P1P2 = np.array([VD.XB1 - VD.XA1,VD.YB1 - VD.YA1,VD.ZB1 - VD.ZA1]).T
-    P1P3 = np.array([VD.XA2 - VD.XA1,VD.YA2 - VD.YA1,VD.ZA2 - VD.ZA1]).T
-    P2P3 = np.array([VD.XA2 - VD.XB1,VD.YA2 - VD.YB1,VD.ZA2 - VD.ZB1]).T
-    P2P4 = np.array([VD.XB2 - VD.XB1,VD.YB2 - VD.YB1,VD.ZB2 - VD.ZB1]).T   
-    
-    # compute area of quadrilateral panel
-    A_panel = 0.5*(np.linalg.norm(np.cross(P1P2,P1P3),axis=1) + np.linalg.norm(np.cross(P2P3, P2P4),axis=1))
-    
-    return A_panel
-
- 
 def compute_unit_normal(VD):
-    """ This computes the unit normal vector of each panel
+    """ Unit normal of each panel, pointing to the upper side of the surface.
 
+        Inputs:
+        VD                   vortex distribution with the panel corners and the control points A and B
 
-    Assumptions: 
-    None
+        Outputs:
+        unit_normal          (panels, 3)
+    """
+    xp   = array_namespace(VD.XA1, VD.XB1, VD.XA2, VD.YA1, VD.YB1, VD.YA2, VD.ZA1, VD.ZB1, VD.ZA2)
+    P1P2 = xp.array([VD.XB1 - VD.XA1,VD.YB1 - VD.YA1,VD.ZB1 - VD.ZA1]).T
+    P1P3 = xp.array([VD.XA2 - VD.XA1,VD.YA2 - VD.YA1,VD.ZA2 - VD.ZA1]).T
 
-    Source:
-    None
-    
-    Inputs:   
-    VD                   - vortex distribution    
-    
-    Properties Used:
-    N/A
-    """     
+    cross = xp.cross(P1P2,P1P3)
 
-     # create vectors for panel
-    P1P2 = np.array([VD.XB1 - VD.XA1,VD.YB1 - VD.YA1,VD.ZB1 - VD.ZA1]).T
-    P1P3 = np.array([VD.XA2 - VD.XA1,VD.YA2 - VD.YA1,VD.ZA2 - VD.ZA1]).T
+    unit_normal = (cross.T / xp.linalg.norm(cross,axis=1)).T
 
-    cross = np.cross(P1P2,P1P3) 
-
-    unit_normal = (cross.T / np.linalg.norm(cross,axis=1)).T
-
-    # same normal as the influence matrix and forces in VLM: (0, -sin(phi), cos(phi)), phi = arctan(dz/dy)
+    # normals point to the upper side of the surface: with the spanwise direction A to B taken outboard, the
+    # normal has a positive component along the spanwise vector rotated a quarter turn
     dy   = VD.YBC - VD.YAC
     dz   = VD.ZBC - VD.ZAC
-    side = np.where(dy < 0, -1.0, 1.0)
+    side = xp.where(dy < 0, -1.0, 1.0)
     flip = unit_normal[:,2]*side*dy - unit_normal[:,1]*side*dz < 0
-    unit_normal[flip,:] = -unit_normal[flip,:]
+    return xp.where(flip[:,None], -unit_normal, unit_normal)
 
-    return unit_normal
+
+def arctangent_of_ratio(numerator, denominator):
+    """ arctan(numerator/denominator), with a finite derivative on JAX where the denominator is zero (a vertical panel)."""
+    xp = array_namespace(numerator, denominator)
+    if xp is np:
+        return np.arctan(numerator/denominator)
+    sign = xp.where(denominator<0, -1., 1.)
+    return xp.arctan2(numerator*sign, denominator*sign)

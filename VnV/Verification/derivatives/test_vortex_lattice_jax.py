@@ -15,6 +15,8 @@ from RCAIDE.Library.Mission.Common.Pre_Process.geometry import geometry_preproce
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import VLM, generate_vortex_distribution, compute_wing_induced_velocity
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import LATTICE_FIELDS
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_aircraft_vortex_distribution, assemble_vortex_distribution
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.postprocess_vortex_distribution import postprocess_vortex_distribution, PANEL_FIELDS
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import control_surface_conditions
 
 # lattice coordinates the influence matrix is computed from
@@ -23,6 +25,13 @@ COORDINATES = ('XAH', 'YAH', 'ZAH', 'XBH', 'YBH', 'ZBH', 'XC', 'YC', 'ZC')
 # lattice fields the force and moment coefficients do not depend on: the aft corners of the panels, which only
 # place the trailing edge, and the wing areas, which only scale the lift coefficient of each wing
 NOT_IN_THE_COEFFICIENTS = ('XA2', 'XB2', 'YA2', 'YB2', 'ZA2', 'ZB2', 'wing_areas')
+
+# what the generator of the lattice produces: the panel corners, the bound vortex and control points, the points
+# where the loads act and the corner nodes; chords, slopes, normals and incidences are derived from them
+GENERATED_FIELDS = PANEL_FIELDS + ('XCH', 'YCH', 'ZCH', 'X', 'Y', 'Z')
+
+# generated fields the coefficients do not depend on (the longitudinal position of the nodes is only plotted)
+GENERATED_NOT_IN_THE_COEFFICIENTS = ('XAC', 'XBC', 'X')
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  main
@@ -44,6 +53,7 @@ def main():
         vehicle, settings, lattice = coarse_lattice(name)
         check_influence_matrix(name, lattice)
         check_solve(name, vehicle, settings, lattice)
+        check_derived_lattice(name, vehicle, settings)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -108,6 +118,36 @@ def check_solve(name, vehicle, settings, lattice):
           f"reverse {report.vjp_consistency_error:.1e}")
     assert report.passed, f"{name}: solve JAX check failed, {report}"
     assert len(missing) == 0, f"{name}: lattice fields that do not reach the coefficients: {missing}"
+    return
+
+def check_derived_lattice(name, vehicle, settings):
+    # the same coefficients, differentiated with respect to what the generator of the lattice produces, through the
+    # chords, slopes, normals and incidences derived from it
+    from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
+    generated = generate_aircraft_vortex_distribution(vehicle, settings)
+    free      = free_entries(assemble_vortex_distribution(generated, 1))
+
+    def coefficients(*arrays):
+        moved = Data()
+        for key in generated.keys():
+            moved[key] = generated[key]
+        for key, value in zip(GENERATED_FIELDS, arrays):
+            if key in free:
+                value = set_at(np.array(generated[key], dtype=float), free[key], value)
+            moved[key] = value
+        lattice = assemble_vortex_distribution(postprocess_vortex_distribution(moved, settings), 1)
+        results = VLM(flow_conditions(), settings, vehicle, VD=lattice)
+        return results.CLift, results.CDrag_induced, results.CM, results.CY, results.CL, results.CN
+
+    inputs  = tuple(np.array(generated[key], dtype=float)[free[key]] if key in free else np.array(generated[key], dtype=float)
+                    for key in GENERATED_FIELDS)
+    report  = check_derivatives(coefficients, inputs, steps=(1e-5, 1e-6, 1e-7), n_directions=2)
+    reached = {key: float(np.max(np.abs(sensitivity))) for key, sensitivity in zip(GENERATED_FIELDS, report.input_sensitivity)}
+    missing = sorted(key for key, value in reached.items() if value == 0 and key not in GENERATED_NOT_IN_THE_COEFFICIENTS)
+    print(f"  {name} derived lattice, {len(GENERATED_FIELDS)} generated fields: values {report.value_error:.1e}, derivatives {report.jvp_error:.1e}, "
+          f"reverse {report.vjp_consistency_error:.1e}")
+    assert report.passed, f"{name}: derived lattice JAX check failed, {report}"
+    assert len(missing) == 0, f"{name}: generated fields that do not reach the coefficients: {missing}"
     return
 
 # ----------------------------------------------------------------------------------------------------------------------

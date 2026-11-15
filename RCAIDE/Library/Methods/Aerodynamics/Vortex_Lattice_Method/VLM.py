@@ -12,6 +12,7 @@
 from RCAIDE.Framework.Core import Data, array_namespace
 from .compute_wing_induced_velocity      import compute_wing_induced_velocity
 from .generate_vortex_distribution       import generate_vortex_distribution
+from .postprocess_vortex_distribution     import arctangent_of_ratio
 from .compute_RHS_matrix                 import compute_RHS_matrix, rotation_in_VORLAX_axes
 
 from scipy.integrate import trapezoid
@@ -551,15 +552,6 @@ def strip_sum(arr, breaks, strip_of_panel):
     if xp is np:
         return np.add.reduceat(arr,breaks,axis=1)
     return xp.zeros((arr.shape[0],len(breaks)),dtype=arr.dtype).at[:,strip_of_panel].add(arr)
-
-
-def arctangent_of_ratio(numerator, denominator):
-    """ arctan(numerator/denominator), with a finite derivative on JAX where the denominator is zero (a vertical panel)."""
-    xp = array_namespace(numerator, denominator)
-    if xp is np:
-        return np.arctan(numerator/denominator)
-    sign = xp.where(denominator<0, -1., 1.)
-    return xp.arctan2(numerator*sign, denominator*sign)
 
 
 def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dist, chord_dist, SREF, b_ref, v_inf=1):
