@@ -30,8 +30,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     The user has the option to use the boundary conditions and induced velocities from either RCAIDE
     or VORLAX. See build_RHS in compute_RHS_matrix.py for more details.
 
-    By default in Vortex_Lattice, VLM performs calculations based on panel coordinates with float32 precision.
-    The user may also choose to use float16 or float64, but be warned that the latter can be memory intensive.
+    The calculations are in double precision.
 
     The user should note that fully capitalized variables correspond to a VORLAX variable of the same name
 
@@ -84,7 +83,6 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
 
     settings.use_surrogate                     [Unitless]
     settings.use_VORLAX_matrix_calculation     [boolean]
-    settings.floating_point_precision          [float16/32/64]
     induced_velocity_cache                     [dict], optional; reuses C_mn across calls with the same geometry and Mach
 
     conditions.aerodynamics.angles.alpha       [radians]
@@ -447,8 +445,8 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     results.spanwise_stations = Y
     results.CLift_wing        = CL_wing
     results.sectional_CLift   = Clift_y
-    results.CP                = np.array(CP    , dtype=settings.floating_point_precision )
-    results.gamma             = np.array(GAMMA , dtype=settings.floating_point_precision )
+    results.CP                = np.array(CP)
+    results.gamma             = np.array(GAMMA)
     results.V_distribution    = rhs.V_distribution
     results.V_x               = rhs.Vx_ind_total
     results.V_z               = rhs.Vz_ind_total

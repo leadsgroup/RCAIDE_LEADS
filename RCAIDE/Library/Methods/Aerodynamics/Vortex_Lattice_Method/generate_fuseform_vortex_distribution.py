@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  generate_fuseform_vortex_distribution
 # ----------------------------------------------------------------------
-def generate_fuseform_vortex_distribution(VD,fus,n_cw,n_sw,spc,precision):
+def generate_fuseform_vortex_distribution(VD,fus,n_cw,n_sw,spc):
     """ This generates the vortex distribution points on a fuselage or nacelle component
     Assumptions: 
     If nacelle has segments defined, the mean width and height of the nacelle is used
@@ -218,7 +218,7 @@ def generate_fuseform_vortex_distribution(VD,fus,n_cw,n_sw,spc,precision):
         fhs_z[-(n_cw+1):] = np.zeros(n_cw+1)                  
         fhs_cs = (fhs.chord[:-1]+fhs.chord[1:])/2 
         
-        VD.wing_areas.append(np.array(fus_h_area, dtype=precision)) 
+        VD.wing_areas.append(np.array(fus_h_area)) 
         VD.symmetric_wings  = np.append(VD.symmetric_wings,True)   
         VD.vertical_wing    =  np.append(VD.vertical_wing, int(0)) 
         
@@ -318,41 +318,41 @@ def generate_fuseform_vortex_distribution(VD,fus,n_cw,n_sw,spc,precision):
         # ---------------------------------------------------------------------------------------
         # STEP 7: Store wing in vehicle vector
         # ---------------------------------------------------------------------------------------
-        VD.XAH.append(np.ravel(np.array(fhs_xah  , dtype=precision)))
-        VD.YAH.append(np.ravel(np.array(fhs_yah  , dtype=precision)))
-        VD.ZAH.append(np.ravel(np.array(fhs_zah  , dtype=precision)))
-        VD.XBH.append(np.ravel(np.array(fhs_xbh  , dtype=precision)))
-        VD.YBH.append(np.ravel(np.array(fhs_ybh  , dtype=precision)))
-        VD.ZBH.append(np.ravel(np.array(fhs_zbh  , dtype=precision)))
-        VD.XCH.append(np.ravel(np.array(fhs_xch  , dtype=precision)))
-        VD.YCH.append(np.ravel(np.array(fhs_ych  , dtype=precision)))
-        VD.ZCH.append(np.ravel(np.array(fhs_zch  , dtype=precision)))
-        VD.XA1.append(np.ravel(np.array(fhs_xa1  , dtype=precision)))
-        VD.YA1.append(np.ravel(np.array(fhs_ya1  , dtype=precision)))
-        VD.ZA1.append(np.ravel(np.array(fhs_za1  , dtype=precision)))
-        VD.XA2.append(np.ravel(np.array(fhs_xa2  , dtype=precision)))
-        VD.YA2.append(np.ravel(np.array(fhs_ya2  , dtype=precision)))
-        VD.ZA2.append(np.ravel(np.array(fhs_za2  , dtype=precision)))
-        VD.XB1.append(np.ravel(np.array(fhs_xb1  , dtype=precision)))
-        VD.YB1.append(np.ravel(np.array(fhs_yb1  , dtype=precision)))
-        VD.ZB1.append(np.ravel(np.array(fhs_zb1  , dtype=precision)))
-        VD.XB2.append(np.ravel(np.array(fhs_xb2  , dtype=precision)))
-        VD.YB2.append(np.ravel(np.array(fhs_yb2  , dtype=precision)))
-        VD.ZB2.append(np.ravel(np.array(fhs_zb2  , dtype=precision)))
-        VD.XAC.append(np.ravel(np.array(fhs_xac  , dtype=precision)))
-        VD.YAC.append(np.ravel(np.array(fhs_yac  , dtype=precision)))
-        VD.ZAC.append(np.ravel(np.array(fhs_zac  , dtype=precision)))
-        VD.XBC.append(np.ravel(np.array(fhs_xbc  , dtype=precision)))
-        VD.YBC.append(np.ravel(np.array(fhs_ybc  , dtype=precision)))
-        VD.ZBC.append(np.ravel(np.array(fhs_zbc  , dtype=precision)))
-        VD.XC.append(np.ravel(np.array(fhs_xc   , dtype=precision)))
-        VD.YC.append(np.ravel(np.array(fhs_yc   , dtype=precision)))
-        VD.ZC.append(np.ravel(np.array(fhs_zc   , dtype=precision)))
-        VD.X.append(np.ravel(np.array(fhs_x    , dtype=precision)))
-        VD.Y.append(np.ravel(np.array(fhs_y    , dtype=precision)))
-        VD.Z.append(np.ravel(np.array(fhs_z    , dtype=precision)))
-        VD.CS.append(np.ravel(np.array(fhs_cs , dtype=precision)))
-        VD.DY.append(np.ravel(np.array(fhs_del_y, dtype=precision)))
+        VD.XAH.append(np.ravel(np.array(fhs_xah)))
+        VD.YAH.append(np.ravel(np.array(fhs_yah)))
+        VD.ZAH.append(np.ravel(np.array(fhs_zah)))
+        VD.XBH.append(np.ravel(np.array(fhs_xbh)))
+        VD.YBH.append(np.ravel(np.array(fhs_ybh)))
+        VD.ZBH.append(np.ravel(np.array(fhs_zbh)))
+        VD.XCH.append(np.ravel(np.array(fhs_xch)))
+        VD.YCH.append(np.ravel(np.array(fhs_ych)))
+        VD.ZCH.append(np.ravel(np.array(fhs_zch)))
+        VD.XA1.append(np.ravel(np.array(fhs_xa1)))
+        VD.YA1.append(np.ravel(np.array(fhs_ya1)))
+        VD.ZA1.append(np.ravel(np.array(fhs_za1)))
+        VD.XA2.append(np.ravel(np.array(fhs_xa2)))
+        VD.YA2.append(np.ravel(np.array(fhs_ya2)))
+        VD.ZA2.append(np.ravel(np.array(fhs_za2)))
+        VD.XB1.append(np.ravel(np.array(fhs_xb1)))
+        VD.YB1.append(np.ravel(np.array(fhs_yb1)))
+        VD.ZB1.append(np.ravel(np.array(fhs_zb1)))
+        VD.XB2.append(np.ravel(np.array(fhs_xb2)))
+        VD.YB2.append(np.ravel(np.array(fhs_yb2)))
+        VD.ZB2.append(np.ravel(np.array(fhs_zb2)))
+        VD.XAC.append(np.ravel(np.array(fhs_xac)))
+        VD.YAC.append(np.ravel(np.array(fhs_yac)))
+        VD.ZAC.append(np.ravel(np.array(fhs_zac)))
+        VD.XBC.append(np.ravel(np.array(fhs_xbc)))
+        VD.YBC.append(np.ravel(np.array(fhs_ybc)))
+        VD.ZBC.append(np.ravel(np.array(fhs_zbc)))
+        VD.XC.append(np.ravel(np.array(fhs_xc)))
+        VD.YC.append(np.ravel(np.array(fhs_yc)))
+        VD.ZC.append(np.ravel(np.array(fhs_zc)))
+        VD.X.append(np.ravel(np.array(fhs_x)))
+        VD.Y.append(np.ravel(np.array(fhs_y)))
+        VD.Z.append(np.ravel(np.array(fhs_z)))
+        VD.CS.append(np.ravel(np.array(fhs_cs)))
+        VD.DY.append(np.ravel(np.array(fhs_del_y)))
         
         side_idx += 1 
      

@@ -77,7 +77,6 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.settings.leading_edge_suction_multiplier               = 1.0  
         self.settings.horizontal_tail_dynamic_pressure_ratio        = 1.0  # q_h/q at the horizontal tail (Raymer Eq. 16.6)
         self.settings.use_VORLAX_matrix_calculation                 = False
-        self.settings.floating_point_precision                      = np.float32     
     
         # conditions table, used for surrogate model training
         self.training                                               = Data() 

@@ -99,32 +99,32 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False):
     TE_ind       = VD.trailing_edge_indices
     n_cp         = VD.n_cp
     n_mach       = len(mach)
-    mach         = np.array(mach,dtype=np.float32)
+    mach         = np.array(mach,dtype=float)
 
     # Control points from the VLM
-    XAH   = np.atleast_2d(VD.XAH).astype(np.float32,copy=True)
-    YAH   = np.atleast_2d(VD.YAH).astype(np.float32,copy=True)
-    ZAH   = np.atleast_2d(VD.ZAH).astype(np.float32,copy=True)
-    XBH   = np.atleast_2d(VD.XBH).astype(np.float32,copy=True)
-    YBH   = np.atleast_2d(VD.YBH).astype(np.float32,copy=True)
-    ZBH   = np.atleast_2d(VD.ZBH).astype(np.float32,copy=True)
-    XA1   = np.atleast_2d(VD.XA1).astype(np.float32,copy=True)
-    YA1   = np.atleast_2d(VD.YA1).astype(np.float32,copy=True)
-    ZA1   = np.atleast_2d(VD.ZA1).astype(np.float32,copy=True)
-    XB1   = np.atleast_2d(VD.XB1).astype(np.float32,copy=True)
-    YB1   = np.atleast_2d(VD.YB1).astype(np.float32,copy=True)
-    ZB1   = np.atleast_2d(VD.ZB1).astype(np.float32,copy=True)
-    XA2   = np.atleast_2d(VD.XA2).astype(np.float32,copy=True)
-    YA2   = np.atleast_2d(VD.YA2).astype(np.float32,copy=True)
-    ZA2   = np.atleast_2d(VD.ZA2).astype(np.float32,copy=True)
-    XB2   = np.atleast_2d(VD.XB2).astype(np.float32,copy=True)
-    YB2   = np.atleast_2d(VD.YB2).astype(np.float32,copy=True)
-    ZB2   = np.atleast_2d(VD.ZB2).astype(np.float32,copy=True)
-    XC    = np.atleast_2d(VD.XC).astype(np.float32,copy=True)
-    YC    = np.atleast_2d(VD.YC).astype(np.float32,copy=True)
-    ZC    = np.atleast_2d(VD.ZC).astype(np.float32,copy=True)
-    XA_TE = np.atleast_2d(VD.XA_TE).astype(np.float32,copy=True)
-    XB_TE = np.atleast_2d(VD.XB_TE).astype(np.float32,copy=True)
+    XAH   = np.atleast_2d(VD.XAH).astype(float,copy=True)
+    YAH   = np.atleast_2d(VD.YAH).astype(float,copy=True)
+    ZAH   = np.atleast_2d(VD.ZAH).astype(float,copy=True)
+    XBH   = np.atleast_2d(VD.XBH).astype(float,copy=True)
+    YBH   = np.atleast_2d(VD.YBH).astype(float,copy=True)
+    ZBH   = np.atleast_2d(VD.ZBH).astype(float,copy=True)
+    XA1   = np.atleast_2d(VD.XA1).astype(float,copy=True)
+    YA1   = np.atleast_2d(VD.YA1).astype(float,copy=True)
+    ZA1   = np.atleast_2d(VD.ZA1).astype(float,copy=True)
+    XB1   = np.atleast_2d(VD.XB1).astype(float,copy=True)
+    YB1   = np.atleast_2d(VD.YB1).astype(float,copy=True)
+    ZB1   = np.atleast_2d(VD.ZB1).astype(float,copy=True)
+    XA2   = np.atleast_2d(VD.XA2).astype(float,copy=True)
+    YA2   = np.atleast_2d(VD.YA2).astype(float,copy=True)
+    ZA2   = np.atleast_2d(VD.ZA2).astype(float,copy=True)
+    XB2   = np.atleast_2d(VD.XB2).astype(float,copy=True)
+    YB2   = np.atleast_2d(VD.YB2).astype(float,copy=True)
+    ZB2   = np.atleast_2d(VD.ZB2).astype(float,copy=True)
+    XC    = np.atleast_2d(VD.XC).astype(float,copy=True)
+    YC    = np.atleast_2d(VD.YC).astype(float,copy=True)
+    ZC    = np.atleast_2d(VD.ZC).astype(float,copy=True)
+    XA_TE = np.atleast_2d(VD.XA_TE).astype(float,copy=True)
+    XB_TE = np.atleast_2d(VD.XB_TE).astype(float,copy=True)
 
 
     # Panel Dihedral Angle, using AH and BH location
@@ -218,9 +218,9 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False):
     RO2      = B2*RTV2
 
     # ZERO-OUT PERTURBATION VELOCITY COMPONENTS
-    U = np.zeros((n_mach,shape[1],shape[2] ),dtype=np.float32)
-    V = np.zeros((n_mach,shape[1],shape[2] ),dtype=np.float32)
-    W = np.zeros((n_mach,shape[1],shape[2] ),dtype=np.float32)
+    U = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
+    V = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
+    W = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
 
     if np.sum(sub)>0:
         # COMPUTATION FOR SUBSONIC HORSESHOE VORTEX
@@ -495,7 +495,7 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
 
     # WWAVE: a panel's self-induced wave-drag term, only ever nonzero on the diagonal, so
     # computed directly there instead of building full (n_mach, n_panels, n_panels) arrays.
-    WWAVE     = np.zeros(shape,dtype=np.float32)
+    WWAVE     = np.zeros(shape,dtype=float)
     COX       = CHORD /RNMAX[:, :, None]
     diag_idx  = np.arange(size)
     T2_diag   = T2[:, diag_idx, diag_idx]

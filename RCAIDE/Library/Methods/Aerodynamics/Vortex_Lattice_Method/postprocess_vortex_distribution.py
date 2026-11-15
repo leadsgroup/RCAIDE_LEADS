@@ -37,14 +37,13 @@ def postprocess_vortex_distribution(VD, settings):
     N/A
     """     
     #unpack
-    precision  = settings.floating_point_precision   
     LE_ind     = VD.leading_edge_indices
     TE_ind     = VD.trailing_edge_indices
     strip_n_cw = VD.panels_per_strip[LE_ind]
 
     # Compute Panel Areas and Normals
-    VD.panel_areas = np.array(compute_panel_area(VD) , dtype=precision)
-    VD.normals     = np.array(compute_unit_normal(VD), dtype=precision)  
+    VD.panel_areas = np.array(compute_panel_area(VD))
+    VD.normals     = np.array(compute_unit_normal(VD))  
     
     # Reshape chord_lengths
     VD.chord_lengths = np.atleast_2d(VD.chord_lengths) #need to be 2D for later calculations
