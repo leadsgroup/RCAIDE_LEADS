@@ -19,7 +19,7 @@ CASE_INDEXED_VD_FIELDS = [
     "XA1","YA1","ZA1","XB1","YB1","ZB1",
     "XA2","YA2","ZA2","XB2","YB2","ZB2",
     "XC","YC","ZC","XA_TE","XB_TE",
-    "leading_edge_indices","trailing_edge_indices","n_cp",
+    "leading_edge_indices","trailing_edge_indices",
     "panels_per_strip","chord_lengths",
 ]
 
@@ -98,7 +98,6 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     # unpack
     LE_ind       = VD.leading_edge_indices
     TE_ind       = VD.trailing_edge_indices
-    n_cp         = VD.n_cp
     n_mach       = len(mach)
     mach         = np.array(mach,dtype=float)
 
@@ -202,10 +201,14 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
         C_mn = np.empty((n_mach,n_points,n_panels,3),dtype=float)
         EW   = np.empty((n_mach,n_points,n_panels),dtype=float) if compute_EW == True else np.nan
 
+    # Supersonic cases: which horseshoe vortices are sonic, and the wave term of each panel on itself
+    if np.sum(sup)>0:
+        RFLAG_sup, wave_diagonal, sonic = sonic_vortex_corrections((x1bar/y1bar)[:,0,:],B2,VD.chord_lengths,VD.panels_per_strip,TE_ind,LE_ind)
+        RFLAG[sup,:] = RFLAG_sup[sup,:]
+
     # The receiving (control) points are taken a block of rows at a time, so the working arrays have a fixed size
-    # and only the result grows with the square of the number of panels. A supersonic case looks across the whole
-    # lattice and is computed in one block.
-    rows_per_block = n_points if np.sum(sup)>0 else max(1, ROW_BLOCK_ENTRIES//n_panels)
+    # and only the result grows with the square of the number of panels.
+    rows_per_block = max(1, ROW_BLOCK_ENTRIES//n_panels)
     for first_row in range(0, n_points, rows_per_block):
         rows = slice(first_row, min(first_row + rows_per_block, n_points))
 
@@ -257,11 +260,9 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
 
         # COMPUTATION FOR SUPERSONIC HORSESHOE VORTEX. some values computed in a preprocessing section in VLM
         if np.sum(sup)>0:
-            RNMAX       = VD.panels_per_strip
-            CHORD       = np.repeat(VD.chord_lengths[:, np.newaxis, :],shape[1],axis=1)
-            U_sup, V_sup, W_sup, RFLAG_sup  = supersonic(zobar,XSQ1,RO1,XSQ2,RO2,XTY,t,B2,ZSQ,TOLSQ,TOL,TOLSQ2,\
-                                                        X1,Y1,X2,Y2,RTV1,RTV2,CUTOFF,CHORD,RNMAX,n_cp,TE_ind,LE_ind)
-            U[sup], V[sup], W[sup], RFLAG[sup,:]  = U_sup[sup], V_sup[sup], W_sup[sup], RFLAG_sup[sup,:]
+            U_sup, V_sup, W_sup = supersonic(zobar,XSQ1,RO1,XSQ2,RO2,XTY,t,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV1,RTV2,CUTOFF)
+            W_sup               = apply_sonic_vortex_corrections(W_sup,rows,n_panels,wave_diagonal,sonic)
+            U[sup], V[sup], W[sup] = U_sup[sup], V_sup[sup], W_sup[sup]
 
         # Rotate into the vehicle frame
         if tangency:
@@ -360,7 +361,7 @@ def subsonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,X1,Y1,X2,Y2,RTV1,RTV2):
 
     return U, V, W
 
-def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV1,RTV2,CUTOFF,CHORD,RNMAX,n_cp,TE_ind, LE_ind):
+def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV1,RTV2,CUTOFF):
     """  This computes the induced velocities at each control point
     of the vehicle vortex lattice for supersonic mach numbers
 
@@ -391,19 +392,13 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
     RTV1         coefficient                                  [-]
     RTV2         coefficient                                  [-]
     CUTOFF       coefficient                                  [-]
-    CHORD        chord length for a panel                     [m]
-    RNMAX        number of chordwise panels                   [-]
-    n_cp         number of control points                     [-]
-    TE_ind       indices of the trailing edge                 [-]
-    LE_ind       indices of the leading edge                  [-]
 
 
 
     Outputs:
     U       X velocity        [unitless]
     V       Y velocity        [unitless]
-    W       Z velocity        [unitless]
-    RFLAG   sonic vortex flag [boolean]
+    W       Z velocity        [unitless], without the wave term and the sonic vortex rows (apply_sonic_vortex_corrections)
 
     Properties Used:
     N/A
@@ -494,12 +489,35 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
     V[in_plane] = 0.
     W[in_plane] = W_in
 
+    return U, V, W
+
+
+def sonic_vortex_corrections(T,B2,chord_lengths,RNMAX,TE_ind,LE_ind):
+    """ The parts of the supersonic horseshoe vortex that depend on a panel and its chordwise neighbors, not on
+    the receiving point.
+
+    Source:
+    1. Miranda, Luis R., Robert D. Elliot, and William M. Baker. "A generalized vortex
+    lattice method for subsonic and supersonic flow applications." (1977). (NASA CR)
+    2. VORLAX Source Code
+
+    Inputs:
+    T               tangent of the horseshoe vortex of each panel   [-]
+    B2              mach^2-1                                        [-]
+    chord_lengths   chord of the strip of each panel                [m]
+    RNMAX           panels per strip                                [-]
+    TE_ind, LE_ind  trailing and leading edge panels                [boolean]
+
+    Outputs:
+    RFLAG           0 for a sonic vortex, 1 otherwise               [-]
+    wave_diagonal   wave term of each panel on itself               [-]
+    sonic           True for a sonic vortex                         [boolean]
+    """
     # DETERMINE IF TRANSVERSE VORTEX LEG OF HORSESHOE ASSOCIATED TO THE
     # CONTROL POINT UNDER CONSIDERATION IS SONIC (SWEPT PARALLEL TO MACH
     # LINE)? IF SO THEN RFLAG = 0.0, OTHERWISE RFLAG = 1.0.
-    size   = shape[1]
-    n_mach = shape[0]
-    T2S    = T2[:,0,:]
+    n_mach, size = np.shape(T)
+    T2S    = T*T
     T2F    = np.zeros((n_mach,size))
     T2A    = np.zeros((n_mach,size))
 
@@ -518,56 +536,55 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
     T2A[LE_ind] = 0.
 
     TRANS = (B2[:,:,0]-T2F)*(B2[:,:,0]-T2A)
-
+    sonic = TRANS<0
     RFLAG = np.ones((n_mach,size),dtype=np.int8)
-    RFLAG[TRANS<0] = 0.
+    RFLAG[sonic] = 0.
 
-    FLAG_bool          = np.zeros_like(TRANS,dtype=bool)
-    FLAG_bool[TRANS<0] = True
-    FLAG_bool          = np.reshape(FLAG_bool,(n_mach,size,-1))
+    # WWAVE: a panel's self-induced wave-drag term, only ever nonzero on the diagonal
+    COX           = chord_lengths/RNMAX
+    B2_panel      = np.broadcast_to(B2[:,0,0][:,None], T2S.shape)
+    supersonic_LE = B2_panel > T2S
+    wave_diagonal = np.zeros_like(T2S)
+    wave_diagonal[supersonic_LE] = - 0.5 *np.sqrt(B2_panel[supersonic_LE] - T2S[supersonic_LE])/COX[supersonic_LE]
+    return RFLAG, wave_diagonal, sonic
 
 
-    # WWAVE: a panel's self-induced wave-drag term, only ever nonzero on the diagonal, so
-    # computed directly there instead of building full (n_mach, n_panels, n_panels) arrays.
-    WWAVE     = np.zeros(shape,dtype=float)
-    COX       = CHORD /RNMAX[:, :, None]
-    diag_idx  = np.arange(size)
-    T2_diag   = T2[:, diag_idx, diag_idx]
-    COX_diag  = COX[:, diag_idx, diag_idx]
-    B2_diag   = np.broadcast_to(B2[:,0,0][:,None], T2_diag.shape)
+def apply_sonic_vortex_corrections(W,rows,size,wave_diagonal,sonic):
+    """ Adds the wave term to the diagonal of a block of rows of W and sets the rows of sonic vortices.
 
-    diag_cond             = B2_diag > T2_diag
-    wwave_diag            = np.zeros_like(T2_diag)
-    wwave_diag[diag_cond] = - 0.5 *np.sqrt(B2_diag[diag_cond] - T2_diag[diag_cond])/COX_diag[diag_cond]
-    WWAVE[:, diag_idx, diag_idx] = wwave_diag
+    Inputs:
+    W               normal velocity of a block of receiving points  [-]
+    rows            slice of the receiving points in the block
+    size            number of panels                                [-]
+    wave_diagonal   wave term of each panel on itself               [-]
+    sonic           True for a sonic vortex                         [boolean]
 
-    W = W + WWAVE
+    Outputs:
+    W               corrected, same block                           [-]
+    """
+    n_mach     = np.shape(W)[0]
+    first      = rows.start
+    block      = np.arange(rows.start,rows.stop)
+    W[:,block - first,block] = W[:,block - first,block] + wave_diagonal[:,block]
 
     # A sonic horseshoe vortex's strength is set to the average of its neighbors (the
     # panels immediately before/after it): zero the row, then set self=2 and neighbors=-1.
-    FLAG_bool_rep     = np.broadcast_to(FLAG_bool,shape)
-    W[FLAG_bool_rep]  = 0.
+    cases, panels = np.where(sonic[:,rows])
+    W[cases,panels,:] = 0.
 
-    # FLAG_ind[0]/[1] are the (mach, panel) indices of every sonic-flagged panel; panel p's
-    # own diagonal entry is at flat index m*size*size + p*(size+1) into W.ravel() -- the
-    # direct-index equivalent of scattering into a dense (size, size, n_mach) array and
-    # reading back where it's nonzero, avoiding an O(n_panels^2) array for a handful of lookups.
-    FLAG_bool_split   = FLAG_bool[:,:,0]
-    FLAG_ind          = np.array(np.where(FLAG_bool_split))
-    FLAG_bool_self    = FLAG_ind[0]*size*size + FLAG_ind[1]*(size+1)
-
-    W                 = W.ravel()
-    W[FLAG_bool_self] = 2. # It's own value, -2
-
-    # The panels before and after go to -1
-    FLAG_bool_bef = FLAG_bool_self - 1
-    FLAG_bool_aft = FLAG_bool_self + 1
-    W[FLAG_bool_bef] = -1.
-    W[FLAG_bool_aft] = -1.
-
-    W = np.reshape(W,shape)
-
-    return U, V, W, RFLAG
+    # positions of a sonic panel's own entry in the whole matrix flattened; the entries before and after it are its
+    # neighbors, as in the full-matrix form of this step
+    cases, panels = np.where(sonic)
+    own           = cases*size*size + panels*(size+1)
+    for flat, value in ((own, 2.), (own - 1, -1.), (own + 1, -1.)):
+        flat = np.where(flat<0, flat + n_mach*size*size, flat)
+        if np.any(flat >= n_mach*size*size):
+            raise IndexError("the last panel of the lattice is a sonic vortex and has no panel after it")
+        case, entry = np.divmod(flat, size*size)
+        row, column = np.divmod(entry, size)
+        inside      = (row >= rows.start) & (row < rows.stop)
+        W[case[inside],row[inside] - first,column[inside]] = value
+    return W
 
 
 def supersonic_in_plane(RAD1,RAD2,Y1,Y2,TOL,XTY,CPI):
