@@ -126,30 +126,24 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,layout=None):
             airfoil_x_pts_dim = station.airfoil_x*local_chord
             airfoil_z_pts_dim = station.airfoil_z*local_chord
 
-            # deflection of the control surfaces at the station
-            LE_angle = 0.0
-            TE_angle = 0.0
-            if station.leading_edge_surface is not None:
-                LE_angle = station.leading_edge_surface.deflection
-            if station.trailing_edge_surface is not None:
-                cs = station.trailing_edge_surface
+            # each control surface deflects the station by the part of the station's span that it covers
+            deflections = []
+            for moved in station.control_surfaces:
+                cs       = moved.surface
+                coverage = span_coverage(cs.span_fraction_start, cs.span_fraction_end, station.span_fraction_start, station.span_fraction_end)
                 if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
-                    TE_angle = cs.deflection * sym_sign
+                    angle = cs.deflection * sym_sign
                 elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:
-                    TE_angle = cs.deflection * xz_sym_sign
+                    angle = cs.deflection * xz_sym_sign
                 elif type(cs) in (RCAIDE.Library.Components.Wings.Control_Surfaces.Flaperon,
                                    RCAIDE.Library.Components.Wings.Control_Surfaces.Elevon,
                                    RCAIDE.Library.Components.Wings.Control_Surfaces.Ruddervator):
                     # symmetric command plus the differential command, which flips on the mirrored side
-                    TE_angle = cs.deflection + cs.secondary_deflection * sym_sign
+                    angle = cs.deflection + cs.secondary_deflection * sym_sign
                 else:
-                    TE_angle = cs.deflection
-
-            # the hinge of each surface is at its present chord fraction; the points it moves are those of the layout
-            LE_chord_fraction = 0. if station.leading_edge_surface  is None else station.leading_edge_surface.chord_fraction
-            TE_chord_fraction = 0. if station.trailing_edge_surface is None else station.trailing_edge_surface.chord_fraction
-            airfoil_x_pts_1, airfoil_z_pts_1 = apply_control_surface_deflections(airfoil_x_pts_dim, airfoil_z_pts_dim,LE_angle, LE_chord_fraction,
-                                                                                 TE_angle, TE_chord_fraction, station.ahead_of_leading_hinge, station.behind_trailing_hinge)
+                    angle = cs.deflection
+                deflections.append((angle*coverage, cs.chord_fraction, moved.leading_edge, moved.fixed_points))
+            airfoil_x_pts_1, airfoil_z_pts_1 = apply_control_surface_deflections(airfoil_x_pts_dim, airfoil_z_pts_dim, deflections)
 
             diff_x = xp.diff(airfoil_x_pts_1)
             diff_z = xp.diff(airfoil_z_pts_1)
@@ -357,8 +351,16 @@ def wing_lattice_inputs(wing):
         inputs += [segment.root_chord_percent, segment.twist, segment.dihedral_outboard, segment.sweeps.leading_edge,
                    segment.origin[0][0], segment.origin[0][1], segment.origin[0][2]]
     for control_surface in wing.control_surfaces:
-        inputs += [control_surface.deflection, control_surface.get('secondary_deflection', 0.), control_surface.chord_fraction]
+        inputs += [control_surface.deflection, control_surface.get('secondary_deflection', 0.), control_surface.chord_fraction,
+                   control_surface.span_fraction_start, control_surface.span_fraction_end]
     return inputs
+
+
+def span_coverage(surface_start, surface_end, station_start, station_end):
+    """The fraction of a station's span, between two span fractions, that a control surface covers."""
+    xp      = array_namespace(surface_start, surface_end)
+    covered = xp.minimum(surface_end, station_end) - xp.maximum(surface_start, station_start)
+    return xp.clip(covered/(station_end - station_start), 0., 1.)
 
 
 def wing_lattice_layout(wing,n_cw,n_sw,spc):
@@ -374,10 +376,11 @@ def wing_lattice_layout(wing,n_cw,n_sw,spc):
     layout.stations   one entry per spanwise station:
        segment                        index of the wing segment inboard of the station
        airfoil_x, airfoil_z           camber line of the airfoil at the station, per unit chord
-       leading_edge_surface           slat at the station, or None
-       trailing_edge_surface          flap, aileron, elevator, rudder or mixed surface at the station, or None
-       ahead_of_leading_hinge         True for the airfoil points aft of the slat hinge (they do not move)
-       behind_trailing_hinge          True for the airfoil points ahead of the trailing-edge hinge (they do not move)
+       span_fraction_start, _end      the span that the station stands for: halfway to the station on either side
+       control_surfaces               one entry per control surface of the wing that moves panels:
+          surface                        the control surface
+          leading_edge                   True for a slat, which hinges at its chord fraction from the leading edge
+          fixed_points                   True for the airfoil points that the surface does not move
        starts_strip                   False for the station at the outboard end of a segment's last panel
     """
     span = wing.spans.projected
@@ -390,6 +393,11 @@ def wing_lattice_layout(wing,n_cw,n_sw,spc):
         y_coordinates   = span*np.cos(thetan)
     else:
         y_coordinates   = np.linspace(0,span,n_sw+1)
+
+    # the span each station stands for, as fractions of the span
+    eta        = y_coordinates/span
+    eta_starts = np.concatenate([eta[:1], (eta[:-1] + eta[1:])/2])
+    eta_ends   = np.concatenate([(eta[:-1] + eta[1:])/2, eta[-1:]])
 
     wing_seg_tags = list(wing.segments.keys())
     airfoils      = {}
@@ -434,42 +442,37 @@ def wing_lattice_layout(wing,n_cw,n_sw,spc):
             airfoils[seg_idx] = interpolated_airfoil_points(inboard_segment, outboard_segment, n_cw+1)
         airfoil_x, airfoil_z = airfoil_points_at(airfoils[seg_idx], local_percent_y_val, n_cw+1)
 
-        # control surfaces at the station
-        station                              = Data()
-        station.segment                      = seg_idx
-        station.airfoil_x                    = airfoil_x
-        station.airfoil_z                    = airfoil_z
-        station.leading_edge_surface         = None
-        station.trailing_edge_surface        = None
-        leading_edge_chord_fraction          = 0.0
-        trailing_edge_chord_fraction         = 0.0
-        LE_angle = 0.0
-        TE_angle = 0.0
-        for cs in wing.control_surfaces:
-            if (eta_y >= cs.span_fraction_start) and  (eta_y <= cs.span_fraction_end):
-                if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler:
-                    # spoilers are captured by the empirical high-lift model; no geometric panel deflection
-                    continue
-                elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
-                    station.leading_edge_surface        = cs
-                    leading_edge_chord_fraction         = cs.chord_fraction
-                    LE_angle                            = cs.deflection
-                else:
-                    station.trailing_edge_surface        = cs
-                    trailing_edge_chord_fraction         = cs.chord_fraction
-                    TE_angle                             = cs.deflection + cs.get('secondary_deflection', 0.)
+        station                     = Data()
+        station.segment             = seg_idx
+        station.airfoil_x           = airfoil_x
+        station.airfoil_z           = airfoil_z
+        station.span_fraction_start = eta_starts[y_i]
+        station.span_fraction_end   = eta_ends[y_i]
+        station.control_surfaces    = []
 
-        # airfoil points that the control surfaces do not move
+        # every control surface of the wing is kept at every station, with the airfoil points it does not move
         airfoil_x_pts = airfoil_x*local_chord
         chord         = airfoil_x_pts[-1]
-        LE_chord_loc  = chord*leading_edge_chord_fraction
-        TE_chord_loc  = chord*(1-trailing_edge_chord_fraction)
-        station.ahead_of_leading_hinge = airfoil_x_pts > LE_chord_loc
-        station.behind_trailing_hinge  = airfoil_x_pts < TE_chord_loc
-        if np.all(station.ahead_of_leading_hinge | ((LE_chord_loc - airfoil_x_pts) == 0)) and (LE_angle != 0):
-            print("Warning: Control surface deflection angle is non-zero but control surface is not actually deflecting any points. \n Check control surface chord fraction and airfoil discretization.")
-        if np.all(station.behind_trailing_hinge | ((airfoil_x_pts - TE_chord_loc) == 0)) and (TE_angle != 0):
-            print("Warning: Control surface deflection angle is non-zero but control surface is not actually deflecting any points. \n Check control surface chord fraction and airfoil discretization.")
+        for cs in wing.control_surfaces:
+            if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler:
+                # spoilers are captured by the empirical high-lift model; no geometric panel deflection
+                continue
+            moved              = Data()
+            moved.surface      = cs
+            moved.leading_edge = type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat
+            if moved.leading_edge:
+                hinge              = chord*cs.chord_fraction
+                moved.fixed_points = airfoil_x_pts > hinge
+                angle              = cs.deflection
+            else:
+                hinge              = chord*(1-cs.chord_fraction)
+                moved.fixed_points = airfoil_x_pts < hinge
+                angle              = cs.deflection + cs.get('secondary_deflection', 0.)
+            station.control_surfaces.append(moved)
+
+            covered = span_coverage(cs.span_fraction_start, cs.span_fraction_end, eta_starts[y_i], eta_ends[y_i]) > 0
+            if covered and np.all(moved.fixed_points | ((hinge - airfoil_x_pts) == 0)) and (angle != 0):
+                print("Warning: Control surface deflection angle is non-zero but control surface is not actually deflecting any points. \n Check control surface chord fraction and airfoil discretization.")
 
         station.starts_strip = bool(delta_y != outboard_segment.percent_span_location * span)
         layout.stations.append(station)
@@ -532,47 +535,39 @@ def airfoil_points_at(airfoil_points,local_percent_y_val,ncpts):
     return x_vals[idx], cambers[idx]
 
 
-def apply_control_surface_deflections(airfoil_x_pts, airfoil_z_pts,LE_angle, LE_chord_fraction, TE_angle, TE_chord_fraction,
-                                      ahead_of_leading_hinge, behind_trailing_hinge):
-    """ Moves the camber line of an airfoil with the deflection of a leading-edge and a trailing-edge control surface.
+def apply_control_surface_deflections(airfoil_x_pts, airfoil_z_pts, deflections):
+    """ Moves the camber line of an airfoil with the deflections of its control surfaces.
 
     Assumptions:
-    The points are rotated about a hinge at the chord fraction of each surface
+    The points are rotated about a hinge at the chord fraction of each surface, and the moves of the surfaces add
 
     Inputs:
     airfoil_x_pts, airfoil_z_pts   camber line                                              [m]
-    LE_angle, TE_angle             deflection of the leading and trailing edge surface       [rad]
-    LE_chord_fraction              chord fraction of the leading-edge surface                [-]
-    TE_chord_fraction              chord fraction of the trailing-edge surface               [-]
-    ahead_of_leading_hinge         True for the points the leading-edge surface does not move
-    behind_trailing_hinge          True for the points the trailing-edge surface does not move
+    deflections                    one entry per control surface:
+       angle                          deflection                                             [rad]
+       chord_fraction                 chord fraction of the surface                          [-]
+       leading_edge                   True for a surface that hinges from the leading edge
+       fixed_points                   True for the points the surface does not move
 
     Outputs:
     airfoil_x_pts_defl, airfoil_z_pts_defl   deflected camber line                           [m]
     """
-    xp    = array_namespace(airfoil_x_pts, airfoil_z_pts, LE_angle, TE_angle)
+    xp    = array_namespace(airfoil_x_pts, airfoil_z_pts, *[value for deflection in deflections for value in deflection[:2]])
     chord = airfoil_x_pts[-1]
 
-    # determine the location of the hinge
-    LE_chord_loc = chord*LE_chord_fraction
-    TE_chord_loc = chord*(1-TE_chord_fraction)
+    airfoil_x_pts_defl = airfoil_x_pts
+    airfoil_z_pts_defl = airfoil_z_pts
+    for angle, chord_fraction, leading_edge, fixed_points in deflections:
+        # distance from each point to the hinge, and the move of the point as it turns about the hinge
+        if leading_edge:
+            hinge_distance = xp.where(fixed_points, 0., chord*chord_fraction - airfoil_x_pts)
+            x_deflection   = xp.where(fixed_points, 0.,  (1 - xp.cos(angle))*hinge_distance)
+        else:
+            hinge_distance = xp.where(fixed_points, 0., airfoil_x_pts - chord*(1-chord_fraction))
+            x_deflection   = xp.where(fixed_points, 0., -(1 - xp.cos(angle))*hinge_distance)
+        z_deflection = xp.where(fixed_points, 0., -xp.sin(angle)*hinge_distance)
 
-    # distance from each point to the hinge
-    LE_hinge_distance = xp.where(ahead_of_leading_hinge, 0., LE_chord_loc - airfoil_x_pts)
-    TE_hinge_distance = xp.where(behind_trailing_hinge , 0., airfoil_x_pts - TE_chord_loc)
-
-    # compute the x and z coordinate changes due to deflection
-    LE_x_deflection = xp.where(ahead_of_leading_hinge, 0.,  (1 - xp.cos(LE_angle))*LE_hinge_distance)
-    TE_x_deflection = xp.where(behind_trailing_hinge , 0., -(1 - xp.cos(TE_angle))*TE_hinge_distance)
-
-    LE_z_deflection = xp.where(ahead_of_leading_hinge, 0., -xp.sin(LE_angle)*LE_hinge_distance)
-    TE_z_deflection = xp.where(behind_trailing_hinge , 0., -xp.sin(TE_angle)*TE_hinge_distance)
-
-    Total_CS_z_deflection = LE_z_deflection + TE_z_deflection
-    Total_CS_x_deflection = LE_x_deflection + TE_x_deflection
-
-    # apply the changes
-    airfoil_x_pts_defl = airfoil_x_pts + Total_CS_x_deflection
-    airfoil_z_pts_defl = airfoil_z_pts + Total_CS_z_deflection
+        airfoil_x_pts_defl = airfoil_x_pts_defl + x_deflection
+        airfoil_z_pts_defl = airfoil_z_pts_defl + z_deflection
 
     return airfoil_x_pts_defl, airfoil_z_pts_defl

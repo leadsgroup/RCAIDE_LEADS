@@ -236,21 +236,25 @@ def check_wing_planform(name, vehicle, settings, wing):
     return
 
 def check_control_surfaces(name, vehicle, settings):
-    # the coefficients, differentiated with respect to the deflection and the chord fraction of every control surface
-    # that moves panels of the lattice, with each surface deflected so that its chord fraction has an effect
+    # the coefficients, differentiated with respect to the deflection, the chord fraction and the two span fractions of
+    # every control surface that moves panels of the lattice. Each surface is deflected so that its size has an effect,
+    # and its ends are moved inboard of the root and the tip, where a surface can only shrink.
     from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
     surfaces = [surface for wing in vehicle.wings for surface in wing.control_surfaces
                 if not isinstance(surface, RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler)]
     layouts  = {wing.tag: wing_lattice_layout(wing, settings.number_of_chordwise_vortices, settings.number_of_spanwise_vortices,
                                               settings.spanwise_cosine_spacing) for wing in vehicle.wings}
-    names    = ('deflections', 'chord fractions')
-    stored   = (np.array([surface.deflection for surface in surfaces], dtype=float), np.array([surface.chord_fraction for surface in surfaces], dtype=float))
-    original = (stored[0] + 5.0 * Units.deg, stored[1])
+    names    = ('deflections', 'chord fractions', 'span fraction starts', 'span fraction ends')
+    stored   = (np.array([surface.deflection for surface in surfaces], dtype=float), np.array([surface.chord_fraction for surface in surfaces], dtype=float),
+                np.array([surface.span_fraction_start for surface in surfaces], dtype=float), np.array([surface.span_fraction_end for surface in surfaces], dtype=float))
+    original = (stored[0] + 5.0 * Units.deg, stored[1], stored[2] + 0.013, stored[3] - 0.017)
 
-    def write(deflections, chord_fractions):
+    def write(deflections, chord_fractions, span_fraction_starts, span_fraction_ends):
         for i, surface in enumerate(surfaces):
-            surface.deflection     = deflections[i]
-            surface.chord_fraction = chord_fractions[i]
+            surface.deflection          = deflections[i]
+            surface.chord_fraction      = chord_fractions[i]
+            surface.span_fraction_start = span_fraction_starts[i]
+            surface.span_fraction_end   = span_fraction_ends[i]
 
     def coefficients(*arrays):
         try:
@@ -262,7 +266,7 @@ def check_control_surfaces(name, vehicle, settings):
             write(*stored)
 
     report  = check_derivatives(coefficients, original, steps=(1e-5, 1e-6, 1e-7), n_directions=2)
-    # every surface is checked on its own: its deflection and its chord fraction must each reach the coefficients
+    # every surface is checked on its own: each of its numbers must reach the coefficients
     unreached = [f"{surface.tag} {key}" for key, sensitivity in zip(names, report.input_sensitivity)
                  for surface, value in zip(surfaces, sensitivity) if value == 0]
     print(f"  {name} control surfaces, {len(surfaces)} surfaces ({', '.join(surface.tag for surface in surfaces)}): "
