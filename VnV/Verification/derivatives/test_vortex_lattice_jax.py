@@ -13,6 +13,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Data, set_at
 from RCAIDE.Library.Mission.Common.Pre_Process.geometry import geometry_preprocess_routine
 from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import VLM, generate_vortex_distribution, compute_wing_induced_velocity
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import wing_lattice_layout
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import LATTICE_FIELDS
@@ -56,6 +57,7 @@ def main():
         check_solve(name, vehicle, settings, lattice)
         check_derived_lattice(name, vehicle, settings)
         check_wing_lattice(name, vehicle, settings)
+        check_wing_planform(name, vehicle, settings)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -198,6 +200,58 @@ def check_wing_lattice(name, vehicle, settings):
           f"derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
     assert report.passed, f"{name}: wing lattice JAX check failed, {report}"
     assert min(reached.values()) > 0, f"{name}: numbers of the wing that do not reach the coefficients: {reached}"
+    return
+
+
+def check_wing_planform(name, vehicle, settings):
+    # the planform values and the coefficients, differentiated with respect to the numbers that define the main wing:
+    # span, root chord, and the chord fraction, twist, dihedral and quarter-chord sweep of each segment. The segment
+    # origins and leading-edge sweeps of the lattice follow from them in wing_planform.
+    from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
+    wing     = vehicle.wings.main_wing
+    segments = list(wing.segments.values())
+    layouts  = {surface.tag: wing_lattice_layout(surface, settings.number_of_chordwise_vortices, settings.number_of_spanwise_vortices,
+                                                 settings.spanwise_cosine_spacing) for surface in vehicle.wings}
+    names    = ('span', 'root chord', 'chord fractions', 'twists', 'dihedrals', 'quarter-chord sweeps')
+
+    # the last segment is the tip: it has no panel outboard of it, so no dihedral or sweep of its own
+    def read():
+        return (np.array([wing.spans.projected], dtype=float), np.array([wing.chords.root], dtype=float),
+                np.array([segment.root_chord_percent for segment in segments], dtype=float),
+                np.array([segment.twist for segment in segments], dtype=float),
+                np.array([segment.dihedral_outboard for segment in segments[:-1]], dtype=float),
+                np.array([segment.sweeps.quarter_chord for segment in segments[:-1]], dtype=float))
+
+    def write(span, root_chord, chord_fractions, twists, dihedrals, sweeps):
+        wing.spans.projected = span[0]
+        wing.chords.root     = root_chord[0]
+        for i, segment in enumerate(segments):
+            segment.root_chord_percent = chord_fractions[i]
+            segment.twist              = twists[i]
+        for i, segment in enumerate(segments[:-1]):
+            segment.dihedral_outboard    = dihedrals[i]
+            segment.sweeps.quarter_chord = sweeps[i]
+
+    original = read()
+
+    def planform_and_coefficients(*arrays):
+        try:
+            write(*arrays)
+            wing_planform(wing)
+            lattice = generate_vortex_distribution(flow_conditions(), settings, vehicle, layouts)
+            results = VLM(flow_conditions(), settings, vehicle, VD=lattice)
+            return (wing.areas.reference, wing.areas.wetted, wing.chords.mean_aerodynamic, wing.aspect_ratio, wing.spans.total,
+                    wing.aerodynamic_center, wing.LEMAC, results.CLift, results.CDrag_induced, results.CM, results.CY, results.CL, results.CN)
+        finally:
+            write(*original)
+            wing_planform(wing)
+
+    report  = check_derivatives(planform_and_coefficients, original, steps=(1e-5, 1e-6, 1e-7), n_directions=2)
+    reached = {key: float(np.max(np.abs(sensitivity))) for key, sensitivity in zip(names, report.input_sensitivity)}
+    print(f"  {name} wing planform, {sum(value.size for value in original)} numbers that define the main wing: values {report.value_error:.1e}, "
+          f"derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
+    assert report.passed, f"{name}: wing planform JAX check failed, {report}"
+    assert min(reached.values()) > 0, f"{name}: numbers of the wing that do not reach the planform or the coefficients: {reached}"
     return
 
 # ----------------------------------------------------------------------------------------------------------------------

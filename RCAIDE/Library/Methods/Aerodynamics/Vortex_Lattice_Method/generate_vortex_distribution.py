@@ -192,6 +192,10 @@ def generate_aircraft_vortex_distribution(geometry,settings,layouts=None):
     for field in CASE_FIELDS:
         VD[field] = array_namespace(*VD[field]).concatenate(VD[field])
 
+    # one area per wing, as one array
+    xp            = array_namespace(*VD.wing_areas)
+    VD.wing_areas = xp.stack([xp.asarray(area, dtype=float) for area in VD.wing_areas])
+
     # ---------------------------------------------------------------------------------------
     # Postprocess VD information
     # ---------------------------------------------------------------------------------------
