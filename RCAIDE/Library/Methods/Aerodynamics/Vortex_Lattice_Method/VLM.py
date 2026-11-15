@@ -90,6 +90,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
     settings.use_surrogate                     [Unitless]
     settings.use_VORLAX_matrix_calculation     [boolean]
     induced_velocity_cache                     [dict], optional; reuses the influence matrix across calls with the same geometry and Mach
+                                               (on JAX it holds values of one trace: keep it no longer than the geometry it was filled for)
 
     conditions.aerodynamics.angles.alpha       [radians]
     conditions.aerodynamics.angles.beta        [radians]
@@ -193,8 +194,6 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
     # Build the aerodynamic influence coefficient matrix A of the flow tangency condition. With VORLAX's matrix
     # calculation it is the VORLAX velocity EW on every row; otherwise EW is kept on the leading-edge rows only.
     use_VORLAX_induced_velocity = settings.use_VORLAX_matrix_calculation
-    if xp is not np:
-        induced_velocity_cache = None
     mach_key = mach.tobytes()
     if induced_velocity_cache is not None and mach_key in induced_velocity_cache:
         cached = induced_velocity_cache[mach_key]
@@ -219,9 +218,15 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
     # Compute vortex strength; with a cache (one case per call), A's LU factorization is reused across the Mach group
     if induced_velocity_cache is not None and len(mach) == 1:
         cached = induced_velocity_cache[mach_key]
-        if 'lu' not in cached:
-            cached['lu'] = scipy.linalg.lu_factor(A[0].astype(np.result_type(A, RHS)))  # same precision as np.linalg.solve
-        GAMMA = scipy.linalg.lu_solve(cached['lu'], RHS[0])[None]
+        if xp is np:
+            if 'lu' not in cached:
+                cached['lu'] = scipy.linalg.lu_factor(A[0].astype(np.result_type(A, RHS)))  # same precision as np.linalg.solve
+            GAMMA = scipy.linalg.lu_solve(cached['lu'], RHS[0])[None]
+        else:
+            import jax.scipy.linalg
+            if 'lu' not in cached:
+                cached['lu'] = jax.scipy.linalg.lu_factor(A[0])
+            GAMMA = jax.scipy.linalg.lu_solve(cached['lu'], RHS[0])[None]
     else:
         GAMMA  = xp.linalg.solve(A,RHS)
 

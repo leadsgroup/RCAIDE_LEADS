@@ -19,7 +19,7 @@ from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import wing_latti
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import LATTICE_FIELDS
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_aircraft_vortex_distribution, assemble_vortex_distribution
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.postprocess_vortex_distribution import postprocess_vortex_distribution, PANEL_FIELDS
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import control_surface_conditions
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import control_surface_conditions, train_model
 
 # lattice coordinates the influence matrix is computed from
 COORDINATES = ('XAH', 'YAH', 'ZAH', 'XBH', 'YBH', 'ZBH', 'XC', 'YC', 'ZC')
@@ -317,6 +317,50 @@ def check_airfoil_thickness(name, vehicle):
         write(stored)
         wing_planform(wing)
         assert np.allclose(after, 1.2 * before, rtol=1e-12), f"{name} {wing.tag}: thickness ratios {after} are not 1.2 times {before}"
+    return
+
+def check_surrogate_tables(name, vehicle, settings):
+    # the tables that the aerodynamic surrogate is built from (coefficients against angle of attack and Mach, sideslip
+    # and rate derivatives, control surface derivatives, high-lift induced drag), differentiated with respect to the
+    # numbers that define the main wing and to the center of gravity, which the moments are taken about. One Mach number and two angles of attack keep the check short. The tables hold
+    # differences of cases a small step apart, which carry the round-off of the two cases: the value tolerance is 1e-10.
+    from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
+    wing                                  = vehicle.wings.main_wing
+    aerodynamics                          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings                 = settings
+    aerodynamics.training.Mach            = np.array([0.5])
+    aerodynamics.training.angle_of_attack = np.array([0., 6.]) * Units.deg
+    layouts = {surface.tag: wing_lattice_layout(surface, settings.number_of_chordwise_vortices, settings.number_of_spanwise_vortices,
+                                                settings.spanwise_cosine_spacing) for surface in vehicle.wings}
+    names, read, write = defining_numbers(wing)
+    names    = names + ('center of gravity (x, z)',)
+    center   = vehicle.mass_properties.center_of_gravity
+    stored   = (center[0][0], center[0][2])
+    original = read() + (np.array(stored, dtype=float),)
+    tables   = []
+
+    def write_center(x, z):
+        vehicle.mass_properties.center_of_gravity = [[x, center[0][1], z]]
+
+    def surrogate_tables(*arrays):
+        try:
+            write(*arrays[:-1])
+            write_center(arrays[-1][0], arrays[-1][1])
+            wing_planform(wing)
+            training = train_model(aerodynamics, aerodynamics.training.Mach, vehicle, layouts)
+            tables[:] = [key for key in training.keys() if key != 'Mach']
+            return tuple(training[key] for key in tables)
+        finally:
+            write(*original[:-1])
+            vehicle.mass_properties.center_of_gravity = center
+            wing_planform(wing)
+
+    report  = check_derivatives(surrogate_tables, original, steps=(1e-4, 1e-5, 1e-6), n_directions=2, value_tolerance=1e-10)
+    reached = {key: float(np.max(np.abs(sensitivity))) for key, sensitivity in zip(names, report.input_sensitivity)}
+    print(f"  {name} surrogate tables, {len(tables)} tables against {sum(value.size for value in original)} numbers of the main wing and the center of gravity: "
+          f"values {report.value_error:.1e}, derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
+    assert report.passed, f"{name}: surrogate table JAX check failed, {report}"
+    assert min(reached.values()) > 0, f"{name}: numbers that do not reach the surrogate tables: {reached}"
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
