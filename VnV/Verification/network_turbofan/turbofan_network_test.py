@@ -101,31 +101,31 @@ def main():
     
     # Truth values
     takeoff_thrust_truth     = 97347.93566737135
-    ICA_climb_CL_truth       = 1.690343209759997
-    climb_throttle_1_truth   = 0.9834680359005878
-    climb_throttle_2_truth   = 0.9200892961341041
-    climb_throttle_3_truth   = 0.7429258357084445
-    climb_throttle_4_truth   = 0.8508083460870917
-    climb_throttle_5_truth   = 0.9106195467849613
-    climb_throttle_6_truth   = 0.8944182617100458
-    climb_throttle_7_truth   = 0.9098343253314701
-    climb_throttle_8_truth   = 0.7853208443434492
-    climb_throttle_9_truth   = 0.8710020517430442
-    climb_throttle_10_truth  = 0.8367813647175181
-    cruise_CL_1_truth        = 0.6838072345937153
-    cruise_CL_2_truth        = 0.5287204987518244
-    descent_throttle_1_truth = 0.39885063140749705
-    descent_2_CL_truth       = 0.6986353603067712
-    curved_cruise_CL_truth   = 1.3127101061452786
+    ICA_climb_CL_truth       = 1.6903434482881807
+    climb_throttle_1_truth   = 0.9834682400395309
+    climb_throttle_2_truth   = 0.9200892764546058
+    climb_throttle_3_truth   = 0.7429258216638621
+    climb_throttle_4_truth   = 0.8508083087971408
+    climb_throttle_5_truth   = 0.910619538448236
+    climb_throttle_6_truth   = 0.8944182954682577
+    climb_throttle_7_truth   = 0.9098343057946093
+    climb_throttle_8_truth   = 0.7853208350955226
+    climb_throttle_9_truth   = 0.8710020936404285
+    climb_throttle_10_truth  = 0.8367813219049017
+    cruise_CL_1_truth        = 0.6838072405032717
+    cruise_CL_2_truth        = 0.5287210651222924
+    descent_throttle_1_truth = 0.3988506197168615
+    descent_2_CL_truth       = 0.69863535904683
+    curved_cruise_CL_truth   = 1.312710131699492
     descent_throttle_3_truth = 0.1
-    single_pt_CL_1_truth     = 0.24457752126343427
-    single_pt_CL_2_truth     = 0.0001859290788933937
-    cruise_4_CL_truth        = 0.4983134600867296
-    cruise_5_CL_truth        = 0.49830946395018044
-    cruise_6_CL_truth        = 0.33877573066325667
-    cruise_7_CL_truth        = 0.3325352124676494
-    cruise_8_CL_truth        = 0.32702091321173915
-    descent_throttle_4_truth = 0.5431803892433111
+    single_pt_CL_1_truth     = 0.24457752282274667
+    single_pt_CL_2_truth     = 0.00018592918440698823
+    cruise_4_CL_truth        = 0.49831346353752776
+    cruise_5_CL_truth        = 0.49830946740086646
+    cruise_6_CL_truth        = 0.33877573344447875
+    cruise_7_CL_truth        = 0.3325352159311075
+    cruise_8_CL_truth        = 0.32702091730795
+    descent_throttle_4_truth = 0.5431803400665679
     landing_thrust_truth     = 4270.067878632428
     
     # Store errors 
