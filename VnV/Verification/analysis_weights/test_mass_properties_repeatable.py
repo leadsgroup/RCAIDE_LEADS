@@ -35,11 +35,11 @@ def main():
     check_same_weights_in_every_segment("stopped rotor", mission)
     check_second_estimate_unchanged("stopped rotor", mission)
 
-    # the takeoff weight of the blended wing body is iterated to a tolerance, so only its propulsion group is compared
+    # the takeoff weight of the blended wing body is iterated, and the iteration converges to round-off
     os.chdir(os.path.join(vnv_folder, "Verification", "network_hydrogen"))
     sys.path.insert(0, os.getcwd())
     mission = hydrogen_blended_wing_body_mission()
-    check_second_estimate_unchanged("hydrogen BWB", mission, keys=['propulsion'])
+    check_second_estimate_unchanged("hydrogen BWB", mission)
 
     os.chdir(start_folder)
     return
@@ -59,13 +59,11 @@ def check_same_weights_in_every_segment(name, mission):
     return
 
 
-def check_second_estimate_unchanged(name, mission, keys=None):
+def check_second_estimate_unchanged(name, mission):
     segment = list(mission.segments.values())[0]
     first   = weight_values(segment)
     mass_properties_preprocess_routine(segment, 0)
     second  = weight_values(segment)
-    if keys is not None:
-        first = {key: first[key] for key in keys}
     for key in first:
         assert abs(second[key] - first[key]) <= 1e-9 * abs(first[key]), f"{name}: {key} {first[key]} then {second[key]} when estimated again"
     print(f"  {name}: a second estimate leaves {len(first)} weights unchanged")

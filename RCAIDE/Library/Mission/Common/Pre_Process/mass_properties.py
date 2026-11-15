@@ -459,7 +459,8 @@ def solve_for_mtow(analyses, weights_analysis, i, max_bracket_expansions=10):
             f"(e.g. tank-derived) max_fuel rather than copied from another vehicle."
         )
 
-    mtow_converged = brentq(_mtow_residual, lo, hi, xtol=1.0)
+    # converged to round-off, so a repeated estimate gives the same takeoff weight
+    mtow_converged = brentq(_mtow_residual, lo, hi, xtol=1e-8)
 
     # Final evaluation to leave vehicle in correct state
     _mtow_residual(mtow_converged)
