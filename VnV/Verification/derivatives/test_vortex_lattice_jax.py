@@ -60,6 +60,7 @@ def main():
         for wing in vehicle.wings:
             check_wing_planform(name, vehicle, settings, wing)
         check_control_surfaces(name, vehicle, settings)
+        check_airfoil_thickness(name, vehicle)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -268,6 +269,50 @@ def check_control_surfaces(name, vehicle, settings):
           f"values {report.value_error:.1e}, derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
     assert report.passed, f"{name}: control surface JAX check failed, {report}"
     assert len(unreached) == 0, f"{name}: control surface numbers that do not reach the coefficients: {unreached}"
+    return
+
+def check_airfoil_thickness(name, vehicle):
+    # the thickness ratios and the wetted area of every wing, differentiated with respect to the thickness multiplier
+    # of each of its airfoils. The multiplier scales the thickness about the camber line, so the lattice does not see it.
+    from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
+    for wing in vehicle.wings:
+        if wing.segments_from_planform:
+            airfoils = [wing.airfoil] if wing.airfoil is not None else []
+        else:
+            airfoils = [segment.airfoil for segment in wing.segments if segment.airfoil is not None]
+        if len(airfoils) == 0:
+            continue
+        stored = np.array([airfoil.thickness_multiplier for airfoil in airfoils], dtype=float)
+
+        def write(multipliers):
+            for i, airfoil in enumerate(airfoils):
+                airfoil.thickness_multiplier = multipliers[i]
+
+        def thickness_and_wetted_area(multipliers):
+            try:
+                write(multipliers)
+                wing_planform(wing)
+                section_thickness = [segment.thickness_to_chord for segment in wing.segments]
+                upper_surfaces    = [airfoil.geometry.y_upper_surface for airfoil in airfoils]
+                return (wing.thickness_to_chord, wing.areas.wetted, *section_thickness, *upper_surfaces)
+            finally:
+                write(stored)
+                wing_planform(wing)
+
+        report = check_derivatives(thickness_and_wetted_area, (1.1 * stored,), steps=(1e-5, 1e-6, 1e-7), n_directions=2)
+        print(f"  {name} {wing.tag} airfoil thickness, {len(airfoils)} multipliers: "
+              f"values {report.value_error:.1e}, derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
+        assert report.passed, f"{name} {wing.tag}: airfoil thickness JAX check failed, {report}"
+        assert np.min(np.abs(report.input_sensitivity[0])) > 0, f"{name} {wing.tag}: a thickness multiplier does not reach the wing: {report.input_sensitivity[0]}"
+
+        # a multiplier of 1.2 on every airfoil gives 1.2 times the thickness ratio of each section
+        before = np.array([airfoil.geometry.thickness_to_chord for airfoil in airfoils], dtype=float)
+        write(1.2 * stored)
+        wing_planform(wing)
+        after  = np.array([airfoil.geometry.thickness_to_chord for airfoil in airfoils], dtype=float)
+        write(stored)
+        wing_planform(wing)
+        assert np.allclose(after, 1.2 * before, rtol=1e-12), f"{name} {wing.tag}: thickness ratios {after} are not 1.2 times {before}"
     return
 
 # ----------------------------------------------------------------------------------------------------------------------

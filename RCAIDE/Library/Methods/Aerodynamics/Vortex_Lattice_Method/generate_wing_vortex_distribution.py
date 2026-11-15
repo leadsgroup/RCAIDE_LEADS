@@ -489,11 +489,12 @@ def interpolated_airfoil_points(inboard_segment,outboard_segment,ncpts):
         Outputs:
         x_vals, cambers                      (ncpts stations, ncpts points) chordwise locations and camber, per unit chord
         """
+        # the thickness multiplier of an airfoil leaves its camber line as it is
         if inboard_segment.airfoil:
             if type(inboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-                a_geo_1 = compute_naca_4series(inboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1, thickness_multiplier = inboard_segment.airfoil.thickness_multiplier)
+                a_geo_1 = compute_naca_4series(inboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1)
             else:
-                a_geo_1 = import_airfoil_geometry(inboard_segment.airfoil.coordinate_file,ncpts*2+1, thickness_multiplier = inboard_segment.airfoil.thickness_multiplier)
+                a_geo_1 = import_airfoil_geometry(inboard_segment.airfoil.coordinate_file,ncpts*2+1)
         else:
             a_geo_1 =  Data()
             a_geo_1.camber_coordinates = np.zeros(ncpts)
@@ -501,9 +502,9 @@ def interpolated_airfoil_points(inboard_segment,outboard_segment,ncpts):
 
         if outboard_segment.airfoil:
             if type(outboard_segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-                a_geo_2 = compute_naca_4series(outboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1, thickness_multiplier = outboard_segment.airfoil.thickness_multiplier)
+                a_geo_2 = compute_naca_4series(outboard_segment.airfoil.NACA_4_Series_code,ncpts*2-1)
             else:
-                a_geo_2 = import_airfoil_geometry(outboard_segment.airfoil.coordinate_file,ncpts*2+1, thickness_multiplier = outboard_segment.airfoil.thickness_multiplier)
+                a_geo_2 = import_airfoil_geometry(outboard_segment.airfoil.coordinate_file,ncpts*2+1)
         else:
             a_geo_2 =  Data()
             a_geo_2.camber_coordinates = np.zeros(ncpts)
