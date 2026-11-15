@@ -70,7 +70,7 @@ def compute_operating_items_weight(vehicle):
     
     THRUST          = ref_propulsor.sealevel_static_thrust * 1 / Units.lbf
     SW              = vehicle.reference_area / Units.ft ** 2
-    FMXTOT          = vehicle.mass_properties.max_zero_fuel / Units.lbs
+    FMXTOT          = vehicle.mass_properties.max_fuel / Units.lbs   # maximum fuel capacity (NASA/TM-2017-219627, Eq. 121)
     DESRNG          = vehicle.flight_envelope.design_range / Units.nmi
     VMAX            = vehicle.flight_envelope.design_mach_number   
     

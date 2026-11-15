@@ -52,6 +52,7 @@ modules = [
     'Verification/analysis_stability/test_crosswind_sideslip.py',
     'Verification/analysis_weights/operating_empty_weight_test.py',
     'Verification/analysis_weights/cg_and_moi_test.py',
+    'Verification/analysis_weights/test_mass_properties_repeatable.py',
     'Verification/geometry/airfoil_import_test.py',
     'Verification/geometry/airfoil_interpolation_test.py',
     'Verification/geometry/fuselage_planform_compute.py',

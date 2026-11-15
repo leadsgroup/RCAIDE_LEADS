@@ -189,8 +189,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
                             
             # Apply correction factors  if any
             apply_correction_factors(analyses)
-            if i == 0:
-                apply_component_weights(analyses)
+            apply_component_weights(analyses)
  
 
         # Fuel the user did not define is computed and capped; prescribed masses are kept and only checked
