@@ -8,7 +8,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 import RCAIDE
-from RCAIDE.Framework.Core import Data 
+from RCAIDE.Framework.Core import Data, array_namespace
 from RCAIDE.Library.Components import Wings
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.extract_wing_collocation_points        import extract_wing_collocation_points
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_wake_induced_velocity import compute_rotor_wake_induced_velocity
@@ -151,11 +151,12 @@ def build_RHS(VD, conditions, settings, aoa_distribution, delta, phi, PSI_distri
     Properties Used:
     N/A
     """
-    LE_ind  = VD.leading_edge_indices
-    RNMAX   = VD.panels_per_strip 
-    dim_1   = len(np.sum(LE_ind, axis=1))
-    dim_2   = np.sum(LE_ind, axis=1)[0]
-
+    xp             = array_namespace(VD.XCH, VD.YCH, VD.ZCH, VD.XBAR, VD.ZBAR, VD.chord_lengths, VD.SLOPE, VD.normals, phi)
+    LE_ind         = VD.leading_edge_indices
+    RNMAX          = VD.panels_per_strip
+    leading_edge   = np.flatnonzero(LE_ind[0])
+    strip_lengths  = np.asarray(RNMAX)[0][leading_edge].astype(int)
+    strip_of_panel = np.repeat(np.arange(len(leading_edge)), strip_lengths)
 
     # VORLAX frame RHS calculation---------------------------------------------------------
     ALFA   = aoa_distribution
@@ -177,26 +178,25 @@ def build_RHS(VD, conditions, settings, aoa_distribution, delta, phi, PSI_distri
     ZZ     = VD.ZCH
     XBAR   = VD.XBAR
     ZBAR   = VD.ZBAR
-
-    CHORD  = VD.chord_lengths 
+    CHORD  = VD.chord_lengths
     DELTAX = 0.5/RNMAX
 
     # LOCATE VORTEX LATTICE CONTROL POINT WITH RESPECT TO THE
     # ROTATION CENTER (XBAR, 0, ZBAR). THE RELATIVE COORDINATES
-    # ARE XGIRO, YGIRO, AND ZGIRO. 
-    X_MAT  = np.repeat( XBAR, RNMAX[LE_ind].reshape(dim_1,dim_2)[0] , axis=1) 
-    Z_MAT  = np.repeat( ZBAR, RNMAX[LE_ind].reshape(dim_1,dim_2)[0] , axis=1) 
-    phi_LE = np.repeat(phi[LE_ind].reshape(dim_1,dim_2)  ,RNMAX[LE_ind].reshape(dim_1,dim_2)[0] , axis=1) 
-     
+    # ARE XGIRO, YGIRO, AND ZGIRO.
+    X_MAT  = XBAR[:,strip_of_panel]
+    Z_MAT  = ZBAR[:,strip_of_panel]
+    phi_LE = phi[:,leading_edge][:,strip_of_panel]
+
     XGIRO = X + CHORD*DELTAX - X_MAT
     YGIRO = YY
     ZGIRO = ZZ - Z_MAT
 
     #COMPUTE DIRECTION COSINES.
-    SCNTL  = VD.SLOPE/np.sqrt(1. + VD.SLOPE **2)
-    CCNTL  = 1. / np.sqrt(1.0 + SCNTL**2)
-    COD    = np.cos(phi_LE)
-    SID    = np.sin(phi_LE)
+    SCNTL  = VD.SLOPE/xp.sqrt(1. + VD.SLOPE **2)
+    CCNTL  = 1. / xp.sqrt(1.0 + SCNTL**2)
+    COD    = xp.cos(phi_LE)
+    SID    = xp.sin(phi_LE)
 
     # COMPUTE VELOCITY COMPONENT ALONG X-AXIS INDUCED BY THE RIGID
     # BODY ROTATION, ONSET.
@@ -205,7 +205,6 @@ def build_RHS(VD, conditions, settings, aoa_distribution, delta, phi, PSI_distri
     # Only one of the VORLAX-frame or body-frame RHS is ever used (selected by
     # settings.use_VORLAX_matrix_calculation below), so only that one is computed.
     use_VORLAX_RHS = settings.use_VORLAX_matrix_calculation
-
     if use_VORLAX_RHS:
         # VORLAX frame RHS calculation-------------------------------------------------
         # VX, VY, VZ ARE THE FLOW ONSET VELOCITY COMPONENTS AT THE LEADING
@@ -230,9 +229,9 @@ def build_RHS(VD, conditions, settings, aoa_distribution, delta, phi, PSI_distri
         Vz                = V_distribution*np.sin(aoa_distribution)                          + Vz_rotation + Vz_ind_total
 
         # compute RHS: dot(v, panel_normals)
-        V_unit_vector    = ((np.array([Vx,Vy,Vz])/V_distribution).T).swapaxes(0,1)[:, :,np.newaxis,:]
+        V_unit_vector    = ((xp.array([Vx,Vy,Vz])/V_distribution).T).swapaxes(0,1)[:, :,np.newaxis,:]
         panel_normals    = VD.normals[:, :,np.newaxis,:]
-        RHS              = np.sum(np.sum(V_unit_vector*panel_normals, axis=2), axis=2 )
+        RHS              = xp.sum(xp.sum(V_unit_vector*panel_normals, axis=2), axis=2 )
 
     #pack values--------------------------------------------------------------------------
     rhs = Data()

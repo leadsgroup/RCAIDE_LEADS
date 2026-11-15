@@ -560,7 +560,6 @@ def setup_noise_settings(sts):
 
 
     sts.broadband_spectrum_resolution        = 301
-    sts.floating_point_precision             = np.float32
     sts.urban_canyon_microphone_z_resolution = 16 
     sts.sideline_x_position                  = 0     
     sts.number_of_multiprocessing_workers    = 8
