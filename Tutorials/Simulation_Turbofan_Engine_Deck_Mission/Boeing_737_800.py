@@ -796,7 +796,7 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['port_propulsor'].core_nozzle.noise_speed        = 415. 
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
-    config.V2_VS_ratio = 1.21
+    config.flight_envelope.V2_VS_ratio = 1.21
     configs.append(config) 
 
     # ------------------------------------------------------------------

@@ -853,7 +853,7 @@ def configs_setup(vehicle):
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True     
     
-    config.V2_VS_ratio = 1.21
+    config.flight_envelope.V2_VS_ratio = 1.21
     configs.append(config)
     # ------------------------------------------------------------------
     #   Transition Configuration (climb to the 35 ft screen height)
@@ -939,7 +939,7 @@ def configs_setup(vehicle):
 
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True         
-    config.Vref_VS_ratio = 1.23
+    config.flight_envelope.Vref_VS_ratio = 1.23
     configs.append(config)   
 
     # ------------------------------------------------------------------
@@ -954,7 +954,7 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  3470. * Units.rpm 
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
-    config.V2_VS_ratio = 1.21 
+    config.flight_envelope.V2_VS_ratio = 1.21 
     configs.append(config)
 
     # ------------------------------------------------------------------
