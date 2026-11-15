@@ -7,8 +7,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  RCAIDE
 # ---------------------------------------------------------------------------------------------------------------------- 
-from copy import deepcopy
 import RCAIDE 
+from RCAIDE.Library.Mission.Common.Pre_Process.configurations import apply_configuration
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_vehicle_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_mass import compute_fuel_mass
@@ -113,15 +113,8 @@ def mass_properties(mission):
         if segment.analyses.weights == None:
             raise AssertionError('Define weights analysis method')
         else: 
-            if i ==0 or segment.analyses.geometry.settings.unique_geometry:
-                mass_properties_preprocess_routine(segment, i) 
-            else: 
-                analyses         = segment.analyses
-                weights_analysis = analyses.weights 
-                vehicle_1 = deepcopy(mission.segments[i-1].analyses.vehicle)
-                segment.analyses.vehicle.mass_properties = vehicle_1.mass_properties
-                weights_analysis.settings.iterate_mtow = False
-                mass_properties_preprocess_routine(segment, i) 
+            apply_configuration(segment.analyses.vehicle, segment.configuration)
+            mass_properties_preprocess_routine(segment, i)
                 
     return
 
@@ -168,7 +161,10 @@ def mass_properties_preprocess_routine(segment, i = 0):
         prescribed_takeoff = analyses.vehicle.mass_properties.takeoff
         if i == 0 and analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
             print('Warning: Prescribed payload weight is greater than maximum payload weight')
-        if weights_analysis.settings.iterate_mtow:
+        if i != 0:
+            # every segment flies the same vehicle, so the weights estimated for the first segment hold
+            pass
+        elif weights_analysis.settings.iterate_mtow:
             solve_for_mtow(analyses, weights_analysis, i)
 
         else:

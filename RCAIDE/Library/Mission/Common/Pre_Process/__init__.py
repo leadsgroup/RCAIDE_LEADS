@@ -8,6 +8,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------- 
    
+from .configurations                          import configurations, set_segment_configuration, apply_configuration, copy_segment
 from .hp_decompose_mission                    import hp_decompose_mission
 from .merge_hp_decomposed_segments            import merge_hp_decomposed_segments
 from .aerodynamics                            import aerodynamics

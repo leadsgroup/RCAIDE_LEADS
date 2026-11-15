@@ -11,6 +11,7 @@ import numpy as np
 
 from RCAIDE.Framework.Core import Data, array_namespace
 from RCAIDE.Library.Methods.Utilities.Linear_Interpolator import Linear_Interpolator
+from RCAIDE.Library.Mission.Common.Pre_Process.configurations import apply_configuration
 
 # compiled residuals by segment signature, shared by every segment with the same structure
 COMPILED_SEGMENTS = {}
@@ -34,6 +35,7 @@ def compile_segment(segment):
        compiled    Compiled_Segment (residual, jacobian, input_derivative, state_derivative)
        inputs      tuple of arrays, the float inputs of this segment that the residual reads, one per compiled.paths
     """
+    apply_configuration(segment.analyses.vehicle, segment.configuration)
     references, signature = segment_inputs(segment)
     if signature not in COMPILED_SEGMENTS:
         COMPILED_SEGMENTS[signature] = Compiled_Segment(segment, references)
@@ -121,6 +123,7 @@ def evaluate_segment(segment, x, paths, values):
 
     # segment.conditions is an alias of segment.state.conditions, so both are swapped
     segment.state, segment.conditions = fresh, fresh.conditions
+    apply_configuration(segment.analyses.vehicle, segment.configuration)
     references = segment_inputs(segment)[0]
     by_path    = {reference[3]: reference for reference in references}
     replaced   = [by_path[path] for path in paths]
@@ -184,7 +187,7 @@ def segment_inputs(segment):
     static    += [('unknown', path, np.shape(container[key])) for container, key, path in unknown_entries(segment.state.unknowns)]
     # the segment's own settings (speeds, altitudes, distances); its tags name it and its converged flag is a result
     collect_inputs(segment, 'segment', references, static, set(),
-                   skip=('analyses', 'state', 'conditions', 'process', 'tag', 'mission_tag', 'converged'))
+                   skip=('analyses', 'configuration', 'state', 'conditions', 'process', 'tag', 'mission_tag', 'converged'))
     collect_inputs(segment.analyses, 'analyses', references, static, set())
     collect_inputs(segment.state, 'state', references, static, set(), skip=('initials',))
     if segment.state.initials:

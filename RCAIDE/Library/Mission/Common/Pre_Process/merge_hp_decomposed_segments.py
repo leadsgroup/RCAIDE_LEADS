@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-import copy
 import numpy as np
 
 from RCAIDE.Framework.Analyses                      import Process
 from RCAIDE.Framework.Mission.Common.Conditions      import Conditions
 from RCAIDE.Framework.Mission.Common.State           import append_array
 from RCAIDE.Library.Mission.Solver.hp_decomposition  import EXTENT_ATTRIBUTES
+from RCAIDE.Library.Mission.Common.Pre_Process.configurations import copy_segment
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  merge_hp_decomposed_segments
@@ -126,7 +126,7 @@ def merge_hp_decomposed_segments(mission):
         pieces           = [seg for _, seg in original_segments[i:i + piece_count]]
         original_segment = hp.original_segment
 
-        merged_segment     = copy.deepcopy(pieces[0])
+        merged_segment     = copy_segment(pieces[0])
         merged_segment.tag = hp.original_tag
 
         specs = EXTENT_ATTRIBUTES.get(type(merged_segment), ())
@@ -144,7 +144,7 @@ def merge_hp_decomposed_segments(mission):
 
         # Segment.__defaults__ aliases segment.conditions to segment.state.
         # conditions at construction time (RCAIDE.Framework.Mission.Segments.
-        # Segment); copy.deepcopy above preserved that aliasing, but replacing
+        # Segment); the copy above preserved that aliasing, but replacing
         # state.conditions wholesale just above broke it -- restore it so
         # results.segments.<tag>.conditions (the form every verification test
         # and any real user script reads) sees the merged data too, not piece

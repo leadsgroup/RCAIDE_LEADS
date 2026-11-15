@@ -69,4 +69,4 @@ class Config(Diffed_Data, Vehicle):
         """     
         self.tag    = 'config'
         self._base  = Vehicle()
-        self._diff  = Vehicle()
+        self._diff  = None

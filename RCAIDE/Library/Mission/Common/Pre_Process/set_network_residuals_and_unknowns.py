@@ -5,6 +5,7 @@
 # Modified: Jun 2026, M. Clarke
 import RCAIDE
 import numpy as np
+from RCAIDE.Library.Mission.Common.Pre_Process.configurations import apply_configuration
 import warnings
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -33,6 +34,7 @@ def set_network_residuals_and_unknowns(mission):
     """
 
     for segment in mission.segments:
+        apply_configuration(segment.analyses.vehicle, segment.configuration)
         segment.state.number_of_network_unknowns   = 0
         segment.state.number_of_network_residuals  = 0
 

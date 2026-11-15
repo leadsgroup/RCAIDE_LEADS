@@ -314,10 +314,10 @@ def hp_decompose_segment(segment, number_of_unknowns, tolerance, step_size,
         else:
             raise ValueError(f"Unknown extent spec kind {spec[0]!r} for {segment_class.__name__}")
 
-    import copy
+    from RCAIDE.Library.Mission.Common.Pre_Process.configurations import copy_segment
     pieces = []
     for i in range(number_of_subsegments):
-        piece = copy.deepcopy(segment)
+        piece = copy_segment(segment)
         piece.tag = f"{segment.tag}_{i}"
         piece.state.numerics.number_of_control_points = points_per_subsegment
         piece.state.numerics.mission_solver.tolerance  = tolerance

@@ -10,12 +10,12 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
 from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform , compute_fuel_volume 
+from .configurations                           import  apply_configuration
 
 # python imports 
 import numpy as  np 
 import os, sys
 import pandas as pd
-from copy import deepcopy 
 # ----------------------------------------------------------------------------------------------------------------------
 #  geometry
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -53,45 +53,18 @@ def geometry(mission):
     RCAIDE.Library.Methods.Geometry.Planform
     RCAIDE.Framework.Mission.Segments
     """
-    for i ,  segment in enumerate(mission.segments): 
-        # --------------------------------------------------------------------------------------------------------------------        
-        # check if geometry analysis is defined 
-        # --------------------------------------------------------------------------------------------------------------------
-        if segment.analyses.geometry is None: 
-            raise AssertionError('Geometry Analyses not defined') 
-        if i == 0 or segment.analyses.geometry.settings.unique_geometry: 
-            geometry_preprocess_routine(segment.analyses) 
-        else:
-            # Reuses previous segment pre processed data to save computational time.
-            # Ensures that changes in configuration are not overwritten. 
-            vehicle_0 = deepcopy(segment.analyses.vehicle)
-            segment.analyses.vehicle = deepcopy(mission.segments[i-1].analyses.vehicle)
-            for wing in segment.analyses.vehicle.wings:
-                for control_surface in wing.control_surfaces:
-                    control_surface.deflection = vehicle_0.wings[wing.tag].control_surfaces[control_surface.tag].deflection
-            for landing_gear in segment.analyses.vehicle.landing_gears:
-                landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
-            for network in segment.analyses.vehicle.networks:
-                network.reverse_thrust = vehicle_0.networks[network.tag].reverse_thrust
-                for source in network.sources:
-                    source.active = vehicle_0.networks[network.tag].sources[source.tag].active
-                for system in network.systems:
-                    system.power_draw = vehicle_0.networks[network.tag].systems[system.tag].power_draw
-                for propulsor in network.propulsors:
-                    propulsor_0              =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
-                    propulsor.active         = propulsor_0.active
-                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
-                        propulsor.afterburner_active          = propulsor_0.afterburner_active
-                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
-                        propulsor.fan.angular_velocity        = propulsor_0.fan.angular_velocity
-                        propulsor.fan_nozzle.exit_velocity    = propulsor_0.fan_nozzle.exit_velocity 
-                        propulsor.core_nozzle.exit_velocity   = propulsor_0.core_nozzle.exit_velocity
-                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
-                        propulsor.rotor.orientation_euler_angles =  propulsor_0.rotor.orientation_euler_angles 
-                        propulsor.rotor.blade_pitch_command      =  propulsor_0.rotor.blade_pitch_command
+    first_segment = None
+    for segment in mission.segments:
+        if segment.analyses.geometry is None:
+            raise AssertionError('Geometry Analyses not defined')
+        if first_segment is None:
+            first_segment = segment
 
-    return 
-        
+    # every segment flies the same vehicle, so its geometry is processed once
+    apply_configuration(first_segment.analyses.vehicle, first_segment.configuration)
+    geometry_preprocess_routine(first_segment.analyses)
+    return
+
 def geometry_preprocess_routine(analyses):
     settings = analyses.geometry.settings
     vehicle  = analyses.vehicle
