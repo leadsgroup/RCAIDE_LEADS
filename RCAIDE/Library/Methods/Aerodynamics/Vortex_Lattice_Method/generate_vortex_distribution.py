@@ -19,19 +19,20 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Generate Vortex Distribution
 # ----------------------------------------------------------------------
-def generate_vortex_distribution(conditions,settings,geometry):
+def generate_vortex_distribution(conditions,settings,geometry,layouts=None):
     """ The vortex distribution of the aircraft, with a leading dimension for the flow cases.
 
     Inputs:
     conditions   flight conditions; the number of cases is that of the angles of attack
     settings     vortex lattice settings (number of vortices, spacing, fuselage model)
     geometry     vehicle
+    layouts      lattice layout of each wing by its tag (wing_lattice_layout), needed on JAX
 
     Outputs:
     VD_seg       vortex distribution
     """
     n_cases = len(conditions.aerodynamics.angles.alpha)
-    VD_i    = generate_aircraft_vortex_distribution(geometry,settings)
+    VD_i    = generate_aircraft_vortex_distribution(geometry,settings,layouts)
     return assemble_vortex_distribution(VD_i,n_cases)
 
 
@@ -56,7 +57,7 @@ def assemble_vortex_distribution(VD_i,n_cases):
     return VD_seg
 
 
-def generate_aircraft_vortex_distribution(geometry,settings):
+def generate_aircraft_vortex_distribution(geometry,settings,layouts=None):
     ''' Compute the coordinates of panels, vortices , control points
     and geometry used to build the influence coefficient matrix. A 
     different discretization (n_sw and n_cw) may be defined for each type
@@ -181,7 +182,7 @@ def generate_aircraft_vortex_distribution(geometry,settings):
     VD.counter     = 0
 
     for wing in geometry.wings:
-        VD = generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc)
+        VD = generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,None if layouts is None else layouts[wing.tag])
 
     if settings.model_fuselage:
         for fuselage in geometry.fuselages:
@@ -189,7 +190,7 @@ def generate_aircraft_vortex_distribution(geometry,settings):
 
     # Concatenate the accumulated per-chunk lists into the final arrays.
     for field in CASE_FIELDS:
-        VD[field] = np.concatenate(VD[field])
+        VD[field] = array_namespace(*VD[field]).concatenate(VD[field])
 
     # ---------------------------------------------------------------------------------------
     # Postprocess VD information

@@ -14,6 +14,7 @@ from RCAIDE.Framework.Core import Data, set_at
 from RCAIDE.Library.Mission.Common.Pre_Process.geometry import geometry_preprocess_routine
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import VLM, generate_vortex_distribution, compute_wing_induced_velocity
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import wing_lattice_layout
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import LATTICE_FIELDS
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_aircraft_vortex_distribution, assemble_vortex_distribution
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.postprocess_vortex_distribution import postprocess_vortex_distribution, PANEL_FIELDS
@@ -54,6 +55,7 @@ def main():
         check_influence_matrix(name, lattice)
         check_solve(name, vehicle, settings, lattice)
         check_derived_lattice(name, vehicle, settings)
+        check_wing_lattice(name, vehicle, settings)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -148,6 +150,54 @@ def check_derived_lattice(name, vehicle, settings):
           f"reverse {report.vjp_consistency_error:.1e}")
     assert report.passed, f"{name}: derived lattice JAX check failed, {report}"
     assert len(missing) == 0, f"{name}: generated fields that do not reach the coefficients: {missing}"
+    return
+
+def check_wing_lattice(name, vehicle, settings):
+    # the same coefficients, differentiated with respect to the numbers of the main wing its lattice is generated
+    # from: span, root chord, and the chord fraction, twist, dihedral, leading-edge sweep and origin of each segment
+    from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
+    wing     = vehicle.wings.main_wing
+    segments = list(wing.segments.values())
+    layouts  = {surface.tag: wing_lattice_layout(surface, settings.number_of_chordwise_vortices, settings.number_of_spanwise_vortices,
+                                                 settings.spanwise_cosine_spacing) for surface in vehicle.wings}
+    names    = ('span', 'root chord', 'chord fractions', 'twists', 'dihedrals', 'leading-edge sweeps', 'origins x', 'origins z')
+
+    def read():
+        return (np.array([wing.spans.projected], dtype=float), np.array([wing.chords.root], dtype=float),
+                np.array([segment.root_chord_percent for segment in segments], dtype=float),
+                np.array([segment.twist for segment in segments], dtype=float),
+                np.array([segment.dihedral_outboard for segment in segments], dtype=float),
+                np.array([segment.sweeps.leading_edge for segment in segments], dtype=float),
+                np.array([segment.origin[0][0] for segment in segments], dtype=float),
+                np.array([segment.origin[0][2] for segment in segments], dtype=float))
+
+    def write(span, root_chord, chord_fractions, twists, dihedrals, sweeps, origins_x, origins_z):
+        wing.spans.projected = span[0]
+        wing.chords.root     = root_chord[0]
+        for i, segment in enumerate(segments):
+            segment.root_chord_percent  = chord_fractions[i]
+            segment.twist               = twists[i]
+            segment.dihedral_outboard   = dihedrals[i]
+            segment.sweeps.leading_edge = sweeps[i]
+            segment.origin              = [[origins_x[i], segment.origin[0][1], origins_z[i]]]
+
+    original = read()
+
+    def coefficients(*arrays):
+        try:
+            write(*arrays)
+            lattice = generate_vortex_distribution(flow_conditions(), settings, vehicle, layouts)
+            results = VLM(flow_conditions(), settings, vehicle, VD=lattice)
+            return results.CLift, results.CDrag_induced, results.CM, results.CY, results.CL, results.CN
+        finally:
+            write(*original)
+
+    report  = check_derivatives(coefficients, original, steps=(1e-5, 1e-6, 1e-7), n_directions=2)
+    reached = {key: float(np.max(np.abs(sensitivity))) for key, sensitivity in zip(names, report.input_sensitivity)}
+    print(f"  {name} wing lattice, {sum(value.size for value in original)} numbers of the main wing: values {report.value_error:.1e}, "
+          f"derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
+    assert report.passed, f"{name}: wing lattice JAX check failed, {report}"
+    assert min(reached.values()) > 0, f"{name}: numbers of the wing that do not reach the coefficients: {reached}"
     return
 
 # ----------------------------------------------------------------------------------------------------------------------

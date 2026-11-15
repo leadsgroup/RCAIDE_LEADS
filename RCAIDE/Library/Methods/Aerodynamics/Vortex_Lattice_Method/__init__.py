@@ -12,7 +12,7 @@ from .compute_RHS_matrix                        import compute_RHS_matrix
 from .compute_wing_induced_velocity             import compute_wing_induced_velocity
 from .postprocess_vortex_distribution           import postprocess_vortex_distribution, compute_unit_normal, arctangent_of_ratio
 from .generate_vortex_distribution              import generate_vortex_distribution
-from .generate_wing_vortex_distribution         import generate_wing_vortex_distribution
+from .generate_wing_vortex_distribution         import generate_wing_vortex_distribution, wing_lattice_layout
 from .generate_fuseform_vortex_distribution     import generate_fuseform_vortex_distribution
 from .train_VLM_surrogates                      import train_VLM_surrogates, train_VLM_supersonic_surrogates
 from .VLM                                       import VLM
