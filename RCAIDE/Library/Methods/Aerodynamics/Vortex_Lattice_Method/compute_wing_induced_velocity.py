@@ -23,6 +23,9 @@ CASE_INDEXED_VD_FIELDS = [
     "panels_per_strip","chord_lengths",
 ]
 
+# entries of one working array of the influence calculation: 8 MB in double precision
+ROW_BLOCK_ENTRIES = 1000000
+
 def compute_wing_induced_velocity(VD,mach,compute_EW=False):
     """ This computes the induced velocities at each control point of the vehicle vortex lattice
 
@@ -163,11 +166,6 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False):
     yc = 0.5*(ya+yb)
     zc = 0.5*(za+zb)
 
-    # This is the receiving point, or the control points
-    xo = XC[:,:,None]
-    yo = YC[:,:,None]
-    zo = ZC[:,:,None]
-
     # Incline the vortex
     theta    = np.arctan2(zb-za,yb-ya)
     costheta = np.cos(theta)
@@ -177,82 +175,92 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False):
     x1bar = (xb - xc)
     y1bar = (yb - yc)*costheta + (zb - zc)*sintheta
 
-    xobar = (xo - xc)
-    yobar = (yo - yc)*costheta + (zo - zc)*sintheta
-    zobar =-(yo - yc)*sintheta + (zo - zc)*costheta
-
-    # COMPUTE COORDINATES OF RECEIVING POINT WITH RESPECT TO END POINTS OF SKEWED LEG.
-    shape   = np.shape(xobar)
-    s       = np.repeat(np.abs(y1bar),shape[1],axis=1)
-    t       = np.repeat(x1bar/y1bar ,shape[1],axis=1)
-
-    X1 = xobar + t*s # In a planar case XC-XAH
-    Y1 = yobar + s   # In a planar case YC-YAH
-    X2 = xobar - t*s # In a planar case XC-XBH
-    Y2 = yobar - s   # In a planar case YC-YBH
-
     # The cutoff hardcoded into vorlax
     CUTOFF = 0.8
 
-    # CALCULATE AXIAL DISTANCE BETWEEN PROJECTION OF RECEIVING POINT ONTO HORSESHOE PLANE AND EXTENSION OF SKEWED LEG.
-    XTY = xobar - t*yobar
-
     # The notation in this method is flipped from the paper
-    B2 = np.atleast_3d(mach**2-1.)
-
-    # SET VALUES OF NUMERICAL TOLERANCE CONSTANTS.
-    TOL    = s /500.0
-    TOLSQ  = TOL *TOL
-    TOLSQ2 = 2500.0 *TOLSQ
-    ZSQ    = zobar *zobar
-    YSQ1   = Y1 *Y1
-    YSQ2   = Y2 *Y2
-    RTV1   = YSQ1 + ZSQ
-    RTV2   = YSQ2 + ZSQ
-    XSQ1   = X1 *X1
-    XSQ2   = X2 *X2
-
-    # Split the vectors into subsonic and supersonic
-    sub      = (B2<0)[:,0,0]
-    RO1      = B2*RTV1
-    RO2      = B2*RTV2
-
-    # ZERO-OUT PERTURBATION VELOCITY COMPONENTS
-    U = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
-    V = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
-    W = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
-
-    if np.sum(sub)>0:
-        # COMPUTATION FOR SUBSONIC HORSESHOE VORTEX
-        U_sub, V_sub, W_sub = subsonic(zobar,XSQ1,RO1,XSQ2,RO2,XTY,t,B2,ZSQ,TOLSQ,X1,Y1,X2,Y2,RTV1,RTV2)
-        U[sub], V[sub], W[sub] = U_sub[sub], V_sub[sub], W_sub[sub]
-
-    # COMPUTATION FOR SUPERSONIC HORSESHOE VORTEX. some values computed in a preprocessing section in VLM
+    B2  = np.atleast_3d(mach**2-1.)
+    sub = (B2<0)[:,0,0]
     sup = (B2>=0)[:,0,0]
-    RFLAG = np.ones((n_mach,shape[2]),dtype=np.int8)
-    if np.sum(sup)>0:
-        RNMAX       = VD.panels_per_strip
-        CHORD       = np.repeat(VD.chord_lengths[:, np.newaxis, :],shape[1],axis=1)
-        U_sup, V_sup, W_sup, RFLAG_sup  = supersonic(zobar,XSQ1,RO1,XSQ2,RO2,XTY,t,B2,ZSQ,TOLSQ,TOL,TOLSQ2,\
-                                                    X1,Y1,X2,Y2,RTV1,RTV2,CUTOFF,CHORD,RNMAX,n_cp,TE_ind,LE_ind)
-        U[sup], V[sup], W[sup], RFLAG[sup,:]  = U_sup[sup], V_sup[sup], W_sup[sup], RFLAG_sup[sup,:]
 
-    # Rotate into the vehicle frame and pack into a velocity matrix
-    C_mn = np.stack([U, V*costheta - W*sintheta, V*sintheta + W*costheta],axis=-1)
+    n_panels = np.shape(XC)[1]
+    C_mn     = np.empty((n_mach,n_panels,n_panels,3),dtype=float)
+    EW       = np.empty((n_mach,n_panels,n_panels),dtype=float) if compute_EW == True else np.nan
+    RFLAG    = np.ones((n_mach,n_panels),dtype=np.int8)
 
+    # The receiving (control) points are taken a block of rows at a time, so the working arrays have a fixed size
+    # and only the result grows with the square of the number of panels. A supersonic case looks across the whole
+    # lattice and is computed in one block.
+    rows_per_block = n_panels if np.sum(sup)>0 else max(1, ROW_BLOCK_ENTRIES//n_panels)
+    for first_row in range(0, n_panels, rows_per_block):
+        rows = slice(first_row, min(first_row + rows_per_block, n_panels))
 
-    if compute_EW == True:
-        # Calculate the W velocity in the VORLAX frame for later calcs
-        # The angles are Dihedral angle of the current panel - dihedral angle of the influencing panel
-        COS1   = np.cos(DL[:,:,None] - DL[:,None,:])
-        SIN1   = np.sin(DL[:,:,None] - DL[:,None,:])
-        WEIGHT = 1
+        # This is the receiving point, or the control points
+        xo = XC[:,rows,None]
+        yo = YC[:,rows,None]
+        zo = ZC[:,rows,None]
 
-        EW = (W*COS1-V*SIN1)*WEIGHT
-    else:
-        # Assume that this function is being used outside of VLM, EW is not needed
-        EW = np.nan
+        xobar = (xo - xc)
+        yobar = (yo - yc)*costheta + (zo - zc)*sintheta
+        zobar =-(yo - yc)*sintheta + (zo - zc)*costheta
 
+        # COMPUTE COORDINATES OF RECEIVING POINT WITH RESPECT TO END POINTS OF SKEWED LEG.
+        shape   = np.shape(xobar)
+        s       = np.repeat(np.abs(y1bar),shape[1],axis=1)
+        t       = np.repeat(x1bar/y1bar ,shape[1],axis=1)
+
+        X1 = xobar + t*s # In a planar case XC-XAH
+        Y1 = yobar + s   # In a planar case YC-YAH
+        X2 = xobar - t*s # In a planar case XC-XBH
+        Y2 = yobar - s   # In a planar case YC-YBH
+
+        # CALCULATE AXIAL DISTANCE BETWEEN PROJECTION OF RECEIVING POINT ONTO HORSESHOE PLANE AND EXTENSION OF SKEWED LEG.
+        XTY = xobar - t*yobar
+
+        # SET VALUES OF NUMERICAL TOLERANCE CONSTANTS.
+        TOL    = s /500.0
+        TOLSQ  = TOL *TOL
+        TOLSQ2 = 2500.0 *TOLSQ
+        ZSQ    = zobar *zobar
+        YSQ1   = Y1 *Y1
+        YSQ2   = Y2 *Y2
+        RTV1   = YSQ1 + ZSQ
+        RTV2   = YSQ2 + ZSQ
+        XSQ1   = X1 *X1
+        XSQ2   = X2 *X2
+        RO1    = B2*RTV1
+        RO2    = B2*RTV2
+
+        # ZERO-OUT PERTURBATION VELOCITY COMPONENTS
+        U = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
+        V = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
+        W = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
+
+        if np.sum(sub)>0:
+            # COMPUTATION FOR SUBSONIC HORSESHOE VORTEX
+            U_sub, V_sub, W_sub = subsonic(zobar,XSQ1,RO1,XSQ2,RO2,XTY,t,B2,ZSQ,TOLSQ,X1,Y1,X2,Y2,RTV1,RTV2)
+            U[sub], V[sub], W[sub] = U_sub[sub], V_sub[sub], W_sub[sub]
+
+        # COMPUTATION FOR SUPERSONIC HORSESHOE VORTEX. some values computed in a preprocessing section in VLM
+        if np.sum(sup)>0:
+            RNMAX       = VD.panels_per_strip
+            CHORD       = np.repeat(VD.chord_lengths[:, np.newaxis, :],shape[1],axis=1)
+            U_sup, V_sup, W_sup, RFLAG_sup  = supersonic(zobar,XSQ1,RO1,XSQ2,RO2,XTY,t,B2,ZSQ,TOLSQ,TOL,TOLSQ2,\
+                                                        X1,Y1,X2,Y2,RTV1,RTV2,CUTOFF,CHORD,RNMAX,n_cp,TE_ind,LE_ind)
+            U[sup], V[sup], W[sup], RFLAG[sup,:]  = U_sup[sup], V_sup[sup], W_sup[sup], RFLAG_sup[sup,:]
+
+        # Rotate into the vehicle frame and pack into a velocity matrix
+        C_mn[:,rows] = np.stack([U, V*costheta - W*sintheta, V*sintheta + W*costheta],axis=-1)
+
+        if compute_EW == True:
+            # Calculate the W velocity in the VORLAX frame for later calcs
+            # The angles are Dihedral angle of the current panel - dihedral angle of the influencing panel
+            COS1   = np.cos(DL[:,rows,None] - DL[:,None,:])
+            SIN1   = np.sin(DL[:,rows,None] - DL[:,None,:])
+            EW[:,rows] = W*COS1-V*SIN1
+
+    # semispan of every horseshoe vortex, repeated for every receiving point
+    s = np.repeat(np.abs(y1bar),n_panels,axis=1)
 
     return C_mn, s, RFLAG, EW
 
