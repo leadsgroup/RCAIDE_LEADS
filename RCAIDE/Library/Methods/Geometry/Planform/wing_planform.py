@@ -65,6 +65,7 @@ def wing_planform(wing):
         defined_aspect_ratio = wing.aspect_ratio
         defined_taper        = wing.taper
         defined_sweep        = wing.sweeps.quarter_chord
+        defined_thickness    = wing.thickness_to_chord
 
     # Unpack
     RC       = wing.chords.root
@@ -225,6 +226,7 @@ def wing_planform(wing):
         wing.aspect_ratio         = defined_aspect_ratio
         wing.taper                = defined_taper
         wing.sweeps.quarter_chord = defined_sweep
+        wing.thickness_to_chord   = defined_thickness
 
         # estimate LEMAC
         y_coord    = wing.spans.projected / 6. * (( 1. + 2. * wing.taper ) / (1. + wing.taper))

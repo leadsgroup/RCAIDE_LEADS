@@ -145,8 +145,11 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,layout=None):
                 else:
                     TE_angle = cs.deflection
 
-            airfoil_x_pts_1, airfoil_z_pts_1 = apply_control_surface_deflections(airfoil_x_pts_dim, airfoil_z_pts_dim,LE_angle, station.leading_edge_chord_fraction,
-                                                                                 TE_angle, station.trailing_edge_chord_fraction, station.ahead_of_leading_hinge, station.behind_trailing_hinge)
+            # the hinge of each surface is at its present chord fraction; the points it moves are those of the layout
+            LE_chord_fraction = 0. if station.leading_edge_surface  is None else station.leading_edge_surface.chord_fraction
+            TE_chord_fraction = 0. if station.trailing_edge_surface is None else station.trailing_edge_surface.chord_fraction
+            airfoil_x_pts_1, airfoil_z_pts_1 = apply_control_surface_deflections(airfoil_x_pts_dim, airfoil_z_pts_dim,LE_angle, LE_chord_fraction,
+                                                                                 TE_angle, TE_chord_fraction, station.ahead_of_leading_hinge, station.behind_trailing_hinge)
 
             diff_x = xp.diff(airfoil_x_pts_1)
             diff_z = xp.diff(airfoil_z_pts_1)
@@ -354,7 +357,7 @@ def wing_lattice_inputs(wing):
         inputs += [segment.root_chord_percent, segment.twist, segment.dihedral_outboard, segment.sweeps.leading_edge,
                    segment.origin[0][0], segment.origin[0][1], segment.origin[0][2]]
     for control_surface in wing.control_surfaces:
-        inputs += [control_surface.deflection, control_surface.get('secondary_deflection', 0.)]
+        inputs += [control_surface.deflection, control_surface.get('secondary_deflection', 0.), control_surface.chord_fraction]
     return inputs
 
 
@@ -373,8 +376,6 @@ def wing_lattice_layout(wing,n_cw,n_sw,spc):
        airfoil_x, airfoil_z           camber line of the airfoil at the station, per unit chord
        leading_edge_surface           slat at the station, or None
        trailing_edge_surface          flap, aileron, elevator, rudder or mixed surface at the station, or None
-       leading_edge_chord_fraction    chord fraction of the leading-edge surface
-       trailing_edge_chord_fraction   chord fraction of the trailing-edge surface
        ahead_of_leading_hinge         True for the airfoil points aft of the slat hinge (they do not move)
        behind_trailing_hinge          True for the airfoil points ahead of the trailing-edge hinge (they do not move)
        starts_strip                   False for the station at the outboard end of a segment's last panel
@@ -440,8 +441,8 @@ def wing_lattice_layout(wing,n_cw,n_sw,spc):
         station.airfoil_z                    = airfoil_z
         station.leading_edge_surface         = None
         station.trailing_edge_surface        = None
-        station.leading_edge_chord_fraction  = 0.0
-        station.trailing_edge_chord_fraction = 0.0
+        leading_edge_chord_fraction          = 0.0
+        trailing_edge_chord_fraction         = 0.0
         LE_angle = 0.0
         TE_angle = 0.0
         for cs in wing.control_surfaces:
@@ -451,18 +452,18 @@ def wing_lattice_layout(wing,n_cw,n_sw,spc):
                     continue
                 elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
                     station.leading_edge_surface        = cs
-                    station.leading_edge_chord_fraction = cs.chord_fraction
+                    leading_edge_chord_fraction         = cs.chord_fraction
                     LE_angle                            = cs.deflection
                 else:
                     station.trailing_edge_surface        = cs
-                    station.trailing_edge_chord_fraction = cs.chord_fraction
+                    trailing_edge_chord_fraction         = cs.chord_fraction
                     TE_angle                             = cs.deflection + cs.get('secondary_deflection', 0.)
 
         # airfoil points that the control surfaces do not move
         airfoil_x_pts = airfoil_x*local_chord
         chord         = airfoil_x_pts[-1]
-        LE_chord_loc  = chord*station.leading_edge_chord_fraction
-        TE_chord_loc  = chord*(1-station.trailing_edge_chord_fraction)
+        LE_chord_loc  = chord*leading_edge_chord_fraction
+        TE_chord_loc  = chord*(1-trailing_edge_chord_fraction)
         station.ahead_of_leading_hinge = airfoil_x_pts > LE_chord_loc
         station.behind_trailing_hinge  = airfoil_x_pts < TE_chord_loc
         if np.all(station.ahead_of_leading_hinge | ((LE_chord_loc - airfoil_x_pts) == 0)) and (LE_angle != 0):
