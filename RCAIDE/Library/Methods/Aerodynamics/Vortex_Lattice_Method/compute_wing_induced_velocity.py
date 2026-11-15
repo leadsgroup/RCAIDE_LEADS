@@ -9,7 +9,7 @@
 # ----------------------------------------------------------------------
 
 # package imports
-from RCAIDE.Framework.Core import Data
+from RCAIDE.Framework.Core import Data, array_namespace, set_at
 import numpy as np
 
 # Fields consumed by compute_wing_induced_velocity_chunk(), indexed by
@@ -87,10 +87,11 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False,delta=None,phi=None):
     return C_mn, s, RFLAG, EW
 
 def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=None):
-    """ Computes compute_wing_induced_velocity()'s result for one slice of the
-    mach/case dimension. Body is the original, unchunked implementation --
-    unchanged other than the name -- see compute_wing_induced_velocity() for why
-    it's called per-chunk instead of once over the full case dimension.
+    """ Computes compute_wing_induced_velocity()'s result for one slice of the mach/case dimension, on NumPy or JAX.
+
+    Assumptions:
+    The Mach numbers are NumPy values (they select the subsonic or supersonic formulas). On JAX the lattice
+    coordinates may be traced; supersonic cases are NumPy only.
 
     Properties Used:
     N/A
@@ -102,53 +103,26 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     mach         = np.array(mach,dtype=float)
 
     # Control points from the VLM
-    XAH   = np.atleast_2d(VD.XAH).astype(float,copy=True)
-    YAH   = np.atleast_2d(VD.YAH).astype(float,copy=True)
-    ZAH   = np.atleast_2d(VD.ZAH).astype(float,copy=True)
-    XBH   = np.atleast_2d(VD.XBH).astype(float,copy=True)
-    YBH   = np.atleast_2d(VD.YBH).astype(float,copy=True)
-    ZBH   = np.atleast_2d(VD.ZBH).astype(float,copy=True)
-    XA1   = np.atleast_2d(VD.XA1).astype(float,copy=True)
-    YA1   = np.atleast_2d(VD.YA1).astype(float,copy=True)
-    ZA1   = np.atleast_2d(VD.ZA1).astype(float,copy=True)
-    XB1   = np.atleast_2d(VD.XB1).astype(float,copy=True)
-    YB1   = np.atleast_2d(VD.YB1).astype(float,copy=True)
-    ZB1   = np.atleast_2d(VD.ZB1).astype(float,copy=True)
-    XA2   = np.atleast_2d(VD.XA2).astype(float,copy=True)
-    YA2   = np.atleast_2d(VD.YA2).astype(float,copy=True)
-    ZA2   = np.atleast_2d(VD.ZA2).astype(float,copy=True)
-    XB2   = np.atleast_2d(VD.XB2).astype(float,copy=True)
-    YB2   = np.atleast_2d(VD.YB2).astype(float,copy=True)
-    ZB2   = np.atleast_2d(VD.ZB2).astype(float,copy=True)
-    XC    = np.atleast_2d(VD.XC).astype(float,copy=True)
-    YC    = np.atleast_2d(VD.YC).astype(float,copy=True)
-    ZC    = np.atleast_2d(VD.ZC).astype(float,copy=True)
-    XA_TE = np.atleast_2d(VD.XA_TE).astype(float,copy=True)
-    XB_TE = np.atleast_2d(VD.XB_TE).astype(float,copy=True)
-
+    names = ('XAH','YAH','ZAH','XBH','YBH','ZBH','XC','YC','ZC')
+    xp    = array_namespace(*[VD[name] for name in names], delta, phi)
+    XAH, YAH, ZAH, XBH, YBH, ZBH, XC, YC, ZC = [xp.atleast_2d(xp.asarray(VD[name],dtype=float)) for name in names]
 
     # Panel Dihedral Angle, using AH and BH location
-    D      = np.sqrt((YAH-YBH)**2+(ZAH-ZBH)**2)
+    D      = xp.sqrt((YAH-YBH)**2+(ZAH-ZBH)**2)
     COS_DL = (YBH-YAH)/D
-    DL     = np.arccos(COS_DL)
-    DL[DL>np.pi/2] = DL[DL>np.pi/2] - np.pi # This flips the dihedral angle for the other side of the wing
+    # a panel without dihedral has a cosine of exactly 1 or -1, where the derivative of the arccosine is infinite
+    flat   = xp.abs(COS_DL) >= 1.
+    DL     = xp.where(flat, xp.where(COS_DL>0, 0., np.pi), xp.arccos(xp.where(flat, 0., COS_DL)))
+    DL     = xp.where(DL>np.pi/2, DL - np.pi, DL) # This flips the dihedral angle for the other side of the wing
 
     # -------------------------------------------------------------------------------------------
     # Compute velocity induced by horseshoe vortex segments on every control point by every panel
     # -------------------------------------------------------------------------------------------
     # If YBH is negative, flip A and B, ie negative side of the airplane. Vortex order flips
-    boolean = YAH>YBH
-    XA1[boolean], XB1[boolean] = XB1[boolean], XA1[boolean]
-    YA1[boolean], YB1[boolean] = YB1[boolean], YA1[boolean]
-    ZA1[boolean], ZB1[boolean] = ZB1[boolean], ZA1[boolean]
-    XA2[boolean], XB2[boolean] = XB2[boolean], XA2[boolean]
-    YA2[boolean], YB2[boolean] = YB2[boolean], YA2[boolean]
-    ZA2[boolean], ZB2[boolean] = ZB2[boolean], ZA2[boolean]
-    XAH[boolean], XBH[boolean] = XBH[boolean], XAH[boolean]
-    YAH[boolean], YBH[boolean] = YBH[boolean], YAH[boolean]
-    ZAH[boolean], ZBH[boolean] = ZBH[boolean], ZAH[boolean]
-
-    XA_TE[boolean], XB_TE[boolean] = XB_TE[boolean], XA_TE[boolean]
+    boolean  = YAH>YBH
+    XAH, XBH = xp.where(boolean,XBH,XAH), xp.where(boolean,XAH,XBH)
+    ZAH, ZBH = xp.where(boolean,ZBH,ZAH), xp.where(boolean,ZAH,ZBH)
+    YAH, YBH = xp.where(boolean,YBH,YAH), xp.where(boolean,YAH,YBH)
 
     # These vortices will use AH and BH, rather than the typical location
     xa = XAH[:,None,:]
@@ -164,9 +138,9 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     zc = 0.5*(za+zb)
 
     # Incline the vortex
-    theta    = np.arctan2(zb-za,yb-ya)
-    costheta = np.cos(theta)
-    sintheta = np.sin(theta)
+    theta    = xp.arctan2(zb-za,yb-ya)
+    costheta = xp.cos(theta)
+    sintheta = xp.sin(theta)
 
     # rotated axes
     x1bar = (xb - xc)
@@ -179,6 +153,8 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     B2  = np.atleast_3d(mach**2-1.)
     sub = (B2<0)[:,0,0]
     sup = (B2>=0)[:,0,0]
+    if xp is not np and np.sum(sup)>0:
+        raise NotImplementedError("the supersonic vortex lattice runs on NumPy only")
 
     # the receiving points are the control points of the lattice, or other points (a rotor disc)
     n_points = np.shape(XC)[1]
@@ -190,16 +166,16 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     # panels by panels. Without them it is the velocity itself, three such arrays, and EW on every row.
     tangency = delta is not None
     if tangency:
-        C_mn             = np.empty((n_mach,n_points,n_panels),dtype=float)
-        normal_x         = np.atleast_3d(np.sin(delta)*np.cos(phi))
-        normal_y         = np.atleast_3d(np.cos(delta)*np.sin(phi))
-        normal_z         = np.atleast_3d(np.cos(phi)*np.cos(delta))
+        C_mn             = xp.empty((n_mach,n_points,n_panels),dtype=float)
+        normal_x         = xp.atleast_3d(xp.sin(delta)*xp.cos(phi))
+        normal_y         = xp.atleast_3d(xp.cos(delta)*xp.sin(phi))
+        normal_z         = xp.atleast_3d(xp.cos(phi)*xp.cos(delta))
         leading_edge     = LE_ind[0]
-        EW               = np.empty((n_mach,int(np.sum(leading_edge)),n_panels),dtype=float) if compute_EW == True else np.nan
+        EW               = xp.empty((n_mach,int(np.sum(leading_edge)),n_panels),dtype=float) if compute_EW == True else np.nan
         leading_edge_row = 0
     else:
-        C_mn = np.empty((n_mach,n_points,n_panels,3),dtype=float)
-        EW   = np.empty((n_mach,n_points,n_panels),dtype=float) if compute_EW == True else np.nan
+        C_mn = xp.empty((n_mach,n_points,n_panels,3),dtype=float)
+        EW   = xp.empty((n_mach,n_points,n_panels),dtype=float) if compute_EW == True else np.nan
 
     # Supersonic cases: which horseshoe vortices are sonic, and the wave term of each panel on itself
     if np.sum(sup)>0:
@@ -207,8 +183,8 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
         RFLAG[sup,:] = RFLAG_sup[sup,:]
 
     # The receiving (control) points are taken a block of rows at a time, so the working arrays have a fixed size
-    # and only the result grows with the square of the number of panels.
-    rows_per_block = max(1, ROW_BLOCK_ENTRIES//n_panels)
+    # and only the result grows with the square of the number of panels. A JAX trace takes them in one block.
+    rows_per_block = max(1, ROW_BLOCK_ENTRIES//n_panels) if xp is np else n_points
     for first_row in range(0, n_points, rows_per_block):
         rows = slice(first_row, min(first_row + rows_per_block, n_points))
 
@@ -223,8 +199,8 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
 
         # COMPUTE COORDINATES OF RECEIVING POINT WITH RESPECT TO END POINTS OF SKEWED LEG.
         shape   = np.shape(xobar)
-        s       = np.repeat(np.abs(y1bar),shape[1],axis=1)
-        t       = np.repeat(x1bar/y1bar ,shape[1],axis=1)
+        s       = xp.repeat(xp.abs(y1bar),shape[1],axis=1)
+        t       = xp.repeat(x1bar/y1bar ,shape[1],axis=1)
 
         X1 = xobar + t*s # In a planar case XC-XAH
         Y1 = yobar + s   # In a planar case YC-YAH
@@ -249,14 +225,15 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
         RO2    = B2*RTV2
 
         # ZERO-OUT PERTURBATION VELOCITY COMPONENTS
-        U = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
-        V = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
-        W = np.zeros((n_mach,shape[1],shape[2] ),dtype=float)
+        U = xp.zeros((n_mach,shape[1],shape[2] ),dtype=float)
+        V = xp.zeros((n_mach,shape[1],shape[2] ),dtype=float)
+        W = xp.zeros((n_mach,shape[1],shape[2] ),dtype=float)
 
         if np.sum(sub)>0:
             # COMPUTATION FOR SUBSONIC HORSESHOE VORTEX
             U_sub, V_sub, W_sub = subsonic(zobar,XSQ1,RO1,XSQ2,RO2,XTY,t,B2,ZSQ,TOLSQ,X1,Y1,X2,Y2,RTV1,RTV2)
-            U[sub], V[sub], W[sub] = U_sub[sub], V_sub[sub], W_sub[sub]
+            subsonic_case       = sub[:,None,None]
+            U, V, W             = xp.where(subsonic_case,U_sub,U), xp.where(subsonic_case,V_sub,V), xp.where(subsonic_case,W_sub,W)
 
         # COMPUTATION FOR SUPERSONIC HORSESHOE VORTEX. some values computed in a preprocessing section in VLM
         if np.sum(sup)>0:
@@ -267,27 +244,27 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
         # Rotate into the vehicle frame
         if tangency:
             # velocity normal to the camber surface at each control point (validated from book eqn 7.42)
-            C_mn[:,rows] =   np.multiply(U                        ,normal_x[:,rows]) \
-                           + np.multiply(V*costheta - W*sintheta  ,normal_y[:,rows]) \
-                           - np.multiply(V*sintheta + W*costheta  ,normal_z[:,rows])
+            block =   xp.multiply(U                        ,normal_x[:,rows]) \
+                    + xp.multiply(V*costheta - W*sintheta  ,normal_y[:,rows]) \
+                    - xp.multiply(V*sintheta + W*costheta  ,normal_z[:,rows])
         else:
-            C_mn[:,rows] = np.stack([U, V*costheta - W*sintheta, V*sintheta + W*costheta],axis=-1)
+            block = xp.stack([U, V*costheta - W*sintheta, V*sintheta + W*costheta],axis=-1)
+        C_mn = set_at(C_mn,(slice(None),rows),block)
 
         if compute_EW == True:
             # Calculate the W velocity in the VORLAX frame for later calcs
             # The angles are Dihedral angle of the current panel - dihedral angle of the influencing panel
-            COS1   = np.cos(DL[:,rows,None] - DL[:,None,:])
-            SIN1   = np.sin(DL[:,rows,None] - DL[:,None,:])
+            COS1   = xp.cos(DL[:,rows,None] - DL[:,None,:])
+            SIN1   = xp.sin(DL[:,rows,None] - DL[:,None,:])
             if tangency:
-                block_leading_edge = leading_edge[rows]
-                number_in_block    = int(np.sum(block_leading_edge))
-                EW[:,leading_edge_row:leading_edge_row + number_in_block] = (W*COS1-V*SIN1)[:,block_leading_edge]
-                leading_edge_row  += number_in_block
+                in_block          = np.flatnonzero(leading_edge[rows])
+                EW                = set_at(EW,(slice(None),slice(leading_edge_row,leading_edge_row + len(in_block))),(W*COS1-V*SIN1)[:,in_block])
+                leading_edge_row += len(in_block)
             else:
-                EW[:,rows] = W*COS1-V*SIN1
+                EW = set_at(EW,(slice(None),rows),W*COS1-V*SIN1)
 
     # semispan of the horseshoe vortex of each panel
-    s = np.abs(y1bar)[:,0,:]
+    s = xp.abs(y1bar)[:,0,:]
 
     return C_mn, s, RFLAG, EW
 
@@ -332,31 +309,33 @@ def subsonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,X1,Y1,X2,Y2,RTV1,RTV2):
     N/A
     """
 
+    xp   = array_namespace(Z,XSQ1,XSQ2,XTY,T,X1,Y1,X2,Y2)
     CPI  = 4 * np.pi
-    RAD1 = np.sqrt(XSQ1 - RO1)
-    RAD2 = np.sqrt(XSQ2 - RO2)
+    RAD1 = xp.sqrt(XSQ1 - RO1)
+    RAD2 = xp.sqrt(XSQ2 - RO2)
 
     TBZ  = (T*T-B2)*ZSQ
     DENOM = XTY * XTY + TBZ
 
-    TOLSQ = np.broadcast_to(TOLSQ,np.shape(DENOM))
+    TOLSQ = xp.broadcast_to(TOLSQ,np.shape(DENOM))
 
-    DENOM[DENOM<TOLSQ] = TOLSQ[DENOM<TOLSQ]
+    DENOM = xp.where(DENOM<TOLSQ, TOLSQ, DENOM)
+
+    # a receiving point on the line of a trailing leg: that leg's term is zero, and its division is not evaluated
+    on_leg_1 = RTV1<TOLSQ
+    on_leg_2 = RTV2<TOLSQ
 
     FB1 = (T *X1 - B2 *Y1) /RAD1
-    FT1 = (X1 + RAD1) /(RAD1 *RTV1)
-    FT1[RTV1<TOLSQ] = 0.
+    FT1 = xp.where(on_leg_1, 0., (X1 + RAD1) /xp.where(on_leg_1, 1., RAD1 *RTV1))
 
     FB2 = (T *X2 - B2 *Y2) /RAD2
-    FT2 = (X2 + RAD2) /(RAD2 *RTV2)
-    FT2[RTV2<TOLSQ] = 0.
+    FT2 = xp.where(on_leg_2, 0., (X2 + RAD2) /xp.where(on_leg_2, 1., RAD2 *RTV2))
 
     QB = (FB1 - FB2) /DENOM
     ZETAPI = Z /CPI
-    U = ZETAPI *QB
-    U[ZSQ<TOLSQ] = 0.
-    V = ZETAPI * (FT1 - FT2 - QB *T)
-    V[ZSQ<TOLSQ] = 0.
+    in_plane = ZSQ<TOLSQ
+    U = xp.where(in_plane, 0., ZETAPI *QB)
+    V = xp.where(in_plane, 0., ZETAPI * (FT1 - FT2 - QB *T))
     W = - (QB *XTY + FT1 *Y1 - FT2 *Y2) /CPI
 
     return U, V, W
