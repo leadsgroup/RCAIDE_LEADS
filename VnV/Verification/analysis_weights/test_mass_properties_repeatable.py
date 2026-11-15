@@ -17,8 +17,8 @@ from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties import mass_prope
 def main():
     # The mission setup estimates the weights of the aircraft of every segment. One aircraft has one empty weight: it
     # must be the same in every segment of a mission, and estimating it a second time must not change it. Checked on
-    # a turboprop transport (FLOPS, whose unusable fuel depends on the fuel capacity) and on a stopped-rotor eVTOL
-    # (component masses set by the user).
+    # a turboprop transport (FLOPS, whose unusable fuel depends on the fuel capacity), on a stopped-rotor eVTOL
+    # (component masses set by the user) and on a hydrogen blended wing body (fuel lines routed to the engines).
     vnv_folder   = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
     start_folder = os.getcwd()
     sys.path.insert(0, os.path.join(vnv_folder, "Vehicles"))
@@ -34,6 +34,12 @@ def main():
     mission = stopped_rotor_mission()
     check_same_weights_in_every_segment("stopped rotor", mission)
     check_second_estimate_unchanged("stopped rotor", mission)
+
+    # the takeoff weight of the blended wing body is iterated to a tolerance, so only its propulsion group is compared
+    os.chdir(os.path.join(vnv_folder, "Verification", "network_hydrogen"))
+    sys.path.insert(0, os.getcwd())
+    mission = hydrogen_blended_wing_body_mission()
+    check_second_estimate_unchanged("hydrogen BWB", mission, keys=['propulsion'])
 
     os.chdir(start_folder)
     return
@@ -53,11 +59,13 @@ def check_same_weights_in_every_segment(name, mission):
     return
 
 
-def check_second_estimate_unchanged(name, mission):
+def check_second_estimate_unchanged(name, mission, keys=None):
     segment = list(mission.segments.values())[0]
     first   = weight_values(segment)
     mass_properties_preprocess_routine(segment, 0)
     second  = weight_values(segment)
+    if keys is not None:
+        first = {key: first[key] for key in keys}
     for key in first:
         assert abs(second[key] - first[key]) <= 1e-9 * abs(first[key]), f"{name}: {key} {first[key]} then {second[key]} when estimated again"
     print(f"  {name}: a second estimate leaves {len(first)} weights unchanged")
@@ -79,7 +87,7 @@ def weight_values(segment):
 
 def set_up_weights(mission):
     """The steps of the mission setup up to the mass properties, without the aerodynamic surrogate."""
-    for step in ('hp_decompose_mission', 'geometry', 'energy', 'mass_properties'):
+    for step in ('configurations', 'hp_decompose_mission', 'geometry', 'energy', 'mass_properties'):
         mission.process.initialize[step](mission)
     return mission
 
@@ -95,6 +103,12 @@ def stopped_rotor_mission():
     vehicle  = test.SR_vehicle_setup(False)
     analyses = test.SR_analyses_setup(test.SR_configs_setup(vehicle))
     return set_up_weights(test.missions_setup(test.SR_mission_setup(analyses, vehicle)).base_mission)
+
+
+def hydrogen_blended_wing_body_mission():
+    import bwb_hydrogen_test as test
+    analyses = test.analyses_setup(test.BWB_configs_setup(test.BWB_vehicle_setup()))
+    return set_up_weights(test.missions_setup(test.mission_setup(analyses)).base_mission)
 
 
 if __name__ == '__main__':
