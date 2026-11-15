@@ -108,10 +108,10 @@ def main():
     RCAIDE_vals.CM_q = -13.302175463455285
     RCAIDE_vals.CN_p = -0.02659845477405559
     RCAIDE_vals.CN_r = -0.11015366016817572
-    RCAIDE_vals.CM_delta_e = -1.5498468606460523
-    RCAIDE_vals.CL_delta_a = -0.16248189991535833
-    RCAIDE_vals.CN_delta_a = 0.010160909195569556
-    RCAIDE_vals.CN_delta_r = -0.0728998404796596
+    RCAIDE_vals.CM_delta_e = -1.4980449073139919
+    RCAIDE_vals.CL_delta_a = -0.15119016236694327
+    RCAIDE_vals.CN_delta_a = 0.009607466202648534
+    RCAIDE_vals.CN_delta_r = -0.06764242371428905
  
 
     RCAIDE_error = Data()
