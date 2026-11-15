@@ -82,6 +82,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         # conditions table, used for surrogate model training
         self.training                                               = Data() 
         self.training_vehicle                                       = None  # vehicle the surrogates were trained on
+        self.surrogate_inputs                                       = None  # values the surrogates were built from
         self.surrogate_owner                                        = None  # analysis owning shared surrogates, set by the aerodynamics pre-process
         self.training.angle_of_attack                               = np.array([ -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45.]) * Units.deg   
         self.training.Mach                                          = np.array([0.1  , 0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.5 , 2.0  , 2.5  , 3.5])             
@@ -158,7 +159,13 @@ class Vortex_Lattice_Method(Aerodynamics):
         
 
     def initialize(self, vehicle): 
-         
+
+        # the surrogates are kept when nothing they were built from has changed
+        inputs = surrogate_inputs(self, vehicle)
+        if self.settings.use_surrogate and same_surrogate_inputs(inputs, self.surrogate_inputs):
+            return
+        self.surrogate_inputs = deepcopy(inputs)
+
         # clean-wing mesh, one case: the geometry the surrogates are trained on and the wing-on-rotor coupling uses
         clean_wing_vehicle = deepcopy(vehicle)
         for wing in clean_wing_vehicle.wings:

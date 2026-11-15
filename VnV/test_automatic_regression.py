@@ -21,6 +21,7 @@ modules = [
     'Verification/analysis_aerodynamics/test_high_lift_induced_drag.py',
     'Verification/analysis_aerodynamics/test_landing_gear_drag.py',
     'Verification/analysis_aerodynamics/test_parasite_drag_nacelle.py',
+    'Verification/analysis_aerodynamics/test_surrogate_inputs.py',
     'Verification/analysis_stability/test_compute_neutral_point.py',
     'Verification/network_turbofan/test_turbofan_matching_floor.py',
     'Verification/network_turbojet/test_turbojet_matching_floor.py',
