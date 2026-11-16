@@ -133,7 +133,7 @@ def VLM(conditions,settings,geometry,VD=None):
     # ------------------ --------------------------------------------------------------------
     if VD is None:
         VD = generate_vortex_distribution(conditions,settings,geometry)
-    xp = array_namespace(*[VD[name] for name in LATTICE_FIELDS], x_m, z_m, S_ref, c_ref, b_ref)
+    xp = array_namespace(*[VD[name] for name in LATTICE_FIELDS], x_m, z_m, S_ref, c_ref, b_ref, conditions.freestream.mach_number)
 
     # unpack conditions--------------------------------------------------------------
     K_SPC    = settings.leading_edge_suction_multiplier

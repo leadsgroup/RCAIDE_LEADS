@@ -20,6 +20,7 @@ from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM import LATTIC
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_aircraft_vortex_distribution, assemble_vortex_distribution
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.postprocess_vortex_distribution import postprocess_vortex_distribution, PANEL_FIELDS
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import control_surface_conditions, train_model
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.compiled_lattice_cases import Compiled_Lattice_Cases
 
 # lattice coordinates the influence matrix is computed from
 COORDINATES = ('XAH', 'YAH', 'ZAH', 'XBH', 'YBH', 'ZBH', 'XC', 'YC', 'ZC')
@@ -61,6 +62,7 @@ def main():
             check_wing_planform(name, vehicle, settings, wing)
         check_control_surfaces(name, vehicle, settings)
         check_airfoil_thickness(name, vehicle)
+        check_surrogate_tables(name, vehicle, settings)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -320,34 +322,43 @@ def check_airfoil_thickness(name, vehicle):
     return
 
 def check_surrogate_tables(name, vehicle, settings):
-    # the tables that the aerodynamic surrogate is built from (coefficients against angle of attack and Mach, sideslip
+    # The tables that the aerodynamic surrogate is built from (coefficients against angle of attack and Mach, sideslip
     # and rate derivatives, control surface derivatives, high-lift induced drag), differentiated with respect to the
-    # numbers that define the main wing and to the center of gravity, which the moments are taken about. One Mach number and two angles of attack keep the check short. The tables hold
-    # differences of cases a small step apart, which carry the round-off of the two cases: the value tolerance is 1e-10.
+    # numbers that define the main wing and to the center of gravity, which the moments are taken about. The flow cases
+    # run as compiled functions of the values the lattice reads (Compiled_Lattice_Cases): one for the clean aircraft
+    # and one for a deflected control surface, each compiled once and used for every Mach number and every surface.
+    # The tables hold differences of cases a small step apart, which carry the round-off of the two cases, so their
+    # values are compared to 1e-9.
+    import time
     from RCAIDE.Library.Methods.Utilities.derivative_check import check_derivatives
-    wing                                  = vehicle.wings.main_wing
-    aerodynamics                          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings                 = settings
-    aerodynamics.training.Mach            = np.array([0.5])
-    aerodynamics.training.angle_of_attack = np.array([0., 6.]) * Units.deg
-    layouts = {surface.tag: wing_lattice_layout(surface, settings.number_of_chordwise_vortices, settings.number_of_spanwise_vortices,
-                                                settings.spanwise_cosine_spacing) for surface in vehicle.wings}
+    wing                       = vehicle.wings.main_wing
+    aerodynamics               = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings      = settings
+    aerodynamics.training.Mach = np.array([0.3, 0.7])
+    Mach                       = aerodynamics.training.Mach
     names, read, write = defining_numbers(wing)
     names    = names + ('center of gravity (x, z)',)
     center   = vehicle.mass_properties.center_of_gravity
-    stored   = (center[0][0], center[0][2])
-    original = read() + (np.array(stored, dtype=float),)
+    original = read() + (np.array([center[0][0], center[0][2]], dtype=float),)
     tables   = []
 
-    def write_center(x, z):
-        vehicle.mass_properties.center_of_gravity = [[x, center[0][1], z]]
+    # the compiled tables against the tables of the NumPy path, and the time of the first build, which compiles
+    expected = train_model(aerodynamics, Mach, vehicle)
+    start    = time.time()
+    compiled = Compiled_Lattice_Cases(aerodynamics, vehicle)
+    built    = train_model(aerodynamics, Mach, vehicle, compiled=compiled)
+    seconds  = time.time() - start
+    keys     = [key for key in expected.keys() if key != 'Mach']
+    scale    = max(float(np.max(np.abs(expected[key]))) for key in keys)
+    error    = max(float(np.max(np.abs(np.asarray(built[key]) - np.asarray(expected[key])))) for key in keys) / scale
+    assert error < 1e-9, f"{name}: the compiled surrogate tables differ from the NumPy tables by {error}"
 
     def surrogate_tables(*arrays):
         try:
             write(*arrays[:-1])
-            write_center(arrays[-1][0], arrays[-1][1])
+            vehicle.mass_properties.center_of_gravity = [[arrays[-1][0], center[0][1], arrays[-1][1]]]
             wing_planform(wing)
-            training = train_model(aerodynamics, aerodynamics.training.Mach, vehicle, layouts)
+            training  = train_model(aerodynamics, Mach, vehicle, compiled=compiled)
             tables[:] = [key for key in training.keys() if key != 'Mach']
             return tuple(training[key] for key in tables)
         finally:
@@ -355,12 +366,16 @@ def check_surrogate_tables(name, vehicle, settings):
             vehicle.mass_properties.center_of_gravity = center
             wing_planform(wing)
 
-    report  = check_derivatives(surrogate_tables, original, steps=(1e-4, 1e-5, 1e-6), n_directions=2, value_tolerance=1e-10)
+    # the compiled functions are differentiated as they stand; the table algebra around them is not compiled again
+    start   = time.time()
+    report  = check_derivatives(surrogate_tables, original, steps=(1e-4, 1e-5, 1e-6), n_directions=2, value_tolerance=1e-9, compiled=False)
     reached = {key: float(np.max(np.abs(sensitivity))) for key, sensitivity in zip(names, report.input_sensitivity)}
     print(f"  {name} surrogate tables, {len(tables)} tables against {sum(value.size for value in original)} numbers of the main wing and the center of gravity: "
-          f"values {report.value_error:.1e}, derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}")
+          f"compiled against NumPy {error:.1e}, derivatives {report.jvp_error:.1e}, reverse {report.vjp_consistency_error:.1e}; "
+          f"first build {seconds:.0f} s with the compilation, derivative check {time.time() - start:.0f} s; compiled {compiled.compilations}")
     assert report.passed, f"{name}: surrogate table JAX check failed, {report}"
     assert min(reached.values()) > 0, f"{name}: numbers that do not reach the surrogate tables: {reached}"
+    assert compiled.compilations['clean'] <= 3 and compiled.compilations['deflected'] <= 3, f"{name}: a set of cases was traced more than once per mode: {compiled.compilations}"
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
