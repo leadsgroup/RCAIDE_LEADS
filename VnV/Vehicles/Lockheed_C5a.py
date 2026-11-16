@@ -808,7 +808,7 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['inner_port_propulsor'].fan.angular_velocity      =  2316 * Units.rpm    
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
-    config.Vref_VS_ratio = 1.3
+    config.flight_envelope.Vref_VS_ratio = 1.3
     configs.append(config)   
      
     # ------------------------------------------------------------------

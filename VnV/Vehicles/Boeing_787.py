@@ -939,7 +939,7 @@ def configs_setup(vehicle):
 
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True         
-    config.Vref_VS_ratio = 1.23
+    config.flight_envelope.Vref_VS_ratio = 1.23
     configs.append(config)   
 
     # ------------------------------------------------------------------

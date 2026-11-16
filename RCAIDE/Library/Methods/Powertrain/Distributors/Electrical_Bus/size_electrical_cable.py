@@ -6,7 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
-from scipy.optimize import fsolve
+from scipy.optimize import brentq
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  size_electrical_cable
@@ -123,8 +123,8 @@ def size_electrical_cable(bus):
                 T4 = duct_U / (1 + 0.1 * (duct_V + duct_Y * theta_m_C) * D_e_mm)
             # The residual should be 0 when thermal equilibrium is met
             return (theta_max - theta_a) - (I_wire**2 * R_prime * (T1 + T4))
-        # Using fsolve with an initial guess of 2mm (0.002 meters)
-        return fsolve(thermal_residual, 0.002)[0]
+        # Bracketed on positive radii (1 um to 0.5 m): prevent fsolve from converging to a negative radius
+        return brentq(thermal_residual, 1e-6, 0.5)
 
     N = bus.number_of_parallel_wires
     if N is None:

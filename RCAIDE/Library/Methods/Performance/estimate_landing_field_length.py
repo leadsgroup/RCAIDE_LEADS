@@ -33,7 +33,7 @@ def estimate_landing_field_length(analyses = None, altitude=0, delta_isa=0):
                 Wing reference area [m^2]
             - maximum_lift_coefficient : float, optional
                 Maximum lift coefficient if pre-computed
-            - Vref_VS_ratio : float, optional
+            - flight_envelope.Vref_VS_ratio : float
                 Ratio of approach to stall speed, default 1.23
     analyses : Analyses
         Container with aerodynamic analyses for computing maximum lift coefficient
@@ -94,11 +94,8 @@ def estimate_landing_field_length(analyses = None, altitude=0, delta_isa=0):
     vehicle         = analyses.vehicle
     weight          = vehicle.mass_properties.landing
     reference_area  = vehicle.reference_area
-    if vehicle.Vref_VS_ratio == None:
-        Vref_VS_ratio = 1.23 
-    else:
-        Vref_VS_ratio = vehicle.Vref_VS_ratio
-        
+    Vref_VS_ratio   = vehicle.flight_envelope.Vref_VS_ratio
+
     #------------------------------------------------------------------------ 
     # Computing atmospheric conditions
     #------------------------------------------------------------------------ 

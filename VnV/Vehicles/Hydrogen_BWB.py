@@ -20,7 +20,6 @@ import os
 #   Define the Vehicle
 # ----------------------------------------------------------------------
 
-
 def vehicle_setup() :
     
     ospath                                = os.path.abspath(__file__)
@@ -851,7 +850,7 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  2030. * Units.rpm 
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
-    config.Vref_VS_ratio = 1.23
+    config.flight_envelope.Vref_VS_ratio            = 1.23
     configs.append(config)
     
     # ------------------------------------------------------------------
