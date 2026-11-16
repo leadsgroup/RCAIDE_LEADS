@@ -101,7 +101,9 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     LE_ind       = VD.leading_edge_indices
     TE_ind       = VD.trailing_edge_indices
     n_mach       = len(mach)
-    mach         = np.array(mach,dtype=float)
+    mach_traced  = array_namespace(mach) is not np
+    if not mach_traced:
+        mach     = np.array(mach,dtype=float)
 
     # Control points from the VLM
     names = ('XAH','YAH','ZAH','XBH','YBH','ZBH','XC','YC','ZC')
@@ -152,9 +154,15 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     CUTOFF = 0.8
 
     # The notation in this method is flipped from the paper
-    B2  = np.atleast_3d(mach**2-1.)
-    sub = (B2<0)[:,0,0]
-    sup = (B2>=0)[:,0,0]
+    # a JAX Mach number is subsonic: the regime decides which formulas are evaluated, so it cannot be a traced value
+    if mach_traced:
+        B2  = array_namespace(mach).reshape(mach**2-1.,(n_mach,1,1))
+        sub = np.ones(n_mach,dtype=bool)
+        sup = np.zeros(n_mach,dtype=bool)
+    else:
+        B2  = np.atleast_3d(mach**2-1.)
+        sub = (B2<0)[:,0,0]
+        sup = (B2>=0)[:,0,0]
     if xp is not np and np.sum(sup)>0:
         raise NotImplementedError("the supersonic vortex lattice runs on NumPy only")
 

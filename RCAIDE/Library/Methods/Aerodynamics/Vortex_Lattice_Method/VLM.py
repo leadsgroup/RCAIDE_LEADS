@@ -146,8 +146,12 @@ def VLM(conditions,settings,geometry,VD=None):
     PITCHQ    = conditions.static_stability.pitch_rate
     VINF      = conditions.freestream.velocity
 
+    # The Mach number and the velocity can be JAX values (a compiled evaluation at any subsonic Mach number); the
+    # angles and rates are NumPy.
+    mach_namespace = array_namespace(mach)
+
     #freestream 0 velocity safeguard
-    if not conditions.freestream.velocity.all():
+    if array_namespace(VINF) is np and not conditions.freestream.velocity.all():
         if settings.use_surrogate:
             velocity                       = conditions.freestream.velocity
             velocity[velocity==0]          = np.ones(len(velocity[velocity==0])) * 1e-6
@@ -194,7 +198,8 @@ def VLM(conditions,settings,geometry,VD=None):
     use_VORLAX_induced_velocity = settings.use_VORLAX_matrix_calculation
     # The matrix depends on the geometry and the Mach number alone. Cases at one Mach number share it: it is built
     # for the first case and the arrays below keep one row, which the cases broadcast against.
-    one_mach = len_mach > 1 and bool(np.all(mach == mach[0]))
+    # Cases given a JAX Mach number share it.
+    one_mach = len_mach > 1 and (mach_namespace is not np or bool(np.all(mach == mach[0])))
     if one_mach:
         VD_matrix = Data()
         for field in CASE_INDEXED_VD_FIELDS:
@@ -240,7 +245,7 @@ def VLM(conditions,settings,geometry,VD=None):
     RJTS = 0
 
     # COMPUTE FREE-STREAM AND ONSET FLOW PARAMETERS. Used throughout the remainder of VLM
-    B2     = np.tile((mach**2 - 1),VD.n_cp[0])
+    B2     = mach_namespace.tile((mach**2 - 1),int(np.ravel(VD.n_cp)[0]))
     SINALF = np.sin(aoa)
     COSALF = np.cos(aoa)
     SINPSI = np.sin(PSI)
@@ -349,7 +354,7 @@ def VLM(conditions,settings,geometry,VD=None):
 
     # Subsonic + vortex lift enabled -> SPC becomes -1
     VL   = np.repeat(VD.vortex_lift,VD.n_sw[0], axis=1)
-    m_b  = np.atleast_2d(mach[:,0]<1.)
+    m_b  = np.atleast_2d(mach[:,0]<1.) if mach_namespace is np else np.ones((1,len_mach),dtype=bool)   # a JAX Mach number is subsonic
     SPC_cond      = VL*m_b.T
     SPC[SPC_cond] = -1.
     SPC           = SPC * exposed_leading_edge_flag
