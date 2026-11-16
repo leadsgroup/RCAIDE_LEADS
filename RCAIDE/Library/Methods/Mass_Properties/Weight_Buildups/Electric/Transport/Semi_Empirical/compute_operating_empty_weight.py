@@ -10,6 +10,7 @@ from RCAIDE.Framework.Core import Data ,  Units
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Transport.Semi_Empirical.compute_operating_items_weight import compute_operating_items_weight
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common as Electric_Common
+from RCAIDE.Library.Components import Component
 
 # python imports 
 import numpy as np
@@ -125,6 +126,25 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
     W_oper = compute_operating_items_weight(vehicle) 
+
+    # Update system component masses if not user defined. If user defined than update the outputs
+    for system in vehicle.systems:
+        if isinstance(system,Component):
+            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Pilots:
+                    system.mass_properties.mass = W_oper.flight_crew
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Attendants:
+                    system.mass_properties.mass = W_oper.flight_attendants
+                # if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Miscellaneous: 
+                #     system.mass_properties.mass = W_oper.misc
+                system.mass_properties.calculated_flag = True
+            else:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Pilots:
+                    W_oper.flight_crew = system.mass_properties.mass
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Attendants:
+                    W_oper.flight_attendants    = system.mass_properties.mass
+                # if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Miscellaneous: 
+                #     W_oper.misc   = system.mass_properties.mass
     
     ##-------------------------------------------------------------------------------         
     # System Weight
