@@ -392,19 +392,15 @@ def defining_numbers(wing):
             return (np.array([wing.areas.reference], dtype=float), np.array([wing.aspect_ratio], dtype=float),
                     np.array([wing.taper], dtype=float), np.array([wing.sweeps.quarter_chord], dtype=float),
                     np.array([segment.twist for segment in segments], dtype=float), np.array([wing.dihedral], dtype=float))
-        def write(area, aspect_ratio, taper, sweep, twists, dihedral=None):
+        def write(area, aspect_ratio, taper, sweep, twists, dihedral):
             wing.areas.reference      = area[0]
             wing.aspect_ratio         = aspect_ratio[0]
             wing.taper                = taper[0]
             wing.sweeps.quarter_chord = sweep[0]
             for i, segment in enumerate(segments):
                 segment.twist = twists[i]
-            if dihedral is not None:
-                wing.dihedral = dihedral[0]
+            wing.dihedral = dihedral[0]
 
-        # the cant of a vertical surface is left out: the Trefftz-plane induced drag is not continuous in it at zero cant
-        if wing.vertical:
-            return names[:-1], lambda: read()[:-1], write
         return names, read, write
 
     # a wing given by segments; the last one is the tip, with no panel outboard of it, so no dihedral or sweep of its own

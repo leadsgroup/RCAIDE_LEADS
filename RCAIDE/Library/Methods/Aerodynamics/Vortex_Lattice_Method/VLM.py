@@ -425,7 +425,8 @@ def VLM(conditions,settings,geometry,VD=None):
     CLift     = xp.atleast_2d(xp.sum(LIFT,axis=1)/S_ref).T
 
     # Drag coefficient
-    results   = compute_trefftz_plane_induced_drag(conditions, VD,Clift_y, X, Y, Z, CHORD_strip,S_ref,b_ref)
+    Cside_y   = FY/CHORD_strip/ES
+    results   = compute_trefftz_plane_induced_drag(VD, Clift_y, Cside_y, CHORD_strip, S_ref)
 
     # Body-axis forces from the wind-axis (lift, drag) pair via the stability-axis rotation
     # inverted (Takahashi et al., AIAA SciTech 2025, Sec. III.F) -- a pure rotation, so no
@@ -561,22 +562,20 @@ def strip_sum(arr, breaks, strip_of_panel):
     return xp.zeros((arr.shape[0],len(breaks)),dtype=arr.dtype).at[:,strip_of_panel].add(arr)
 
 
-def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dist, chord_dist, SREF, b_ref, v_inf=1):
-    """Compute induced drag using a Trefftz-plane (far-field wake) analysis: circulation is
-    reconstructed from the sectional lift via Kutta-Joukowski, shed vortices are formed from
-    the spanwise difference in bound circulation (Helmholtz), each shed vortex's 2-D Biot-Savart
-    field is evaluated at every strip centerpoint, and induced drag is the span-integral of
-    (induced angle x cl x chord), following the classical vortex-lattice/lifting-line approach
-    used in AVL and VORLAX.
+def compute_trefftz_plane_induced_drag(VD, cl, cy, chord_dist, SREF, v_inf=1):
+    """Induced drag from a Trefftz-plane (far-field wake) analysis, for lifting surfaces at any dihedral angle,
+    vertical ones included.
+
+    Each chordwise strip runs from its station A to its station B in the plane, with unit tangent t = (dy, dz)/ds and
+    unit normal n = (-dz, dy)/ds. Its circulation is that of the force along n (Kutta-Joukowski),
+    Gamma/V = c (cl t_y - cy t_z)/2. It leaves a trailing vortex Gamma at B and -Gamma at A (Helmholtz); where two
+    strips meet, or a wing meets its mirror image at the root, these add. A trailing vortex G at Q induces at P the
+    velocity G (t . (P - Q))/(2 pi |P - Q|^2) along n in the far wake, and half of it at the surface. The induced drag
+    of a strip is its normal force times the angle by which that velocity turns the flow.
 
     Assumptions:
-    Incompressible, inviscid flow. Each wing is an independent lifting surface when assembling
-    shed-vortex strengths (mutual induction between wings is still captured in the induced-velocity
-    step, which runs over all wings at once). Symmetric (xz-plane) wings have their inboard root
-    vortex strength set to zero -- the other side's image is implicit. cl is normalised by
-    arc-length area (chord x DS, DS = true spanwise arc-length) rather than projected area
-    (chord x dY); the DS/|dY| factor in the circulation calc corrects back to true bound
-    circulation, and is exactly 1 for a flat, unswept wing.
+    Incompressible, inviscid flow. The wake leaves along the body x axis, so the stations are taken in body axes with
+    no rotation by the angle of attack, as in AVL.
 
     Source:
     1. Drela, M. and Youngren, H., "AVL 3.36 User Primer," MIT, 2017.
@@ -586,130 +585,76 @@ def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dis
        Vol. 11, No. 9, 1974, pp. 518-527.
 
     Inputs:
-    conditions.aerodynamics.angles.alpha      [radians]
     VD.Y/.Z              global node coordinates, the same for every case      [m]
     VD.n_sw/.n_cw        spanwise strips / chordwise panels per strip per wing [Unitless]
-    VD.symmetric_wings/.vertical_wing         per-wing booleans                [Unitless]
-    VD.wing_areas                             per-wing reference area         [m^2]
-    cl               sectional lift coefficient at each strip's LE panel      [Unitless]
-    chord_dist       local chord at each strip                               [m]
-    SREF             vehicle reference area                                  [m^2]
-    v_inf            freestream speed (default 1, non-dimensional)           [m/s]
+    cl, cy               lift and side force coefficient of each strip, on its chord times its width [Unitless]
+    chord_dist           chord of each strip                                   [m]
+    SREF                 vehicle reference area                                [m^2]
+    v_inf                freestream speed (default 1, non-dimensional)         [m/s]
 
     Outputs:
     results.
         CDrag_induced                          [Unitless]
         sectional_CDrag_induced                [Unitless]
         CDrag_induced_wing                     [Unitless]
-        alpha_induced                          [radians]
+        alpha_induced                          [radians], positive where the flow is turned against the lift of
+                                               an upright surface (downwash)
 
     Properties Used:
     N/A
     """
-    xp      = array_namespace(cl, chord_dist, VD.Y, VD.Z, SREF)
-
-    # Every flow case has the same lattice, so the geometry is taken from the first case and the lift of all the
-    # cases is carried along the leading axis.
+    xp        = array_namespace(cl, cy, chord_dist, VD.Y, VD.Z, SREF)
     n_sw      = VD.n_sw[0]
     n_cw      = VD.n_cw[0]
-    n_wings   = len(n_sw)
+
+    # the stations of each wing in the plane: one node per spanwise station (a wing has (n_sw+1)*(n_cw+1) nodes)
+    node_splits = np.cumsum((n_sw + 1) * (n_cw + 1))[:-1]
+    y_stations  = [nodes[::(n_cw[w] + 1)] for w, nodes in enumerate(xp.split(VD.Y[0], node_splits))]
+    z_stations  = [nodes[::(n_cw[w] + 1)] for w, nodes in enumerate(xp.split(VD.Z[0], node_splits))]
+
+    # tangent, width and center of every strip
+    dy       = xp.concatenate([xp.diff(y) for y in y_stations])
+    dz       = xp.concatenate([xp.diff(z) for z in z_stations])
+    ds       = xp.sqrt(dy**2 + dz**2)
+    t_y      = dy/ds
+    t_z      = dz/ds
+    y_center = xp.concatenate([(y[:-1] + y[1:])/2 for y in y_stations])
+    z_center = xp.concatenate([(z[:-1] + z[1:])/2 for z in z_stations])
+
+    # force of each strip along its normal, and its circulation
+    normal_force = cl * t_y - cy * t_z
+    circulation  = 0.5 * chord_dist * v_inf * normal_force
+
+    # trailing vortices at the stations of each wing: -Gamma at the first station of a strip, +Gamma at its second
     divisions = np.cumsum(n_sw)[:-1]
+    trailing  = []
+    for gamma in xp.split(circulation, divisions, axis=1):
+        trailing.append(xp.concatenate([-gamma[:,:1], gamma[:,:-1] - gamma[:,1:], gamma[:,-1:]], axis=1))
+    trailing  = xp.concatenate(trailing, axis=1)
+    y_vortex  = xp.concatenate(y_stations)
+    z_vortex  = xp.concatenate(z_stations)
 
-    # Split into per-wing lists — no np.stack, wings may have different n_sw
-    cl_split    = xp.split(cl, divisions, axis=1)
-    chord_split = xp.split(chord_dist, divisions, axis=1)
+    # velocity along the normal of each strip at its center, half of that in the far wake
+    r_y     = y_center[:, None] - y_vortex[None, :]
+    r_z     = z_center[:, None] - z_vortex[None, :]
+    r2      = r_y**2 + r_z**2
+    r2      = xp.where(r2 == 0, np.inf, r2)
+    kernel  = (t_y[:, None] * r_y + t_z[:, None] * r_z) / (4.0 * np.pi * r2)
+    normal_velocity = (trailing[:, None, :] * kernel).sum(axis=2)
 
-    # VD.Y/VD.Z are flat node arrays: each wing w contributes (n_sw[w]+1)*(n_cw[w]+1)
-    # corner nodes, row-major. Stride by (n_cw[w]+1) to pick one point per spanwise station
-    # (using the first wing's n_cw as a global stride would be wrong when wings differ).
-    node_sizes       = (n_sw + 1) * (n_cw + 1)
-    node_splits      = np.cumsum(node_sizes)[:-1]
-    y_nodes_per_wing = xp.split(VD.Y[0], node_splits)
-    z_nodes_per_wing = xp.split(VD.Z[0], node_splits)
-    y_control_points = [seg[::(n_cw[w] + 1)] for w, seg in enumerate(y_nodes_per_wing)]
-    z_control_points = [seg[::(n_cw[w] + 1)] for w, seg in enumerate(z_nodes_per_wing)]
+    turning    = -xp.arctan(normal_velocity / v_inf)
+    cd_induced = turning * normal_force
 
-    is_symmetric = np.array(VD.symmetric_wings[0], dtype=bool)
-    is_vertical  = np.array(VD.vertical_wing[0],   dtype=bool)
-    symmetric_wing_flags = np.concatenate([np.repeat(is_symmetric & ~is_vertical, 2), np.zeros(np.count_nonzero(~is_symmetric), dtype=bool)])[:n_wings]
-
-    y_centerpoints = []
-    z_centerpoints = []
-    shed_vortices  = []
-
-    for w in range(n_wings):
-        ycp  = y_control_points[w]
-        zcp  = z_control_points[w]
-        cl_w = cl_split[w]
-        ch_w = chord_split[w]
-
-        y_centerpoints.append((ycp[:-1] + ycp[1:]) / 2)
-        # Evaluated in body-axis coordinates -- no alpha rotation on Z, matching how AVL's
-        # TPFORC handles the Prandtl-Glauert transform (ALFAT = 0): the wake and bound-vortex
-        # geometry are already in body axes, so rotating Z by alpha would double-count incidence.
-        z_centerpoints.append((zcp[:-1] + zcp[1:]) / 2)
-
-        dy_w = xp.diff(ycp)
-        dz_w = xp.diff(zcp)
-        # Floor projected span at 1e-6 m (negligible vs. any real panel) to avoid a
-        # division-by-zero for winglet panels lying entirely in the XZ plane.
-        dy_w_g  = xp.where(dy_w == 0, 1e-6, dy_w)
-        DS_w    = xp.sqrt(dy_w_g**2 + dz_w**2)
-        circ_w  = 0.5 * ch_w * v_inf * cl_w * (DS_w / xp.abs(dy_w_g))
-
-        # vorticity shed at each station: the root sheds none on a wing with a mirror image
-        sign_w  = xp.sign(ycp[1] - ycp[0])
-        root    = 0. * circ_w[:,:1] if symmetric_wing_flags[w] else -sign_w * circ_w[:,:1]
-        sv_w    = xp.concatenate([root, sign_w * xp.diff(circ_w, axis=1), -sign_w * circ_w[:,-1:]], axis=1)
-        shed_vortices.append(sv_w)
-
-    # Induced velocity, vectorised over all wings and all cases simultaneously
-    yc    = xp.concatenate(y_centerpoints)
-    zc    = xp.concatenate(z_centerpoints)
-    yp    = xp.concatenate(y_control_points)
-    zp    = xp.concatenate(z_control_points)
-    gamma = xp.concatenate(shed_vortices, axis=1)
-
-    sdy = xp.concatenate([xp.diff(y_control_points[w]) for w in range(n_wings)])
-    sdz = xp.concatenate([xp.diff(z_control_points[w]) for w in range(n_wings)])
-    sds = xp.sqrt(sdy**2 + sdz**2)
-
-    dy_mat = yc[:, None] - yp[None, :]
-    dz_mat = zc[:, None] - zp[None, :]
-    dist2  = dy_mat**2 + dz_mat**2
-    dist2  = xp.where(dist2 == 0, np.inf, dist2)
-
-    numerator             = sdz[:, None] * dz_mat + sdy[:, None] * dy_mat
-    induced_velocity_flat = (
-        (gamma[:, None, :] * xp.sign(sdy[:, None]) * numerator
-         / (4.0 * np.pi * sds[:, None] * dist2))
-        .sum(axis=2)
-    )
-
-    alpha_induced_flat = xp.arctan(induced_velocity_flat / v_inf)
-    cl_flat            = xp.concatenate(cl_split, axis=1)
-    cd_induced_flat    = alpha_induced_flat * cl_flat
-
-    # Per-wing CDi integration
-    CDi          = 0
+    # per-wing integration over the strips
     CDi_of_wings = []
-    offset       = 0
-    for w in range(n_wings):
-        n_sw_w = len(y_centerpoints[w])
-        ycp_w  = y_control_points[w]
-        zcp_w  = z_control_points[w]
-        cd_w   = cd_induced_flat[:, offset:offset + n_sw_w]
-        ch_w   = chord_split[w]
-        ds_w   = xp.sqrt(xp.diff(ycp_w)**2 + xp.diff(zcp_w)**2)
-        CDi_w  = xp.sum(cd_w * ch_w * ds_w, axis=1) / SREF   # strip sum, consistent with how lift is summed
-        CDi_of_wings.append(CDi_w)
-        CDi    = CDi + CDi_w
-        offset += n_sw_w
+    for cd, chord, width in zip(xp.split(cd_induced, divisions, axis=1), xp.split(chord_dist, divisions, axis=1), xp.split(ds, divisions)):
+        CDi_of_wings.append(xp.sum(cd * chord * width, axis=1) / SREF)
+    CDi_of_wings = xp.stack(CDi_of_wings, axis=1)
 
+    # the turning is about the normal of the strip, which points down on the mirrored side of a wing; reported as downwash
     results                          = Data()
-    results.CDrag_induced            = CDi[:,np.newaxis]
-    results.sectional_CDrag_induced  = cd_induced_flat
-    results.CDrag_induced_wing       = xp.stack(CDi_of_wings, axis=1)
-    results.alpha_induced            = alpha_induced_flat
-
+    results.CDrag_induced            = xp.sum(CDi_of_wings, axis=1)[:,np.newaxis]
+    results.sectional_CDrag_induced  = cd_induced
+    results.CDrag_induced_wing       = CDi_of_wings
+    results.alpha_induced            = turning * xp.where(dy < 0, -1., 1.)
     return results
