@@ -3,6 +3,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+from RCAIDE.Framework.Core import array_namespace
 import numpy as np
 from scipy import interpolate
 
@@ -26,7 +27,8 @@ def apply_airfoil_thickness_multiplier(geometry, thickness_multiplier):
     thickness_multiplier : float
         Scale factor on local thickness (1.0 = no change).
     """
-    if thickness_multiplier == 1.0:
+    xp = array_namespace(thickness_multiplier)
+    if xp is np and thickness_multiplier == 1.0:
         return geometry
 
     x_common  = geometry.x_upper_surface  # == x_lower_surface, shared grid
@@ -40,9 +42,7 @@ def apply_airfoil_thickness_multiplier(geometry, thickness_multiplier):
     geometry.max_thickness      = geometry.max_thickness * thickness_multiplier
     geometry.thickness_to_chord = geometry.thickness_to_chord * thickness_multiplier
 
-    # x_coordinates/y_coordinates is the same airfoil on a different (combined
-    # upper+lower loop) sampling -- scale each point's deviation from the
-    # local (interpolated) camber line by the same factor.
+    # the combined loop of points is scaled about the camber line interpolated at each point
     camber_interp = interpolate.interp1d(x_common, camber, kind='linear',
                                           bounds_error=False,
                                           fill_value=(camber[0], camber[-1]))

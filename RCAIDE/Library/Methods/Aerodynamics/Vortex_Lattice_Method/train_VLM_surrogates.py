@@ -10,12 +10,12 @@
 
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core import  Data, Units
+from RCAIDE.Framework.Core import  Data, Units, array_namespace
 from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_vortex_distribution, repeat_vortex_distribution
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.compute_zero_lift_moment import compute_zero_lift_moment
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
-from copy import deepcopy
 
 # package imports
 import numpy  as np
@@ -23,6 +23,9 @@ import numpy  as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
 # ---------------------------------------------------------------------------------------------------------------------- 
+# angle of attack of the second set of high-lift induced drag cases
+HIGH_LIFT_TRAINING_ANGLE = 5.0 * Units.deg
+
 SIDESLIP_AND_RATE_DERIVATIVES = ["dCY_dbeta", "dCL_dbeta", "dCN_dbeta", "dCZ_dq", "dCM_dq", "dCY_dp", "dCL_dp", "dCN_dp", "dCY_dr", "dCL_dr", "dCN_dr"]
 
 def train_VLM_surrogates(aerodynamics, vehicle):
@@ -76,20 +79,23 @@ def train_VLM_supersonic_surrogates(aerodynamics, vehicle):
         training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach, vehicle)
     return
     
-def train_model(aerodynamics,Mach, vehicle): 
-    """Sub function that call methods to run VLM for sample point evaluation. 
-    
+def train_model(aerodynamics,Mach, vehicle, layouts=None):
+    """Sub function that call methods to run VLM for sample point evaluation.
+
     Assumptions:
         None
-        
+
     Source:
         None
 
     Args:
-        aerodynamics       : VLM analysis          [unitless] 
-        
-    Returns: 
-        None    
+        aerodynamics       : VLM analysis          [unitless]
+        Mach               : training Mach numbers [unitless]
+        vehicle            : vehicle; its numbers can be JAX values, and the tables are then JAX arrays
+        layouts            : lattice layout of each wing by its tag (wing_lattice_layout), needed on JAX
+
+    Returns:
+        training           : tables of the coefficients and their derivatives
     """
     settings       = aerodynamics.settings
     AoA            = aerodynamics.training.angle_of_attack                  
@@ -128,10 +134,18 @@ def train_model(aerodynamics,Mach, vehicle):
     conditions.static_stability.roll_rate           = np.zeros_like(Machs)*AoAs  
     conditions.static_stability.yaw_rate            = np.zeros_like(Machs)*AoAs 
    
-    clean_wing_vehicle = deepcopy(vehicle)
-    for wing in clean_wing_vehicle.wings:
-        wing.control_surfaces = []
-    VLM_results      = call_VLM(conditions,settings,clean_wing_vehicle)
+    # Every control surface is undeflected here, so the lattice is that of the clean wing. It is generated once, and
+    # all the cases on it go through one call, so that each Mach number builds its influence matrix once.
+    has_control_surfaces = any(len(wing.control_surfaces) > 0 for wing in vehicle.wings)
+    conditions_alpha     = control_surface_conditions(Mach)
+    conditions_alpha.aerodynamics.angles.alpha[:] = HIGH_LIFT_TRAINING_ANGLE
+    clean_cases      = [conditions, reference_conditions(aerodynamics, Mach), sideslip_and_rate_conditions(aerodynamics, Mach)]
+    if has_control_surfaces:
+        clean_cases += [control_surface_conditions(Mach), conditions_alpha]
+    clean_lattice    = generate_vortex_distribution(control_surface_conditions(Mach[:1]),settings,vehicle,layouts)
+    xp               = array_namespace(clean_lattice.XC)
+    clean_results    = split_results(call_VLM(stack_conditions(clean_cases),settings,vehicle,clean_lattice), clean_cases)
+    VLM_results      = clean_results[0]
     Clift_res        = VLM_results.CLift
     Cdrag_res        = VLM_results.CDrag_induced
     CX_res           = VLM_results.CX
@@ -143,18 +157,18 @@ def train_model(aerodynamics,Mach, vehicle):
 
     training.Clift_spanwise  = VLM_results.sectional_CLift.reshape(len_Mach, len_AoA, np.shape(VLM_results.sectional_CLift)[1]).transpose(1, 0, 2)
     training.gamma_alpha     = VLM_results.gamma.reshape(len_Mach, len_AoA, np.shape(VLM_results.gamma)[1]).transpose(1, 0, 2)
-    Clift_alpha              = np.reshape(Clift_res,(len_Mach,len_AoA)).T 
-    Cdrag_induced_alpha      = np.reshape(Cdrag_res,(len_Mach,len_AoA)).T 
-    CX_alpha                 = np.reshape(CX_res,(len_Mach,len_AoA)).T 
-    CY_alpha                 = np.reshape(CY_res,(len_Mach,len_AoA)).T 
-    CZ_alpha                 = np.reshape(CZ_res,(len_Mach,len_AoA)).T 
-    CL_alpha                 = np.reshape(CL_res,(len_Mach,len_AoA)).T 
-    CM_alpha                 = np.reshape(CM_res,(len_Mach,len_AoA)).T 
-    CN_alpha                 = np.reshape(CN_res,(len_Mach,len_AoA)).T  
+    Clift_alpha              = xp.reshape(Clift_res,(len_Mach,len_AoA)).T
+    Cdrag_induced_alpha      = xp.reshape(Cdrag_res,(len_Mach,len_AoA)).T
+    CX_alpha                 = xp.reshape(CX_res,(len_Mach,len_AoA)).T
+    CY_alpha                 = xp.reshape(CY_res,(len_Mach,len_AoA)).T
+    CZ_alpha                 = xp.reshape(CZ_res,(len_Mach,len_AoA)).T
+    CL_alpha                 = xp.reshape(CL_res,(len_Mach,len_AoA)).T
+    CM_alpha                 = xp.reshape(CM_res,(len_Mach,len_AoA)).T
+    CN_alpha                 = xp.reshape(CN_res,(len_Mach,len_AoA)).T
     
     # zero-lift moment from cases at +/- the reference perturbation (a VLM case at exactly zero incidence is noisy
     # for untwisted wings)
-    reference     = reference_coefficients(aerodynamics, Mach, settings, clean_wing_vehicle)
+    reference     = reference_coefficients(clean_results[1], Mach)
     # STABILITY COEFFICIENTS  
     training.Clift_alpha               = Clift_alpha  
     training.Cdrag_induced_alpha       = Cdrag_induced_alpha   
@@ -167,19 +181,18 @@ def train_model(aerodynamics,Mach, vehicle):
     training.CM_zero_lift              = reference.CM_zero_lift
             
     # derivatives at each training angle of attack
-    training.update(sideslip_and_rate_derivatives(aerodynamics, Mach, settings, clean_wing_vehicle))
+    training.update(sideslip_and_rate_derivatives(aerodynamics, Mach, vehicle, clean_results[2]))
 
     # control surface derivatives: one deflected run per channel against a single undeflected reference
     # shared by all channels; see control_surface_registry.py for why every type is treated identically here.
-    has_control_surfaces = any(len(wing.control_surfaces) > 0 for wing in vehicle.wings)
     if has_control_surfaces:
-        VLM_ref = call_VLM(control_surface_conditions(Mach),settings,vehicle)  # all deflections are 0 here
+        VLM_ref = clean_results[3]  # all deflections are 0 here
     for wing in vehicle.wings:
         for control_surface in wing.control_surfaces:
             for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
                 delta = delta_train[letter][0]
                 setattr(control_surface, deflection_attr, delta)
-                VLM_results = call_VLM(control_surface_conditions(Mach),settings,vehicle)
+                VLM_results = call_VLM(control_surface_conditions(Mach),settings,vehicle,layouts=layouts)
                 training['dClift_ddelta_' + letter] = (VLM_results.CLift[:,0]         - VLM_ref.CLift[:,0]        ) / delta
                 training['dCdrag_ddelta_' + letter] = (VLM_results.CDrag_induced[:,0] - VLM_ref.CDrag_induced[:,0]) / delta
                 training['dCX_ddelta_'    + letter] = (VLM_results.CX[:,0]            - VLM_ref.CX[:,0]           ) / delta
@@ -193,7 +206,7 @@ def train_model(aerodynamics,Mach, vehicle):
 
     # high-lift induced drag at two deflections and two angles of attack (see train_high_lift_induced_drag)
     if has_control_surfaces:
-        training.update(train_high_lift_induced_drag(settings, vehicle, Mach, VLM_ref.CDrag_induced[:,0]))
+        training.update(train_high_lift_induced_drag(settings, vehicle, Mach, VLM_ref.CDrag_induced[:,0], clean_results[4].CDrag_induced[:,0], layouts))
 
     # restore real deflections now that training is done
     for wing in vehicle.wings:
@@ -201,9 +214,6 @@ def train_model(aerodynamics,Mach, vehicle):
             for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
                 setattr(control_surface, deflection_attr, delta_0[letter])
 
-    # reset vortex distribution after training
-    # restore the clean-wing geometry in place: segments share this object, and the control-surface
-    # sweeps above left the last deflected geometry in it (read by e.g. transonic_lift_wave_drag)
     return training
 
 def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub_Mach, sup_Mach, vehicle): 
@@ -273,7 +283,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
     return training
 
 
-def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference):
+def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference, CDi_alpha=None, layouts=None):
     """
     Trains the induced-drag increment of each flap and slat as
     dCDi = p*delta + q*delta^2 + (r0 + r1*delta)*alpha*delta, from VLM runs at two deflections (15, 30 deg)
@@ -297,6 +307,10 @@ def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference):
         Training Mach numbers [-].
     CDi_reference : numpy.ndarray
         Undeflected induced drag at zero incidence for each Mach number [-].
+    CDi_alpha : numpy.ndarray
+        Undeflected induced drag at the training angle of attack for each Mach number [-], computed here when not given.
+    layouts : dict
+        Lattice layout of each wing by its tag (wing_lattice_layout), needed on JAX.
 
     Returns
     -------
@@ -308,17 +322,20 @@ def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference):
                  for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface) if letter in HIGH_LIFT_LETTERS]
     if len(high_lift) == 0:
         return training
-    alpha_training         = 5.0 * Units.deg
+    alpha_training         = HIGH_LIFT_TRAINING_ANGLE
     delta_a, delta_b       = 15.0 * Units.deg, 30.0 * Units.deg
     conditions_alpha       = control_surface_conditions(Mach)
     conditions_alpha.aerodynamics.angles.alpha[:] = alpha_training
-    CDi_alpha              = call_VLM(conditions_alpha,settings,vehicle).CDrag_induced[:,0]
+    if CDi_alpha is None:
+        CDi_alpha          = call_VLM(conditions_alpha,settings,vehicle,layouts=layouts).CDrag_induced[:,0]
     for control_surface, letter, deflection_attr in high_lift:
         increment = {}
         for delta in (delta_a, delta_b):
             setattr(control_surface, deflection_attr, delta)
-            increment[delta] = (call_VLM(control_surface_conditions(Mach),settings,vehicle).CDrag_induced[:,0] - CDi_reference,
-                                call_VLM(conditions_alpha,settings,vehicle).CDrag_induced[:,0] - CDi_alpha)
+            # the two angles of attack at this deflection go through one call, on one lattice
+            cases            = [control_surface_conditions(Mach), conditions_alpha]
+            zero, at_alpha   = split_results(call_VLM(stack_conditions(cases),settings,vehicle,layouts=layouts), cases)
+            increment[delta] = (zero.CDrag_induced[:,0] - CDi_reference, at_alpha.CDrag_induced[:,0] - CDi_alpha)
             setattr(control_surface, deflection_attr, 0)
         q   = (increment[delta_b][0] / delta_b - increment[delta_a][0] / delta_a) / (delta_b - delta_a)
         p   = increment[delta_a][0] / delta_a - q * delta_a
@@ -331,9 +348,8 @@ def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference):
     return training
 
 
-def reference_coefficients(aerodynamics, Mach, settings, vehicle):
-    """Coefficients at zero incidence per Mach, the mean of VLM cases at +/- training.reference_angle_perturbation,
-    and the pitching moment at zero lift from the same cases."""
+def reference_conditions(aerodynamics, Mach):
+    """Cases at +/- training.reference_angle_perturbation for each Mach, which the reference coefficients are taken from."""
     delta                                  = aerodynamics.training.reference_angle_perturbation
     AoAs                                   = np.atleast_2d(np.tile([delta, -delta], len(Mach))).T
     Machs                                  = np.atleast_2d(np.repeat(Mach, 2)).T
@@ -346,25 +362,32 @@ def reference_coefficients(aerodynamics, Mach, settings, vehicle):
     conditions.static_stability.pitch_rate = np.zeros_like(Machs)
     conditions.static_stability.roll_rate  = np.zeros_like(Machs)
     conditions.static_stability.yaw_rate   = np.zeros_like(Machs)
-    VLM_results = call_VLM(conditions, settings, vehicle)
+    return conditions
+
+
+def reference_coefficients(VLM_results, Mach):
+    """Coefficients at zero incidence per Mach, the mean of the cases of reference_conditions, and the pitching moment
+    at zero lift from the same cases."""
+    xp          = array_namespace(VLM_results.CLift)
     reference   = Data()
     for key in ['CLift', 'CDrag_induced', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN']:
-        reference[key] = np.reshape(VLM_results[key], (len(Mach), 2)).mean(axis=1)
-    CLift, CM   = np.reshape(VLM_results.CLift, (len(Mach), 2)), np.reshape(VLM_results.CM, (len(Mach), 2))
+        reference[key] = xp.reshape(VLM_results[key], (len(Mach), 2)).mean(axis=1)
+    CLift, CM   = xp.reshape(VLM_results.CLift, (len(Mach), 2)), xp.reshape(VLM_results.CM, (len(Mach), 2))
     reference.CM_zero_lift = compute_zero_lift_moment(CLift[:, 0], CLift[:, 1], CM[:, 0], CM[:, 1])
     return reference
 
 
-def sideslip_and_rate_derivatives(aerodynamics, Mach, settings, vehicle):
-    """Sideslip and rate derivatives at each training angle of attack and Mach, shape (len(AoA), len(Mach)); rates are
-    about body axes (see compute_lateral_derivatives). All cases share one call so each Mach reuses its C_mn."""
-    training = aerodynamics.training
-    AoA, Beta, q, p, r = training.angle_of_attack, training.sideslip_angle, training.pitch_rate, training.roll_rate, training.yaw_rate
-    b, MAC   = vehicle.reference_span, vehicle.reference_chord
+def sideslip_and_rate_cases(training):
+    """Two cases each of sideslip, pitch rate, roll rate and yaw rate; columns beta, q, p, r."""
+    Beta, q, p, r = training.sideslip_angle, training.pitch_rate, training.roll_rate, training.yaw_rate
+    return np.array([[Beta[0], 0, 0, 0], [Beta[1], 0, 0, 0], [0, q[0], 0, 0], [0, q[1], 0, 0],
+                     [0, 0, p[0], 0], [0, 0, p[1], 0], [0, 0, 0, r[0]], [0, 0, 0, r[1]]])
 
-    # columns beta, q, p, r
-    cases    = np.array([[Beta[0], 0, 0, 0], [Beta[1], 0, 0, 0], [0, q[0], 0, 0], [0, q[1], 0, 0],
-                         [0, 0, p[0], 0], [0, 0, p[1], 0], [0, 0, 0, r[0]], [0, 0, 0, r[1]]])
+
+def sideslip_and_rate_conditions(aerodynamics, Mach):
+    """The cases of sideslip_and_rate_cases at each training angle of attack and Mach."""
+    AoA      = aerodynamics.training.angle_of_attack
+    cases    = sideslip_and_rate_cases(aerodynamics.training)
     n_alpha, n_Mach, n_cases = len(AoA), len(Mach), len(cases)
     per_Mach = np.hstack((np.repeat(AoA, n_cases)[:, None], np.tile(cases, (n_alpha, 1))))
     table    = np.tile(per_Mach, (n_Mach, 1))
@@ -379,10 +402,20 @@ def sideslip_and_rate_derivatives(aerodynamics, Mach, settings, vehicle):
     conditions.static_stability.pitch_rate = table[:, 2:3]
     conditions.static_stability.roll_rate  = table[:, 3:4]
     conditions.static_stability.yaw_rate   = table[:, 4:5]
-    VLM_results = call_VLM(conditions, settings, vehicle)
+    return conditions
+
+
+def sideslip_and_rate_derivatives(aerodynamics, Mach, vehicle, VLM_results):
+    """Sideslip and rate derivatives at each training angle of attack and Mach, shape (len(AoA), len(Mach)), from the
+    cases of sideslip_and_rate_conditions; rates are about body axes (see compute_lateral_derivatives)."""
+    training = aerodynamics.training
+    AoA, Beta, q, p, r = training.angle_of_attack, training.sideslip_angle, training.pitch_rate, training.roll_rate, training.yaw_rate
+    b, MAC   = vehicle.reference_span, vehicle.reference_chord
+    n_alpha, n_Mach, n_cases = len(AoA), len(Mach), len(sideslip_and_rate_cases(training))
+    xp       = array_namespace(VLM_results.CY)
 
     def difference(key, case):
-        values = np.reshape(VLM_results[key], (n_Mach, n_alpha, n_cases)).transpose(1, 0, 2)
+        values = xp.reshape(VLM_results[key], (n_Mach, n_alpha, n_cases)).transpose(1, 0, 2)
         return values[:, :, case] - values[:, :, case + 1]
 
     V       = Mach * 343
@@ -443,44 +476,75 @@ def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_n
     return  abs(dCM_dalpha)
 
 
-def call_VLM(full_conditions,settings,vehicle): 
+def stack_conditions(blocks):
+    """The flow cases of several sets of conditions as one set, in the order given."""
+    conditions = RCAIDE.Framework.Mission.Common.Results()
+    conditions.freestream.mach_number      = np.vstack([block.freestream.mach_number      for block in blocks])
+    conditions.freestream.velocity         = np.vstack([block.freestream.velocity         for block in blocks])
+    conditions.aerodynamics.angles.alpha   = np.vstack([block.aerodynamics.angles.alpha   for block in blocks])
+    conditions.aerodynamics.angles.beta    = np.vstack([block.aerodynamics.angles.beta    for block in blocks])
+    conditions.static_stability.pitch_rate = np.vstack([block.static_stability.pitch_rate for block in blocks])
+    conditions.static_stability.roll_rate  = np.vstack([block.static_stability.roll_rate  for block in blocks])
+    conditions.static_stability.yaw_rate   = np.vstack([block.static_stability.yaw_rate   for block in blocks])
+    return conditions
 
-    # geometry is fixed within this call, so cases at the same Mach share C_mn
-    induced_velocity_cache = {}
-    num_cases =  len(full_conditions.aerodynamics.angles.alpha)
-    for i in  range(num_cases): 
-        conditions                                      = RCAIDE.Framework.Mission.Common.Results() 
-        conditions.freestream.mach_number               = np.atleast_2d(full_conditions.freestream.mach_number[i,:])    
-        conditions.aerodynamics.angles.alpha            = np.atleast_2d(full_conditions.aerodynamics.angles.alpha[i,:])  
-        conditions.aerodynamics.angles.beta             = np.atleast_2d(full_conditions.aerodynamics.angles.beta[i,:])     
-        conditions.freestream.velocity                  = np.atleast_2d(full_conditions.freestream.velocity[i,:])          
-        conditions.static_stability.pitch_rate          = np.atleast_2d(full_conditions.static_stability.pitch_rate[i,:])  
-        conditions.static_stability.roll_rate           = np.atleast_2d(full_conditions.static_stability.roll_rate[i,:])   
-        conditions.static_stability.yaw_rate            = np.atleast_2d(full_conditions.static_stability.yaw_rate[i,:])   
 
-        VLM_results         = VLM(conditions,settings,vehicle,induced_velocity_cache)
-        if i == 0: 
-            RES                 = Data()
-            RES.CLift           = VLM_results.CLift
-            RES.CDrag_induced   = VLM_results.CDrag_induced
-            RES.CX              = VLM_results.CX
-            RES.CY              = VLM_results.CY
-            RES.CZ              = VLM_results.CZ
-            RES.CL              = VLM_results.CL
-            RES.CM              = VLM_results.CM
-            RES.CN              = VLM_results.CN
-            RES.sectional_CLift = VLM_results.sectional_CLift         
-            RES.gamma           = VLM_results.gamma
-        else: 
-            RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift)) 
-            RES.CDrag_induced   = np.vstack((RES.CDrag_induced  ,VLM_results.CDrag_induced))
-            RES.CX              = np.vstack((RES.CX             ,VLM_results.CX))
-            RES.CY              = np.vstack((RES.CY             ,VLM_results.CY))
-            RES.CZ              = np.vstack((RES.CZ             ,VLM_results.CZ))
-            RES.CL              = np.vstack((RES.CL             ,VLM_results.CL))
-            RES.CM              = np.vstack((RES.CM             ,VLM_results.CM))
-            RES.CN              = np.vstack((RES.CN             ,VLM_results.CN))
-            RES.sectional_CLift = np.vstack((RES.sectional_CLift,VLM_results.sectional_CLift))   
-            RES.gamma           = np.vstack((RES.gamma          ,VLM_results.gamma))
-    
+def split_results(RES, blocks):
+    """The results of one call for stack_conditions(blocks), one set of results per block."""
+    results = []
+    start   = 0
+    for block in blocks:
+        end  = start + len(block.freestream.mach_number)
+        part = Data()
+        for key in RES.keys():
+            part[key] = RES[key][start:end]
+        results.append(part)
+        start = end
+    return results
+
+
+def call_VLM(full_conditions,settings,vehicle,lattice=None,layouts=None):
+    """The vortex lattice at each flow case in turn, on one lattice of the vehicle as it is now.
+
+    Args:
+        full_conditions : flow cases, one per row
+        settings        : vortex lattice settings
+        vehicle         : vehicle
+        lattice         : its vortex distribution for one case, generated here when not given
+        layouts         : lattice layout of each wing by its tag (wing_lattice_layout), needed on JAX
+
+    Returns:
+        RES             : coefficients, sectional lift and vortex strengths, one row per case
+    """
+    if lattice is None:
+        lattice = generate_vortex_distribution(control_surface_conditions(np.zeros(1)),settings,vehicle,layouts)
+    xp = array_namespace(lattice.XC)
+
+    # The geometry is fixed within this call, so the cases at one Mach number share an influence matrix: they are
+    # solved together, one Mach number after another, and put back in the order they were given.
+    keys   = ['CLift', 'CDrag_induced', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN', 'sectional_CLift', 'gamma']
+    mach   = np.asarray(full_conditions.freestream.mach_number)[:,0]
+    parts  = {key: [] for key in keys}
+    solved = []
+    for value in np.unique(mach):
+        cases                                  = np.flatnonzero(mach == value)
+        conditions                             = RCAIDE.Framework.Mission.Common.Results()
+        conditions.freestream.mach_number      = full_conditions.freestream.mach_number[cases]
+        conditions.freestream.velocity         = full_conditions.freestream.velocity[cases]
+        conditions.aerodynamics.angles.alpha   = full_conditions.aerodynamics.angles.alpha[cases]
+        conditions.aerodynamics.angles.beta    = full_conditions.aerodynamics.angles.beta[cases]
+        conditions.static_stability.pitch_rate = full_conditions.static_stability.pitch_rate[cases]
+        conditions.static_stability.roll_rate  = full_conditions.static_stability.roll_rate[cases]
+        conditions.static_stability.yaw_rate   = full_conditions.static_stability.yaw_rate[cases]
+
+        VLM_results = VLM(conditions,settings,vehicle,VD=repeat_vortex_distribution(lattice,len(cases)))
+        for key in keys:
+            parts[key].append(VLM_results[key])
+        solved.append(cases)
+
+    # the place of each given case among the solved ones
+    place = np.argsort(np.concatenate(solved))
+    RES   = Data()
+    for key in keys:
+        RES[key] = xp.concatenate(parts[key], axis=0)[place]
     return RES

@@ -10,6 +10,7 @@
 
 # package imports
 from RCAIDE.Framework.Core import Data, array_namespace, set_at
+from .postprocess_vortex_distribution import panels_of_reversed_strips
 import numpy as np
 
 # Fields consumed by compute_wing_induced_velocity_chunk(), indexed by
@@ -100,7 +101,9 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     LE_ind       = VD.leading_edge_indices
     TE_ind       = VD.trailing_edge_indices
     n_mach       = len(mach)
-    mach         = np.array(mach,dtype=float)
+    mach_traced  = array_namespace(mach) is not np
+    if not mach_traced:
+        mach     = np.array(mach,dtype=float)
 
     # Control points from the VLM
     names = ('XAH','YAH','ZAH','XBH','YBH','ZBH','XC','YC','ZC')
@@ -113,13 +116,14 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     # a panel without dihedral has a cosine of exactly 1 or -1, where the derivative of the arccosine is infinite
     flat   = xp.abs(COS_DL) >= 1.
     DL     = xp.where(flat, xp.where(COS_DL>0, 0., np.pi), xp.arccos(xp.where(flat, 0., COS_DL)))
-    DL     = xp.where(DL>np.pi/2, DL - np.pi, DL) # This flips the dihedral angle for the other side of the wing
+    # The orientation of a panel is that of its chordwise strip. On a reversed strip (the mirrored side of a surface)
+    # the dihedral angle is turned half a turn, and the ends A and B of the vortex change places.
+    boolean = panels_of_reversed_strips(VD)
+    DL      = xp.where(boolean, DL - np.pi, DL)
 
     # -------------------------------------------------------------------------------------------
     # Compute velocity induced by horseshoe vortex segments on every control point by every panel
     # -------------------------------------------------------------------------------------------
-    # If YBH is negative, flip A and B, ie negative side of the airplane. Vortex order flips
-    boolean  = YAH>YBH
     XAH, XBH = xp.where(boolean,XBH,XAH), xp.where(boolean,XAH,XBH)
     ZAH, ZBH = xp.where(boolean,ZBH,ZAH), xp.where(boolean,ZAH,ZBH)
     YAH, YBH = xp.where(boolean,YBH,YAH), xp.where(boolean,YAH,YBH)
@@ -150,9 +154,15 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
     CUTOFF = 0.8
 
     # The notation in this method is flipped from the paper
-    B2  = np.atleast_3d(mach**2-1.)
-    sub = (B2<0)[:,0,0]
-    sup = (B2>=0)[:,0,0]
+    # a JAX Mach number is subsonic: the regime decides which formulas are evaluated, so it cannot be a traced value
+    if mach_traced:
+        B2  = array_namespace(mach).reshape(mach**2-1.,(n_mach,1,1))
+        sub = np.ones(n_mach,dtype=bool)
+        sup = np.zeros(n_mach,dtype=bool)
+    else:
+        B2  = np.atleast_3d(mach**2-1.)
+        sub = (B2<0)[:,0,0]
+        sup = (B2>=0)[:,0,0]
     if xp is not np and np.sum(sup)>0:
         raise NotImplementedError("the supersonic vortex lattice runs on NumPy only")
 

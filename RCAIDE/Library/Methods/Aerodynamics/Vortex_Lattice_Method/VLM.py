@@ -10,9 +10,9 @@
 
 # package imports
 from RCAIDE.Framework.Core import Data, array_namespace
-from .compute_wing_induced_velocity      import compute_wing_induced_velocity
+from .compute_wing_induced_velocity      import compute_wing_induced_velocity, CASE_INDEXED_VD_FIELDS
 from .generate_vortex_distribution       import generate_vortex_distribution
-from .postprocess_vortex_distribution     import arctangent_of_ratio
+from .postprocess_vortex_distribution     import arctangent_of_ratio, panels_of_reversed_strips
 from .compute_RHS_matrix                 import compute_RHS_matrix, rotation_in_VORLAX_axes
 
 from scipy.integrate import trapezoid
@@ -27,7 +27,7 @@ LATTICE_FIELDS = ('D','SLOPE','XA1','XA2','XAH','XA_TE','XB1','XB2','XBH','XB_TE
                   'YA_TE','YB1','YB2','YBC','YBH','YB_TE','YC','YCH','Z','ZA1','ZA2','ZAC','ZAH','ZA_TE','ZB1','ZB2','ZBC',
                   'ZBH','ZB_TE','ZC','ZCH','chord_lengths','normals','tangent_incidence_angle','wing_areas')
 
-def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
+def VLM(conditions,settings,geometry,VD=None):
     """Uses the vortex lattice method to compute the lift, induced drag and moment coefficients.
 
     The user should be forwarned that this will cause very slight differences in results for 0 deflection due to
@@ -89,7 +89,6 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
 
     settings.use_surrogate                     [Unitless]
     settings.use_VORLAX_matrix_calculation     [boolean]
-    induced_velocity_cache                     [dict], optional; reuses the influence matrix across calls with the same geometry and Mach
 
     conditions.aerodynamics.angles.alpha       [radians]
     conditions.aerodynamics.angles.beta        [radians]
@@ -147,8 +146,12 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
     PITCHQ    = conditions.static_stability.pitch_rate
     VINF      = conditions.freestream.velocity
 
+    # The Mach number and the velocity can be JAX values (a compiled evaluation at any subsonic Mach number); the
+    # angles and rates are NumPy.
+    mach_namespace = array_namespace(mach)
+
     #freestream 0 velocity safeguard
-    if not conditions.freestream.velocity.all():
+    if array_namespace(VINF) is np and not conditions.freestream.velocity.all():
         if settings.use_surrogate:
             velocity                       = conditions.freestream.velocity
             velocity[velocity==0]          = np.ones(len(velocity[velocity==0])) * 1e-6
@@ -182,7 +185,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
     # STEP 10: Generate A and RHS matrices from VD and geometry
     # ------------------ --------------------------------------------------------------------
     # Compute flow tangency conditions
-    phi   = arctangent_of_ratio(VD.ZBC - VD.ZAC, VD.YBC - VD.YAC) # dihedral angle
+    phi   = arctangent_of_ratio(VD.ZBC - VD.ZAC, VD.YBC - VD.YAC, panels_of_reversed_strips(VD)) # dihedral angle
     delta = arctangent_of_ratio(VD.ZC - VD.ZCH, VD.XC - VD.XCH)   # mean camber surface angle
 
     # Build the RHS vector
@@ -193,22 +196,23 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
     # Build the aerodynamic influence coefficient matrix A of the flow tangency condition. With VORLAX's matrix
     # calculation it is the VORLAX velocity EW on every row; otherwise EW is kept on the leading-edge rows only.
     use_VORLAX_induced_velocity = settings.use_VORLAX_matrix_calculation
-    if xp is not np:
-        induced_velocity_cache = None
-    mach_key = mach.tobytes()
-    if induced_velocity_cache is not None and mach_key in induced_velocity_cache:
-        cached = induced_velocity_cache[mach_key]
-        A, s, RFLAG, EW = cached['A'], cached['s'], cached['RFLAG'], cached['EW']
+    # The matrix depends on the geometry and the Mach number alone. Cases at one Mach number share it: it is built
+    # for the first case and the arrays below keep one row, which the cases broadcast against.
+    # Cases given a JAX Mach number share it.
+    one_mach = len_mach > 1 and (mach_namespace is not np or bool(np.all(mach == mach[0])))
+    if one_mach:
+        VD_matrix = Data()
+        for field in CASE_INDEXED_VD_FIELDS:
+            VD_matrix[field] = VD[field][:1]
+        mach_matrix, delta_matrix, phi_matrix = mach[:1], delta[:1], phi[:1]
     else:
-        if use_VORLAX_induced_velocity:
-            _, s, RFLAG, EW = compute_wing_induced_velocity(VD,mach,compute_EW=True)
-            A               = EW
-            EW              = EW[:,leading_edge]
-        else:
-            A, s, RFLAG, EW = compute_wing_induced_velocity(VD,mach,compute_EW=True,delta=delta,phi=phi)
-        if induced_velocity_cache is not None:
-            induced_velocity_cache.clear()  # keep only the latest Mach to bound memory
-            induced_velocity_cache[mach_key] = {'A': A, 's': s, 'RFLAG': RFLAG, 'EW': EW}
+        VD_matrix, mach_matrix, delta_matrix, phi_matrix = VD, mach, delta, phi
+    if use_VORLAX_induced_velocity:
+        _, s, RFLAG, EW = compute_wing_induced_velocity(VD_matrix,mach_matrix,compute_EW=True)
+        A               = EW
+        EW              = EW[:,leading_edge]
+    else:
+        A, s, RFLAG, EW = compute_wing_induced_velocity(VD_matrix,mach_matrix,compute_EW=True,delta=delta_matrix,phi=phi_matrix)
 
     # Turn off sonic vortices when Mach>1
     RHS = RHS*RFLAG
@@ -216,12 +220,15 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
     # To ensure compatibility for np.linalg.solve across numpy1.0 and numpy2.0
     RHS = xp.atleast_3d(RHS)
 
-    # Compute vortex strength; with a cache (one case per call), A's LU factorization is reused across the Mach group
-    if induced_velocity_cache is not None and len(mach) == 1:
-        cached = induced_velocity_cache[mach_key]
-        if 'lu' not in cached:
-            cached['lu'] = scipy.linalg.lu_factor(A[0].astype(np.result_type(A, RHS)))  # same precision as np.linalg.solve
-        GAMMA = scipy.linalg.lu_solve(cached['lu'], RHS[0])[None]
+    # Compute vortex strength: the shared matrix is factored once and every case is a right-hand side of it
+    if one_mach:
+        if xp is np:
+            factors = scipy.linalg.lu_factor(A[0].astype(np.result_type(A, RHS)))  # same precision as np.linalg.solve
+            GAMMA   = scipy.linalg.lu_solve(factors, RHS[:,:,0].T).T[:,:,None]
+        else:
+            import jax.scipy.linalg
+            factors = jax.scipy.linalg.lu_factor(A[0])
+            GAMMA   = jax.scipy.linalg.lu_solve(factors, RHS[:,:,0].T).T[:,:,None]
     else:
         GAMMA  = xp.linalg.solve(A,RHS)
 
@@ -238,7 +245,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
     RJTS = 0
 
     # COMPUTE FREE-STREAM AND ONSET FLOW PARAMETERS. Used throughout the remainder of VLM
-    B2     = np.tile((mach**2 - 1),VD.n_cp[0])
+    B2     = mach_namespace.tile((mach**2 - 1),int(np.ravel(VD.n_cp)[0]))
     SINALF = np.sin(aoa)
     COSALF = np.cos(aoa)
     SINPSI = np.sin(PSI)
@@ -347,7 +354,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
 
     # Subsonic + vortex lift enabled -> SPC becomes -1
     VL   = np.repeat(VD.vortex_lift,VD.n_sw[0], axis=1)
-    m_b  = np.atleast_2d(mach[:,0]<1.)
+    m_b  = np.atleast_2d(mach[:,0]<1.) if mach_namespace is np else np.ones((1,len_mach),dtype=bool)   # a JAX Mach number is subsonic
     SPC_cond      = VL*m_b.T
     SPC[SPC_cond] = -1.
     SPC           = SPC * exposed_leading_edge_flag
@@ -580,9 +587,9 @@ def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dis
 
     Inputs:
     conditions.aerodynamics.angles.alpha      [radians]
-    VD.Y/.Z[k]           global node coordinates for case k                    [m]
-    VD.n_sw/.n_cw[k]     spanwise strips / chordwise panels per strip per wing [Unitless]
-    VD.symmetric_wings/.vertical_wing[k]      per-wing booleans                [Unitless]
+    VD.Y/.Z              global node coordinates, the same for every case      [m]
+    VD.n_sw/.n_cw        spanwise strips / chordwise panels per strip per wing [Unitless]
+    VD.symmetric_wings/.vertical_wing         per-wing booleans                [Unitless]
     VD.wing_areas                             per-wing reference area         [m^2]
     cl               sectional lift coefficient at each strip's LE panel      [Unitless]
     chord_dist       local chord at each strip                               [m]
@@ -600,119 +607,109 @@ def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dis
     N/A
     """
     xp      = array_namespace(cl, chord_dist, VD.Y, VD.Z, SREF)
-    alpha   = conditions.aerodynamics.angles.alpha
-    n_cases = len(alpha)
 
-    CDi_total         = []
-    CDi_wing          = []
-    Cd_i_distribution = []
-    alpha_i           = []
+    # Every flow case has the same lattice, so the geometry is taken from the first case and the lift of all the
+    # cases is carried along the leading axis.
+    n_sw      = VD.n_sw[0]
+    n_cw      = VD.n_cw[0]
+    n_wings   = len(n_sw)
+    divisions = np.cumsum(n_sw)[:-1]
 
-    for k in range(n_cases):
-        n_wings = len(VD.n_sw[k])
+    # Split into per-wing lists — no np.stack, wings may have different n_sw
+    cl_split    = xp.split(cl, divisions, axis=1)
+    chord_split = xp.split(chord_dist, divisions, axis=1)
 
-        divisions = np.cumsum(VD.n_sw[k])[:-1]
+    # VD.Y/VD.Z are flat node arrays: each wing w contributes (n_sw[w]+1)*(n_cw[w]+1)
+    # corner nodes, row-major. Stride by (n_cw[w]+1) to pick one point per spanwise station
+    # (using the first wing's n_cw as a global stride would be wrong when wings differ).
+    node_sizes       = (n_sw + 1) * (n_cw + 1)
+    node_splits      = np.cumsum(node_sizes)[:-1]
+    y_nodes_per_wing = xp.split(VD.Y[0], node_splits)
+    z_nodes_per_wing = xp.split(VD.Z[0], node_splits)
+    y_control_points = [seg[::(n_cw[w] + 1)] for w, seg in enumerate(y_nodes_per_wing)]
+    z_control_points = [seg[::(n_cw[w] + 1)] for w, seg in enumerate(z_nodes_per_wing)]
 
-        # Split into per-wing lists — no np.stack, wings may have different n_sw
-        cl_split    = xp.split(cl[k], divisions)
-        chord_split = xp.split(chord_dist[k], divisions)
+    is_symmetric = np.array(VD.symmetric_wings[0], dtype=bool)
+    is_vertical  = np.array(VD.vertical_wing[0],   dtype=bool)
+    symmetric_wing_flags = np.concatenate([np.repeat(is_symmetric & ~is_vertical, 2), np.zeros(np.count_nonzero(~is_symmetric), dtype=bool)])[:n_wings]
 
-        # VD.Y[k]/VD.Z[k] are flat node arrays: each wing w contributes (n_sw[w]+1)*(n_cw[w]+1)
-        # corner nodes, row-major. Stride by (n_cw[w]+1) to pick one point per spanwise station
-        # (using the first wing's n_cw as a global stride would be wrong when wings differ).
-        node_sizes       = (VD.n_sw[k] + 1) * (VD.n_cw[k] + 1)
-        node_splits      = np.cumsum(node_sizes)[:-1]
-        y_nodes_per_wing = xp.split(VD.Y[k], node_splits)
-        z_nodes_per_wing = xp.split(VD.Z[k], node_splits)
-        y_control_points = [seg[::(VD.n_cw[k][w] + 1)] for w, seg in enumerate(y_nodes_per_wing)]
-        z_control_points = [seg[::(VD.n_cw[k][w] + 1)] for w, seg in enumerate(z_nodes_per_wing)]
+    y_centerpoints = []
+    z_centerpoints = []
+    shed_vortices  = []
 
-        is_symmetric = np.array(VD.symmetric_wings[0], dtype=bool)
-        is_vertical  = np.array(VD.vertical_wing[0],   dtype=bool)
-        symmetric_wing_flags = np.concatenate([np.repeat(is_symmetric & ~is_vertical, 2), np.zeros(np.count_nonzero(~is_symmetric), dtype=bool)])[:n_wings]
+    for w in range(n_wings):
+        ycp  = y_control_points[w]
+        zcp  = z_control_points[w]
+        cl_w = cl_split[w]
+        ch_w = chord_split[w]
 
-        y_centerpoints = []
-        z_centerpoints = []
-        shed_vortices  = []
+        y_centerpoints.append((ycp[:-1] + ycp[1:]) / 2)
+        # Evaluated in body-axis coordinates -- no alpha rotation on Z, matching how AVL's
+        # TPFORC handles the Prandtl-Glauert transform (ALFAT = 0): the wake and bound-vortex
+        # geometry are already in body axes, so rotating Z by alpha would double-count incidence.
+        z_centerpoints.append((zcp[:-1] + zcp[1:]) / 2)
 
-        for w in range(n_wings):
-            ycp  = y_control_points[w]
-            zcp  = z_control_points[w]
-            cl_w = cl_split[w]
-            ch_w = chord_split[w]
+        dy_w = xp.diff(ycp)
+        dz_w = xp.diff(zcp)
+        # Floor projected span at 1e-6 m (negligible vs. any real panel) to avoid a
+        # division-by-zero for winglet panels lying entirely in the XZ plane.
+        dy_w_g  = xp.where(dy_w == 0, 1e-6, dy_w)
+        DS_w    = xp.sqrt(dy_w_g**2 + dz_w**2)
+        circ_w  = 0.5 * ch_w * v_inf * cl_w * (DS_w / xp.abs(dy_w_g))
 
-            y_centerpoints.append((ycp[:-1] + ycp[1:]) / 2)
-            # Evaluated in body-axis coordinates -- no alpha rotation on Z, matching how AVL's
-            # TPFORC handles the Prandtl-Glauert transform (ALFAT = 0): the wake and bound-vortex
-            # geometry are already in body axes, so rotating Z by alpha would double-count incidence.
-            z_centerpoints.append((zcp[:-1] + zcp[1:]) / 2)
+        # vorticity shed at each station: the root sheds none on a wing with a mirror image
+        sign_w  = xp.sign(ycp[1] - ycp[0])
+        root    = 0. * circ_w[:,:1] if symmetric_wing_flags[w] else -sign_w * circ_w[:,:1]
+        sv_w    = xp.concatenate([root, sign_w * xp.diff(circ_w, axis=1), -sign_w * circ_w[:,-1:]], axis=1)
+        shed_vortices.append(sv_w)
 
-            dy_w = xp.diff(ycp)
-            dz_w = xp.diff(zcp)
-            # Floor projected span at 1e-6 m (negligible vs. any real panel) to avoid a
-            # division-by-zero for winglet panels lying entirely in the XZ plane.
-            dy_w_g  = xp.where(dy_w == 0, 1e-6, dy_w)
-            DS_w    = xp.sqrt(dy_w_g**2 + dz_w**2)
-            circ_w  = 0.5 * ch_w * v_inf * cl_w * (DS_w / xp.abs(dy_w_g))
+    # Induced velocity, vectorised over all wings and all cases simultaneously
+    yc    = xp.concatenate(y_centerpoints)
+    zc    = xp.concatenate(z_centerpoints)
+    yp    = xp.concatenate(y_control_points)
+    zp    = xp.concatenate(z_control_points)
+    gamma = xp.concatenate(shed_vortices, axis=1)
 
-            # vorticity shed at each station: the root sheds none on a wing with a mirror image
-            sign_w  = xp.sign(ycp[1] - ycp[0])
-            root    = 0. * circ_w[:1] if symmetric_wing_flags[w] else -sign_w * circ_w[:1]
-            sv_w    = xp.concatenate([root, sign_w * xp.diff(circ_w), -sign_w * circ_w[-1:]])
-            shed_vortices.append(sv_w)
+    sdy = xp.concatenate([xp.diff(y_control_points[w]) for w in range(n_wings)])
+    sdz = xp.concatenate([xp.diff(z_control_points[w]) for w in range(n_wings)])
+    sds = xp.sqrt(sdy**2 + sdz**2)
 
-        # Induced velocity, vectorised over all wings simultaneously
-        yc    = xp.concatenate(y_centerpoints)
-        zc    = xp.concatenate(z_centerpoints)
-        yp    = xp.concatenate(y_control_points)
-        zp    = xp.concatenate(z_control_points)
-        gamma = xp.concatenate(shed_vortices)
+    dy_mat = yc[:, None] - yp[None, :]
+    dz_mat = zc[:, None] - zp[None, :]
+    dist2  = dy_mat**2 + dz_mat**2
+    dist2  = xp.where(dist2 == 0, np.inf, dist2)
 
-        sdy = xp.concatenate([xp.diff(y_control_points[w]) for w in range(n_wings)])
-        sdz = xp.concatenate([xp.diff(z_control_points[w]) for w in range(n_wings)])
-        sds = xp.sqrt(sdy**2 + sdz**2)
+    numerator             = sdz[:, None] * dz_mat + sdy[:, None] * dy_mat
+    induced_velocity_flat = (
+        (gamma[:, None, :] * xp.sign(sdy[:, None]) * numerator
+         / (4.0 * np.pi * sds[:, None] * dist2))
+        .sum(axis=2)
+    )
 
-        dy_mat = yc[:, None] - yp[None, :]
-        dz_mat = zc[:, None] - zp[None, :]
-        dist2  = dy_mat**2 + dz_mat**2
-        dist2  = xp.where(dist2 == 0, np.inf, dist2)
+    alpha_induced_flat = xp.arctan(induced_velocity_flat / v_inf)
+    cl_flat            = xp.concatenate(cl_split, axis=1)
+    cd_induced_flat    = alpha_induced_flat * cl_flat
 
-        numerator            = sdz[:, None] * dz_mat + sdy[:, None] * dy_mat
-        induced_velocity_flat = (
-            (gamma[None, :] * xp.sign(sdy[:, None]) * numerator
-             / (4.0 * np.pi * sds[:, None] * dist2))
-            .sum(axis=1)
-        )
-
-        alpha_induced_flat = xp.arctan(induced_velocity_flat / v_inf)
-        cl_flat            = xp.concatenate(cl_split)
-        cd_induced_flat    = alpha_induced_flat * cl_flat
-
-        # Per-wing CDi integration
-        CDi          = 0
-        CDi_of_wings = []
-        offset       = 0
-        for w in range(n_wings):
-            n_sw_w = len(y_centerpoints[w])
-            ycp_w  = y_control_points[w]
-            zcp_w  = z_control_points[w]
-            cd_w   = cd_induced_flat[offset:offset + n_sw_w]
-            ch_w   = chord_split[w]
-            ds_w   = xp.sqrt(xp.diff(ycp_w)**2 + xp.diff(zcp_w)**2)
-            CDi_w  = xp.sum(cd_w * ch_w * ds_w) / SREF   # strip sum, consistent with how lift is summed
-            CDi_of_wings.append(CDi_w)
-            CDi    = CDi + CDi_w
-            offset += n_sw_w
-
-        CDi_total.append(CDi)
-        CDi_wing.append(xp.stack(CDi_of_wings))
-        Cd_i_distribution.append(cd_induced_flat)
-        alpha_i.append(alpha_induced_flat)
+    # Per-wing CDi integration
+    CDi          = 0
+    CDi_of_wings = []
+    offset       = 0
+    for w in range(n_wings):
+        n_sw_w = len(y_centerpoints[w])
+        ycp_w  = y_control_points[w]
+        zcp_w  = z_control_points[w]
+        cd_w   = cd_induced_flat[:, offset:offset + n_sw_w]
+        ch_w   = chord_split[w]
+        ds_w   = xp.sqrt(xp.diff(ycp_w)**2 + xp.diff(zcp_w)**2)
+        CDi_w  = xp.sum(cd_w * ch_w * ds_w, axis=1) / SREF   # strip sum, consistent with how lift is summed
+        CDi_of_wings.append(CDi_w)
+        CDi    = CDi + CDi_w
+        offset += n_sw_w
 
     results                          = Data()
-    results.CDrag_induced            = xp.stack(CDi_total)[:,np.newaxis]
-    results.sectional_CDrag_induced  = xp.stack(Cd_i_distribution)
-    results.CDrag_induced_wing       = xp.stack(CDi_wing)
-    results.alpha_induced            = xp.stack(alpha_i)
+    results.CDrag_induced            = CDi[:,np.newaxis]
+    results.sectional_CDrag_induced  = cd_induced_flat
+    results.CDrag_induced_wing       = xp.stack(CDi_of_wings, axis=1)
+    results.alpha_induced            = alpha_induced_flat
 
     return results

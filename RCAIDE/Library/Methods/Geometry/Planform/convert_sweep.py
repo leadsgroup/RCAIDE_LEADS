@@ -3,6 +3,7 @@
 #  Imports
 # ----------------------------------------------------------------------
 import numpy as np
+from RCAIDE.Framework.Core import array_namespace
 
 # ----------------------------------------------------------------------
 # convert_sweep
@@ -125,6 +126,7 @@ def convert_sweep_segments(old_sweep, seg_a, seg_b, wing, old_ref_chord_fraction
         return old_sweep
     
     # Unpack inputs    
+    xp             = array_namespace(old_sweep, seg_a.root_chord_percent, seg_b.root_chord_percent, wing.chords.root, wing.spans.projected)
     sweep          = old_sweep
     
     root_chord     = seg_a.root_chord_percent *wing.chords.root
@@ -140,11 +142,11 @@ def convert_sweep_segments(old_sweep, seg_a, seg_b, wing, old_ref_chord_fraction
     if old_ref_chord_fraction == 0.0:
         sweep_LE = old_sweep
     else:
-        sweep_LE  = np.arctan(np.tan(sweep)+4*old_ref_chord_fraction*
+        sweep_LE  = xp.arctan(xp.tan(sweep)+4*old_ref_chord_fraction*
                               (1-taper)/(ar*(1+taper)))  #Compute leading-edge sweep
 
     #Convert from leading edge sweep to the desired sweep reference
-    new_sweep = np.arctan(np.tan(sweep_LE)-4*new_ref_chord_fraction*
+    new_sweep = xp.arctan(xp.tan(sweep_LE)-4*new_ref_chord_fraction*
                           (1-taper)/(ar*(1+taper)))  #Compute sweep referenced 
                                                      #to new chord-fraction
 

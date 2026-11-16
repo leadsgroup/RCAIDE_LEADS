@@ -119,15 +119,35 @@ def compute_unit_normal(VD):
     # normal has a positive component along the spanwise vector rotated a quarter turn
     dy   = VD.YBC - VD.YAC
     dz   = VD.ZBC - VD.ZAC
-    side = xp.where(dy < 0, -1.0, 1.0)
+    side = xp.where(panels_of_reversed_strips(VD), -1.0, 1.0)
     flip = unit_normal[:,2]*side*dy - unit_normal[:,1]*side*dz < 0
     return xp.where(flip[:,None], -unit_normal, unit_normal)
 
 
-def arctangent_of_ratio(numerator, denominator):
-    """ arctan(numerator/denominator), with a finite derivative on JAX where the denominator is zero (a vertical panel)."""
+def panels_of_reversed_strips(VD):
+    """ True for every panel of a chordwise strip whose leading-edge bound vortex runs from B to A along y (the
+    mirrored side of a surface). The orientation of a panel is that of its strip: a rudder panel deflected past the
+    vertical keeps the orientation of the fin it is on."""
+    leading_edge   = np.atleast_2d(VD.leading_edge_indices)[0]
+    strip_of_panel = np.cumsum(leading_edge) - 1
+    first_panel    = np.flatnonzero(leading_edge)[strip_of_panel]
+    return (VD.YAH > VD.YBH)[..., first_panel]
+
+
+def arctangent_of_ratio(numerator, denominator, reversed_strip=None):
+    """ arctan(numerator/denominator), with a finite derivative on JAX where the denominator is zero (a vertical panel).
+
+    Without reversed_strip the angle is between -pi/2 and pi/2. With it (panels_of_reversed_strips) the angle is that of
+    the vector (denominator, numerator), turned half a turn on a reversed strip, so it is continuous through pi/2."""
     xp = array_namespace(numerator, denominator)
+    if reversed_strip is None:
+        if xp is np:
+            return np.arctan(numerator/denominator)
+        sign = xp.where(denominator<0, -1., 1.)
+        return xp.arctan2(numerator*sign, denominator*sign)
     if xp is np:
-        return np.arctan(numerator/denominator)
-    sign = xp.where(denominator<0, -1., 1.)
+        angle       = np.arctan(numerator/denominator)
+        other_side  = (denominator < 0) != reversed_strip
+        return np.where(other_side, np.where(angle > 0, angle - np.pi, angle + np.pi), angle)
+    sign = xp.where(reversed_strip, -1., 1.)
     return xp.arctan2(numerator*sign, denominator*sign)

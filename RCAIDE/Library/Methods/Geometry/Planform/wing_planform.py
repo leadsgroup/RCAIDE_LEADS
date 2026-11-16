@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE 
+from RCAIDE.Framework.Core import array_namespace
 from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments, convert_sweep 
 from RCAIDE.Library.Methods.Geometry.Airfoil                import  compute_naca_4series, import_airfoil_geometry
 from RCAIDE.Library.Methods.Geometry.Planform.compute_segment_centroid import compute_segment_centroid
@@ -64,6 +65,7 @@ def wing_planform(wing):
         defined_aspect_ratio = wing.aspect_ratio
         defined_taper        = wing.taper
         defined_sweep        = wing.sweeps.quarter_chord
+        defined_thickness    = wing.thickness_to_chord
 
     # Unpack
     RC       = wing.chords.root
@@ -72,7 +74,6 @@ def wing_planform(wing):
     
     # Pull all the segment data into array format
     span_locs = []
-    twists    = []
     sweeps    = []
     dihedrals = []
     chords    = []
@@ -82,7 +83,6 @@ def wing_planform(wing):
     for i in range(len(wing.segments)): 
         seg       = wing.segments[seg_keys[i]]
         span_locs.append(seg.percent_span_location)
-        twists.append(seg.twist)
         chords.append(seg.root_chord_percent)
         
         if i ==  (len(wing.segments) - 1):
@@ -95,14 +95,10 @@ def wing_planform(wing):
             
             elif seg.sweeps.quarter_chord == None and  seg.sweeps.leading_edge != None:
                 # covert leading edge to quarter chord
-                if i == len(wing.segments) - 1:
-                    sweeps.append(0)
-                    seg.sweeps.quarter_chord = 0
-                else: 
-                    next_seg  = wing.segments[seg_keys[i+1]]                
-                    quarter_chord_sweep =  convert_sweep_segments(seg.sweeps.leading_edge, seg, next_seg, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25)
-                    sweeps.append(quarter_chord_sweep)
-                    seg.sweeps.quarter_chord = quarter_chord_sweep 
+                next_seg  = wing.segments[seg_keys[i+1]]                
+                quarter_chord_sweep =  convert_sweep_segments(seg.sweeps.leading_edge, seg, next_seg, wing, old_ref_chord_fraction=0.0, new_ref_chord_fraction=0.25)
+                sweeps.append(quarter_chord_sweep)
+                seg.sweeps.quarter_chord = quarter_chord_sweep 
             else:
                 raise AssertionError("Quarter chord or leading edge sweep must be defined") 
          
@@ -119,11 +115,13 @@ def wing_planform(wing):
             t_cs.append(seg.thickness_to_chord)
         dihedrals.append(seg.dihedral_outboard)
         
-    # Convert to arrays
-    chords    = np.array(chords)
-    span_locs = np.array(span_locs)
-    sweeps    = np.array(sweeps)
-    t_cs      = np.array(t_cs)
+    # Convert to arrays, of JAX when a number of the wing is a JAX value
+    xp        = array_namespace(RC, span, *span_locs, *sweeps, *dihedrals, *chords, *t_cs)
+    chords    = stacked(xp, chords)
+    span_locs = stacked(xp, span_locs)
+    sweeps    = stacked(xp, sweeps)
+    dihedrals = stacked(xp, dihedrals)
+    t_cs      = stacked(xp, t_cs)
     
     # Basic calcs:
     semispan     = span/(1+sym)
@@ -137,27 +135,22 @@ def wing_planform(wing):
     Af = lengths_dim*((chords_dim[:-1]*t_cs[:-1]+chords_dim[1:]*t_cs[1:])/2)
 
     # Calculate the wing area
-    ref_area = np.sum(As)*(1+sym)
-    frontal_area = np.sum(Af)*(1+sym)
+    ref_area = xp.sum(As)*(1+sym)
+    frontal_area = xp.sum(Af)*(1+sym)
     
     # Calculate the Aspect Ratio
     AR = (span**2)/ref_area
     
     # Calculate the total span
-    lens = lengths_dim/np.cos(dihedrals[:-1])
-    total_len = np.sum(np.array(lens))*(1+sym)
+    lens = lengths_dim/xp.cos(dihedrals[:-1])
+    total_len = xp.sum(lens)*(1+sym)
     
     # Calculate the mean geometric chord
     mgc = ref_area/span
     
-    # Calculate the mean aerodynamic chord
-    A = chords_dim[:-1]
-    B = (A-chords_dim[1:])/(-lengths_ndim)
-    C = span_locs[:-1]
-    integral = ((A+B*(span_locs[1:]-C))**3-(A+B*(span_locs[:-1]-C))**3)/(3*B)
-    # For the cases when the wing doesn't taper in a spot
-    integral[np.isnan(integral)] = (A[np.isnan(integral)]**2)*((lengths_ndim)[np.isnan(integral)])
-    MAC = (semispan*(1+sym)/(ref_area))*np.sum(integral)
+    # Calculate the mean aerodynamic chord: the integral of the chord squared over each linearly tapered segment
+    integral = lengths_ndim*(chords_dim[:-1]**2 + chords_dim[:-1]*chords_dim[1:] + chords_dim[1:]**2)/3
+    MAC = (semispan*(1+sym)/(ref_area))*xp.sum(integral)
     
     # Calculate the taper ratio
     lamda = chords[-1]/chords[0]
@@ -166,43 +159,38 @@ def wing_planform(wing):
     ct = chords_dim[-1]
     
     # Calculate an average t/c weighted by area
-    t_c = np.sum(As*t_cs[:-1])/(ref_area/(1+sym))
+    t_c = xp.sum(As*t_cs[:-1])/(ref_area/(1+sym))
     
     # Calculate the segment leading edge sweeps
     r_offsets = chords_dim[:-1]/4
     t_offsets = chords_dim[1:]/4
-    le_sweeps = np.arctan((r_offsets+np.tan(sweeps[:-1])*(lengths_dim)-t_offsets)/(lengths_dim)) 
-    le_sweeps = np.append(le_sweeps, 0)
+    le_sweeps = xp.arctan((r_offsets+xp.tan(sweeps[:-1])*(lengths_dim)-t_offsets)/(lengths_dim)) 
+    le_sweeps = xp.concatenate([le_sweeps, xp.zeros(1)])
     
     # Calculate the effective sweeps
-    c_4_sweep     = np.arctan(np.sum(lengths_ndim*np.tan(sweeps[:-1])))
-    le_sweep_total= np.arctan(np.sum(lengths_ndim*np.tan(le_sweeps[:-1])))
+    c_4_sweep     = xp.arctan(xp.sum(lengths_ndim*xp.tan(sweeps[:-1])))
+    le_sweep_total= xp.arctan(xp.sum(lengths_ndim*xp.tan(le_sweeps[:-1])))
 
     # Calculate the aerodynamic center, but first the centroid
-    dxs = np.cumsum(np.concatenate([np.array([0]),np.tan(le_sweeps[:-1])*lengths_dim]))
-    dys = np.cumsum(np.concatenate([np.array([0]),lengths_dim]))
-    dzs = np.cumsum(np.concatenate([np.array([0]),np.tan(dihedrals[:-1])*lengths_dim]))
+    dxs = xp.cumsum(xp.concatenate([xp.zeros(1),xp.tan(le_sweeps[:-1])*lengths_dim]))
+    dys = xp.cumsum(xp.concatenate([xp.zeros(1),lengths_dim]))
+    dzs = xp.cumsum(xp.concatenate([xp.zeros(1),xp.tan(dihedrals[:-1])*lengths_dim]))
     
-    Cxys = []
-    for i in range(len(lengths_dim)):
-        Cxys.append(compute_segment_centroid(le_sweeps[i],lengths_dim[i],dxs[i],dys[i],dzs[i], tapers[i], 
-                                     dihedrals[i], chords_dim[i], chords_dim[i+1]))
+    Cxys = compute_segment_centroid(le_sweeps[:-1],lengths_dim,dxs[:-1],dys[:-1],dzs[:-1], tapers,
+                                    dihedrals[:-1], chords_dim[:-1], chords_dim[1:])
 
-    aerodynamic_center = (np.dot(np.transpose(Cxys),As)/(ref_area/(1+sym)))
-    
-    
-    single_side_aerodynamic_center = (np.array(aerodynamic_center)*1.)
-    single_side_aerodynamic_center[0] = single_side_aerodynamic_center[0] - MAC*.25
-    # a vertical surface spans along z, as its segment origins do
-    if vertical:
-        aerodynamic_center[1], aerodynamic_center[2] = aerodynamic_center[2], aerodynamic_center[1]
+    centroid = xp.sum(Cxys*As, axis=1)/(ref_area/(1+sym))
+
+    # the aerodynamic center is at the quarter chord; a vertical surface spans along z, as its segment origins do
+    ac_x = centroid[0] - MAC*.25
+    ac_y = centroid[2] if vertical else centroid[1]
+    ac_z = centroid[1] if vertical else centroid[2]
     if sym== True:
-        aerodynamic_center[1] = 0 
-        
-    aerodynamic_center[0] = single_side_aerodynamic_center[0]
+        ac_y = 0.*ac_y
+    aerodynamic_center = xp.stack([ac_x, ac_y, ac_z])
     
     # Total length for supersonics
-    total_length = np.tan(le_sweep_total)*semispan + chords[-1]*RC
+    total_length = xp.tan(le_sweep_total)*semispan + chords[-1]*RC
     
     if vertical: 
         for i in range(len(wing.segments)):
@@ -238,10 +226,11 @@ def wing_planform(wing):
         wing.aspect_ratio         = defined_aspect_ratio
         wing.taper                = defined_taper
         wing.sweeps.quarter_chord = defined_sweep
+        wing.thickness_to_chord   = defined_thickness
 
         # estimate LEMAC
         y_coord    = wing.spans.projected / 6. * (( 1. + 2. * wing.taper ) / (1. + wing.taper))
-        wing.LEMAC = wing.origin[0][0] + np.tan(wing.sweeps.leading_edge) * y_coord
+        wing.LEMAC = wing.origin[0][0] + xp.tan(wing.sweeps.leading_edge) * y_coord
 
     # control surface  
     taper = wing.taper 
@@ -275,8 +264,8 @@ def wing_planform(wing):
 
             # reference trapezoid: this panel's leading and trailing edges extended from the centerline to the tip
             span                 = wing.spans.projected
-            projected_root_chord = segment_root_chord + segnent_start_span/2 * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
-            projected_tip_chord  = projected_root_chord + span/2 * (np.tan(trailing_edge_sweep) - np.tan(leading_edge_sweep))
+            projected_root_chord = segment_root_chord + segnent_start_span/2 * (xp.tan(leading_edge_sweep) - xp.tan(trailing_edge_sweep))
+            projected_tip_chord  = projected_root_chord + span/2 * (xp.tan(trailing_edge_sweep) - xp.tan(leading_edge_sweep))
             wing.areas.reference = (projected_root_chord + projected_tip_chord)/2 * span
             wing.aspect_ratio    = span**2 / wing.areas.reference
             wing.chords.mean_aerodynamic =   2./3.*( projected_root_chord+projected_tip_chord - projected_root_chord*projected_tip_chord/(projected_root_chord+projected_tip_chord) )
@@ -285,8 +274,7 @@ def wing_planform(wing):
             outboard_segment_origin =  wing.segments[seg_keys[tag+1]].origin
             taper = projected_tip_chord/projected_root_chord
             y_coord = span / 6. * (( 1. + 2. * taper ) / (1. + taper))
-            x_coord = wing.chords.mean_aerodynamic * 0.25 + y_coord * np.tan(leading_edge_sweep) 
-            LEMAC = wing.origin[0][0] + outboard_segment_origin[0][0] + np.tan(leading_edge_sweep)*(y_coord - wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected/2)
+            LEMAC = wing.origin[0][0] + outboard_segment_origin[0][0] + xp.tan(leading_edge_sweep)*(y_coord - wing.segments[seg_keys[tag+1]].percent_span_location * wing.spans.projected/2)
             # estimate LEMAC
             wing.LEMAC =  LEMAC
 
@@ -412,6 +400,8 @@ def segment_properties(wing):
     wing_root_chord           = wing.chords.root  
     segment_names             = list(segments.keys())
     num_segments              = len(segment_names)
+    xp                        = array_namespace(semispan, wing_root_chord, wing.origin[0][0], *[value for name in segment_names for value in
+                                    (segments[name].percent_span_location, segments[name].root_chord_percent, segments[name].thickness_to_chord, segments[name].origin[0][0])])
     
     # initialize areas to 0
     total_wetted_area         = 0.0 
@@ -451,10 +441,8 @@ def segment_properties(wing):
                 S_exposed_seg = S_exposed_seg*2
             
             # compute wetted area of segment
-            if t_c_w < 0.05:
-                Swet_seg = 2.003* S_exposed_seg
-            else:
-                Swet_seg = (1.977 + 0.52*t_c_w) * S_exposed_seg
+            # wetted area, constant below a thickness ratio of 0.05, where the two expressions meet
+            Swet_seg = (1.977 + 0.52*xp.maximum(t_c_w, 0.05)) * S_exposed_seg
              
             # store segment properties   
             inboard_segment.taper                          = taper 
@@ -487,13 +475,13 @@ def segment_properties(wing):
             total_reference_area += Sref_seg
 
     # LEMAC: chord-weighted mean leading-edge location over the piecewise-linear planform
-    y_seg      = np.array([segments[name].percent_span_location for name in segment_names]) * semispan
-    c_seg      = np.array([segments[name].root_chord_percent for name in segment_names]) * wing_root_chord
-    x_seg      = np.array([segments[name].origin[0][0] for name in segment_names]) + wing.origin[0][0]
-    dy         = np.diff(y_seg)
+    y_seg      = stacked(xp, [segments[name].percent_span_location for name in segment_names]) * semispan
+    c_seg      = stacked(xp, [segments[name].root_chord_percent for name in segment_names]) * wing_root_chord
+    x_seg      = stacked(xp, [segments[name].origin[0][0] for name in segment_names]) + wing.origin[0][0]
+    dy         = y_seg[1:] - y_seg[:-1]
     c_0, c_1   = c_seg[:-1], c_seg[1:]
     x_0, x_1   = x_seg[:-1], x_seg[1:]
-    wing.LEMAC = np.sum(dy*(2*c_0*x_0 + c_0*x_1 + c_1*x_0 + 2*c_1*x_1)/6) / np.sum(dy*(c_0 + c_1)/2)
+    wing.LEMAC = xp.sum(dy*(2*c_0*x_0 + c_0*x_1 + c_1*x_0 + 2*c_1*x_1)/6) / xp.sum(dy*(c_0 + c_1)/2)
 
     wing.areas.reference   = total_reference_area
     wing.areas.projected   = total_reference_area
@@ -504,3 +492,8 @@ def segment_properties(wing):
     wing.areas.wetted    = total_wetted_area
         
     return wing
+
+
+def stacked(xp, values):
+    """A list of numbers as one array of the given namespace."""
+    return xp.stack([xp.asarray(value, dtype=float) for value in values])
