@@ -45,8 +45,10 @@ class Main_Wing(Wing):
         """
         Sets default values for the main wing attributes.
         """
-        self.tag      = 'main_wing'
-        self.segments = Segment_Container()
+        self.tag        = 'main_wing'
+        self.segments   = Segment_Container()
+        # flapped fraction of the wing area for the FLOPS weights; None takes the FLOPS default
+        self.flap_ratio = None
 
 class Segment_Container(Container):
     """

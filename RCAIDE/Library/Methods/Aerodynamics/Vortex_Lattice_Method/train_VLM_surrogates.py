@@ -104,17 +104,18 @@ def train_model(aerodynamics,Mach, vehicle, layouts=None, compiled=None):
     training       = Data()
     training.Mach  = Mach 
     
-    # loop through wings to determine what control surfaces are present
-    delta_0     = {}
-    delta_train = {}
+    # loop through wings to determine what control surfaces are present; each surface's deflections are stored and
+    # set to zero for the training
+    stored_deflections = []
+    delta_train        = {}
     for wing in vehicle.wings:
         for control_surface in wing.control_surfaces:
+            stored_deflections.append((control_surface, control_surface.deflection, control_surface.secondary_deflection))
             for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
-                delta_0[letter]     = getattr(control_surface, deflection_attr)
                 delta_train[letter] = getattr(aerodynamics.training, channel + '_deflection')
                 setattr(aerodynamics, flag, True)
-            control_surface.deflection           = 0 # set all control surfaces to be 0
-            control_surface.secondary_deflection = 0
+            control_surface.deflection           = 0.
+            control_surface.secondary_deflection = 0.
              
     len_Mach       = len(Mach)        
     len_AoA        = len(AoA)  
@@ -191,17 +192,16 @@ def train_model(aerodynamics,Mach, vehicle, layouts=None, compiled=None):
                 training['dCM_ddelta_'    + letter] = (VLM_results.CM[:,0]            - VLM_ref.CM[:,0]           ) / delta
                 training['dCN_ddelta_'    + letter] = (VLM_results.CN[:,0]            - VLM_ref.CN[:,0]           ) / delta
                 # reset to 0, not the real deflection, so later surfaces train in isolation
-                setattr(control_surface, deflection_attr, 0)
+                setattr(control_surface, deflection_attr, 0.)
 
     # high-lift induced drag at two deflections and two angles of attack (see train_high_lift_induced_drag)
     if has_control_surfaces:
         training.update(train_high_lift_induced_drag(settings, vehicle, Mach, VLM_ref.CDrag_induced[:,0], clean_results[4].CDrag_induced[:,0], layouts, compiled))
 
-    # restore real deflections now that training is done
-    for wing in vehicle.wings:
-        for control_surface in wing.control_surfaces:
-            for letter, name, channel, flag, deflection_attr in cs_lookup(control_surface):
-                setattr(control_surface, deflection_attr, delta_0[letter])
+    # restore each surface's deflections now that training is done
+    for control_surface, deflection, secondary_deflection in stored_deflections:
+        control_surface.deflection           = deflection
+        control_surface.secondary_deflection = secondary_deflection
 
     return training
 
@@ -329,7 +329,7 @@ def train_high_lift_induced_drag(settings, vehicle, Mach, CDi_reference, CDi_alp
             else:
                 zero, at_alpha = compiled.cases('deflected', vehicle, Mach)
             increment[delta] = (zero.CDrag_induced[:,0] - CDi_reference, at_alpha.CDrag_induced[:,0] - CDi_alpha)
-            setattr(control_surface, deflection_attr, 0)
+            setattr(control_surface, deflection_attr, 0.)
         q   = (increment[delta_b][0] / delta_b - increment[delta_a][0] / delta_a) / (delta_b - delta_a)
         p   = increment[delta_a][0] / delta_a - q * delta_a
         r_a = (increment[delta_a][1] - increment[delta_a][0]) / (alpha_training * delta_a)

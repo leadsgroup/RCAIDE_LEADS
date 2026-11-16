@@ -362,15 +362,14 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
         fuel_tank_points[:, :, 2] += fuel_tank.origin[0][2]
     
 
-    if hasattr(fuel_tank, "wing_root_twist"):
-        # do one last rotation for root twist of wing 
-        wing_root_rotation = np.zeros((3, 3))
-        wing_root_rotation[0,0] = np.cos(fuel_tank.wing_root_twist)
-        wing_root_rotation[0,2] = np.sin(fuel_tank.wing_root_twist)
-        wing_root_rotation[1,1] = 1
-        wing_root_rotation[2,0] = -np.sin(fuel_tank.wing_root_twist)
-        wing_root_rotation[2,2] = np.cos(fuel_tank.wing_root_twist)
-        fuel_tank_points =  fuel_tank_points @ wing_root_rotation.T 
+    # do one last rotation for root twist of wing (zero for a tank outside a wing)
+    wing_root_rotation = np.zeros((3, 3))
+    wing_root_rotation[0,0] = np.cos(fuel_tank.wing_root_twist)
+    wing_root_rotation[0,2] = np.sin(fuel_tank.wing_root_twist)
+    wing_root_rotation[1,1] = 1
+    wing_root_rotation[2,0] = -np.sin(fuel_tank.wing_root_twist)
+    wing_root_rotation[2,2] = np.cos(fuel_tank.wing_root_twist)
+    fuel_tank_points =  fuel_tank_points @ wing_root_rotation.T 
     
     G= Data()
     G.PTS  = fuel_tank_points 
@@ -527,14 +526,13 @@ def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_ta
     section_1 = np.column_stack((coords_np[:, 0], np.full(coords_np.shape[0], y1), coords_np[:, 1]))
     tank_points = np.stack((section_0, section_1), axis=0)
 
-    if hasattr(fuel_tank, "wing_root_twist"):
-        wing_root_rotation = np.zeros((3, 3))
-        wing_root_rotation[0, 0] = np.cos(fuel_tank.wing_root_twist)
-        wing_root_rotation[0, 2] = np.sin(fuel_tank.wing_root_twist)
-        wing_root_rotation[1, 1] = 1
-        wing_root_rotation[2, 0] = -np.sin(fuel_tank.wing_root_twist)
-        wing_root_rotation[2, 2] = np.cos(fuel_tank.wing_root_twist)
-        tank_points = tank_points @ wing_root_rotation.T
+    wing_root_rotation = np.zeros((3, 3))
+    wing_root_rotation[0, 0] = np.cos(fuel_tank.wing_root_twist)
+    wing_root_rotation[0, 2] = np.sin(fuel_tank.wing_root_twist)
+    wing_root_rotation[1, 1] = 1
+    wing_root_rotation[2, 0] = -np.sin(fuel_tank.wing_root_twist)
+    wing_root_rotation[2, 2] = np.cos(fuel_tank.wing_root_twist)
+    tank_points = tank_points @ wing_root_rotation.T
 
     G = Data()
     G.PTS = tank_points

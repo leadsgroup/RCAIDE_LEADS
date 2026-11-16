@@ -65,7 +65,8 @@ class Vehicle(Data):
         self.costs                                                         = Data()      
         self.reference_area                                                = 0.0      
         self.reference_span                                                = 0.0      
-        self.reference_chord                                               = 0.0      
+        self.reference_chord                                               = 0.0
+        self.LEMAC                                                         = 0.0
         self.neutral_point                                                 = None
         self.number_of_passengers                                          = 0 
         self.number_of_seats                                               = 0 
@@ -312,8 +313,10 @@ class Vehicle_Mass_Properties(Components.Mass_Properties):
         self.center_of_gravity                      = [[0.0,0.0,0.0]]
         self.zero_fuel_center_of_gravity            = [[0.0,0.0,0.0]]
         self.operating_empty_center_of_gravity      = [[0.0,0.0,0.0]]
-        self.OEW_CG_mass_percentage                 = 0.0    
-        
+        self.OEW_CG_mass_percentage                 = 0.0
+        # the breakdown the weights analysis computes; its entries depend on the method
+        self.weight_breakdown                       = None
+
 class Vehicle_Mass_Container(Components.Component.Container,Vehicle_Mass_Properties):
         
     def append(self,value,key=None):

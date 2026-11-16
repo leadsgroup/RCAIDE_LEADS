@@ -110,11 +110,10 @@ def compute_operating_empty_weight(vehicle, settings=None):
             raise ValueError("FLOPS requires a design range for sizing!")
         if vehicle.flight_envelope.design_cruise_altitude == None:
             raise ValueError("FLOPS requires a cruise altitude for sizing!")
-    if not hasattr(vehicle, 'flap_ratio'):
-        flap_ratio = 0.33
-        for wing in vehicle.wings:
-            if isinstance(wing, Wings.Main_Wing):
-                wing.flap_ratio = flap_ratio 
+    # the FLOPS flapped fraction of the wing area, where the main wing does not set its own
+    for wing in vehicle.wings:
+        if isinstance(wing, Wings.Main_Wing) and wing.flap_ratio is None:
+            wing.flap_ratio = 0.33
                 
     ##-------------------------------------------------------------------------------             
     # Payload Weight

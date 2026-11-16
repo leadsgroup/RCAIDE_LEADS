@@ -96,6 +96,7 @@ class Segment(Component):
         self.percent_span_location                     = 0.0
         self.twist                                     = 0.0
         self.taper                                     = 0.0
+        self.aspect_ratio                              = 0.0
         self.root_chord_percent                        = 0.0
         self.dihedral_outboard                         = 0.0
         self.thickness_to_chord                        = 0.0

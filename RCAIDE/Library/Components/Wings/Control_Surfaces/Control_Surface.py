@@ -102,6 +102,9 @@ class Control_Surface(Component):
         """
         self.tag                   = 'control_surface' 
         self.span                  = 0.0
+        self.area                  = 0.0
+        self.root_chord            = 0.0
+        self.tip_chord             = 0.0
         self.span_fraction_start   = 0.0
         self.span_fraction_end     = 0.0 
         self.hinge_fraction        = 0.0

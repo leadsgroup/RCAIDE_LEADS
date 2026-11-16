@@ -526,6 +526,9 @@ def resolve_hybridization(segment, topology,seg_i, verbose=False):
                         # .compute_fuel_volume), which this must not overwrite.
                         if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                             continue
+                        # a propulsor shares the bus through its own drive generator's split
+                        if isinstance(source, RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor):
+                            continue
                         source.power_split_ratio = 1.0 / len(sources)
 
     if verbose and seg_i == 0:
