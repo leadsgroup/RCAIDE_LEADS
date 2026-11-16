@@ -38,8 +38,7 @@ def extract_wing_collocation_points(VD,conditions,settings,geometry, wing_instan
     # unpack vortex distribution properties 
     sym          = VD.symmetric_wings
     
-    # Find the beginning and end indices of the wing
-    # all breaks
+    # Find the beginning and end indices of the wing all breaks
     breaks = np.hstack([0,np.cumsum(VD.n_cw*VD.n_sw)])
     
     # Find the initial index of the wing

@@ -126,7 +126,7 @@ def compressibility_drag(state,settings,geometry):
     sub_h00    = lambda M:sub_spline.compute(M)   
 
     subsonic_CDc          = subsonic_compressibility_drag(state,settings,geometry) 
-    transonic_CDw_lift    = transonic_lift_wave_drag(conditions, settings, geometry) 
+    transonic_CDw_lift    = transonic_lift_wave_drag(conditions, state.analyses.aerodynamics.vortex_distribution, geometry) 
     supersonic_CDw_volume = supersonic_volume_wave_drag(conditions, settings, geometry) 
     supersonic_CDw_lift   = supersonic_lift_wave_drag(conditions, settings, geometry)
     
@@ -282,7 +282,7 @@ def subsonic_compressibility_drag(state,settings,geometry):
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  transonic_wave_drag
 # ----------------------------------------------------------------------------------------------------------------------
-def transonic_lift_wave_drag(conditions, settings, geometry): 
+def transonic_lift_wave_drag(conditions, vortex_distribution, geometry): 
     """
     Computes transonic lift wave drag coefficient using empirical correlations.
 
@@ -366,9 +366,9 @@ def transonic_lift_wave_drag(conditions, settings, geometry):
     CD_wave_transonic = np.zeros_like(Mach) 
     CL_y              = conditions.aerodynamics.coefficients.lift.spanwise *geometry.wings.main_wing.areas.projected/S_ref
 
-    chords   = settings.vortex_distribution.chord_lengths
-    delta    = settings.vortex_distribution.leading_edge_sweeps 
-    dy       = settings.vortex_distribution.chord_widths
+    chords   = vortex_distribution.strip_chord_lengths
+    delta    = vortex_distribution.leading_edge_sweeps 
+    dy       = vortex_distribution.chord_widths
     
     CD_wave_transonic = np.zeros_like(Mach)
     c_kappa           = 0.23 # normalized curvature of the airfoil. This can eventually be calcualted using airfoil shape data. 

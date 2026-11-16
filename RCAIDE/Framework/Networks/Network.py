@@ -68,6 +68,8 @@ class Network(Component):
         """ This sets the default values for the network to function.
         """        
         self.tag                          = 'network'
+        self.reverse_thrust               = False
+        self.wing_on_rotor_coupling       = False
         self.propulsors                   = Container()  
         self.busses                       = Container()
         self.coolant_lines                = Container()
