@@ -8,7 +8,7 @@
 #  Imports
 # ----------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core    import  Data 
+from RCAIDE.Framework.Core    import  Data, array_namespace
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.postprocess_vortex_distribution       import postprocess_vortex_distribution
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_wing_vortex_distribution     import generate_wing_vortex_distribution  
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_fuseform_vortex_distribution import generate_fuseform_vortex_distribution  
@@ -19,156 +19,63 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Generate Vortex Distribution
 # ----------------------------------------------------------------------
-def generate_vortex_distribution(conditions,settings,geometry): 
-    precision      = settings.floating_point_precision    
-    # ---------------------------------------------------------------------------------------
-    # STEP 1: Define empty vectors for coordinates of panes, control points and bound vortices
-    # ---------------------------------------------------------------------------------------
-    VD_seg = Data()
+def generate_vortex_distribution(conditions,settings,geometry,layouts=None):
+    """ The vortex distribution of the aircraft, with a leading dimension for the flow cases.
 
-    VD_seg.XAH    = np.empty(shape=[0,0], dtype=precision)
-    VD_seg.YAH    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.ZAH    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.XBH    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YBH    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.ZBH    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.XCH    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YCH    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.ZCH    = np.empty(shape=[0,1], dtype=precision)     
-    VD_seg.XA1    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YA1    = np.empty(shape=[0,1], dtype=precision)  
-    VD_seg.ZA1    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.XA2    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YA2    = np.empty(shape=[0,1], dtype=precision)    
-    VD_seg.ZA2    = np.empty(shape=[0,1], dtype=precision)    
-    VD_seg.XB1    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YB1    = np.empty(shape=[0,1], dtype=precision)  
-    VD_seg.ZB1    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.XB2    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YB2    = np.empty(shape=[0,1], dtype=precision)    
-    VD_seg.ZB2    = np.empty(shape=[0,1], dtype=precision)     
-    VD_seg.XAC    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YAC    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.ZAC    = np.empty(shape=[0,1], dtype=precision) 
-    VD_seg.XBC    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YBC    = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.ZBC    = np.empty(shape=[0,1], dtype=precision) 
-    VD_seg.XC_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YC_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.ZC_TE  = np.empty(shape=[0,1], dtype=precision)     
-    VD_seg.XA_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YA_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.ZA_TE  = np.empty(shape=[0,1], dtype=precision) 
-    VD_seg.XB_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YB_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.ZB_TE  = np.empty(shape=[0,1], dtype=precision)  
-    VD_seg.XC     = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.YC     = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.ZC     = np.empty(shape=[0,1], dtype=precision)        
-    VD_seg.CS     = np.empty(shape=[0,1], dtype=precision) 
-    VD_seg.X      = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.Y      = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.Z      = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.Y_SW   = np.empty(shape=[0,1], dtype=precision)
-    VD_seg.DY     = np.empty(shape=[0,1], dtype=precision)
-     
-    # generate_aircraft_vortex_distribution(geometry, settings) does not depend on
-    # `conditions` -- it produces byte-identical output for every flight condition.
-    # Compute it once and tile below instead of recomputing (and np.vstack-copying)
-    # the same panel geometry once per condition, which is what a loop over
-    # range(n_cases) with an unused loop variable was doing before.
+    Inputs:
+    conditions   flight conditions; the number of cases is that of the angles of attack
+    settings     vortex lattice settings (number of vortices, spacing, fuselage model)
+    geometry     vehicle
+    layouts      lattice layout of each wing by its tag (wing_lattice_layout), needed on JAX
+
+    Outputs:
+    VD_seg       vortex distribution
+    """
     n_cases = len(conditions.aerodynamics.angles.alpha)
-    VD_i    = generate_aircraft_vortex_distribution(geometry,settings)
-    VD_seg.XAH                       = np.atleast_2d(VD_i.XAH   )
-    VD_seg.YAH                       = np.atleast_2d(VD_i.YAH   )
-    VD_seg.ZAH                       = np.atleast_2d(VD_i.ZAH   )
-    VD_seg.XBH                       = np.atleast_2d(VD_i.XBH   )
-    VD_seg.YBH                       = np.atleast_2d(VD_i.YBH   )
-    VD_seg.ZBH                       = np.atleast_2d(VD_i.ZBH   )
-    VD_seg.XCH                       = np.atleast_2d(VD_i.XCH   )
-    VD_seg.YCH                       = np.atleast_2d(VD_i.YCH   )
-    VD_seg.ZCH                       = np.atleast_2d(VD_i.ZCH   )     
-    VD_seg.XA1                       = np.atleast_2d(VD_i.XA1   )
-    VD_seg.YA1                       = np.atleast_2d(VD_i.YA1   )  
-    VD_seg.ZA1                       = np.atleast_2d(VD_i.ZA1   )
-    VD_seg.XA2                       = np.atleast_2d(VD_i.XA2   )
-    VD_seg.YA2                       = np.atleast_2d(VD_i.YA2   )    
-    VD_seg.ZA2                       = np.atleast_2d(VD_i.ZA2   )    
-    VD_seg.XB1                       = np.atleast_2d(VD_i.XB1   )
-    VD_seg.YB1                       = np.atleast_2d(VD_i.YB1   )  
-    VD_seg.ZB1                       = np.atleast_2d(VD_i.ZB1   )
-    VD_seg.XB2                       = np.atleast_2d(VD_i.XB2   )
-    VD_seg.YB2                       = np.atleast_2d(VD_i.YB2   )    
-    VD_seg.ZB2                       = np.atleast_2d(VD_i.ZB2   )     
-    VD_seg.XAC                       = np.atleast_2d(VD_i.XAC   )
-    VD_seg.YAC                       = np.atleast_2d(VD_i.YAC   )
-    VD_seg.ZAC                       = np.atleast_2d(VD_i.ZAC   ) 
-    VD_seg.XBC                       = np.atleast_2d(VD_i.XBC   )
-    VD_seg.YBC                       = np.atleast_2d(VD_i.YBC   )
-    VD_seg.ZBC                       = np.atleast_2d(VD_i.ZBC   ) 
-    VD_seg.XC_TE                     = np.atleast_2d(VD_i.XC_TE )
-    VD_seg.YC_TE                     = np.atleast_2d(VD_i.YC_TE )
-    VD_seg.ZC_TE                     = np.atleast_2d(VD_i.ZC_TE )     
-    VD_seg.XA_TE                     = np.atleast_2d(VD_i.XA_TE )
-    VD_seg.YA_TE                     = np.atleast_2d(VD_i.YA_TE )
-    VD_seg.ZA_TE                     = np.atleast_2d(VD_i.ZA_TE ) 
-    VD_seg.XB_TE                     = np.atleast_2d(VD_i.XB_TE )
-    VD_seg.YB_TE                     = np.atleast_2d(VD_i.YB_TE )
-    VD_seg.ZB_TE                     = np.atleast_2d(VD_i.ZB_TE )  
-    VD_seg.XC                        = np.atleast_2d(VD_i.XC    )
-    VD_seg.YC                        = np.atleast_2d(VD_i.YC    )
-    VD_seg.ZC                        = np.atleast_2d(VD_i.ZC    )         
-    VD_seg.CS                        = np.atleast_2d(VD_i.CS    ) 
-    VD_seg.X                         = np.atleast_2d(VD_i.X     )
-    VD_seg.Y                         = np.atleast_2d(VD_i.Y     )
-    VD_seg.Z                         = np.atleast_2d(VD_i.Z     )
-    VD_seg.Y_SW                      = np.atleast_2d(VD_i.Y_SW  )
-    VD_seg.DY                        = np.atleast_2d(VD_i.DY    )  
-    VD_seg.n_w                       = np.atleast_2d(VD_i.n_w                      )
-    VD_seg.n_cp                      = np.atleast_2d(VD_i.n_cp                     )
-    VD_seg.n_sw                      = np.atleast_2d(VD_i.n_sw                     )
-    VD_seg.n_cw                      = np.atleast_2d(VD_i.n_cw                     )
-    VD_seg.chordwise_breaks          = np.atleast_2d(VD_i.chordwise_breaks         )
-    VD_seg.spanwise_breaks           = np.atleast_2d(VD_i.spanwise_breaks          )
-    VD_seg.symmetric_wings           = np.atleast_2d(VD_i.symmetric_wings          )
-    VD_seg.vertical_wing             = np.atleast_2d(VD_i.vertical_wing            )
-    VD_seg.horizontal_tail           = np.atleast_2d(VD_i.horizontal_tail          )
-    VD_seg.surface_ID                = np.atleast_2d(VD_i.surface_ID               )
-    VD_seg.surface_ID_full           = np.atleast_2d(VD_i.surface_ID_full          )
-    VD_seg.leading_edge_indices      = np.atleast_2d(VD_i.leading_edge_indices     )
-    VD_seg.leading_edge_sweeps       = np.atleast_2d(VD_i.leading_edge_sweeps      )
-    VD_seg.trailing_edge_indices     = np.atleast_2d(VD_i.trailing_edge_indices    )
-    VD_seg.panels_per_strip          = np.atleast_2d(VD_i.panels_per_strip         )
-    VD_seg.chordwise_panel_number    = np.atleast_2d(VD_i.chordwise_panel_number   )
-    VD_seg.chord_lengths             = np.atleast_2d(VD_i.chord_lengths            )
-    VD_seg.strip_chord_lengths       = np.atleast_2d(VD_i.strip_chord_lengths      )
-    VD_seg.chord_widths              = np.atleast_2d(VD_i.chord_widths            )
-    VD_seg.tangent_incidence_angle   = np.atleast_2d(VD_i.tangent_incidence_angle  )
-    VD_seg.exposed_leading_edge_flag = np.atleast_2d(VD_i.exposed_leading_edge_flag) 
-    VD_seg.wing_areas                = np.atleast_2d(VD_i.wing_areas               )
-    VD_seg.vortex_lift               = np.atleast_2d(VD_i.vortex_lift              )
-    VD_seg.counter                   = np.atleast_2d(VD_i.counter                  ) 
-    VD_seg.panel_areas               = np.atleast_2d(VD_i.panel_areas              )
-    VD_seg.normals                   = VD_i.normals[None,:, :]
-    VD_seg.SLOPE                     = np.atleast_2d(VD_i.SLOPE                    )
-    VD_seg.SLE                       = np.atleast_2d(VD_i.SLE                      )
-    VD_seg.D                         = np.atleast_2d(VD_i.D                        )
-    VD_seg.tangent_incidence_angle   = np.atleast_2d(VD_i.tangent_incidence_angle  )   
+    VD_i    = generate_aircraft_vortex_distribution(geometry,settings,layouts)
+    return assemble_vortex_distribution(VD_i,n_cases)
 
-    # Replicate the single condition-independent geometry to all n_cases rows.
-    # Equivalent to the vstack chain this replaced (every row was identical anyway
-    # since VD_i never varied with condition), just without recomputing/recopying
-    # it n_cases times.
-    if n_cases > 1:
-        for key in list(VD_seg.keys()):
-            val  = VD_seg[key]
-            reps = (n_cases,) + (1,) * (np.ndim(val) - 1)
-            VD_seg[key] = np.tile(val, reps)
 
+def assemble_vortex_distribution(VD_i,n_cases):
+    """ Gives every field of the aircraft's vortex distribution a leading dimension for the flow cases.
+
+    Inputs:
+    VD_i      vortex distribution of the aircraft (generate_aircraft_vortex_distribution)
+    n_cases   number of flow cases
+
+    Outputs:
+    VD_seg    vortex distribution
+    """
+    VD_seg = Data()
+    for key in VD_i.keys():
+        value = VD_i[key]
+        xp    = array_namespace(value)
+        value = value[None,:,:] if key == 'normals' else xp.atleast_2d(value)
+        if n_cases > 1:
+            value = xp.tile(value, (n_cases,) + (1,) * (np.ndim(value) - 1))
+        VD_seg[key] = value
     return VD_seg
-    
-    
-def generate_aircraft_vortex_distribution(geometry,settings):
+
+
+def repeat_vortex_distribution(VD,n_cases):
+    """ A vortex distribution of one flow case, repeated for a number of flow cases.
+
+    Inputs:
+    VD        vortex distribution of one case (generate_vortex_distribution)
+    n_cases   number of flow cases
+
+    Outputs:
+    VD_cases  vortex distribution
+    """
+    VD_cases = Data()
+    for key in VD.keys():
+        value = VD[key][:1]
+        xp    = array_namespace(value)
+        VD_cases[key] = xp.tile(value, (n_cases,) + (1,) * (np.ndim(value) - 1)) if n_cases > 1 else value
+    return VD_cases
+
+
+def generate_aircraft_vortex_distribution(geometry,settings,layouts=None):
     ''' Compute the coordinates of panels, vortices , control points
     and geometry used to build the influence coefficient matrix. A 
     different discretization (n_sw and n_cw) may be defined for each type
@@ -210,7 +117,6 @@ def generate_aircraft_vortex_distribution(geometry,settings):
 
     Inputs:
     geometry.wings                                [Unitless]  
-    settings.floating_point_precision             [np.dtype]
     
     Of the following settings, the user should define either the number_ atrributes or the wing_ and fuse_ attributes.
     settings.number_of_spanwise_vortices             - a base number of vortices to be applied to both wings and fuselages
@@ -228,7 +134,6 @@ def generate_aircraft_vortex_distribution(geometry,settings):
     # ---------------------------------------------------------------------------------------        
     #unpack other settings----------------------------------------------------
     spc            = settings.spanwise_cosine_spacing
-    precision      = settings.floating_point_precision
     
     # unpack discretization settings------------------------------------------
     n_sw           = settings.number_of_spanwise_vortices
@@ -260,16 +165,16 @@ def generate_aircraft_vortex_distribution(geometry,settings):
     for field in CASE_FIELDS:
         VD[field] = []
 
-    VD.XC_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD.YC_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD.ZC_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD.XA_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD.YA_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD.ZA_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD.XB_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD.YB_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD.ZB_TE  = np.empty(shape=[0,1], dtype=precision)
-    VD.Y_SW   = np.empty(shape=[0,1], dtype=precision)
+    VD.XC_TE  = np.empty(shape=[0,1])
+    VD.YC_TE  = np.empty(shape=[0,1])
+    VD.ZC_TE  = np.empty(shape=[0,1])
+    VD.XA_TE  = np.empty(shape=[0,1])
+    VD.YA_TE  = np.empty(shape=[0,1])
+    VD.ZA_TE  = np.empty(shape=[0,1])
+    VD.XB_TE  = np.empty(shape=[0,1])
+    VD.YB_TE  = np.empty(shape=[0,1])
+    VD.ZB_TE  = np.empty(shape=[0,1])
+    VD.Y_SW   = np.empty(shape=[0,1])
 
     # empty vectors necessary for arbitrary discretization dimensions
     VD.n_w              = 0                            # number of wings counter (refers to ALL surfaces)
@@ -283,9 +188,9 @@ def generate_aircraft_vortex_distribution(geometry,settings):
     VD.vertical_wing    = np.array([], dtype=np.int32)
     VD.horizontal_tail  = np.array([], dtype=np.int32) # 1 for each surface side that belongs to a horizontal tail
     VD.leading_edge_sweeps       = np.array([], dtype=bool)      # bool array of leading  edge indices (all false except for panels at leading  edge)
-    VD.chord_lengths             = np.array([], dtype=precision) # Chord length, this is assigned for all panels.
-    VD.tangent_incidence_angle   = np.array([], dtype=precision) # Tangent Incidence Angles of the chordwise strip. LE to TE, ZETA
-    VD.chord_widths              = np.array([], dtype=precision) # Chord width, this is assigned for all panels.
+    VD.chord_lengths             = np.array([]) # Chord length, this is assigned for all panels.
+    VD.tangent_incidence_angle   = np.array([]) # Tangent Incidence Angles of the chordwise strip. LE to TE, ZETA
+    VD.chord_widths              = np.array([]) # Chord width, this is assigned for all panels.
 
     # ---------------------------------------------------------------------------------------
     # Unpack aircraft wing geometry
@@ -295,15 +200,19 @@ def generate_aircraft_vortex_distribution(geometry,settings):
     VD.counter     = 0
 
     for wing in geometry.wings:
-        VD = generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision)
+        VD = generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,None if layouts is None else layouts[wing.tag])
 
     if settings.model_fuselage:
         for fuselage in geometry.fuselages:
-            VD = generate_fuseform_vortex_distribution(VD,fuselage,n_cw_f,n_sw_f,spc,precision)
+            VD = generate_fuseform_vortex_distribution(VD,fuselage,n_cw_f,n_sw_f,spc)
 
     # Concatenate the accumulated per-chunk lists into the final arrays.
     for field in CASE_FIELDS:
-        VD[field] = np.concatenate(VD[field])
+        VD[field] = array_namespace(*VD[field]).concatenate(VD[field])
+
+    # one area per wing, as one array
+    xp            = array_namespace(*VD.wing_areas)
+    VD.wing_areas = xp.stack([xp.asarray(area, dtype=float) for area in VD.wing_areas])
 
     # ---------------------------------------------------------------------------------------
     # Postprocess VD information
