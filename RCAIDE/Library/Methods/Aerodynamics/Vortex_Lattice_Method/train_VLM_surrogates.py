@@ -13,7 +13,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import  Data, Units, array_namespace
 from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_vortex_distribution
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution import generate_vortex_distribution, repeat_vortex_distribution
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.compute_zero_lift_moment import compute_zero_lift_moment
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import lookup as cs_lookup, CONTROL_SURFACE_TYPES, HIGH_LIFT_LETTERS, HIGH_LIFT_DRAG_TERMS
 
@@ -520,28 +520,31 @@ def call_VLM(full_conditions,settings,vehicle,lattice=None,layouts=None):
         lattice = generate_vortex_distribution(control_surface_conditions(np.zeros(1)),settings,vehicle,layouts)
     xp = array_namespace(lattice.XC)
 
-    # The geometry is fixed within this call, so cases at the same Mach share the influence matrix. The cases are
-    # run one Mach number after another, whatever their order, so that the matrix of each is built once.
-    induced_velocity_cache = {}
-    keys      = ['CLift', 'CDrag_induced', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN', 'sectional_CLift', 'gamma']
-    num_cases = len(full_conditions.aerodynamics.angles.alpha)
-    order     = np.argsort(np.asarray(full_conditions.freestream.mach_number)[:,0], kind='stable')
-    rows      = {key: [None]*num_cases for key in keys}
-    for i in order:
-        conditions                                      = RCAIDE.Framework.Mission.Common.Results()
-        conditions.freestream.mach_number               = np.atleast_2d(full_conditions.freestream.mach_number[i,:])
-        conditions.aerodynamics.angles.alpha            = np.atleast_2d(full_conditions.aerodynamics.angles.alpha[i,:])
-        conditions.aerodynamics.angles.beta             = np.atleast_2d(full_conditions.aerodynamics.angles.beta[i,:])
-        conditions.freestream.velocity                  = np.atleast_2d(full_conditions.freestream.velocity[i,:])
-        conditions.static_stability.pitch_rate          = np.atleast_2d(full_conditions.static_stability.pitch_rate[i,:])
-        conditions.static_stability.roll_rate           = np.atleast_2d(full_conditions.static_stability.roll_rate[i,:])
-        conditions.static_stability.yaw_rate            = np.atleast_2d(full_conditions.static_stability.yaw_rate[i,:])
+    # The geometry is fixed within this call, so the cases at one Mach number share an influence matrix: they are
+    # solved together, one Mach number after another, and put back in the order they were given.
+    keys   = ['CLift', 'CDrag_induced', 'CX', 'CY', 'CZ', 'CL', 'CM', 'CN', 'sectional_CLift', 'gamma']
+    mach   = np.asarray(full_conditions.freestream.mach_number)[:,0]
+    parts  = {key: [] for key in keys}
+    solved = []
+    for value in np.unique(mach):
+        cases                                  = np.flatnonzero(mach == value)
+        conditions                             = RCAIDE.Framework.Mission.Common.Results()
+        conditions.freestream.mach_number      = full_conditions.freestream.mach_number[cases]
+        conditions.freestream.velocity         = full_conditions.freestream.velocity[cases]
+        conditions.aerodynamics.angles.alpha   = full_conditions.aerodynamics.angles.alpha[cases]
+        conditions.aerodynamics.angles.beta    = full_conditions.aerodynamics.angles.beta[cases]
+        conditions.static_stability.pitch_rate = full_conditions.static_stability.pitch_rate[cases]
+        conditions.static_stability.roll_rate  = full_conditions.static_stability.roll_rate[cases]
+        conditions.static_stability.yaw_rate   = full_conditions.static_stability.yaw_rate[cases]
 
-        VLM_results = VLM(conditions,settings,vehicle,induced_velocity_cache,VD=lattice)
+        VLM_results = VLM(conditions,settings,vehicle,VD=repeat_vortex_distribution(lattice,len(cases)))
         for key in keys:
-            rows[key][i] = VLM_results[key]
+            parts[key].append(VLM_results[key])
+        solved.append(cases)
 
-    RES = Data()
+    # the place of each given case among the solved ones
+    place = np.argsort(np.concatenate(solved))
+    RES   = Data()
     for key in keys:
-        RES[key] = xp.concatenate(rows[key], axis=0)
+        RES[key] = xp.concatenate(parts[key], axis=0)[place]
     return RES

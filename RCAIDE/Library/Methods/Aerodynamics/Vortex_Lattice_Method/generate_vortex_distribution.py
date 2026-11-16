@@ -57,6 +57,24 @@ def assemble_vortex_distribution(VD_i,n_cases):
     return VD_seg
 
 
+def repeat_vortex_distribution(VD,n_cases):
+    """ A vortex distribution of one flow case, repeated for a number of flow cases.
+
+    Inputs:
+    VD        vortex distribution of one case (generate_vortex_distribution)
+    n_cases   number of flow cases
+
+    Outputs:
+    VD_cases  vortex distribution
+    """
+    VD_cases = Data()
+    for key in VD.keys():
+        value = VD[key][:1]
+        xp    = array_namespace(value)
+        VD_cases[key] = xp.tile(value, (n_cases,) + (1,) * (np.ndim(value) - 1)) if n_cases > 1 else value
+    return VD_cases
+
+
 def generate_aircraft_vortex_distribution(geometry,settings,layouts=None):
     ''' Compute the coordinates of panels, vortices , control points
     and geometry used to build the influence coefficient matrix. A 
