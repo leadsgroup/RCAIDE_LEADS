@@ -46,6 +46,10 @@ def main():
     check_fuel_derivative(mission, 'wing_aspect_ratio', tolerance=1e-5)
     check_structure_of_inputs()
 
+    # mission_adjoint gives the derivative of the fuel burned with respect to the inputs of every segment in one
+    # backward sweep; along each design change it must equal the forward mission derivative
+    check_reverse_derivative(mission, ('cruise_distance', 'takeoff_mass', 'wing_aspect_ratio'), tolerance=1e-7)
+
     os.chdir(start_folder)
     return
 
@@ -108,6 +112,47 @@ def check_structure_of_inputs():
     assert signatures[0][0] == signatures[1][0], "the structure changed with values the compiled residual does not read"
     assert signatures[0][1] == ['engine.design_thrust', 'engine.stages.pressure_ratio'], f"inputs {signatures[0][1]}"
     print(f"  structure unchanged by the idle fallback deck and the object's own map; inputs {signatures[0][1]}")
+    return
+
+
+def check_reverse_derivative(mission, parameters, tolerance, relative_step=1e-4):
+    from RCAIDE.Library.Mission.Solver.mission_derivative import mission_derivative
+    from RCAIDE.Library.Mission.Solver.mission_adjoint import mission_adjoint, output_fuel_burned, inputs_after_setup
+    from RCAIDE.Library.Mission.Solver.compiled_residual import compile_segment, unknowns_vector
+
+    # one backward sweep for the fuel burned, for every design at once
+    adjoint  = mission_adjoint(mission, output_fuel_burned(mission), build_mission())
+    segments = list(mission.segments.values())
+    mass     = 'state.conditions.weights.vehicle.mass'
+
+    for parameter in parameters:
+        value = parameter_value(mission, parameter)
+        step  = relative_step * value
+        plus  = build_mission({parameter: value + step})
+        minus = build_mission({parameter: value - step})
+
+        forward  = mission_derivative(mission, plus, step, minus)
+        expected = float(forward[0].state[mass][0, 0] - forward[-1].state[mass][-1, 0])
+
+        # the change of each segment's inputs with the design alone: each segment set up at the moved designs from
+        # the end state of the solved segment before it (the first from its own initials)
+        plus.process.initialize(plus)
+        minus.process.initialize(minus)
+        computed = 0.
+        for k, segment in enumerate(segments):
+            x                = unknowns_vector(segment.state.unknowns)
+            compiled, inputs = compile_segment(segment)
+            sides            = []
+            for moved in (plus, minus):
+                moved_segment = list(moved.segments.values())[k]
+                initials      = segments[k-1].state if k > 0 else moved_segment.state.initials
+                sides.append(inputs_after_setup(moved_segment, initials, x, compiled))
+            for weight, upper, lower in zip(adjoint[k].inputs, sides[0], sides[1]):
+                computed += float(np.sum(np.asarray(weight) * (upper - lower) / (2 * step)))
+
+        error = abs(computed - expected) / abs(expected)
+        print(f"  d(fuel burned)/d({parameter}): reverse {computed:.10e}, forward {expected:.10e}, relative difference {error:.1e}")
+        assert error <= tolerance, f"{parameter}: reverse {computed} against forward {expected}"
     return
 
 
