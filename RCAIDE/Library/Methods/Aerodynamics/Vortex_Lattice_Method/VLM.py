@@ -12,7 +12,7 @@
 from RCAIDE.Framework.Core import Data, array_namespace
 from .compute_wing_induced_velocity      import compute_wing_induced_velocity
 from .generate_vortex_distribution       import generate_vortex_distribution
-from .postprocess_vortex_distribution     import arctangent_of_ratio
+from .postprocess_vortex_distribution     import arctangent_of_ratio, panels_of_reversed_strips
 from .compute_RHS_matrix                 import compute_RHS_matrix, rotation_in_VORLAX_axes
 
 from scipy.integrate import trapezoid
@@ -183,7 +183,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None,VD=None):
     # STEP 10: Generate A and RHS matrices from VD and geometry
     # ------------------ --------------------------------------------------------------------
     # Compute flow tangency conditions
-    phi   = arctangent_of_ratio(VD.ZBC - VD.ZAC, VD.YBC - VD.YAC) # dihedral angle
+    phi   = arctangent_of_ratio(VD.ZBC - VD.ZAC, VD.YBC - VD.YAC, panels_of_reversed_strips(VD)) # dihedral angle
     delta = arctangent_of_ratio(VD.ZC - VD.ZCH, VD.XC - VD.XCH)   # mean camber surface angle
 
     # Build the RHS vector
