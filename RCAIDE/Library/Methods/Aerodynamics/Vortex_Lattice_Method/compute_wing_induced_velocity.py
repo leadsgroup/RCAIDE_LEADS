@@ -107,7 +107,7 @@ def compute_wing_induced_velocity_chunk(VD,mach,compute_EW=False,delta=None,phi=
 
     # Control points from the VLM
     names = ('XAH','YAH','ZAH','XBH','YBH','ZBH','XC','YC','ZC')
-    xp    = array_namespace(*[VD[name] for name in names], delta, phi)
+    xp    = array_namespace(*[VD[name] for name in names], delta, phi, mach)
     XAH, YAH, ZAH, XBH, YBH, ZBH, XC, YC, ZC = [xp.atleast_2d(xp.asarray(VD[name],dtype=float)) for name in names]
 
     # Panel Dihedral Angle, using AH and BH location
