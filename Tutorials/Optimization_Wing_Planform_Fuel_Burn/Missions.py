@@ -257,21 +257,6 @@ def mission_setup(analyses):
     segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)
-    
-    # ------------------------------------------------------------------------------------------------------------------------------------ 
-    #   Landing Roll
-    # ------------------------------------------------------------------------------------------------------------------------------------ 
-
-    segment = Segments.Ground.Landing(base_segment)
-    segment.tag = "landing"
-
-    segment.analyses.extend( analyses.landing ) 
-    segment.velocity_end                                                   = 10 * Units.knots 
-    segment.friction_coefficient                                           = 0.4
-    segment.altitude                                                       = 0.0   
-    segment.assigned_control_variables.elapsed_time.active                 = True  
-    segment.assigned_control_variables.elapsed_time.initial_guess_values   = [[30.]]  
-    mission.append_segment(segment)     
 
 
     # ------------------------------------------------------------------

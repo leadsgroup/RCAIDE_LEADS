@@ -30,13 +30,14 @@ def main():
     ti = time.time()
 
     # each design solves the mission once; the gradients of the objective and the constraints come from the mission
-    # derivative without solving it again. Few iterations keep the tutorial short.
-    solution = solve_design_problem(problem, optimizer='SLSQP', iterations=3, tolerance=1e-4)
+    # derivative without solving it again
+    solution = solve_design_problem(problem, optimizer='SLSQP', iterations=50, tolerance=1e-6)
 
     # stop clock
     tf           = time.time()
     elapsed_time = round((tf-ti)/60,2)
     print('Simulation Time: ' + str(elapsed_time) + ' mins')
+    print('Optimizer: ' + solution.optimizer.message + ', ' + str(solution.optimizer.nit) + ' iterations')
 
     # write optimization outputs
     print('\nOptimal design')
@@ -69,10 +70,11 @@ def define_optimization_problem():
     # -------------------------------------------------------------------
     # Variables: paths to floats of the vehicle or of a segment
     # -------------------------------------------------------------------
-    # the wing is defined by its span, root chord and segments, so its area and aspect ratio follow the span
+    # the wing is defined by its span, root chord and segments, so its area and aspect ratio follow the span. The
+    # span is limited by the gate constraint below, so its upper bound is not reached.
     #   [ path                                              , initial          , lower bound      , upper bound       , scale            ]
     problem.variables = [
-        [ 'vehicle.wings.main_wing.spans.projected'           , 28.72            , 24.              , 34.               , 28.72            ],
+        [ 'vehicle.wings.main_wing.spans.projected'           , 28.72            , 24.              , 40.               , 28.72            ],
         [ 'missions.base_mission.segments.cruise.altitude'    , 10.668 * Units.km, 9.    * Units.km , 12.   * Units.km  , 10.   * Units.km ],
         [ 'missions.base_mission.segments.cruise.distance'    , 1000 * Units.nmi , 500   * Units.nmi, 2000  * Units.nmi , 1000  * Units.nmi],
     ]
@@ -86,10 +88,13 @@ def define_optimization_problem():
     problem.outputs     = mission_outputs
     #   [ output, scale ]
     problem.objective   = [ 'fuel_burn', 10000. ]
+    # the span stays below 36 m, the limit of aerodrome code letter C (ICAO Annex 14, Volume I, 9th edition, 2022,
+    # Table 1-1), so the aircraft keeps fitting the gates it was designed for
     #   [ output        , sense, edge               , scale            ]
     problem.constraints = [
         [ 'fuel_margin' , '>'  , 0.15               , 1.               ],
         [ 'range'       , '>'  , 1500. * Units.nmi  , 1000. * Units.nmi],
+        [ 'span'        , '<'  , 36.                , 36.              ],
     ]
     return problem
 
@@ -106,11 +111,12 @@ def climb_to_cruise_altitude(missions):
 def mission_outputs(missions):
     segments    = missions.base_mission.segments
     vehicle     = segments.takeoff.analyses.vehicle
-    fuel_burn   = segments.takeoff.conditions.weights.vehicle.mass[0, 0] - segments.landing.conditions.weights.vehicle.mass[-1, 0]
+    fuel_burn   = segments.takeoff.conditions.weights.vehicle.mass[0, 0] - segments.descent_5.conditions.weights.vehicle.mass[-1, 0]
     max_fuel    = vehicle.mass_properties.max_fuel
     return {'fuel_burn':   float(fuel_burn),
             'fuel_margin': float((max_fuel - fuel_burn) / max_fuel),
-            'range':       float(segments.landing.conditions.frames.inertial.aircraft_range[-1, 0])}
+            'range':       float(segments.descent_5.conditions.frames.inertial.aircraft_range[-1, 0]),
+            'span':        float(vehicle.wings.main_wing.spans.projected)}
 
 
 if __name__ == '__main__':
