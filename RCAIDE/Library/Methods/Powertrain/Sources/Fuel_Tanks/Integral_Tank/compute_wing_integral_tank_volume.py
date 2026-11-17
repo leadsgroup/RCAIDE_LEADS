@@ -154,8 +154,6 @@ def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor
     fuel_tank.widths.external  = bounds[1][0] - bounds[0][0]
     fuel_tank.lengths.external = bounds[1][1] - bounds[0][1]
     fuel_tank.heights.external = bounds[1][2] - bounds[0][2]
-    if fuel_tank.heights.external > 0:
-        fuel_tank.aspect_ratio = fuel_tank.lengths.external / fuel_tank.heights.external
 
     # Reflect across the YZ plane (mirror X)
     Ry = np.diag([1, -1, 1])   # reflection matrix

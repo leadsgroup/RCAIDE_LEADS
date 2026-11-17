@@ -210,7 +210,6 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
     fuel_tank.widths.external                      = np.sum(edge_lengths[~vertical_edge])/2
     fuel_tank.lengths.external                     = length_external
     fuel_tank.heights.external                     = np.sum(edge_lengths[vertical_edge])/2
-    fuel_tank.aspect_ratio                         = fuel_tank.lengths.external /fuel_tank.heights.external 
     fuel_tank.volume_properties.net_volume         = max_volume
     fuel_tank.volume_properties.gross_volume       = max_volume
 
