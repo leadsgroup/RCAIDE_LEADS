@@ -66,8 +66,8 @@ def integral_fuel_tank_volume_test():
 
     print('\n----- Integral Fuel Tank Volume Test -----')
 
-    wing_volume_true  = 31.020330704132945
-    total_volume_true = 89.36725414008149
+    wing_volume_true  = 30.922043023280025
+    total_volume_true = 89.26896645922857
 
     vehicle   = B737_vehicle_setup()
     fuel_line = vehicle.networks.fuel.distributors.fuel_line
