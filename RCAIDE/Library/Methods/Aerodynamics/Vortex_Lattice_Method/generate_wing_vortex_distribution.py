@@ -381,7 +381,7 @@ def wing_lattice_layout(wing,n_cw,n_sw,spc):
           surface                        the control surface
           leading_edge                   True for a slat, which hinges at its chord fraction from the leading edge
           fixed_points                   True for the airfoil points that the surface does not move
-       starts_strip                   False for the station at the outboard end of a segment's last panel
+       starts_strip                   False only for the tip station, which closes the last strip
     """
     span = wing.spans.projected
     if wing.xz_plane_symmetric is True:
@@ -408,19 +408,12 @@ def wing_lattice_layout(wing,n_cw,n_sw,spc):
         delta_y = y_coordinates[y_i]
         eta_y   = delta_y / span
 
-        # determine the segment of the station
+        # the segment of the station: a station on a segment break stays with the inboard segment, and the
+        # search never passes the last segment, so segments narrower than a panel are simply stepped over
+        while seg_idx + 2 < len(wing_seg_tags) and delta_y > wing.segments[wing_seg_tags[seg_idx+1]].percent_span_location * span:
+            seg_idx += 1
         inboard_segment  = wing.segments[wing_seg_tags[seg_idx]]
         outboard_segment = wing.segments[wing_seg_tags[seg_idx+1]]
-        try:
-            if delta_y == outboard_segment.percent_span_location * span:
-                pass
-            else:
-                while delta_y >= outboard_segment.percent_span_location * span:
-                    seg_idx += 1
-                    inboard_segment = wing.segments[wing_seg_tags[seg_idx]]
-                    outboard_segment = wing.segments[wing_seg_tags[seg_idx+1]]
-        except:
-            raise AssertionError("Insufficient surface panelization discretization. Increase number of spanwise and chordwise vortices.")
 
         segment_root_chord    = wing.chords.root*inboard_segment.root_chord_percent
         segment_tip_chord     = wing.chords.root*outboard_segment.root_chord_percent
@@ -474,7 +467,8 @@ def wing_lattice_layout(wing,n_cw,n_sw,spc):
             if covered and np.all(moved.fixed_points | ((hinge - airfoil_x_pts) == 0)) and (angle != 0):
                 print("Warning: Control surface deflection angle is non-zero but control surface is not actually deflecting any points. \n Check control surface chord fraction and airfoil discretization.")
 
-        station.starts_strip = bool(delta_y != outboard_segment.percent_span_location * span)
+        # every station but the tip starts a chordwise strip, matching the panels built between neighboring stations
+        station.starts_strip = y_i < len(y_coordinates) - 1
         layout.stations.append(station)
     return layout
 

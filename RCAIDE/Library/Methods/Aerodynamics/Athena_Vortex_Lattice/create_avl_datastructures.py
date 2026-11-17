@@ -178,24 +178,23 @@ def populate_wing_sections(avl_wing,rcaide_wing):
                     append_avl_wing_control_surfaces(rcaide_wing,avl_wing,semispan,root_chord_percent,tip_chord_percent,tip_percent_span,
                                                      root_percent_span,root_twist,tip_twist,tip_airfoil,seg_tag,dihedral,origin,sweep) 
     
-            # update origin for next segment 
-            segment_percent_span =    segments[next_seg].percent_span_location - segments[current_seg].percent_span_location     
+            # update origin for next segment; sweep is measured in planform over the projected span, as in
+            # wing_planform and the vortex lattice
+            segment_percent_span =    segments[next_seg].percent_span_location - segments[current_seg].percent_span_location
             if avl_wing.vertical:
                 inverted_wing = -np.sign(abs(dihedral) - np.pi/2)
                 if inverted_wing  == 0:
                     inverted_wing  = 1
                 dz = inverted_wing*semispan*segment_percent_span
                 dy = dz*np.tan(dihedral)
-                l  = dz/np.cos(dihedral)
-                dx = l*np.tan(sweep)
+                dx = dz*np.tan(sweep)
             else:
                 inverted_wing = np.sign(dihedral)
                 if inverted_wing  == 0:
                     inverted_wing  = 1
                 dy = semispan*segment_percent_span
                 dz = dy*np.tan(dihedral)
-                l  = dy/np.cos(dihedral)
-                dx = l*np.tan(sweep)
+                dx = dy*np.tan(sweep)
             origin= [[origin[0][0] + dx , origin[0][1] + dy, origin[0][2] + dz]]  
         
     else:    
@@ -322,15 +321,13 @@ def append_avl_wing_control_surfaces(rcaide_wing,avl_wing,semispan,root_chord_pe
             if inverted_wing  == 0: inverted_wing  = 1
             dz = ordered_section_spans[section_count] -  inverted_wing*semispan*root_percent_span
             dy = dz*np.tan(dihedral)
-            l  = dz/np.cos(dihedral)
-            dx = l*np.tan(sweep)                                                            
+            dx = dz*np.tan(sweep)
         else:
             inverted_wing = np.sign(dihedral)
             if inverted_wing  == 0: inverted_wing  = 1
             dy = ordered_section_spans[section_count] - semispan*root_percent_span
             dz = dy*np.tan(dihedral)
-            l  = dy/np.cos(dihedral)
-            dx = l*np.tan(sweep)
+            dx = dy*np.tan(sweep)
         section.origin = [[origin[0][0] + dx , origin[0][1] + dy, origin[0][2] + dz]]              
 
         # this loop appends all the control surfaces within a particular wing section
