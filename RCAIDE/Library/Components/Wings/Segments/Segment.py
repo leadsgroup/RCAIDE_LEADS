@@ -116,7 +116,8 @@ class Segment(Component):
         self.structural.front_spar_percent_chord       = 0.1  
         self.structural.rear_spar_percent_chord        = 0.6  
         self.airfoil                                   = None
-        
+        self.control_surfaces                          = None
+
         
     def append_airfoil(self, airfoil):
         """
