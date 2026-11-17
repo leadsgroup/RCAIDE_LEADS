@@ -39,6 +39,7 @@ def main():
     problem = define_problem()
     check_output_derivatives(problem, tolerance=1e-5)
     check_finite_difference_method(problem, tolerance=1e-5)
+    check_reverse_method(problem, tolerance=1e-5)
     check_repeated_design(problem, tolerance=1e-9)
     check_optimization(define_problem())
 
@@ -165,6 +166,29 @@ def check_finite_difference_method(problem, tolerance):
     return
 
 
+def check_reverse_method(problem, tolerance):
+    # one backward sweep of the mission and one reverse pass of the surrogate training per output give the same
+    # derivatives as the forward mission derivative, one pass per variable
+    import time
+    from RCAIDE.Framework.Optimization.Common.Design_Problem import evaluate_design
+
+    design = {variable[0]: variable[1] for variable in problem.variables}
+    exact  = evaluate_design(problem, design).derivatives
+    problem.derivative_method = 'reverse'
+    try:
+        start  = time.time()
+        result = evaluate_design(problem, design).derivatives
+        print(f"  reverse evaluation {time.time() - start:.1f} s")
+    finally:
+        problem.derivative_method = 'mission_derivative'
+    for name in exact:
+        for index, variable in enumerate(problem.variables):
+            error = abs(result[name][index] - exact[name][index]) / max(abs(exact[name][index]), 1e-300)
+            print(f"  d({name})/d({variable[0]}): reverse {result[name][index]:.8e}, mission derivative {exact[name][index]:.8e}, relative difference {error:.1e}")
+            assert error <= tolerance, f"d({name})/d({variable[0]}): reverse {result[name][index]} against {exact[name][index]}"
+    return
+
+
 def check_repeated_design(problem, tolerance):
     # the vehicle persists between designs, so a design evaluated after another gives its own outputs again
     from RCAIDE.Framework.Optimization.Common.Design_Problem import evaluate_design
@@ -247,8 +271,9 @@ def range_of_first_design():
 def mission_outputs(missions):
     first = missions.design.segments.climb.conditions
     last  = missions.design.segments.descent.conditions
-    return {'fuel_burn': float(first.weights.vehicle.mass[0, 0] - last.weights.vehicle.mass[-1, 0]),
-            'range':     float(last.frames.inertial.aircraft_range[-1, 0])}
+    # array operations, no float(): a reverse derivative traces this function
+    return {'fuel_burn': first.weights.vehicle.mass[0, 0] - last.weights.vehicle.mass[-1, 0],
+            'range':     last.frames.inertial.aircraft_range[-1, 0]}
 
 
 if __name__ == '__main__':

@@ -35,7 +35,8 @@ class Design_Problem(Data):
         update_missions(missions), run after update_vehicle: couplings only, such as a climb that ends at the cruise
         altitude. It may only change declared floats of the segments.
     outputs : function
-        outputs(missions) gives {name: float} from the solved missions.
+        outputs(missions) gives {name: value} from the solved missions, written with array operations (no float())
+        so that a reverse derivative can trace it.
     objective : list
         [output name, scale], minimized.
     constraints : list
@@ -46,9 +47,13 @@ class Design_Problem(Data):
         {variable path: relative step} for variables that need their own step (see sweep_relative_steps).
     derivative_method : str
         'mission_derivative' differences the setup and solves the linear system of every segment;
-        'finite_difference' solves the missions again at the two moved designs (the baseline without gradients).
+        'finite_difference' solves the missions again at the two moved designs (the baseline without gradients);
+        'reverse' takes one backward sweep of the missions and one reverse pass of the surrogate training per output,
+        for every variable at once (see reverse_derivatives); outputs must then be written with array operations.
     moved_models : Data
         Two copies of the vehicle and missions for the setup at the moved designs, made by check_design_problem.
+    compiled_lattice_cases : dict
+        {mission tag: Compiled_Lattice_Cases} of the surrogate training, made by the first reverse derivative.
 
     Notes
     -----
@@ -72,6 +77,7 @@ class Design_Problem(Data):
         self.relative_steps    = {}
         self.derivative_method = 'mission_derivative'
         self.moved_models      = None
+        self.compiled_lattice_cases = None
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  check_design_problem
@@ -263,9 +269,11 @@ def evaluate_design(problem, design, derivatives=True):
     # imported here: the mission solver itself imports the optimization package
     from RCAIDE.Library.Mission.Solver.mission_derivative import mission_derivative, moved_state
 
-    if problem.derivative_method not in ('mission_derivative', 'finite_difference'):
+    from .reverse_derivatives import reverse_derivatives, training_analysis
+
+    if problem.derivative_method not in ('mission_derivative', 'finite_difference', 'reverse'):
         raise ValueError(f"Unsupported derivative method '{problem.derivative_method}'. Supported values are "
-                         f"'mission_derivative' and 'finite_difference'.")
+                         f"'mission_derivative', 'finite_difference' and 'reverse'.")
 
     first_evaluation = problem.moved_models is None
     if first_evaluation:
@@ -284,11 +292,22 @@ def evaluate_design(problem, design, derivatives=True):
 
     for mission in problem.missions.values():
         mission.evaluate()
-    outputs = problem.outputs(problem.missions)
+    outputs = {name: float(value) for name, value in problem.outputs(problem.missions).items()}
     result  = Data(outputs=outputs, derivatives=None)
 
     if not derivatives:
         return result
+
+    if problem.derivative_method == 'reverse':
+        result.derivatives = reverse_derivatives(problem, design, outputs)
+        return result
+
+    # the moved copies train their own surrogates (a reverse derivative may have left them holding the design's)
+    for moved in problem.moved_models.values():
+        for mission in moved.missions.values():
+            owner = training_analysis(mission)
+            if owner is not None:
+                owner.settings.train_surrogates = True
 
     result.derivatives = {name: np.zeros(len(problem.variables)) for name in outputs}
     plus, minus        = problem.moved_models.plus, problem.moved_models.minus
@@ -319,8 +338,8 @@ def evaluate_design(problem, design, derivatives=True):
                         if np.any(np.asarray(array) != 0):
                             changed = True
 
-        plus_outputs  = problem.outputs(plus.missions)
-        minus_outputs = problem.outputs(minus.missions)
+        plus_outputs  = {name: float(value) for name, value in problem.outputs(plus.missions).items()}
+        minus_outputs = {name: float(value) for name, value in problem.outputs(minus.missions).items()}
         for name in outputs:
             result.derivatives[name][index] = (plus_outputs[name] - minus_outputs[name]) / (2 * step)
             if result.derivatives[name][index] != 0:
