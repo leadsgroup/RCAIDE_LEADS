@@ -57,6 +57,10 @@ class Compiled_Segment:
        state_derivative(x, inputs, x_direction, direction)
                                                 derivative of the state arrays (state_paths) along a direction of
                                                 the unknowns and the inputs
+       residual_transpose(x, inputs, weights)   weights of the residual times its derivative, with respect to x and
+                                                to the inputs (reverse mode)
+       state_transpose(x, inputs, weights)      weights of the state arrays (one per state_paths) times their
+                                                derivative, with respect to x and to the inputs (reverse mode)
     """
 
     def __init__(self, segment, references):
@@ -90,10 +94,16 @@ class Compiled_Segment:
             return [jnp.asarray(array, dtype=float) for array in arrays]
         def state_derivative(x, inputs, x_direction, direction):
             return jax.jvp(state, (x, inputs), (x_direction, direction))[1]
-        self.residual         = jax.jit(residual)
-        self.jacobian         = jax.jit(jax.jacfwd(residual))
-        self.input_derivative = jax.jit(input_derivative)
-        self.state_derivative = jax.jit(state_derivative)
+        def residual_transpose(x, inputs, weights):
+            return jax.vjp(residual, x, inputs)[1](weights)
+        def state_transpose(x, inputs, weights):
+            return jax.vjp(state, x, inputs)[1](weights)
+        self.residual           = jax.jit(residual)
+        self.jacobian           = jax.jit(jax.jacfwd(residual))
+        self.input_derivative   = jax.jit(input_derivative)
+        self.state_derivative   = jax.jit(state_derivative)
+        self.residual_transpose = jax.jit(residual_transpose)
+        self.state_transpose    = jax.jit(state_transpose)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  The residual as a function of the unknowns and the inputs
@@ -208,6 +218,10 @@ def signature_difference(segment, other, limit=5):
 # fallback deck of a gas turbine (the JAX matching returns NaN at a point NumPy would route to it)
 NUMPY_ONLY = ('idle_fallback',)
 
+# the energy topology of the segment before is not its end state: it holds the network's components, which the segment
+# reads through its own topology. Walked, the trace would credit the components to the segment before.
+NOT_END_STATE = ('initials.conditions.energy.topology',)
+
 def collect_inputs(item, path, references, static, seen, skip=()):
     """Appends the float inputs under item to references and everything else to static; skip names keys of item itself."""
     if id(item) in seen:
@@ -217,7 +231,7 @@ def collect_inputs(item, path, references, static, seen, skip=()):
     static.append((path, type(item).__qualname__))
 
     # the unknowns are arguments of the residual; what the solve writes about itself (convergence, counters) is a result
-    if path in ('state.unknowns', 'state.numerics.mission_solver'):
+    if path in ('state.unknowns', 'state.numerics.mission_solver') or path in NOT_END_STATE:
         return
 
     if isinstance(item, Linear_Interpolator):
