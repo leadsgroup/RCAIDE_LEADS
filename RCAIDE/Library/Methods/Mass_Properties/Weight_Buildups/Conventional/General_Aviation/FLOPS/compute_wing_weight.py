@@ -533,7 +533,7 @@ def find_sweep(y, lst_y, swp):
     
     for i in range(len(lst_y)-1):
         e       = lst_y[i]
-        swps[y>=e] = swp[i]
+        swps[y >= e - 1e-9] = swp[i]   # a station on a break takes the outboard sweep whatever its round-off
         
 
     return swps
