@@ -143,17 +143,32 @@ def converge(segment):
                 raise ValueError(f"Unsupported mission_solver.jacobian '{numerics.mission_solver.jacobian}'. Supported "
                                  f"values are 'finite_difference', 'compiled'.")
 
-            x_scaled,infodict,ier,error_message = scipy.optimize.fsolve(scaled_iterate,
-                                                 unknowns / unknown_scale,
-                                                 fprime = scaled_jacobian,
-                                                 xtol   = numerics.mission_solver.tolerance,
-                                                 maxfev = numerics.mission_solver.max_evaluations,
-                                                 epsfcn = numerics.mission_solver.step_size,
-                                                 full_output = 1) 
+            tolerance   = numerics.mission_solver.tolerance
+            x_scaled    = unknowns / unknown_scale
+            evaluations = 0
+            residual    = np.inf
+            # fsolve stops when its steps are small, which a stale Jacobian can reach before the residual is small, so
+            # it is restarted from its result while the residual is above the tolerance and still falling
+            while evaluations < numerics.mission_solver.max_evaluations:
+                x_scaled,infodict,ier,error_message = scipy.optimize.fsolve(scaled_iterate,
+                                                     x_scaled,
+                                                     fprime = scaled_jacobian,
+                                                     xtol   = tolerance,
+                                                     maxfev = numerics.mission_solver.max_evaluations - evaluations,
+                                                     epsfcn = numerics.mission_solver.step_size,
+                                                     full_output = 1)
+                evaluations  += infodict['nfev']
+                last_residual = residual
+                residual      = np.max(np.abs(infodict['fvec']))
+                if residual <= tolerance or residual >= last_residual:
+                    break
             scaled_iterate(x_scaled)   # leaves the segment at the solution, mirrored into the bounds
 
-        if ier !=1:
+        if ier != 1:
             mission_converge = False
+        elif residual > tolerance:
+            mission_converge = False
+            error_message    = f"the steps converged but the scaled residual {residual:.3e} is above the tolerance {tolerance:.1e}"
         else:
             mission_converge = True
             
