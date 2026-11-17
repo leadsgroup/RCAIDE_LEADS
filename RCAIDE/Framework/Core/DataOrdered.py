@@ -604,7 +604,15 @@ class DataOrdered(OrderedDict):
         for k in vars(DataOrdered()):
             inst_dict.pop(k, None)
         return (_reconstructor, (self.__class__,items,), inst_dict)
-    
+
+    def __setstate__(self, state):
+        """Sets the attributes of a copy in the order of the original, so that the copy iterates as the original does."""
+        attributes = dict(vars(self))
+        attributes.update(state)
+        vars(self).clear()
+        for key in list(state.keys()) + [key for key in attributes if key not in state]:
+            vars(self)[key] = attributes[key]
+
     def __setattr__(self, key, value):
         """ An override of the standard __setattr_ in Python.
             
