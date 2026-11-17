@@ -21,4 +21,4 @@ from .mass_properties_correction_factors      import apply_correction_factors, a
 from .mass_properties_report                  import print_mass_report, write_mass_report    
 from .set_mission_residuals_and_unknowns              import set_mission_residuals_and_unknowns
 from .set_network_residuals_and_unknowns      import set_network_residuals_and_unknowns
-from .declared_values                         import record_undeclared_values, check_undeclared_values, find_undeclared_values
+from .declared_values                         import record_undeclared_values, check_undeclared_values, find_undeclared_values, undeclared_vehicle_paths

@@ -35,7 +35,8 @@ def record_undeclared_values(mission):
     RCAIDE.Library.Mission.Common.Pre_Process.check_undeclared_values
     """
     paths = find_undeclared_values(mission)
-    if len(paths) > 0:
+    # warned once per mission; a mission set up again at a new design records them silently
+    if len(paths) > 0 and mission.undeclared_vehicle_values is None:
         print('Warning: values set on the vehicle that no class declares; they cannot be design variables:')
         for path in paths:
             print('  ' + path)
@@ -61,8 +62,7 @@ def check_undeclared_values(mission):
 
     Notes
     -----
-    A value a method computes must have a default in its component class, or belong in the results. Otherwise
-    restoring the vehicle between design evaluations would miss it.
+    A value a method computes must have a default in its component class, or belong in the results.
     """
     recorded = mission.undeclared_vehicle_values
     if recorded is None:
@@ -94,10 +94,17 @@ def find_undeclared_values(mission):
         vehicle = segment.analyses.vehicle
         vehicles[id(vehicle)] = vehicle
 
+    paths = []
+    for vehicle in vehicles.values():
+        paths += undeclared_vehicle_paths(vehicle)
+    return sorted(set(paths))
+
+
+def undeclared_vehicle_paths(vehicle):
+    """Paths of the values on one vehicle that no class declares, such as 'vehicle.wings.main_wing.made_up'."""
     paths    = []
     defaults = {}
-    for vehicle in vehicles.values():
-        walk_declared_values(vehicle, fresh_default(vehicle, defaults), 'vehicle', paths, set(), defaults)
+    walk_declared_values(vehicle, fresh_default(vehicle, defaults), 'vehicle', paths, set(), defaults)
     return sorted(set(paths))
 
 
