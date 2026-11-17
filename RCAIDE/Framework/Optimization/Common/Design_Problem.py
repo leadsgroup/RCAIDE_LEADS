@@ -31,6 +31,9 @@ class Design_Problem(Data):
     update_vehicle : function, optional
         update_vehicle(vehicle), run after the variables are written: couplings only, such as a tail sized with the
         wing. It may only change values that a class declares.
+    update_missions : function, optional
+        update_missions(missions), run after update_vehicle: couplings only, such as a climb that ends at the cruise
+        altitude. It may only change declared floats of the segments.
     outputs : function
         outputs(missions) gives {name: float} from the solved missions.
     objective : list
@@ -51,22 +54,24 @@ class Design_Problem(Data):
     the linear system of every segment, without solving the missions again.
     """
     def __defaults__(self):
-        self.vehicle        = None
-        self.missions       = Data()
-        self.variables      = []
-        self.update_vehicle = None
-        self.outputs        = None
-        self.objective      = None
-        self.constraints    = []
-        self.relative_step  = 1e-4
-        self.moved_models   = None
+        self.vehicle         = None
+        self.missions        = Data()
+        self.variables       = []
+        self.update_vehicle  = None
+        self.update_missions = None
+        self.outputs         = None
+        self.objective       = None
+        self.constraints     = []
+        self.relative_step   = 1e-4
+        self.moved_models    = None
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  check_design_problem
 # ----------------------------------------------------------------------------------------------------------------------
 def check_design_problem(problem):
     """
-    Checks the variables and update_vehicle of a design problem, and makes the copies for the moved designs.
+    Checks the variables, update_vehicle and update_missions of a design problem, and makes the copies for the moved
+    designs.
 
     Parameters
     ----------
@@ -84,7 +89,8 @@ def check_design_problem(problem):
        1. the path resolves;
        2. the value's owner is a component, the vehicle or a mission segment, and its class declares the key;
        3. the value is a float (an integer is structure);
-       4. update_vehicle adds no value that no class declares, changes no undeclared value and no variable.
+       4. update_vehicle adds no value that no class declares, changes no undeclared value and no variable;
+       5. update_missions adds no value to a segment and changes only declared floats of the segments, not variables.
     That the setup does not compute a variable, and that a variable changes something, is checked by the first
     evaluation.
     """
@@ -106,6 +112,20 @@ def check_design_problem(problem):
             if not same_value(value, value_at(model, path)):
                 kind = 'a variable' if path in paths else 'a value that no class declares'
                 raise ValueError(f"update_vehicle changed {path}, {kind}")
+
+    if problem.update_missions is not None:
+        before = segment_values(problem.missions)
+        problem.update_missions(problem.missions)
+        after  = segment_values(problem.missions)
+        added  = [path for path in after if path not in before]
+        if len(added) > 0:
+            raise ValueError('update_missions added values to segments: ' + ', '.join(added))
+        for path, value in before.items():
+            if same_value(value, after[path]):
+                continue
+            if path in paths:
+                raise ValueError(f"update_missions changed {path}, a variable")
+            check_variable_path(model, path)
 
     # copied before any setup, together so that the copied missions fly the copied vehicle
     problem.moved_models = Data(plus=copy.deepcopy(model), minus=copy.deepcopy(model))
@@ -145,6 +165,32 @@ def check_variable_path(model, path):
 
     if isinstance(value, bool) or not isinstance(value, (float, np.floating)):
         raise ValueError(f"{path}: the value is a {type(value).__name__}, not a float")
+    return
+
+
+def segment_values(missions):
+    """{path: copy of the value} of every value a mission's segments hold, outside their state, analyses and process."""
+    values = {}
+    for tag, mission in missions.items():
+        for segment in mission.segments.values():
+            path = f"missions.{tag}.segments.{segment.tag}"
+            collect_values(segment, path, values, set(), skip=('state', 'analyses', 'process', 'conditions'))
+    return values
+
+
+def collect_values(node, path, values, seen, skip=()):
+    """Adds a copy of every value under node that is not itself a Data, by path."""
+    if id(node) in seen:
+        return
+    seen.add(id(node))
+    for key in node.keys():
+        if key in skip:
+            continue
+        value = node[key]
+        if isinstance(value, (Data, DataOrdered)):
+            collect_values(value, path + '.' + str(key), values, seen)
+        else:
+            values[path + '.' + str(key)] = copy.deepcopy(value)
     return
 
 
@@ -263,11 +309,13 @@ def evaluate_design(problem, design, derivatives=True):
 
 
 def set_design(problem, model, design):
-    """Writes the design onto a model (vehicle and missions) and runs update_vehicle."""
+    """Writes the design onto a model (vehicle and missions) and runs update_vehicle and update_missions."""
     for path, value in design.items():
         write_value(model, path, value)
     if problem.update_vehicle is not None:
         problem.update_vehicle(model.vehicle)
+    if problem.update_missions is not None:
+        problem.update_missions(model.missions)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
