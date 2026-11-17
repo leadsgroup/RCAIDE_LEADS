@@ -38,6 +38,7 @@ def main():
     check_refused_mission_updates()
     problem = define_problem()
     check_output_derivatives(problem, tolerance=1e-5)
+    check_finite_difference_method(problem, tolerance=1e-5)
     check_repeated_design(problem, tolerance=1e-9)
     check_optimization(define_problem())
 
@@ -142,6 +143,25 @@ def check_output_derivatives(problem, tolerance):
             error    = abs(computed - expected) / max(abs(expected), 1e-300)
             print(f"  d({output})/d({path}): design problem {computed:.8e}, solved again {expected:.8e}, relative difference {error:.1e}")
             assert error <= tolerance, f"d({output})/d({path}): {computed} against {expected}"
+    return
+
+
+def check_finite_difference_method(problem, tolerance):
+    # the baseline without gradients: the moved designs solved again give the same derivatives
+    from RCAIDE.Framework.Optimization.Common.Design_Problem import evaluate_design
+
+    design = {variable[0]: variable[1] for variable in problem.variables}
+    exact  = evaluate_design(problem, design).derivatives
+    problem.derivative_method = 'finite_difference'
+    try:
+        solved = evaluate_design(problem, design).derivatives
+    finally:
+        problem.derivative_method = 'mission_derivative'
+    for name in exact:
+        for index, variable in enumerate(problem.variables):
+            error = abs(solved[name][index] - exact[name][index]) / max(abs(exact[name][index]), 1e-300)
+            print(f"  d({name})/d({variable[0]}): finite differences {solved[name][index]:.8e}, mission derivative {exact[name][index]:.8e}, relative difference {error:.1e}")
+            assert error <= tolerance, f"d({name})/d({variable[0]}): {solved[name][index]} against {exact[name][index]}"
     return
 
 

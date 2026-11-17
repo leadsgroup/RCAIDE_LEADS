@@ -41,7 +41,12 @@ class Design_Problem(Data):
     constraints : list
         [output name, sense, edge, scale] per constraint, sense '>', '<' or '='.
     relative_step : float
-        Step of the setup finite difference, relative to each variable's scale.
+        Step of the finite differences, relative to each variable's scale.
+    relative_steps : dict
+        {variable path: relative step} for variables that need their own step (see sweep_relative_steps).
+    derivative_method : str
+        'mission_derivative' differences the setup and solves the linear system of every segment;
+        'finite_difference' solves the missions again at the two moved designs (the baseline without gradients).
     moved_models : Data
         Two copies of the vehicle and missions for the setup at the moved designs, made by check_design_problem.
 
@@ -50,20 +55,23 @@ class Design_Problem(Data):
     A variable must be a float that a component or a mission segment class declares, that the setup does not
     compute, and that changes the missions or the outputs. check_design_problem refuses any other path.
 
-    Derivatives are forward, one pass per variable: each pass differences the setup at two moved designs and solves
-    the linear system of every segment, without solving the missions again.
+    Derivatives are forward, one pass per variable: with the mission derivative each pass differences the setup at
+    two moved designs and solves the linear system of every segment, without solving the missions again; with finite
+    differences each pass solves the missions at the two moved designs.
     """
     def __defaults__(self):
-        self.vehicle         = None
-        self.missions        = Data()
-        self.variables       = []
-        self.update_vehicle  = None
-        self.update_missions = None
-        self.outputs         = None
-        self.objective       = None
-        self.constraints     = []
-        self.relative_step   = 1e-4
-        self.moved_models    = None
+        self.vehicle           = None
+        self.missions          = Data()
+        self.variables         = []
+        self.update_vehicle    = None
+        self.update_missions   = None
+        self.outputs           = None
+        self.objective         = None
+        self.constraints       = []
+        self.relative_step     = 1e-4
+        self.relative_steps    = {}
+        self.derivative_method = 'mission_derivative'
+        self.moved_models      = None
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  check_design_problem
@@ -129,6 +137,11 @@ def check_design_problem(problem):
 
     # copied before any setup, together so that the copied missions fly the copied vehicle
     problem.moved_models = Data(plus=copy.deepcopy(model), minus=copy.deepcopy(model))
+
+    # the undeclared values of the vehicle script are listed once, by the problem's own missions
+    for moved in problem.moved_models.values():
+        for mission in moved.missions.values():
+            mission.undeclared_vehicle_values = []
     return
 
 
@@ -230,7 +243,7 @@ def evaluate_design(problem, design, derivatives=True):
     solved, at the design moved up and down by one step; mission_derivative gives the change of every segment's
     converged state between them, and the outputs are read from the moved copies at their moved states. The central
     difference of the two is the derivative, so the setup and the output formulas are differenced and the solve is
-    not.
+    not. With problem.derivative_method 'finite_difference' the moved copies are solved instead.
 
     Parameters
     ----------
@@ -249,6 +262,10 @@ def evaluate_design(problem, design, derivatives=True):
     """
     # imported here: the mission solver itself imports the optimization package
     from RCAIDE.Library.Mission.Solver.mission_derivative import mission_derivative, moved_state
+
+    if problem.derivative_method not in ('mission_derivative', 'finite_difference'):
+        raise ValueError(f"Unsupported derivative method '{problem.derivative_method}'. Supported values are "
+                         f"'mission_derivative' and 'finite_difference'.")
 
     first_evaluation = problem.moved_models is None
     if first_evaluation:
@@ -277,24 +294,30 @@ def evaluate_design(problem, design, derivatives=True):
     plus, minus        = problem.moved_models.plus, problem.moved_models.minus
     for index, variable in enumerate(problem.variables):
         path = variable[0]
-        step = problem.relative_step * variable[4]
+        step = problem.relative_steps.get(path, problem.relative_step) * variable[4]
         for moved, move in ((plus, +step), (minus, -step)):
             moved_design       = dict(design)
             moved_design[path] = design[path] + move
             set_design(problem, moved, moved_design)
 
-        # each moved copy at its moved converged state: the solved state moved along its derivative
         changed = False
-        for tag, mission in problem.missions.items():
-            states = mission_derivative(mission, plus.missions[tag], step, minus.missions[tag])
-            for moved, move in ((plus, +step), (minus, -step)):
-                for segment, moved_segment, derivative in zip(mission.segments.values(), moved.missions[tag].segments.values(), states):
-                    moved_segment.state      = moved_state(segment.state, derivative.state, move)
-                    moved_segment.conditions = moved_segment.state.conditions
-            for derivative in states:
-                for array in derivative.state.values():
-                    if np.any(np.asarray(array) != 0):
-                        changed = True
+        if problem.derivative_method == 'finite_difference':
+            # each moved copy solved again
+            for moved in (plus, minus):
+                for moved_mission in moved.missions.values():
+                    moved_mission.evaluate()
+        else:
+            # each moved copy at its moved converged state: the solved state moved along its derivative
+            for tag, mission in problem.missions.items():
+                states = mission_derivative(mission, plus.missions[tag], step, minus.missions[tag])
+                for moved, move in ((plus, +step), (minus, -step)):
+                    for segment, moved_segment, derivative in zip(mission.segments.values(), moved.missions[tag].segments.values(), states):
+                        moved_segment.state      = moved_state(segment.state, derivative.state, move)
+                        moved_segment.conditions = moved_segment.state.conditions
+                for derivative in states:
+                    for array in derivative.state.values():
+                        if np.any(np.asarray(array) != 0):
+                            changed = True
 
         plus_outputs  = problem.outputs(plus.missions)
         minus_outputs = problem.outputs(minus.missions)
@@ -306,6 +329,35 @@ def evaluate_design(problem, design, derivatives=True):
         if first_evaluation and not changed:
             raise ValueError(f"{path}: a step of this value changes no mission state and no output")
     return result
+
+
+def sweep_relative_steps(problem, design, relative_steps):
+    """
+    The derivatives of a design at several relative steps, to choose a step per variable: too large a step mixes in
+    the curvature, too small a step is lost in the noise of the solve and the surrogates.
+
+    Parameters
+    ----------
+    problem : Design_Problem
+    design : dict
+        {variable path: value}
+    relative_steps : list of float
+        Steps relative to each variable's scale, applied to every variable at once.
+
+    Returns
+    -------
+    sweep : dict
+        {relative step: {output name: array, one entry per variable}}
+    """
+    stored = problem.relative_steps
+    sweep  = {}
+    try:
+        for relative_step in relative_steps:
+            problem.relative_steps = {variable[0]: relative_step for variable in problem.variables}
+            sweep[relative_step]   = evaluate_design(problem, design).derivatives
+    finally:
+        problem.relative_steps = stored
+    return sweep
 
 
 def set_design(problem, model, design):
