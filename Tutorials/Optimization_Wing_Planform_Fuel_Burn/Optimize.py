@@ -109,14 +109,15 @@ def climb_to_cruise_altitude(missions):
 #   Outputs
 # ----------------------------------------------------------------------------------------------------------------------
 def mission_outputs(missions):
+    # array operations only (no float()), so a reverse derivative can trace this function
     segments    = missions.base_mission.segments
     vehicle     = segments.takeoff.analyses.vehicle
     fuel_burn   = segments.takeoff.conditions.weights.vehicle.mass[0, 0] - segments.descent_5.conditions.weights.vehicle.mass[-1, 0]
     max_fuel    = vehicle.mass_properties.max_fuel
-    return {'fuel_burn':   float(fuel_burn),
-            'fuel_margin': float((max_fuel - fuel_burn) / max_fuel),
-            'range':       float(segments.descent_5.conditions.frames.inertial.aircraft_range[-1, 0]),
-            'span':        float(vehicle.wings.main_wing.spans.projected)}
+    return {'fuel_burn':   fuel_burn,
+            'fuel_margin': (max_fuel - fuel_burn) / max_fuel,
+            'range':       segments.descent_5.conditions.frames.inertial.aircraft_range[-1, 0],
+            'span':        vehicle.wings.main_wing.spans.projected}
 
 
 if __name__ == '__main__':
