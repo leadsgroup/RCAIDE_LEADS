@@ -95,7 +95,6 @@ def generate_3d_wing_cabin_points(wing, n_points, plot_centerline=False):
 
     n_segments = len(cabin_segs)
     origin     = wing.origin
-    semispan   = wing.spans.projected / (1 + wing.xz_plane_symmetric)
 
     # pts holds local-frame section coordinates; section_twist is initialised to identity
     pts           = np.zeros((n_segments+2, n_points, 3, 1))
@@ -151,35 +150,12 @@ def generate_3d_wing_cabin_points(wing, n_points, plot_centerline=False):
             section_twist[i,:,2,0] = -np.sin(twist)
             section_twist[i,:,2,2] =  np.cos(twist)
 
-        # tip end-cap has no stored origin — its translation is copied from the outermost section below
+        # every section, the outermost included, sits at the segment origin from wing_planform; the tip end cap copies it
         if i != n_segments + 1:
             translation[i, :, 0, :] += current_seg.origin[0][0]
             translation[i, :, 1, :] += current_seg.origin[0][1]
             translation[i, :, 2, :] += current_seg.origin[0][2]
-
-        if i == n_segments:
-            # outermost section has no segment origin past the last stored one;
-            # compute its position by projecting from the previous section using sweep and dihedral
-            prev_seg     = list(cabin_segs)[i-2]
-            sweep        = prev_seg.sweeps.leading_edge
-            dihedral     = prev_seg.dihedral_outboard
-            segment_percent_span = current_seg.percent_span_location - prev_seg.percent_span_location
-            if wing.vertical:
-                dz = semispan * segment_percent_span
-                dy = dz * np.tan(dihedral)
-                l  = dz / np.cos(dihedral)
-                dx = l  * np.tan(sweep)
-            else:
-                dy = semispan * segment_percent_span
-                dz = dy * np.tan(dihedral)
-                l  = dy / np.cos(dihedral)
-                dx = l  * np.tan(sweep)
-            translation[i,:,0,:] = translation[i-1,:,0,:] + dx
-            translation[i,:,1,:] = translation[i-1,:,1,:] + dy
-            translation[i,:,2,:] = translation[i-1,:,2,:] + dz
-
-        elif i == n_segments + 1:
-            # tip end-cap sits at the same position as the outermost section
+        else:
             translation[i,:,:,:] = translation[i-1,:,:,:]
 
     mat = translation + np.matmul(section_twist, pts)
