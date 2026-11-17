@@ -30,7 +30,7 @@ def compute_component_moment_of_inertia(moment_of_inertia_df,component,vehicle,t
     Outputs:
        None
     """      
-    vehicle_CG = [12.87, 0, 0.572246] #vehicle.mass_properties.center_of_gravity
+    vehicle_CG = vehicle.mass_properties.center_of_gravity
     if isinstance(component,Component.Container): 
         for key in component.keys():
             item = component[key]        

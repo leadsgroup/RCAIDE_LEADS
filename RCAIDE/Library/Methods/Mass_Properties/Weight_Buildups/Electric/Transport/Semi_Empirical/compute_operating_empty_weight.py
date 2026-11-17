@@ -170,7 +170,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_energy_network.W_starter         = 0 
     W_energy_network.W_fuel_system     = 0 
     W_energy_network.W_motors          = 0 
-    W_energy_network.W_nacelle         = 0 
+    W_energy_network.W_nacelle         = 1 
     W_energy_network.W_battery         = 0
     W_energy_network.W_motor           = 0
     W_energy_network.W_TMS             = Data()
@@ -181,6 +181,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
 
     for network in vehicle.networks: 
         W_energy_network_total   = 0 
+        for propulsor in network.propulsors:
+            number_of_engines       += 1
     
         # Electric-Powered Propulsors  
         for bus in network.busses: 
@@ -205,6 +207,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
                     propulsor.rotor.mass_properties.mass  =  propeller_mass
                     W_energy_network.W_propellers += propeller_mass
                     W_energy_network_total     += propeller_mass
+            
+            propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
         
         # Cable weight, inverter weight, and other electric  powertrain components added here
     
@@ -227,6 +231,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.battery             = W_energy_network.W_battery
     output.empty.propulsion.motors              = W_energy_network.W_motor
     output.empty.propulsion.engines             = W_energy_network.W_engine
+    output.empty.propulsion.nacelles            = W_energy_network.W_nacelle
     output.empty.propulsion.propellers          = W_energy_network.W_propellers
     output.empty.propulsion.thrust_reversers    = W_energy_network.W_thrust_reverser
     output.empty.propulsion.miscellaneous       = W_energy_network.W_engine_controls + W_energy_network.W_starter

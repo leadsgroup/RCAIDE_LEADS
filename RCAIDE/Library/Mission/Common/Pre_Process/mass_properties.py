@@ -556,8 +556,8 @@ def apply_component_weights(analyses):
         elif key == 'networks':
             for network in analyses.vehicle.networks:
                 for propulsor in network.propulsors: 
-                    if hasattr(weight_correction_factors.empty.structural, 'nacelle'):
-                        propulsor.nacelle.mass_properties.mass *= weight_correction_factors.empty.structural.nacelle
+                    if hasattr(weight_correction_factors.empty.propulsion, 'nacelles'):
+                        propulsor.nacelle.mass_properties.mass *= weight_correction_factors.empty.propulsion.nacelles
                     if hasattr(weight_correction_factors.empty.propulsion, 'engines'):
                         propulsor.mass_properties.mass *= weight_correction_factors.empty.propulsion.engines
                 # for fuel_line in network.fuel_lines:
