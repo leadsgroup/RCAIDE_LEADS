@@ -345,12 +345,12 @@ def generate_int_stations(NSD, ETA):
             N/A
     """
     Y           = [ETA[1]]
-    desired_int = (ETA[-1] - ETA[1]) / NSD
     NS          = 0
     for i in range(2, len(ETA)):
-        NP = int((ETA[i] - ETA[i - 1]) / desired_int + 0.5)
-        if NP < 1:
-            NP = 1
+        # stations per panel from its share of the half span in segment fractions, which do not move with the span;
+        # the inboard panel is counted from the wing root, not from the side of the fuselage
+        panel_fraction = ETA[i] - (ETA[0] if i == 2 else ETA[i - 1])
+        NP             = max(int(panel_fraction * NSD + 0.5), 1)
         AINT = (ETA[i] - ETA[i - 1]) / NP
         for j in range(NP):
             NS = NS + 1
