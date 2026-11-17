@@ -47,7 +47,6 @@ class Main_Wing(Wing):
         """
         self.tag        = 'main_wing'
         self.segments   = Segment_Container()
-        # flapped fraction of the wing area for the FLOPS weights; None takes the FLOPS default
         self.flap_ratio = None
 
 class Segment_Container(Container):

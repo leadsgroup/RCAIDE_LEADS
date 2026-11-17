@@ -112,7 +112,7 @@ class Non_Integral_Tank(Fuel_Tank):
         self.geometry_type               = 'cylindrical'   # ['prismatic', 'cylindrical']
         self.transverse_tank_segment_bound      = None # This only has one bound since it is more of a end bound and it will always start from the rootchord and grow symmetrically till bound
         self.radial_offset               = None
-        self.tank_percent_span_location  = 0.0 # outboard end of the tank in the wing, as a fraction of the span; computed
+        self.tank_percent_span_location  = 0.0
         self.aspect_ratio                = None # Defined as the ratio of total length of the tank to the diameter of the tank. or for a conformal tank it is defined as the ratio of length to height
 
 

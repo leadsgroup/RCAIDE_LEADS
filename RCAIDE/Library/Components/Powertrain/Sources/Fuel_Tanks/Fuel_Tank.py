@@ -69,7 +69,8 @@ class Fuel_Tank(Source):
         self.wing_tag                       = None
         self.fuselage_tag                   = None
         self.transverse_tank                = False
-        self.wing_root_twist                = 0.0 # twist of the root of the wing holding the tank; computed
+        self.transverse_tank_chord_bounds   = None
+        self.wing_root_twist                = 0.0
         self.gravimetric_efficiency         = 1.0
         self.packs_after_tank               = None  # tag of a tank to pack sequentially after (see compute_wing_non_integral_tank_volume)
         self.lengths                        = Data()

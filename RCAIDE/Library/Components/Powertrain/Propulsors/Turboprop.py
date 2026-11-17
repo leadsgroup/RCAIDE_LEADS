@@ -180,6 +180,7 @@ class Turboprop(Propulsor):
         self.design_mach_number                         = None 
         self.design_freestream_velocity                 = None
         self.compressor_nondimensional_massflow         = 0.0
+        self.TSFC                                       = None
         self.reference_temperature                      = 288.15
         self.reference_pressure                         = 1.0*Units.atmosphere
         self.integrated_drive_generator                 = None

@@ -314,7 +314,6 @@ class Vehicle_Mass_Properties(Components.Mass_Properties):
         self.zero_fuel_center_of_gravity            = [[0.0,0.0,0.0]]
         self.operating_empty_center_of_gravity      = [[0.0,0.0,0.0]]
         self.OEW_CG_mass_percentage                 = 0.0
-        # the breakdown the weights analysis computes; its entries depend on the method
         self.weight_breakdown                       = None
 
 class Vehicle_Mass_Container(Components.Component.Container,Vehicle_Mass_Properties):

@@ -489,7 +489,6 @@ def design_turbofan(turbofan, build_idle_fallback=True):
         sls_total_temperature_rise           = float(np.ravel(sls_fan_conditions.outputs.stagnation_temperature - sls_fan_conditions.inputs.stagnation_temperature)[0])
         fan.design_angular_velocity          = fan.rated_angular_velocity * np.sqrt(fan.design_total_temperature_rise / sls_total_temperature_rise)
     turbofan.sealevel_static_power         = outputs.power.propulsive[0][0]
-    turbofan.design_power                  = design_power_offtake
 
     # Step 27: Build the deck-driven surrogate, if requested
     if turbofan.surrogate_deck_path is not None:

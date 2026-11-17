@@ -166,6 +166,7 @@ class Wing(Component):
         self.dihedral                               = 0.0
         self.aspect_ratio                           = 0.0
         self.thickness_to_chord                     = 0.0
+        self.winglet_fraction                       = 0.0
         self.aerodynamic_center                     = [0.0,0.0,0.0]
         self.percent_span_unexposed                 = 0.0
         self.total_length                           = 0.0

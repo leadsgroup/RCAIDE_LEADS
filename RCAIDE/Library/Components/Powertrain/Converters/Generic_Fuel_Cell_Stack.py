@@ -60,6 +60,9 @@ class Generic_Fuel_Cell_Stack(Converter):
         self.design_voltage                             = None
         self.design_power                               = None
         self.specific_power                             = None
+        self.voltage                                    = 0.0
+        self.maximum_voltage                            = 0.0
+        self.maximum_power                              = 0.0
             
         self.length                                     = 0.0
         self.width                                      = 0.0
@@ -76,6 +79,7 @@ class Generic_Fuel_Cell_Stack(Converter):
         self.fuel_cell.mass_density                     = 1203.208556                         # take default as specs from Nissan 2011 fuel cell      
         self.fuel_cell.volume                           = 0.0
         self.fuel_cell.max_power                        = 0.0 
+        self.fuel_cell.mass                             = 0.0
         self.fuel_cell.length                           = 0.02
         self.fuel_cell.width                            = 0.05
         self.fuel_cell.height                           = 0.1 

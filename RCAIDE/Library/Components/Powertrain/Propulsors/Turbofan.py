@@ -237,6 +237,7 @@ class Turbofan(Propulsor):
         self.design_mach_number                         = 0.0
         self.specific_fuel_consumption_reduction_factor = 0.0 
         self.compressor_nondimensional_massflow         = 0.0
+        self.TSFC                                       = None
         self.reference_temperature                      = 288.15
         self.reference_pressure                         = 1.01325*Units.bar
         self.design_thrust                              = 0.0 

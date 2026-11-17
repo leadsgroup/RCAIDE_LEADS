@@ -77,6 +77,9 @@ class Electric_Rotor(Propulsor):
         # setting the default values
         self.tag                           = 'electric_rotor'
         self.domain                        = 'electrical'
+        self.motor                         = None
+        self.rotor                         = None
+        self.electronic_speed_controller   = None
 
     def append_operating_conditions(self,segment):
         """

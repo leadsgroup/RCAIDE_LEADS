@@ -105,6 +105,11 @@ class Generic_Battery_Module(Source):
         self.energy_density                                    = 0.0 
         self.current_capacitor_charge                          = 0.0
         self.capacity                                          = 0.0
+        self.voltage                                           = 0.0
+        self.nominal_capacity                                  = 0.0
+        self.specific_energy                                   = 0.0
+        self.specific_power                                    = 0.0
+        self.initial_maximum_energy                            = 0.0
             
         self.length                                            = 0.0
         self.width                                             = 0.0
