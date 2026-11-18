@@ -11,3 +11,4 @@
 from . import Airfoil
 from . import Planform
 from . import LOPA
+from . import Solids

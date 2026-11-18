@@ -64,8 +64,10 @@ class Compiled_Lattice_Cases():
                                            sideslip_and_rate_conditions(aerodynamics, one), control_surface_conditions(one), high_lift_angle_conditions(one)],
                              'deflected': [control_surface_conditions(one), high_lift_angle_conditions(one)]}
         self.compilations = {'clean': 0, 'deflected': 0}
-        self.value        = {'clean'    : jax.jit(lambda fields, references, mach: self.evaluate('clean', fields, references, mach)),
-                             'deflected': jax.jit(lambda fields, references, mach: self.evaluate('deflected', fields, references, mach))}
+        # checkpointed: a reverse pass keeps only each call's inputs and recomputes its solve, so the memory of a
+        # derivative of the whole training is that of one set of cases at one Mach number
+        self.value        = {'clean'    : jax.jit(jax.checkpoint(lambda fields, references, mach: self.evaluate('clean', fields, references, mach))),
+                             'deflected': jax.jit(jax.checkpoint(lambda fields, references, mach: self.evaluate('deflected', fields, references, mach)))}
 
     def evaluate(self, name, fields, references, mach):
         """The results of every case of a set for the lattice fields, the reference values and center of gravity, and

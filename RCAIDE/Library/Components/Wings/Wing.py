@@ -166,10 +166,12 @@ class Wing(Component):
         self.dihedral                               = 0.0
         self.aspect_ratio                           = 0.0
         self.thickness_to_chord                     = 0.0
+        self.winglet_fraction                       = 0.0
         self.aerodynamic_center                     = [0.0,0.0,0.0]
         self.percent_span_unexposed                 = 0.0
-        self.total_length                           = 0.0 
-             
+        self.total_length                           = 0.0
+        self.LEMAC                                  = 0.0
+
         self.spans                                  = Data()
         self.spans.projected                        = 0.0
         self.spans.total                            = 0.0
@@ -180,7 +182,9 @@ class Wing(Component):
         self.areas.affected                         = 0.0
         self.areas.wetted                           = 0.0
         self.areas.planform                         = 0.0
-                                                    
+        self.areas.projected                        = 0.0
+        self.areas.front_projected                  = 0.0
+
         self.chords                                 = Data()
         self.chords.mean_aerodynamic                = 0.0
         self.chords.mean_geometric                  = 0.0

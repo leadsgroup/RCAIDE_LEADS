@@ -100,6 +100,7 @@ class Propulsor(Component):
         self.identical_propulsors           = True
         self.reverse_thrust                 = False
         self.sealevel_static_thrust         = 0.0
+        self.sealevel_static_power          = 0.0
         self.sealevel_static_chemical_power = 0.0
         self.working_fluid                  = RCAIDE.Library.Attributes.Gases.Air()
         self.assigned_converters            = None

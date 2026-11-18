@@ -29,6 +29,7 @@ class Pump(Converter):
         self.power_density            = 15000
         self.turbine_efficiency       = 0.9
         self.distributor_split        = None
+        self.design_power             = 0.0
 
         return
     

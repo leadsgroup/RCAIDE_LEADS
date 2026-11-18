@@ -218,6 +218,9 @@ def signature_difference(segment, other, limit=5):
 # fallback deck of a gas turbine (the JAX matching returns NaN at a point NumPy would route to it)
 NUMPY_ONLY = ('idle_fallback',)
 
+# a record of what an analysis was built from, which decides whether it is rebuilt: never read by the residual
+NOT_INPUTS = ('surrogate_inputs',)
+
 # the energy topology of the segment before is not its end state: it holds the network's components, which the segment
 # reads through its own topology. Walked, the trace would credit the components to the segment before.
 NOT_END_STATE = ('initials.conditions.energy.topology',)
@@ -240,7 +243,7 @@ def collect_inputs(item, path, references, static, seen, skip=()):
         collect_value(item, 'values', item.values, 'attribute', f"{path}.values", references, static, seen)
     elif isinstance(item, dict):
         for key, value in dict.items(item):
-            if key not in skip and key not in NUMPY_ONLY and not (path == 'state' and str(key).startswith('number_of_')):
+            if key not in skip and key not in NUMPY_ONLY and key not in NOT_INPUTS and not (path == 'state' and str(key).startswith('number_of_')):
                 collect_value(item, key, value, 'item', f"{path}.{key}", references, static, seen)
         # object attributes of a Data (the conditions size, a vehicle's maps to its own containers), walked after its
         # items so a container held both ways is walked once; not the binding to the preallocated layout

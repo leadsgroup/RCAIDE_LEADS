@@ -195,6 +195,7 @@ class Turbojet(Propulsor):
         self.afterburner_active                          = False
         self.specific_fuel_consumption_reduction_factor  = 0.0  
         self.compressor_nondimensional_massflow          = 0.0
+        self.TSFC                                        = None
         self.reference_temperature                       = 288.15
         self.reference_pressure                          = 1.01325*10**5
         self.integrated_drive_generator                  = None

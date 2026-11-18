@@ -568,7 +568,7 @@ def vehicle_setup() :
     fuel_tank_1.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_1.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_1.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
-    fuel_tank_1.segments_percent_chord_bounds          = [0.1 ,0.1]
+    fuel_tank_1.segments_percent_chord_start           = [0.1 ,0.1]
     fuel_tank_1.segments_percent_chord_end             = [0.55,0.55]
     fuel_tank_1.assigned_distributors = [[fuel_line.tag]]
     net.sources.append(fuel_tank_1)
@@ -584,7 +584,7 @@ def vehicle_setup() :
     fuel_tank_2.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_2.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
-    fuel_tank_2.segments_percent_chord_bounds          = [0.1 ,0.1]
+    fuel_tank_2.segments_percent_chord_start           = [0.1 ,0.1]
     fuel_tank_2.segments_percent_chord_end             = [0.55,0.55]
     fuel_tank_2.packs_after_tank                       = 'tank_1l_1r'
     fuel_tank_2.assigned_distributors = [[fuel_line.tag]]
@@ -601,7 +601,7 @@ def vehicle_setup() :
     fuel_tank_3.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_3.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
-    fuel_tank_3.segments_percent_chord_bounds          = [0.1 ,0.1]
+    fuel_tank_3.segments_percent_chord_start           = [0.1 ,0.1]
     fuel_tank_3.segments_percent_chord_end             = [0.55,0.55]
     fuel_tank_3.packs_after_tank                       = 'tank_2l_2r'
     fuel_tank_3.assigned_distributors = [[fuel_line.tag]]

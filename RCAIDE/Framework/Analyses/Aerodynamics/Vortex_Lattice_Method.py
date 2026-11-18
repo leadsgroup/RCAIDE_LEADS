@@ -77,10 +77,12 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.settings.leading_edge_suction_multiplier               = 1.0  
         self.settings.horizontal_tail_dynamic_pressure_ratio        = 1.0  # q_h/q at the horizontal tail (Raymer Eq. 16.6)
         self.settings.use_VORLAX_matrix_calculation                 = False
-    
+        self.settings.train_surrogates                              = True
+
         # conditions table, used for surrogate model training
         self.training                                               = Data() 
         self.training_vehicle                                       = None  # vehicle the surrogates were trained on
+        self.surrogate_inputs                                       = None  # values the surrogates were built from
         self.surrogate_owner                                        = None  # analysis owning shared surrogates, set by the aerodynamics pre-process
         self.training.angle_of_attack                               = np.array([ -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45.]) * Units.deg   
         self.training.Mach                                          = np.array([0.1  , 0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.5 , 2.0  , 2.5  , 3.5])             
@@ -157,7 +159,14 @@ class Vortex_Lattice_Method(Aerodynamics):
         
 
     def initialize(self, vehicle): 
-         
+
+        # the surrogates are kept when nothing they were built from has changed
+        inputs = surrogate_inputs(self, vehicle)
+        if self.settings.use_surrogate and self.settings.train_surrogates and same_surrogate_inputs(inputs, self.surrogate_inputs):
+            return
+        # surrogates built from a training held for another vehicle are not those of these inputs
+        self.surrogate_inputs = deepcopy(inputs) if self.settings.train_surrogates else None
+
         # clean-wing mesh, one case: the geometry the surrogates are trained on and the wing-on-rotor coupling uses
         clean_wing_vehicle = deepcopy(vehicle)
         for wing in clean_wing_vehicle.wings:
@@ -168,9 +177,12 @@ class Vortex_Lattice_Method(Aerodynamics):
         reuse_training_data  = self.settings.reuse_training_data   
 
         # If we are using the surrogate
-        if use_surrogate == True: 
+        if use_surrogate == True:
             #  training data
-            if reuse_training_data: 
+            if not self.settings.train_surrogates:
+                if self.training.subsonic is None:
+                    raise ValueError(f"{self.tag}: train_surrogates is False but the analysis holds no training")
+            elif reuse_training_data:
                 with open(self.filename, 'rb') as file:
                     self.training = pickle.load(file) 
                 print("\n Aerodynamic training data loaded. Delete the file and rerun to regenerate.")
@@ -182,8 +194,10 @@ class Vortex_Lattice_Method(Aerodynamics):
                     with open(self.filename, 'wb') as file:
                         pickle.dump(self.training, file) 
 
-            build_VLM_surrogates(self, vehicle)        
+            build_VLM_surrogates(self, vehicle)
             self.training_vehicle = vehicle
+            # False holds for one initialize only, so the analysis it leaves has the settings of a trained one
+            self.settings.train_surrogates = True
     
         # build the evaluation process
         compute   =  self.process.compute                  

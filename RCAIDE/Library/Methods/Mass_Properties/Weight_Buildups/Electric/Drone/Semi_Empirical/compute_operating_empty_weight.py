@@ -83,11 +83,10 @@ def compute_operating_empty_weight(vehicle, settings=None):
     if vehicle.flight_envelope.design_mach_number  == None: # Added design mach number
         raise ValueError("FLOPS requires a design mach number for sizing!")
     
-    if not hasattr(vehicle, 'flap_ratio'):
-        flap_ratio = 0.33
-        for wing in vehicle.wings:
-            if isinstance(wing, Wings.Main_Wing):
-                wing.flap_ratio = flap_ratio
+    # the FLOPS flapped fraction of the wing area, where the main wing does not set its own
+    for wing in vehicle.wings:
+        if isinstance(wing, Wings.Main_Wing) and wing.flap_ratio is None:
+            wing.flap_ratio = 0.33
                 
     ##-------------------------------------------------------------------------------             
     # Payload Weight

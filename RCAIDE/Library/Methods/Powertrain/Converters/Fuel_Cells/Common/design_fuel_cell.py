@@ -111,7 +111,7 @@ def design_fuel_cell(fuel_cell_stack):
 
         fuel_cell_stack_conditions.current_density[0] = rated_current_density
         pem = evaluate_PEM(fuel_cell_stack, fuel_cell_stack_conditions, fuel_cell_stack_conditions.current_density[:, 0])
-        m_dot_H2, V_fuel_cell, P_fuel_cell = pem.mdot_H2[0], pem.voltage[0], pem.net_power[0]
+        V_fuel_cell, P_fuel_cell = pem.voltage[0], pem.net_power[0]
 
     # size the stack from its design point -- see docstring Notes. Only when both are explicitly set, so stacks
     # that hand-set series/parallel directly (the class default is 1x1, not None) are unaffected.
@@ -169,14 +169,11 @@ def design_fuel_cell(fuel_cell_stack):
 
     if type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack:
         # P_fuel_cell, V_fuel_cell, maximum_current_density already found above
-        efficiency                             = np.divide(V_fuel_cell, fuel_cell.ideal_voltage)
-        mdot_H2                                = np.divide(P_fuel_cell,np.multiply(fuel_cell.propellant.specific_energy,efficiency))
 
         # store properties
         fuel_cell.rated_current_density       = maximum_current_density
         fuel_cell.volume                       = fuel_cell.interface_area*fuel_cell.wall_thickness
         fuel_cell.mass                         = fuel_cell.volume*fuel_cell.cell_density*fuel_cell.porosity_coefficient
-        fuel_cell.density                      = fuel_cell.mass/fuel_cell.volume
         fuel_cell.specific_power               = fuel_cell.max_power/fuel_cell.mass
 
         fuel_cell_stack.mass_properties.mass   = n_total*fuel_cell.mass
@@ -184,8 +181,6 @@ def design_fuel_cell(fuel_cell_stack):
         fuel_cell_stack.maximum_voltage        = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_power          = P_fuel_cell * n_total
         fuel_cell_stack.design_power           = fuel_cell_stack.maximum_power
-        fuel_cell_stack.maximum_current        = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
-        fuel_cell_stack.maximum_fuel_mass_flow_rate = mdot_H2 * n_total
 
     elif type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell:
 
@@ -194,14 +189,11 @@ def design_fuel_cell(fuel_cell_stack):
         area_square_meters                          = fuel_cell.interface_area * 0.0001
         fuel_cell.volume                            = area_square_meters*fuel_cell.wall_thickness
         fuel_cell.mass                              = fuel_cell.volume*fuel_cell.cell_density*fuel_cell.porosity_coefficient
-        fuel_cell.density                           = fuel_cell.mass/fuel_cell.volume
         fuel_cell.specific_power                    = fuel_cell.max_power/fuel_cell.mass
         fuel_cell_stack.mass_properties.mass        = n_total*fuel_cell.mass
         fuel_cell_stack.voltage                     = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_voltage             = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_power               = P_fuel_cell * n_total
         fuel_cell_stack.design_power                = fuel_cell_stack.maximum_power
-        fuel_cell_stack.maximum_current             = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
-        fuel_cell_stack.maximum_fuel_mass_flow_rate = m_dot_H2 * n_total
 
     return

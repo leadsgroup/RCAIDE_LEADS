@@ -33,6 +33,9 @@ class Economy(Component):
         self.emergency_exit_percent_x_locations  = []
         self.type_A_exit_percent_x_locations     = [] 
         self.y_offset_distance                   = 0
+        self.length                              = 0.0
+        self.percentage                          = 0.0
+        self.cabin_class_width                   = 0.0
          
                
      

@@ -177,7 +177,8 @@ class Fuselage(Component):
         self.lengths.nose                           = 0.0
         self.lengths.tail                           = 0.0
         self.lengths.total                          = 0.0
-        self.x_rotation                             = 0.0
+        self.lengths.cabin                          = 0.0
+        self.x_rotation                            = 0.0
         self.y_rotation                             = 0.0
         self.z_rotation                             = 0.0  
         self.fineness                               = Data() 

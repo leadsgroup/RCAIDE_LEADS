@@ -42,8 +42,9 @@ class Cabin(Component):
         self.tail.fineness_ratio       = 0
         self.nose                      = Data()
         self.nose.fineness_ratio       = 0
-        self.classes                   = Container() 
+        self.classes                   = Container()
         self.segments                  = Container()
+        self.layout_of_passenger_accommodations = None
 
     def append_segment(self, segment):
         """

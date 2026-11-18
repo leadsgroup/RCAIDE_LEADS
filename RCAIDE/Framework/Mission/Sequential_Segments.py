@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports    
 from RCAIDE.Library.Mission.Common.Segments    import sequential_segments
-from RCAIDE.Library.Mission.Common.Pre_Process import configurations, geometry, aerodynamics,stability, energy,emissions,mass_properties, set_mission_residuals_and_unknowns, set_network_residuals_and_unknowns, hp_decompose_mission, merge_hp_decomposed_segments
+from RCAIDE.Library.Mission.Common.Pre_Process import configurations, geometry, aerodynamics,stability, energy,emissions,mass_properties, set_mission_residuals_and_unknowns, set_network_residuals_and_unknowns, hp_decompose_mission, merge_hp_decomposed_segments, record_undeclared_values, check_undeclared_values
 from RCAIDE.Framework.Core                     import Container as ContainerBase
 from RCAIDE.Framework.Analyses                 import Process 
 from . import Segments
@@ -46,10 +46,12 @@ class Sequential_Segments(Segments.Segment.Container):
         """          
 
         self.tag = 'mission'
+        self.undeclared_vehicle_values = None
         
         #   Initialize
         self.process.initialize                                      = Process()
         self.process.initialize.configurations                       = configurations
+        self.process.initialize.record_undeclared_values             = record_undeclared_values
         self.process.initialize.hp_decompose_mission                 = hp_decompose_mission
         self.process.initialize.geometry                             = geometry
         self.process.initialize.energy                               = energy
@@ -59,6 +61,7 @@ class Sequential_Segments(Segments.Segment.Container):
         self.process.initialize.emissions                            = emissions
         self.process.initialize.set_mission_residuals_and_unknowns   = set_mission_residuals_and_unknowns
         self.process.initialize.set_network_residuals_and_unknowns   = set_network_residuals_and_unknowns
+        self.process.initialize.check_undeclared_values              = check_undeclared_values
 
 
         #   Converge

@@ -96,6 +96,7 @@ class Segment(Component):
         self.percent_span_location                     = 0.0
         self.twist                                     = 0.0
         self.taper                                     = 0.0
+        self.aspect_ratio                              = 0.0
         self.root_chord_percent                        = 0.0
         self.dihedral_outboard                         = 0.0
         self.thickness_to_chord                        = 0.0
@@ -115,7 +116,8 @@ class Segment(Component):
         self.structural.front_spar_percent_chord       = 0.1  
         self.structural.rear_spar_percent_chord        = 0.6  
         self.airfoil                                   = None
-        
+        self.control_surfaces                          = None
+
         
     def append_airfoil(self, airfoil):
         """

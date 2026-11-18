@@ -45,8 +45,9 @@ class Main_Wing(Wing):
         """
         Sets default values for the main wing attributes.
         """
-        self.tag      = 'main_wing'
-        self.segments = Segment_Container()
+        self.tag        = 'main_wing'
+        self.segments   = Segment_Container()
+        self.flap_ratio = None
 
 class Segment_Container(Container):
     """

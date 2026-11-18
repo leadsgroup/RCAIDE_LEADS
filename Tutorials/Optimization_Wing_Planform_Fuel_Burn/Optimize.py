@@ -1,149 +1,124 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports 
-import RCAIDE 
-from RCAIDE.Framework.Core import Units, Data
-from RCAIDE.Framework.Optimization.Common import * 
-from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
+# ----------------------------------------------------------------------------------------------------------------------
+# RCAIDE imports
+import RCAIDE
+from RCAIDE.Framework.Core import Units, Data, base_vehicle
+from RCAIDE.Framework.Optimization.Common import Design_Problem, solve_design_problem
 
-# local file imports 
-import Vehicles     # defines aircraft 
+# local file imports
+import Vehicles     # defines aircraft
 import Analyses     # defines analyses
-import Missions     # defines flight profile 
-import Procedure    # defines optimization interation process  
+import Missions     # defines flight profile
 
-# python imports 
-import matplotlib.pyplot as plt
-import numpy as np
-import time 
+# python imports
+import time
+import jax
 
-# ----------------------------------------------------------------------        
+# the derivatives need double precision
+jax.config.update("jax_enable_x64", True)
+
+# ----------------------------------------------------------------------------------------------------------------------
 #  Main Script
-# ----------------------------------------------------------------------  
+# ----------------------------------------------------------------------------------------------------------------------
 def main():
-    
-    # define optmiztion problem
+
+    # define optimization problem
     problem = define_optimization_problem()
 
-    show_desing_space = True
-    
-    # show design space with carpet and line plots  
-    if show_desing_space:
-        carpet_plot_data =generate_carpet_plot(problem,
-                    design_input_1_index            = 0, 
-                    design_input_2_index            = 1,                
-                    number_of_points                = 3,
-                    generate_objective_plot         = True, 
-                    objective_plot_constraint_index = 0, 
-                    generate_constraint_plots       = True)
-        
-        # create line plot 
-        line_plot_data =generate_line_plot(problem,
-                design_input_1_index = 0, 
-                number_of_points     = 3, 
-                plot_objective       = True,
-                plot_constraint      = True) 
-     
-    # start clock 
+    # start clock
     ti = time.time()
-    
-    '''This optimization call below is set to run only 2 iterations with a large tolerance to speed up 
-    the optimization for tutorial and server regression purposes. '''
-    regression_solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP', sense_step = 1.e-2, iter =2, tolerance = 1e-1)
-    
-    # solve optimization problem
-    #solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP', sense_step = 1.e-4, iter =10, tolerance = 1e-2)
-    
-    # stop clock 
-    tf                   = time.time()
-    elapsed_time         = round((tf-ti)/60,2)
-    print('Simulation Time: ' + str(elapsed_time) + ' mins')    
 
-    # write optimization outputs     
-    print_optimization_results(problem)  
-    
+    # each design solves the mission once; the gradients of the objective and the constraints come from the mission
+    # derivative without solving it again
+    solution = solve_design_problem(problem, optimizer='SLSQP', iterations=50, tolerance=1e-6)
+
+    # stop clock
+    tf           = time.time()
+    elapsed_time = round((tf-ti)/60,2)
+    print('Simulation Time: ' + str(elapsed_time) + ' mins')
+    print('Optimizer: ' + solution.optimizer.message + ', ' + str(solution.optimizer.nit) + ' iterations')
+
+    # write optimization outputs
+    print('\nOptimal design')
+    for path, value in solution.design.items():
+        print(f'  {path:45s} {value:.6g}')
+    print('Outputs')
+    for name, value in solution.outputs.items():
+        print(f'  {name:45s} {value:.6g}')
     return
 
-# ----------------------------------------------------------------------        
+# ----------------------------------------------------------------------------------------------------------------------
 #   Inputs, Objective, & Constraints
-# ----------------------------------------------------------------------  
+# ----------------------------------------------------------------------------------------------------------------------
 def define_optimization_problem():
 
-    nexus = Nexus()
-    problem = Data()
-    nexus.optimization_problem = problem
+    # the vehicle and its configurations, analyses and missions, as the tutorial files build them
+    configs  = Vehicles.setup()
+    analyses = Analyses.setup(configs)
+    missions = Missions.setup(analyses)
+
+    problem          = Design_Problem()
+    problem.vehicle  = base_vehicle(configs.base)
+    problem.missions = Data(base_mission=missions.base_mission)
+
+    # the gradients are taken at the converged state, so the segments are solved tightly: at the default 1e-6 the
+    # range against span has the wrong sign
+    for segment in problem.missions.base_mission.segments.values():
+        segment.state.numerics.mission_solver.tolerance = 1e-10
 
     # -------------------------------------------------------------------
-    # Inputs - i.e. design variables 
-    # ------------------------------------------------------------------- 
-    #   [ tag                   , initial,     lb , ub        , scaling , units ]
-    problem.inputs = np.array([
-        [ 'wing_area'           ,  92     ,    50. ,   130.    ,   100.  , 1*Units.meter**2],
-        [ 'cruise_altitude'     ,   10    ,    6.  ,    12.    ,   10.   , 1*Units.km],
-        [ 'cruise_distance'     ,  1000   ,   10.  ,   5000.   ,   1000. , 1*Units.nmi   ],
-    ],dtype=object)
+    # Variables: paths to floats of the vehicle or of a segment
+    # -------------------------------------------------------------------
+    # the wing is defined by its span, root chord and segments, so its area and aspect ratio follow the span. The
+    # span is limited by the gate constraint below, so its upper bound is not reached.
+    #   [ path                                              , initial          , lower bound      , upper bound       , scale            ]
+    problem.variables = [
+        [ 'vehicle.wings.main_wing.spans.projected'           , 28.72            , 24.              , 40.               , 28.72            ],
+        [ 'missions.base_mission.segments.cruise.altitude'    , 10.668 * Units.km, 9.    * Units.km , 12.   * Units.km  , 10.   * Units.km ],
+        [ 'missions.base_mission.segments.cruise.distance'    , 1000 * Units.nmi , 500   * Units.nmi, 2000  * Units.nmi , 1000  * Units.nmi],
+    ]
+
+    # the last climb ends at the cruise altitude
+    problem.update_missions = climb_to_cruise_altitude
 
     # -------------------------------------------------------------------
-    # Objective - i.e. goal 
+    # Objective and constraints, on the outputs
     # -------------------------------------------------------------------
+    problem.outputs     = mission_outputs
+    #   [ output, scale ]
+    problem.objective   = [ 'fuel_burn', 10000. ]
+    # the span stays below 36 m, the limit of aerodrome code letter C (ICAO Annex 14, Volume I, 9th edition, 2022,
+    # Table 1-1), so the aircraft keeps fitting the gates it was designed for
+    #   [ output        , sense, edge               , scale            ]
+    problem.constraints = [
+        [ 'fuel_margin' , '>'  , 0.15               , 1.               ],
+        [ 'range'       , '>'  , 1500. * Units.nmi  , 1000. * Units.nmi],
+        [ 'span'        , '<'  , 36.                , 36.              ],
+    ]
+    return problem
 
-    # [ tag, scaling, units ]
-    problem.objective = np.array([
-        [ 'fuel_burn', 10000, 1*Units.kg ]
-    ],dtype=object)
-    
-    # -------------------------------------------------------------------
-    # Constraints 
-    # -------------------------------------------------------------------
-    
-    # [ tag, sense, edge, scaling, units ]
-    problem.constraints = np.array([
-        [ 'fuel_margin' , '>', 0.15 , 1, 1*Units.less], # fuel margin defined here as fuel
-        [ 'range_residual'    , '>', 0.   , 1, 1*Units.less], # 
-    ],dtype=object)
-    
-    # -------------------------------------------------------------------
-    #  Aliases - links between user specified terms and RCAIDE terms 
-    # -------------------------------------------------------------------
-    
-    # [ 'alias' , ['data.path1.name','data.path2.name'] ] 
-    problem.aliases = [
-        [ 'wing_area'                ,  ['vehicle_configurations.*.wings.main_wing.areas.reference','vehicle_configurations.*.reference_area' ]  ], 
-        [ 'cruise_altitude'          ,  ['missions.base_mission.segments.climb_3.altitude_end', 'missions.base_mission.segments.cruise.altitude']],
-        [ 'cruise_distance'          ,  'missions.base_mission.segments.cruise.distance'                                                         ],
-        [ 'fuel_burn'                ,  'summary.fuel_burn'                                                                                      ],
-        [ 'range_residual'           ,  'summary.range_residual'                                                                                 ],
-        [ 'fuel_margin'              ,  'summary.fuel_margin'                                                                                    ],
-    ]     
-    
-    # -------------------------------------------------------------------
-    #  Vehicles
-    # -------------------------------------------------------------------
-    nexus.vehicle_configurations = Vehicles.setup()
-    
-    # -------------------------------------------------------------------
-    #  Analyses
-    # -------------------------------------------------------------------
-    nexus.analyses = Analyses.setup(nexus.vehicle_configurations)
-    
-    # -------------------------------------------------------------------
-    #  Missions
-    # -------------------------------------------------------------------
-    nexus.missions = Missions.setup(nexus.analyses)
-    
-    # -------------------------------------------------------------------
-    #  Procedure
-    # -------------------------------------------------------------------    
-    nexus.procedure = Procedure.setup()
-    
-    # -------------------------------------------------------------------
-    #  Summary
-    # -------------------------------------------------------------------    
-    nexus.summary = Data()    
-    nexus.total_number_of_iterations = 0
-    return nexus
-     
+
+def climb_to_cruise_altitude(missions):
+    # the climb ends where the cruise flies
+    segments                       = missions.base_mission.segments
+    segments.climb_3.altitude_end  = segments.cruise.altitude
+    return
+
+# ----------------------------------------------------------------------------------------------------------------------
+#   Outputs
+# ----------------------------------------------------------------------------------------------------------------------
+def mission_outputs(missions):
+    # array operations only (no float()), so a reverse derivative can trace this function
+    segments    = missions.base_mission.segments
+    vehicle     = segments.takeoff.analyses.vehicle
+    fuel_burn   = segments.takeoff.conditions.weights.vehicle.mass[0, 0] - segments.descent_5.conditions.weights.vehicle.mass[-1, 0]
+    max_fuel    = vehicle.mass_properties.max_fuel
+    return {'fuel_burn':   fuel_burn,
+            'fuel_margin': (max_fuel - fuel_burn) / max_fuel,
+            'range':       segments.descent_5.conditions.frames.inertial.aircraft_range[-1, 0],
+            'span':        vehicle.wings.main_wing.spans.projected}
+
+
 if __name__ == '__main__':
     main()
-    plt.show()

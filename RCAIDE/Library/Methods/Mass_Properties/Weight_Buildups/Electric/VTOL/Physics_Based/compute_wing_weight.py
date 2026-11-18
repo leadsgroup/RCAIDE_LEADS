@@ -78,10 +78,7 @@ def compute_wing_weight(wing,
     thicknessToChord = wing.thickness_to_chord
     wingArea         = wing.areas.reference
 
-    try:
-        wingletFraction = wing.winglet_fraction
-    except AttributeError:
-        wingletFraction = 0.0
+    wingletFraction  = wing.winglet_fraction
 
     totalWingArea   = 0
     for w in config.wings:

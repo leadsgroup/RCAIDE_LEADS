@@ -173,8 +173,7 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
     max_volume = np.max(tank_volumes)
     max_idx = np.argmax(tank_volumes)
 
-    fuel_tank.volume_external = max_volume
-    fuel_tank.length_external = tank_lengths[max_idx]
+    length_external = tank_lengths[max_idx]
 
     # ------------------------------------------------------
     # Plot shaded intersection polygon
@@ -208,12 +207,9 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
     vertical_edge = np.array(vertical_edge)
 
     # chordwise edges (upper + lower chains) give width, vertical walls give height
-    fuel_tank.max_volume_intersection_edge_lengths = edge_lengths
-    fuel_tank.max_volume_intersection_num_edges    = int(len(edge_lengths))
     fuel_tank.widths.external                      = np.sum(edge_lengths[~vertical_edge])/2
-    fuel_tank.lengths.external                     = fuel_tank.length_external
+    fuel_tank.lengths.external                     = length_external
     fuel_tank.heights.external                     = np.sum(edge_lengths[vertical_edge])/2
-    fuel_tank.aspect_ratio                         = fuel_tank.lengths.external /fuel_tank.heights.external 
     fuel_tank.volume_properties.net_volume         = max_volume
     fuel_tank.volume_properties.gross_volume       = max_volume
 
@@ -229,11 +225,11 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
     # Extrusion is centered about y = 0 (symmetric about origin in spanwise axis).
     tank_mesh = trimesh.creation.extrude_polygon(
         polygon=polygon_for_calc,
-        height=float(fuel_tank.length_external),
+        height=float(length_external),
     )
     R = trimesh.transformations.rotation_matrix(-np.pi / 2.0, [1.0, 0.0, 0.0])
     T = trimesh.transformations.translation_matrix(
-        [0.0, -0.5 * float(fuel_tank.length_external), 0.0]
+        [0.0, -0.5 * float(length_external), 0.0]
     )
   
     tank_mesh.apply_transform(R)

@@ -69,6 +69,8 @@ class Fuel_Tank(Source):
         self.wing_tag                       = None
         self.fuselage_tag                   = None
         self.transverse_tank                = False
+        self.transverse_tank_chord_bounds   = None
+        self.wing_root_twist                = 0.0
         self.gravimetric_efficiency         = 1.0
         self.packs_after_tank               = None  # tag of a tank to pack sequentially after (see compute_wing_non_integral_tank_volume)
         self.lengths                        = Data()
@@ -86,6 +88,7 @@ class Fuel_Tank(Source):
 
         # Insulation sub-component
         self.insulation                     = Component()
+        self.insulation.thickness           = 0.0
         self.insulation.lengths             = Data()
         self.insulation.lengths.external    = 0.0
         self.insulation.lengths.internal    = 0.0
@@ -101,6 +104,7 @@ class Fuel_Tank(Source):
 
         # Inner structure (pressure vessel) sub-component
         self.inner_structure                     = Component()
+        self.inner_structure.thickness           = 0.0
         self.inner_structure.lengths             = Data()
         self.inner_structure.lengths.external    = 0.0
         self.inner_structure.lengths.internal    = 0.0
