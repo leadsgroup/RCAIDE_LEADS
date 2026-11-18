@@ -9,6 +9,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Data ,  Units 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.General_Aviation.FLOPS as FLOPS
+from RCAIDE.Library.Components import Component
 # python imports 
 import numpy as np
 
@@ -44,7 +45,25 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------             
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
-    W_oper = FLOPS.compute_operating_items_weight(vehicle)    
+    W_oper = FLOPS.compute_operating_items_weight(vehicle)   
+
+    for system in vehicle.systems:
+        if isinstance(system,Component):
+            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Pilots:
+                    system.mass_properties.mass = W_oper.flight_crew
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Attendants:
+                    system.mass_properties.mass = W_oper.flight_attendants
+                # if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Miscellaneous: 
+                #     system.mass_properties.mass = W_oper.misc
+                system.mass_properties.calculated_flag = True
+            else:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Pilots:
+                    W_oper.flight_crew = system.mass_properties.mass
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Attendants:
+                    W_oper.flight_attendants    = system.mass_properties.mass
+                # if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Miscellaneous: 
+                #     W_oper.misc   = system.mass_properties.mass 
     
     ##-------------------------------------------------------------------------------         
     # System Weight
@@ -71,7 +90,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_energy_network.W_starter         = 0 
     W_energy_network.W_fuel_system     = 0 
     W_energy_network.W_motors          = 0 
-    W_energy_network.W_nacelle         = 0 
+    W_energy_network.W_nacelle         = 1 
     W_energy_network.W_battery         = 0
     W_energy_network.W_motor           = 0
     number_of_engines                  = 0
@@ -79,6 +98,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
 
     for network in vehicle.networks: 
         W_energy_network_total   = 0 
+        for propulsor in network.propulsors:
+            number_of_engines       += 1
     
         # Electric-Powered Propulsors  
         for bus in network.busses: 
@@ -96,6 +117,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
             if 'motor' in propulsor:                           
                 W_energy_network.W_motor +=  propulsor.motor.mass_properties.mass
                 W_energy_network_total  +=  propulsor.motor.mass_properties.mass
+            propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
                    
     W_energy_network_cumulative += W_energy_network_total
     
@@ -115,6 +137,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.battery             = W_energy_network.W_battery
     output.empty.propulsion.motors              = W_energy_network.W_motor
     output.empty.propulsion.engines             = W_energy_network.W_engine
+    output.empty.propulsion.nacelles            = W_energy_network.W_nacelle
     output.empty.propulsion.thrust_reversers    = W_energy_network.W_thrust_reverser
     output.empty.propulsion.miscellaneous       = W_energy_network.W_engine_controls + W_energy_network.W_starter
     output.empty.propulsion.fuel_system         = W_energy_network.W_fuel_system
