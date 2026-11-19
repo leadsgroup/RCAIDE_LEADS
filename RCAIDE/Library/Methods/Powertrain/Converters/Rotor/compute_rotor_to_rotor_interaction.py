@@ -14,7 +14,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_rotor_to_rotor_interaction
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_rotor_to_rotor_interaction(rotors, conditions, wing_on_rotor_coupling=False):
+def compute_rotor_to_rotor_interaction(rotors, conditions, wing_vortex_distribution=None):
     """Computes the performance of coupled rotors with mutual wake interaction.
 
     Lifting_Line_Theory rotors are solved together with the real cross-rotor K_bound[i][j]/
@@ -26,12 +26,12 @@ def compute_rotor_to_rotor_interaction(rotors, conditions, wing_on_rotor_couplin
     ll_rotors = [r for r in rotors if r.fidelity == 'Lifting_Line_Theory']
 
     if ll_rotors:
-        wake_inputs_list = [build_rotor_wake_inputs(r, conditions, wing_on_rotor_coupling) for r in ll_rotors]
+        wake_inputs_list = [build_rotor_wake_inputs(r, conditions, wing_vortex_distribution) for r in ll_rotors]
         evaluate_bound_vortex_circulation(ll_rotors, wake_inputs_list, conditions)
         for r, wi in zip(ll_rotors, wake_inputs_list):
             compute_lifting_line_loads(r, wi, conditions)
 
     for r in rotors:
         if r.fidelity != 'Lifting_Line_Theory':
-            compute_rotor_performance(r, conditions, wing_on_rotor_coupling)
+            compute_rotor_performance(r, conditions, wing_vortex_distribution)
     return

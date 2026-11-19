@@ -76,7 +76,7 @@ def translate_conditions_to_cases(avl ,conditions, vehicle):
     
     return cases
 
-def translate_results_to_conditions(cases,res,results, settings):
+def translate_results_to_conditions(cases,res,results, aerodynamics):
     """ Takes avl results structure containing the results of each run case stored
         each in its own Data() object. Translates into the Conditions() data structure.
 
@@ -138,8 +138,7 @@ def translate_results_to_conditions(cases,res,results, settings):
         res.static_stability.coefficients.yaw[i][0]                         = case_res.aerodynamics.yaw_moment_coefficient
         res.aerodynamics.coefficients.lift.inviscid.total[i][0]             = case_res.aerodynamics.total_lift_coefficient
         res.aerodynamics.coefficients.drag.induced.inviscid[i][0]           = case_res.aerodynamics.induced_drag_coefficient 
-        res.aerodynamics.coefficients.drag.induced.efficiency_factor[i][0]  = case_res.aerodynamics.oswald_efficiency 
-        res.aerodynamics.oswald_efficiency[i][0]                            = case_res.aerodynamics.oswald_efficiency
+        res.aerodynamics.coefficients.drag.induced.span_efficiency[i][0]    = case_res.aerodynamics.span_efficiency
         
         res.static_stability.derivatives.Clift_alpha[i][0]                  = case_res.stability.alpha_derivatives.lift_curve_slope
         res.static_stability.derivatives.CY_alpha[i][0]                     = case_res.stability.alpha_derivatives.side_force_derivative
@@ -219,7 +218,7 @@ def translate_results_to_conditions(cases,res,results, settings):
         res.static_stability.control_surfaces_cases[tag]    = case_res.stability.control_surfaces
         
         
-        for cs_name, cs in zip(cases[0].stability_and_control.control_surface_names, settings.control_surface_tags): 
+        for cs_name, cs in zip(cases[0].stability_and_control.control_surface_names, aerodynamics.settings.control_surface_tags): 
             cs_res =  case_res.stability.control_surfaces.control_surfaces[cs_name]
             
             if cs == 'flap':
@@ -252,9 +251,9 @@ def translate_results_to_conditions(cases,res,results, settings):
         res.static_stability.derivatives.CX_alpha[:, 0] =  np.gradient( res.static_stability.coefficients.X[:, 0],res.aerodynamics.angles.alpha[:, 0] )
         res.static_stability.derivatives.CZ_alpha[:, 0] =  np.gradient( res.static_stability.coefficients.Z[:, 0],res.aerodynamics.angles.alpha[:, 0] ) 
     
-    settings.vortex_distribution  = Data(
+    aerodynamics.vortex_distribution  = Data(
         chord_widths        = wing_strip_widths.reshape(wing_strip_widths.shape[:-2] + (-1,)), 
-        chord_lengths       = wing_section_chords.reshape(wing_section_chords.shape[:-2] + (-1,)),
+        strip_chord_lengths = wing_section_chords.reshape(wing_section_chords.shape[:-2] + (-1,)),
         leading_edge_sweeps = leading_edge_sweeps.reshape(leading_edge_sweeps.shape[:-2] + (-1,)), 
         wing_areas          = wing_areas, 
         )

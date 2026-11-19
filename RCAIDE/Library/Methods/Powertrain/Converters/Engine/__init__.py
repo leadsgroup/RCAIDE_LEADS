@@ -15,5 +15,6 @@ RCAIDE.Library.Methods.Powertrain.Converters.Motor
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .append_engine_conditions           import append_engine_conditions         
+from .compute_power_available            import compute_power_available
 from .compute_throttle_from_power        import compute_throttle_from_power
 from .compute_power_from_throttle        import compute_power_from_throttle 

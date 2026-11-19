@@ -3,6 +3,7 @@
 # Created:  Jun 2024, M. Clarke  
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+import numpy as np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 # append_expansion_nozzle_conditions
@@ -38,4 +39,8 @@ def append_expansion_nozzle_conditions(expansion_nozzle,segment):
     segment.state.conditions.energy.converters[expansion_nozzle.tag]                      = Conditions()
     segment.state.conditions.energy.converters[expansion_nozzle.tag].inputs               = Conditions()
     segment.state.conditions.energy.converters[expansion_nozzle.tag].outputs              = Conditions() 
+    outputs = segment.state.conditions.energy.converters[expansion_nozzle.tag].outputs   # exit state, NaN until computed
+    rows    = segment.state.ones_row(1).shape[0]
+    for key in ['velocity', 'static_temperature', 'static_pressure', 'stagnation_temperature', 'stagnation_pressure']:
+        outputs[key] = np.full((rows, 1), np.nan)
     return 

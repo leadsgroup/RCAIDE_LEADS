@@ -81,18 +81,15 @@ Lift\tCD Profile Drag Counts\tCD Induced Drag Counts\tCD Wave Drag Counts
 0.6501\t250.0998\t152.9940\t72.6547
 """
 
-# Regression truth values — first 5 data points per quantity (snapshot 2026-09-03).
-# 'Total Drag' updated after fixing form_drag.py's CD_sep correlation, which was
-# over-correcting (fit against an alpha table with an unfounded AR extrapolation and
-# stale relative to the current parasite/induced/compressibility buildup); the new
-# values were verified against the CRM wind tunnel polar (raw_data_92 above) to
-# max abs error ~1.1e-3 across the full sweep, vs. ~8.7e-3 previously.
+# Regression truth values at low, cruise and high lift (points of raw_data_92), snapshot 2026-11-03.
+# Against the wind tunnel polar at the same CL: about +25 counts at CL 0.35-0.45, -230 counts at CL 0.72.
+TRUTH_INDICES = [0, 8, 14, 20, 25]
 TRUTH_VALUES = {
-    'Lift':         np.array([-2.5013857199e-01, -1.1054613425e-01, -4.3671358935e-02,  2.3110966590e-02,  9.1938472921e-02]),
-    'Total Drag':   np.array([ 2.5246219665e-02,  1.7891010671e-02,  1.6361547768e-02,  1.5606387533e-02,  1.5462565284e-02]),
-    'Induced Drag': np.array([ 1.1078637930e-02,  7.7852513243e-03,  6.2646857681e-03,  4.7869310241e-03,  3.3107393207e-03]),
-    'Wave Drag':    np.array([ 9.4800170926e-06,  2.8489918747e-05,  4.7017947099e-05,  7.6005111330e-05,  1.2185721190e-04]),
-    'Profile Drag': np.array([ 0.023290438340032797,0.017328324290169197,0.014475576482664931, 0.013437450527902036,0.012367293114379625]),
+    'Lift':         np.array([-0.2615462407294136, 0.35359476651625216, 0.5575834459059965, 0.7602682131174282, 1.033234021774249]),
+    'Total Drag':   np.array([0.017759396208638485, 0.02254642379756862, 0.03264103127796964, 0.056581427337659904, 0.08634973436930019]),
+    'Induced Drag': np.array([0.0030983911143904297, 0.00658027998246894, 0.013401518443557744, 0.021432076621018488, 0.03777664758366282]),
+    'Wave Drag':    np.array([1.1164919804113089e-05, 0.0008794898655580198, 0.0035803020078985044, 0.009753245037209993, 0.018072901975149346]),
+    'Profile Drag': np.array([0.014649840174443943, 0.01508665394954166, 0.015659210826513392, 0.025396105679431423, 0.030500184810488017]),
 }
 
 # ----------------------------------------------------------------------
@@ -118,13 +115,12 @@ def main():
 #   Regression Check
 # ----------------------------------------------------------------------
 
-def check_truth_values(results, tol=1e-2):
+def check_truth_values(results, tol=1e-4):
     print('\n--- Regression Check ---')
-    n = len(next(iter(TRUTH_VALUES.values())))   # number of truth points (5)
     passed = True
     for key, truth in TRUTH_VALUES.items():
-        computed = results[key].to_numpy()[:n]
-        if not np.allclose(computed, truth, rtol=tol, atol=tol):
+        computed = results[key].to_numpy()[TRUTH_INDICES]
+        if not np.allclose(computed, truth, rtol=tol, atol=0.0):
             max_err = np.max(np.abs(computed - truth))
             print(f'  FAIL  {key:<14}  max deviation = {max_err:.3e}')
             passed = False

@@ -45,7 +45,7 @@ def set_mission_residuals_and_unknowns(mission):
 
         # assign force and moment residuals i.e. degrees of freedom
         if dynamics.final_velocity_error == True:
-            segment.state.residuals.mission.final_velocity_error = 0.0
+            segment.state.residuals.mission.final_velocity_error = np.zeros(())   # rank 0: one entry, not expanded to rows
             segment.state.number_of_mission_residuals += 1
 
         if dynamics.force_x == True:

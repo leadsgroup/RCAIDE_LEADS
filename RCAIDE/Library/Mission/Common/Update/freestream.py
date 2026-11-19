@@ -58,10 +58,10 @@ def freestream(segment):
     Re = rho * Vmag / mu  # per m
 
     # pack
-    conditions.freestream.velocity         = Vmag
-    conditions.freestream.mach_number      = M
-    conditions.freestream.reynolds_number  = Re
-    conditions.freestream.dynamic_pressure = q
+    conditions.freestream.velocity[...]         = Vmag
+    conditions.freestream.mach_number[...]      = M
+    conditions.freestream.reynolds_number[...]  = Re
+    conditions.freestream.dynamic_pressure[...] = q
 
     return
 

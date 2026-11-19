@@ -13,10 +13,14 @@ from RCAIDE.Library.Methods.Aerodynamics                       import Common
 from .Aerodynamics                                             import Aerodynamics 
 from RCAIDE.Framework.Analyses.Common.Process_Geometry         import Process_Geometry 
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method import *   
+from RCAIDE.Framework.Mission.Common                           import Results
+from RCAIDE.Library.Methods.Stability.Common.compute_longitudinal_derivatives import compute_longitudinal_derivatives
+from RCAIDE.Library.Methods.Stability.Common.compute_lateral_derivatives import compute_lateral_derivatives
 
 # package imports 
 import numpy as np 
 import os,pickle
+from copy import deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice_Method
@@ -70,7 +74,6 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.settings.number_of_fuselage_chordwise_vortices         = 10 
         self.settings.model_fuselage                                = False 
         self.settings.spanwise_cosine_spacing                       = True
-        self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
         self.settings.horizontal_tail_dynamic_pressure_ratio        = 1.0  # q_h/q at the horizontal tail (Raymer Eq. 16.6)
         self.settings.use_VORLAX_matrix_calculation                 = False
@@ -91,6 +94,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.altitude                                      = 0
         self.training.speed_of_sound                                = 343 
         self.training.angle_purtubation                             = 10 * Units.deg          
+        self.training.reference_angle_perturbation                  = 2 * Units.deg
         self.training.speed_purtubation                             = 5  
         self.training.rate_purtubation                              = 0.05 * Units.deg / Units.sec   # 0.05 * Units.deg / Units.sec   
         self.training.control_surface_purtubation                   = 10 * Units.deg          
@@ -100,7 +104,6 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.rudder_deflection                             = np.array([10  , 1E-3 ]) * Units.deg
         self.training.flap_deflection                               = np.array([10  , 1E-3 ]) * Units.deg 
         self.training.slat_deflection                               = np.array([10  , 1E-3 ]) * Units.deg                      
-        self.training.u                                             = np.array([10 , 5 ])  * Units.m / Units.sec 
         self.training.v                                             = np.array([10 , 5 ])  * Units.m / Units.sec 
         self.training.w                                             = np.array([10 , 5 ])  * Units.m / Units.sec   
         self.training.pitch_rate                                    = np.array([0.05 ,1E-20 ])  * Units.deg / Units.sec
@@ -149,11 +152,19 @@ class Vortex_Lattice_Method(Aerodynamics):
         compute.drag.form                                           = Common.Drag.form_drag   
         compute.drag.trim                                           = Common.Drag.trim_drag 
         compute.drag.total                                          = Common.Drag.total_drag
+        compute.longitudinal_derivatives                            = compute_longitudinal_derivatives
+        compute.lateral_derivatives                                 = compute_lateral_derivatives
         self.process.compute                                        = compute
         
 
     def initialize(self, vehicle): 
          
+        # clean-wing mesh, one case: the geometry the surrogates are trained on and the wing-on-rotor coupling uses
+        clean_wing_vehicle = deepcopy(vehicle)
+        for wing in clean_wing_vehicle.wings:
+            wing.control_surfaces = []
+        self.vortex_distribution = generate_vortex_distribution(Results(), self.settings, clean_wing_vehicle)
+
         use_surrogate        = self.settings.use_surrogate 
         reuse_training_data  = self.settings.reuse_training_data   
 
@@ -184,6 +195,16 @@ class Vortex_Lattice_Method(Aerodynamics):
         return 
     
          
+    def append_operating_conditions(self, segment):
+        """Allocates the aerodynamic outputs, including the spanwise lift and vortex strengths sized by the mesh; NaN
+        until computed."""
+        Aerodynamics.append_operating_conditions(self, segment)
+        rows         = segment.state.ones_row(1).shape[0]
+        aerodynamics = segment.state.conditions.aerodynamics
+        aerodynamics.coefficients.lift.spanwise = np.full((rows, self.vortex_distribution.Y_SW.shape[1]), np.nan)   # per strip
+        aerodynamics.gamma                      = np.full((rows, self.vortex_distribution.XC.shape[1]), np.nan)     # per panel
+        return
+
     def train_supersonic_surrogates(self):
         """Trains and builds the supersonic and transonic surrogates on first need (see evaluate_surrogate)."""
         train_VLM_supersonic_surrogates(self, self.training_vehicle)

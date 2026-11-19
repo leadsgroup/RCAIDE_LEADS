@@ -143,7 +143,7 @@ def run_AVL_analysis(aerodynamics,run_conditions,vehicle):
         results_avl = read_results(aerodynamics,vehicle)
         
     # translate results
-    translate_results_to_conditions(cases,run_conditions,results_avl,aerodynamics.settings) 
+    translate_results_to_conditions(cases,run_conditions,results_avl,aerodynamics) 
 
     if not aerodynamics.settings.keep_files:
         rmtree( run_folder )

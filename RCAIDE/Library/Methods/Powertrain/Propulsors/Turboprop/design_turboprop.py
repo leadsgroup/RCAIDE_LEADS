@@ -92,6 +92,8 @@ def design_turboprop(turboprop, build_idle_fallback=True):
                 Combustor exit temperature of the takeoff rating over its design-point value
             - sealevel_static_power : float
                 Sea-level static shaft power at the takeoff rating [W]
+            - sealevel_static_chemical_power : float
+                Sea-level static fuel chemical power at the takeoff rating [W]
             - sealevel_static_thrust : float
                 Sea-level static thrust at the takeoff rating [N]
 
@@ -419,8 +421,9 @@ def design_turboprop(turboprop, build_idle_fallback=True):
     # Step 29: Sea-level static shaft power and thrust at the takeoff rating (the propeller as an actuator
     # disk, finite at zero speed)
     sls_outputs                      = sea_level_static_performance(1.0)
-    turboprop.sealevel_static_thrust = sls_outputs.thrust[0][0]
-    turboprop.sealevel_static_power  = sls_outputs.power.mechanical[0][0]
+    turboprop.sealevel_static_thrust         = sls_outputs.thrust[0][0]
+    turboprop.sealevel_static_power          = sls_outputs.power.mechanical[0][0]
+    turboprop.sealevel_static_chemical_power = operating_state.conditions.energy.propulsors[turboprop.tag].inputs.power.chemical[0][0]
     
     turboprop.design_thrust_specific_fuel_consumption = turboprop_conditions.thrust_specific_fuel_consumption  
     turboprop.design_non_dimensional_thrust           = turboprop_conditions.non_dimensional_thrust            

@@ -11,6 +11,8 @@ from RCAIDE.Framework.Core                                                      
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.design_turbojet_offdesign_matching import design_turbojet_offdesign_matching
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.generate_turbojet_deck          import generate_turbojet_deck
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.Turbofan_Surrogate              import Turbofan_Surrogate
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.Turbojet_OffDesign_Matching     import solve_turbojet_offdesign_robust
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common.compute_matching_floor            import compute_matching_floor
 
 # Python package imports
 import numpy as np
@@ -43,7 +45,7 @@ def build_turbojet_offdesign_matching(turbojet, combustor_exit_temperature_fract
     Returns
     -------
     offdesign_matching : Data
-        design_constants, reference_point and idle_fallback, as consumed by
+        design_constants, reference_point, matching_floor and idle_fallback, as consumed by
         compute_turbojet_performance_offdesign.
 
     Notes
@@ -75,7 +77,12 @@ def build_turbojet_offdesign_matching(turbojet, combustor_exit_temperature_fract
         deck[field] = np.concatenate([deck_fraction[field] for deck_fraction in decks])
     idle_fallback = Turbofan_Surrogate().build(deck=deck)
 
+    # matching floor over the same envelope; below it compute_turbojet_performance_offdesign holds fuel flow and decays thrust
+    matching_floor = compute_matching_floor(solve_turbojet_offdesign_robust, design_constants, reference_point,
+                                            np.linspace(0.0, maximum_altitude, 8),
+                                            np.linspace(0.0, maximum_mach_number, 8))
     offdesign_matching = Data(design_constants = design_constants,
                               reference_point  = reference_point,
+                              matching_floor   = matching_floor,
                               idle_fallback    = idle_fallback)
     return offdesign_matching

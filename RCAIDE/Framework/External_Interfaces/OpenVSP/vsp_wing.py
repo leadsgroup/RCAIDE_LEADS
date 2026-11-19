@@ -386,7 +386,10 @@ def read_vsp_wing(wing_id, main_wing_tag = None,blended_wing_body = False , last
         # Determine which segment the control surfaces begin and end, use floor
         segment_start = int(np.floor(U_starts[cs_idx]/U_scale)) - 1
         segment_end   = int(np.floor(U_ends[cs_idx]/U_scale)) - 1
-        
+        # a surface ending at the tip section lands one segment past the last; keep it in the last segment
+        segment_start = min(segment_start, len(breaks) - 2)
+        segment_end   = min(segment_end, len(breaks) - 2)
+
         segment_normalized_start = U_starts[cs_idx]/U_scale - (segment_start+1)
         segment_normalized_end   = U_ends[cs_idx]/U_scale   - (segment_end+1)
         

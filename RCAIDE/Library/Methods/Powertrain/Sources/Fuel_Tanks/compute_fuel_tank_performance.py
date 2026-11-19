@@ -46,8 +46,11 @@ def compute_fuel_tank_performance(tank,state,distributor):
     The fuel mass flow rate is found from the tank's assigned distributor's chemical
     power demand (already computed, since distributors run after sources in
     ``Network.evaluate()``) divided by the fuel's lower heating value, split between
-    multiple tanks on the same distributor by ``power_split_ratio``. Remaining fuel
-    mass is then integrated over the mission using ``state.numerics.time.integrate``.
+    multiple tanks on the same distributor by ``power_split_ratio``. This is a fixed
+    per-tank share for the segment: if a tank empties, its unmet demand is recorded in
+    ``fuel_deficit_rate`` and is not reassigned to other tanks on that distributor.
+    Remaining fuel mass is then integrated over the mission using
+    ``state.numerics.time.integrate``.
 
     Cryogenic_Tank overrides ``compute_performance`` entirely (see
     ``compute_cryogenic_tank_performance``) rather than going through this function,
@@ -67,7 +70,7 @@ def compute_fuel_tank_performance(tank,state,distributor):
     chemical_power      = tank_conditions.power_split_ratio * state.conditions.energy.distributors[tank.assigned_distributors[0][0]].outputs.power.chemical
     fuel_mass_flow_rate = chemical_power / tank.fuel.lower_heating_value
 
-    m_0_fuel                               = state.conditions.weights.components.mass[fuel.tag][0,0]
+    m_0_fuel                               = tank_conditions.fuel_mass[0,0]
     total_mass_flow_rate                   = fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate
     tank_conditions.outputs.power.chemical = total_mass_flow_rate * tank.fuel.lower_heating_value
 
@@ -79,7 +82,10 @@ def compute_fuel_tank_performance(tank,state,distributor):
         refuel_target = tank_conditions.refuel_target_mass[0,0]
         if np.isfinite(refuel_target) and m_0_fuel < refuel_target:
             fuel_mass = np.minimum(fuel_mass, refuel_target)
-        tank_conditions.fuel_mass[:,0] = fuel_mass
+        # An empty tank stops at zero; demand it cannot meet is reported as a deficit
+        empty = fuel_mass <= 0.0
+        tank_conditions.fuel_deficit_rate[:,0] = np.where(empty, np.maximum(net_mass_flow_rate[:,0], 0.0), 0.0)
+        tank_conditions.fuel_mass[:,0]         = np.maximum(fuel_mass, 0.0)
 
     stored_results_flag            = True
     stored_source_tag              = tank.tag   

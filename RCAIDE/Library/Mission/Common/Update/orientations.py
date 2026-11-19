@@ -79,7 +79,7 @@ def orientations(segment):
     conditions.aerodynamics.angles.phi[:,0]   = phi[:,0] 
 
     # pack transformation tensor
-    conditions.frames.body.transform_to_inertial = T_body2inertial 
+    conditions.frames.body.transform_to_inertial[...] = T_body2inertial 
 
     # ------------------------------------------------------------------
     #  Wind Frame
@@ -96,11 +96,11 @@ def orientations(segment):
     T_wind2inertial = orientation_product(T_wind2body,T_body2inertial) 
 
     # pack wind rotations
-    conditions.frames.wind.body_rotations = wind_body_rotations
+    conditions.frames.wind.body_rotations[...] = wind_body_rotations
 
     # pack transformation tensor
-    conditions.frames.wind.transform_to_inertial = T_wind2inertial
-    conditions.frames.wind.transform_to_body     = T_wind2body
+    conditions.frames.wind.transform_to_inertial[...] = T_wind2inertial
+    conditions.frames.wind.transform_to_body[...]     = T_wind2body
     
     # ------------------------------------------------------------------
     # Rotation rates 
@@ -117,7 +117,7 @@ def orientations(segment):
     reverse_transformation[:, 2, 1] =  np.sin(phi) /np.cos(theta)
     reverse_transformation[:, 2, 2] =  np.cos(phi) /np.cos(theta) 
     inertial_rotations              =  orientation_product(reverse_transformation,stability_frame_rotations)
-    segment.state.conditions.frames.inertial.angular_velocity_vector = inertial_rotations 
+    segment.state.conditions.frames.inertial.angular_velocity_vector[...] = inertial_rotations 
     
     return
          

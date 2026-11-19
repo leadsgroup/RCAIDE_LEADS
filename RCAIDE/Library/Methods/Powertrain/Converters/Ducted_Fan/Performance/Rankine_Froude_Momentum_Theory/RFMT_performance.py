@@ -87,13 +87,14 @@ def RFMT_performance(ducted_fan,conditions):
     thrust_vector           = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)     
     torque                  = power/omega
       
-    conditions.energy.converters[ducted_fan.tag] = Data( 
+    # write into the ducted fan's conditions, keeping fields set by its propulsor and reusing memory
+    conditions.energy.converters.copy_values({ducted_fan.tag: Data( 
             thrust                            = thrust_vector,  
             power                             = power,
             power_coefficient                 = Cp, 
             thrust_coefficient                = Ct,
             efficiency                        = eta_p,  
-            torque                            = torque)
+            torque                            = torque)})
     
     return  
 

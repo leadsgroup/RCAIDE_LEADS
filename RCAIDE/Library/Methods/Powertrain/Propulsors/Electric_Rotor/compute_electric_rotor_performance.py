@@ -13,8 +13,6 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performanc
 
 # pacakge imports  
 import numpy as np 
-from copy import deepcopy
-
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_electric_rotor_performance
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -110,7 +108,7 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
     
     # Compute rotor performance (coupled rotors are solved together by the network)
     if not network.rotor_on_rotor_coupling:
-        compute_rotor_performance(rotor,conditions,network.wing_on_rotor_coupling)
+        compute_rotor_performance(rotor,conditions,network.wing_vortex_distribution(state))
  
     # Compute moment 
     moment_vector           = 0*state.ones_row(3)
@@ -198,10 +196,9 @@ def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_ta
     rotor_0                    = network.propulsors[stored_propulsor_tag].rotor 
     esc_0                      = network.propulsors[stored_propulsor_tag].electronic_speed_controller
     
-    conditions.energy.converters[motor.tag]        = deepcopy(conditions.energy.converters[motor_0.tag])
-    conditions.energy.converters[rotor.tag]        = deepcopy(conditions.energy.converters[rotor_0.tag])
-    conditions.energy.modulators[esc.tag]          = deepcopy(conditions.energy.modulators[esc_0.tag])
-  
+    conditions.energy.converters[motor.tag].copy_values(conditions.energy.converters[motor_0.tag])
+    conditions.energy.converters[rotor.tag].copy_values(conditions.energy.converters[rotor_0.tag])
+    conditions.energy.modulators[esc.tag].copy_values(conditions.energy.modulators[esc_0.tag])
     thrust_vector           = conditions.energy.converters[rotor.tag].thrust 
     P_mech                  = conditions.energy.converters[rotor.tag].power 
     P_elec                  = conditions.energy.modulators[esc.tag].inputs.power.electrical    

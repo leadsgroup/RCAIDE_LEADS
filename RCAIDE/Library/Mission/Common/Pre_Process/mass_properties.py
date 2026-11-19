@@ -12,6 +12,8 @@ import RCAIDE
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_vehicle_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_mass import compute_fuel_mass
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.set_vehicle_fuel_mass import set_vehicle_fuel_mass
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_tank_capacity import compute_fuel_tank_capacity
 from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_correction_factors   import apply_correction_factors, apply_component_weights
 from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_report import print_mass_report, write_mass_report   
 from scipy.optimize import brentq
@@ -121,7 +123,7 @@ def mass_properties(mission):
                 weights_analysis.settings.iterate_mtow = False
                 mass_properties_preprocess_routine(segment, i) 
                 
-    return 
+    return
 
 def mass_properties_preprocess_routine(segment, i = 0):
     analyses         = segment.analyses
@@ -132,7 +134,11 @@ def mass_properties_preprocess_routine(segment, i = 0):
     # ---------------------------------------------------------------------------------------------------------------------------    
     update_max_fuel_mass = weights_analysis.settings.update_max_fuel_mass                       
     update_fuel_mass     = weights_analysis.settings.update_fuel_mass   
-    compute_fuel_mass(analyses.vehicle, update_fuel_mass, update_max_fuel_mass)    
+    # Later segments inherit segment 0's mass properties, so a fuel load computed there stays computed
+    fuel_specified = analyses.vehicle.mass_properties.get('computed_fuel') is None
+    if i == 0 and weights_analysis.settings.run_weights_analysis:
+        fuel_specified = clear_computed_fuel_and_takeoff(analyses.vehicle)
+    compute_fuel_mass(analyses.vehicle, update_fuel_mass, update_max_fuel_mass)
     
     # ---------------------------------------------------------------------------------------------------------------------------
     # STEP 2:  Pre-checks for weights analysis 
@@ -158,6 +164,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
         # ---------------------------------------------------------------------------------------------------------------------------
         # STEP 3: Run weights analysis 
         # ---------------------------------------------------------------------------------------------------------------------------         
+        # Read before the weight buildups, which may overwrite it with full tanks
+        prescribed_takeoff = analyses.vehicle.mass_properties.takeoff
         if i == 0 and analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
             print('Warning: Prescribed payload weight is greater than maximum payload weight')
         if weights_analysis.settings.iterate_mtow:
@@ -185,23 +193,37 @@ def mass_properties_preprocess_routine(segment, i = 0):
                 apply_component_weights(analyses)
  
 
-        if (analyses.vehicle.mass_properties.fuel  == 0 or analyses.vehicle.mass_properties.fuel is None) and weights_analysis.propulsion_architecture != 'Electric':
-            ('Fuel Weight for the mission is not defned. Filling up the airplace till max takeoff weight')     
-            analyses.vehicle.mass_properties.fuel     = analyses.vehicle.mass_properties.max_takeoff- (analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload)
+        # Fuel the user did not define is computed and capped; prescribed masses are kept and only checked
+        if not fuel_specified and weights_analysis.propulsion_architecture != 'Electric':
+            compute_mission_fuel_load(analyses.vehicle, prescribed_takeoff)
+
+        # Re-seed tank conditions: the energy Pre_Process appended them before the fuel load was known
+        for network in analyses.vehicle.networks:
+            for source in network.sources:
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                    source.append_operating_conditions(segment)
 
         # Compute takeoff weight and max zero fuel weight 
-        if analyses.vehicle.mass_properties.takeoff == None:
+        if prescribed_takeoff == None:
             analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.operating_empty  + analyses.vehicle.mass_properties.payload+ analyses.vehicle.mass_properties.fuel    
-       
+            analyses.vehicle.mass_properties.computed_takeoff = analyses.vehicle.mass_properties.takeoff
+        else:
+            analyses.vehicle.mass_properties.takeoff = prescribed_takeoff
+        if i == 0:
+            analyses.vehicle.mass_properties.computed_fuel = None if fuel_specified else analyses.vehicle.mass_properties.fuel
+
         analyses.vehicle.mass_properties.max_zero_fuel = analyses.vehicle.mass_properties.operating_empty\
-                                                                    + analyses.vehicle.mass_properties.max_payload 
-        
+                                                                    + analyses.vehicle.mass_properties.max_payload
+
         # ---------------------------------------------------------------------------------------------------------------------------
-        # STEP 4: Print weight statements and apply weight factors  
-        # --------------------------------------------------------------------------------------------------------------------------- 
-        if i == 0: 
-            if weights_analysis.print_weight_analysis_report and type(weights_analysis) != RCAIDE.Framework.Analyses.Weights.Weights:  
-                print_mass_report(analyses)  
+        # STEP 4: Print weight statements and apply weight factors
+        # ---------------------------------------------------------------------------------------------------------------------------
+        if i == 0:
+            mass_limit_warnings = check_mass_limits(analyses.vehicle, prescribed_takeoff)
+            for message in mass_limit_warnings:
+                print('Warning: ' + message)
+            if weights_analysis.print_weight_analysis_report and type(weights_analysis) != RCAIDE.Framework.Analyses.Weights.Weights:
+                print_mass_report(analyses, prescribed_takeoff, fuel_specified, mass_limit_warnings)
             if weights_analysis.settings.write_mass_properties:
                 excel_filename = write_mass_report(analyses)     
     
@@ -263,7 +285,69 @@ def mass_properties_preprocess_routine(segment, i = 0):
         for i_axis, axis_i in enumerate('xyz'):
             for j_axis, axis_j in enumerate('xyz'):
                 vehicle_MOI['moments_of_inertia_I' + axis_i + axis_j] = tensor[i_axis, j_axis] * ones_row(1)
- 
+
+    return
+
+
+def clear_computed_fuel_and_takeoff(vehicle):
+    """Resets a takeoff mass and fuel load left over from a previous evaluation, so a re-evaluated mission recomputes
+    them; values the user changed since then differ from the computed ones and are kept. Returns True if the fuel
+    load is specified by the user."""
+    mp        = vehicle.mass_properties
+    tanks     = [source for network in vehicle.networks for source in network.sources
+                 if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
+    tank_fuel = sum(tank.fuel.mass_properties.mass for tank in tanks)
+    if mp.get('computed_takeoff') is not None and mp.takeoff == mp.computed_takeoff:
+        mp.takeoff = None
+    if mp.get('computed_fuel') is not None and abs(tank_fuel - mp.computed_fuel) <= 1e-6 * max(mp.computed_fuel, 1.0):
+        for tank in tanks:
+            tank.fuel.mass_properties.mass = 0
+        if mp.fuel == mp.computed_fuel:
+            mp.fuel = 0
+    return bool(mp.fuel) or any(tank.fuel.mass_properties.mass > 0 for tank in tanks)
+
+def compute_mission_fuel_load(vehicle, prescribed_takeoff = None):
+    """Sets a fuel load the user did not define: takeoff mass (MTOW unless prescribed, and never above MTOW) minus
+    OEW and payload, capped by the tank capacity (tanks without a modeled volume add none) and max_fuel, and split across
+    the tanks by capacity."""
+    mp       = vehicle.mass_properties
+    tanks    = [source for network in vehicle.networks for source in network.sources
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
+    target   = mp.max_takeoff if prescribed_takeoff is None else min(prescribed_takeoff, mp.max_takeoff)
+    fuel     = max(target - mp.operating_empty - mp.payload, 0)
+    capacity = sum(max(compute_fuel_tank_capacity(tank), 0) for tank in tanks)
+    if capacity > 0:
+        fuel = min(fuel, capacity)
+    if mp.max_fuel:
+        fuel = min(fuel, mp.max_fuel)
+    set_vehicle_fuel_mass(vehicle, fuel)
+    return
+
+def check_mass_limits(vehicle, prescribed_takeoff = None):
+    """Returns a message for each mass limit the vehicle violates. Nothing is modified: prescribed masses are flown
+    as given."""
+    mp        = vehicle.mass_properties
+    tanks     = [source for network in vehicle.networks for source in network.sources
+                 if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
+    zero_fuel = mp.operating_empty + mp.payload
+    fuel      = mp.fuel if mp.fuel else 0
+    messages  = []
+    if zero_fuel > mp.max_takeoff:
+        messages.append(f'OEW plus payload ({zero_fuel:.1f} kg) exceeds MTOW ({mp.max_takeoff:.1f} kg)')
+    elif zero_fuel + fuel > mp.max_takeoff * (1 + 1e-6):
+        messages.append(f'OEW plus payload plus fuel ({zero_fuel + fuel:.1f} kg) exceeds MTOW ({mp.max_takeoff:.1f} kg)')
+    capacity = sum(max(compute_fuel_tank_capacity(tank), 0) for tank in tanks)
+    if capacity > 0 and fuel > capacity * (1 + 1e-6):
+        messages.append(f'Fuel load ({fuel:.1f} kg) exceeds the tank capacity ({capacity:.1f} kg)')
+    if prescribed_takeoff is not None:
+        if prescribed_takeoff > mp.max_takeoff:
+            messages.append(f'Prescribed takeoff mass ({prescribed_takeoff:.1f} kg) exceeds MTOW ({mp.max_takeoff:.1f} kg)')
+        if prescribed_takeoff < zero_fuel * (1 - 1e-6):
+            messages.append(f'Prescribed takeoff mass ({prescribed_takeoff:.1f} kg) is below OEW plus payload ({zero_fuel:.1f} kg)')
+        elif abs(prescribed_takeoff - zero_fuel - fuel) > 1e-3 * prescribed_takeoff:
+            messages.append(f'Prescribed takeoff mass ({prescribed_takeoff:.1f} kg) differs from OEW plus payload plus fuel '
+                            f'({zero_fuel + fuel:.1f} kg); the mission flies the prescribed takeoff mass')
+    return messages
 
 def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
     # Inital guess for max fuel and max zero fuel based on regressional analysis which use max takeoff weight of the aircraft
@@ -296,10 +380,10 @@ def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
         residual_max_fuel = 0
         if compute_max_fuel:
             new_max_fuel       = analyses.vehicle.mass_properties.max_takeoff - analyses.vehicle.mass_properties.operating_empty - analyses.vehicle.mass_properties.min_payload
-            fuel_density       = next((ft.fuel.density for network in analyses.vehicle.networks for ft in network.sources
-                                        if isinstance(ft, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)), None)
-            if fuel_density is not None:
-                max_fuel_by_volume = analyses.vehicle.volume_properties.max_fuel * fuel_density
+            fuel_tanks = [source for network in analyses.vehicle.networks for source in network.sources
+                          if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)]
+            if fuel_tanks:
+                max_fuel_by_volume = sum(compute_fuel_tank_capacity(tank) for tank in fuel_tanks)
                 new_max_fuel       = min(new_max_fuel, max_fuel_by_volume)
             residual_max_fuel  = abs(new_max_fuel - analyses.vehicle.mass_properties.max_fuel)
             analyses.vehicle.mass_properties.max_fuel = new_max_fuel

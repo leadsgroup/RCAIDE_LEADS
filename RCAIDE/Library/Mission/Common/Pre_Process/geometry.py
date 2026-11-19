@@ -80,8 +80,10 @@ def geometry(mission):
                 for propulsor in network.propulsors:
                     propulsor_0              =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
                     propulsor.active         = propulsor_0.active
+                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+                        propulsor.afterburner_active          = propulsor_0.afterburner_active
                     if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
-                        propulsor.fan.angular_velocity        = propulsor_0.fan.angular_velocity   
+                        propulsor.fan.angular_velocity        = propulsor_0.fan.angular_velocity
                         propulsor.fan_nozzle.exit_velocity    = propulsor_0.fan_nozzle.exit_velocity 
                         propulsor.core_nozzle.exit_velocity   = propulsor_0.core_nozzle.exit_velocity
                     if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):

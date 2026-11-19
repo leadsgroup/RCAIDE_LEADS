@@ -68,7 +68,7 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry):
 
     # unpack 
     aoa              = conditions.aerodynamics.angles.alpha 
-    PSI              = conditions.aerodynamics.angles.beta
+    PSI, _, _        = rotation_in_VORLAX_axes(conditions)
     num_eval_pts     = len(VD.XC[0])
     PSI_distribution = np.repeat(PSI,num_eval_pts, axis = 1) 
     V_distribution   =  np.ones_like(aoa) * conditions.freestream.velocity
@@ -106,6 +106,12 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry):
                     Vx_ind_total, Vy_ind_total, Vz_ind_total, V_distribution, dt)
     
     return rhs 
+
+def rotation_in_VORLAX_axes(conditions):
+    """Sideslip, roll rate and yaw rate in the VORLAX axes (x aft, y right, z up). Etkin & Reid (Dynamics of Flight,
+    Sec. 1.6) define beta, p and r about x forward, z down, so all three change sign; pitch rate does not."""
+    return -conditions.aerodynamics.angles.beta, -conditions.static_stability.roll_rate, -conditions.static_stability.yaw_rate
+
 
 def build_RHS(VD, conditions, settings, aoa_distribution, delta, phi, PSI_distribution,
               Vx_ind_total, Vy_ind_total, Vz_ind_total, V_distribution, dt):
@@ -155,8 +161,7 @@ def build_RHS(VD, conditions, settings, aoa_distribution, delta, phi, PSI_distri
     ALFA   = aoa_distribution
     PSIRAD = PSI_distribution
     PITCHQ = conditions.static_stability.pitch_rate
-    ROLLQ  = conditions.static_stability.roll_rate
-    YAWQ   = conditions.static_stability.yaw_rate
+    _, ROLLQ, YAWQ = rotation_in_VORLAX_axes(conditions)
     VINF   = conditions.freestream.velocity
 
     SINALF = np.sin(ALFA)

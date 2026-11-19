@@ -15,14 +15,14 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Supersonic_Nozzle  import compute_supersonic_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet           import compute_thrust
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Common             import compute_gas_generator_shaft_power_offtake
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Common             import compute_gas_generator_shaft_power_offtake, extend_thrust_below_floor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.Turbojet_OffDesign_Matching import (
     solve_turbojet_offdesign_robust, OffDesignMatchingError, pack_turbojet_design_constants, pack_turbojet_reference_point,
     apply_turbojet_afterburner)
 
 # python imports 
 import  numpy as  np 
-from copy import  deepcopy
+from scipy.interpolate import RegularGridInterpolator
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turbojet_performance
@@ -451,18 +451,17 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
     core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
 
-    # deep copy results 
-    conditions.energy.propulsors[turbojet.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.aeroacoustics.propulsors[turbojet.tag]          = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
-    conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
-    conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
-    conditions.energy.converters[low_pressure_compressor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.tag] )
-    conditions.energy.converters[high_pressure_compressor.tag] = deepcopy(conditions.energy.converters[high_pressure_compressor_0.tag])
-    conditions.energy.converters[combustor.tag]                = deepcopy(conditions.energy.converters[combustor_0.tag]               )
-    conditions.energy.converters[low_pressure_turbine.tag]     = deepcopy(conditions.energy.converters[low_pressure_turbine_0.tag]    )
-    conditions.energy.converters[high_pressure_turbine.tag]    = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag]   )
-    conditions.energy.converters[core_nozzle.tag]              = deepcopy(conditions.energy.converters[core_nozzle_0.tag]             )
-
+    # copy the stored propulsor's results, reusing memory
+    conditions.energy.propulsors[turbojet.tag].copy_values(conditions.energy.propulsors[stored_propulsor_tag])
+    conditions.aeroacoustics.propulsors[turbojet.tag].copy_values(conditions.aeroacoustics.propulsors[stored_propulsor_tag])
+    conditions.energy.converters[ram.tag].copy_values(conditions.energy.converters[ram_0.tag])
+    conditions.energy.converters[inlet_nozzle.tag].copy_values(conditions.energy.converters[inlet_nozzle_0.tag])
+    conditions.energy.converters[low_pressure_compressor.tag].copy_values(conditions.energy.converters[low_pressure_compressor_0.tag])
+    conditions.energy.converters[high_pressure_compressor.tag].copy_values(conditions.energy.converters[high_pressure_compressor_0.tag])
+    conditions.energy.converters[combustor.tag].copy_values(conditions.energy.converters[combustor_0.tag])
+    conditions.energy.converters[low_pressure_turbine.tag].copy_values(conditions.energy.converters[low_pressure_turbine_0.tag])
+    conditions.energy.converters[high_pressure_turbine.tag].copy_values(conditions.energy.converters[high_pressure_turbine_0.tag])
+    conditions.energy.converters[core_nozzle.tag].copy_values(conditions.energy.converters[core_nozzle_0.tag])
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
     thrust_vector      = 0*state.ones_row(3)
@@ -478,13 +477,13 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     idm   = turbojet.integrated_drive_motor
     idm_0 = network.propulsors[stored_propulsor_tag].integrated_drive_motor
     if idm != None and  len(state.numerics.time.differentiate) > 0:
-        conditions.energy.converters[idm.tag] = deepcopy(conditions.energy.converters[idm_0.tag])
+        conditions.energy.converters[idm.tag].copy_values(conditions.energy.converters[idm_0.tag])
         conditions.energy.propulsors[turbojet.tag].inputs.power.electrical = conditions.energy.converters[idm.tag].inputs.power.electrical
 
     idg   = turbojet.integrated_drive_generator
     idg_0 = network.propulsors[stored_propulsor_tag].integrated_drive_generator
     if idg != None and len(state.numerics.time.differentiate) > 0:
-        conditions.energy.converters[idg.tag] = deepcopy(conditions.energy.converters[idg_0.tag])
+        conditions.energy.converters[idg.tag].copy_values(conditions.energy.converters[idg_0.tag])
         conditions.energy.propulsors[turbojet.tag].outputs.power.electrical = conditions.energy.converters[idg.tag].outputs.power.electrical
 
     conditions.energy.propulsors[turbojet.tag].outputs.thrust           = thrust_vector
@@ -547,6 +546,10 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     matching `compute_turbojet_performance`'s (the analytical model's) own
     schema, not the turbofan dispatcher's.
 
+    Below the matching floor the cycle and fuel flow stay at the floor and the thrust decays from the floor
+    thrust toward the ram drag of the airflow (extend_thrust_below_floor), so static thrust and fuel flow never
+    turn negative and the mission solver keeps a gradient.
+
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.Turbojet_OffDesign_Matching.solve_turbojet_offdesign_robust
@@ -569,6 +572,18 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     design_constants = turbojet.offdesign_matching.design_constants
     reference_point  = turbojet.offdesign_matching.reference_point
     idle_fallback    = getattr(turbojet.offdesign_matching, 'idle_fallback', None)
+    matching_floor   = getattr(turbojet.offdesign_matching, 'matching_floor', None)
+
+    # lowest Tt4 fraction the matching solver represents; below it thrust decays from the floor (extend_thrust_below_floor)
+    if matching_floor is not None:
+        floor_interpolator = RegularGridInterpolator((matching_floor.altitude, matching_floor.mach_number),
+                                                     matching_floor.combustor_exit_temperature_fraction,
+                                                     bounds_error=False, fill_value=None)
+        floor_fraction     = floor_interpolator(np.column_stack([altitude, mach_number]))
+    else:
+        floor_fraction     = np.full(n, -np.inf)
+    below_floor = throttle < floor_fraction
+    floor_step  = 0.005  # Tt4 fraction step for the floor thrust slope; small because thrust is strongly concave above the floor
 
     thrust_N              = np.zeros(n)
     fuel_mass_flow_rate    = np.zeros(n)
@@ -594,26 +609,41 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     lpc_conditions.omega = turbojet.low_pressure_compressor.design_angular_velocity * throttle.reshape(-1, 1)
     external_shaft_power, _, _, in_mission = compute_gas_generator_shaft_power_offtake(turbojet, state, lpc_conditions.omega)
     shaft_power_offtake  = np.ravel(external_shaft_power) * np.ones(n) if in_mission else [None] * n
-    for i in range(n):
-        combustor_exit_temperature = reference_point.Tt4 * throttle[i]
-        try:
-            result = solve_turbojet_offdesign_robust(
-                design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
-                combustor_exit_temperature, packed_design_constants=packed_design_constants,
-                packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
-        except OffDesignMatchingError:
-            if idle_fallback is None:
-                raise
-            F, FF = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
-                                         throttle=np.array([throttle[i]]))
-            thrust_N[i]             = F[0]
-            fuel_mass_flow_rate[i]  = FF[0]
-            continue
-        
+    def evaluate(i, fraction):
+        result = solve_turbojet_offdesign_robust(
+            design_constants, reference_point, mach_number[i], static_temperature[i], static_pressure[i],
+            reference_point.Tt4 * fraction, packed_design_constants=packed_design_constants,
+            packed_reference_point=packed_reference_point, shaft_power_offtake=shaft_power_offtake[i])
         if turbojet.afterburner_active and turbojet.afterburner is not None:
             result = apply_turbojet_afterburner(result, design_constants, turbojet.afterburner, turbojet.working_fluid,
                                                 static_temperature[i], static_pressure[i])
-        thrust_N[i]                                 = result.thrust
+        return result
+
+    for i in range(n):
+        try:
+            result = evaluate(i, max(throttle[i], floor_fraction[i]))
+            thrust = result.thrust
+            if below_floor[i]:
+                # station data and fuel flow stay at the floor
+                floor_slope = (evaluate(i, floor_fraction[i] + floor_step).thrust - result.thrust) / floor_step
+                # in flight the thrust approaches the ram drag of the airflow with no gross thrust
+                thrust      = extend_thrust_below_floor(result.thrust, floor_slope, throttle[i], floor_fraction[i],
+                                                        lower_bound = -result.mass_flow_rate * velocity[i])
+        except OffDesignMatchingError:
+            if idle_fallback is None:
+                raise
+            # the deck is queried at the floor, not extrapolated below its data; fuel flow stays at the floor
+            query_fraction = max(throttle[i], floor_fraction[i])
+            F, FF = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
+                                         throttle=np.array([query_fraction]))
+            if below_floor[i]:
+                F_above, _ = idle_fallback.query(np.array([altitude[i]]), np.array([mach_number[i]]),
+                                                 throttle=np.array([floor_fraction[i] + floor_step]))
+                F = np.array([extend_thrust_below_floor(F[0], (F_above[0] - F[0]) / floor_step, throttle[i], floor_fraction[i])])
+            thrust_N[i]             = F[0]
+            fuel_mass_flow_rate[i]  = FF[0]
+            continue
+        thrust_N[i]                                 = thrust
         fuel_mass_flow_rate[i]                       = result.fuel_mass_flow_rate
         core_nozzle_exit_velocity[i]                = result.core_nozzle_exit_velocity
         core_nozzle_exit_static_temperature[i]      = result.core_nozzle_exit_static_temperature
@@ -653,6 +683,7 @@ def compute_turbojet_performance_offdesign(turbojet, state, center_of_gravity=[[
     turbojet_conditions.outputs.moment                     = moment
     turbojet_conditions.outputs.power.propulsive           = power_propulsive.reshape(-1,1)
     turbojet_conditions.power                              = power_propulsive.reshape(-1,1)
+    turbojet_conditions.below_matching_floor               = below_floor.astype(float).reshape(-1,1)
 
     # same fields the analytical path sets; NaN at idle_fallback points
     turbojet_conditions.flow_through_core           = 1.0

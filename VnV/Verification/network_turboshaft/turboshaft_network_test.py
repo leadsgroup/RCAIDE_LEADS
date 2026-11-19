@@ -53,7 +53,8 @@ def main():
     print('Elapsed time (min): ', elapsed_time_min)
     return     
   
-def turboshaft_engine_Boeing_502_14(altitude,mach):   
+def turboshaft_Boeing_502_14():
+    """The designed Boeing 502-14 turboshaft."""
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Propulsor
@@ -121,6 +122,11 @@ def turboshaft_engine_Boeing_502_14(altitude,mach):
 
     # design turboshaft
     design_turboshaft(turboshaft) 
+
+    return turboshaft
+
+def turboshaft_engine_Boeing_502_14(altitude,mach):   
+    turboshaft = turboshaft_Boeing_502_14()
 
     # set up default operating conditions
     fuel_line        = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()

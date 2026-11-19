@@ -159,6 +159,10 @@ class Network(Component):
                 and not (self.wing_on_rotor_coupling or self.rotor_on_rotor_coupling)
                 and propulsor.assigned_distributors == reference.assigned_distributors)
 
+    def wing_vortex_distribution(self, state):
+        """ VLM mesh whose induced velocities enter the rotor discs when wing_on_rotor_coupling is on, else None """
+        return state.context.config.vortex_distribution if self.wing_on_rotor_coupling else None
+
     def evaluate(network,state,vehicle,ground_operations=False):
         """ Computes the performance of the network.
 
@@ -186,21 +190,21 @@ class Network(Component):
         net_hydraulic_power     = 0. * state.ones_row(1)
  
         # ----------------------------------------------------------
-        # Propulsors
+        # Propulsors (off during stationary ground operations, e.g. dormancy and refuel, which run on ground power)
         # ----------------------------------------------------------
-        if network.rotor_on_rotor_coupling:
+        if network.rotor_on_rotor_coupling and not ground_operations:
             # electric rotors are solved together; other propulsors solve their own rotor with the coupling
             rotors = []
             for propulsor in propulsors:
                 if propulsor.active and isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
                     propulsor.compute_drive(state,network)
                     rotors.append(propulsor.rotor)
-            compute_rotor_to_rotor_interaction(rotors,conditions,network.wing_on_rotor_coupling)
+            compute_rotor_to_rotor_interaction(rotors,conditions,network.wing_vortex_distribution(state))
             
         stored_results_flag  = False
         stored_propulsor_tag = None
         for propulsor in propulsors:
-            if propulsor.active: 
+            if propulsor.active and not ground_operations:
                 reference = propulsors[stored_propulsor_tag] if stored_results_flag else None
                 if not network.reuses_results(propulsor, reference):
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network,center_of_gravity=center_of_gravity)
@@ -267,7 +271,10 @@ class Network(Component):
         # ----------------------------------------------------------                
         stored_results_flag   = False
         stored_converter_tag  = None
-        for converter in converters:
+        # heaters last, so their tank solve sees the fuel drawn by every other converter
+        is_heater = [isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Heater) for converter in converters]
+        ordered   = [c for c, h in zip(converters, is_heater) if not h] + [c for c, h in zip(converters, is_heater) if h]
+        for converter in ordered:
             if converter.active:
                 same_group = (stored_results_flag == True and
                               converter.assigned_distributors == converters[stored_converter_tag].assigned_distributors)
@@ -275,7 +282,7 @@ class Network(Component):
                     converter.reverse_mode_computation = True
                     inputs, outputs, stored_results_flag, stored_converter_tag = converter.compute_performance(state,network)
                 else:
-                    inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_converter_tag)
+                    inputs, outputs = converter.reuse_stored_data(state,network,stored_converter_tag=stored_converter_tag)
                 total_mdot             += state.conditions.energy.converters[converter.tag].fuel_mass_flow_rate
                 externally_powered_now  = ground_operations and converter.externally_powered
                 if not externally_powered_now:
@@ -316,6 +323,8 @@ class Network(Component):
                     total_mdot -= source_conditions.refuel_mass_flow_rate
                 if 'vent_rate' in source_conditions:
                     total_mdot += source_conditions.vent_rate
+                if 'refuel_return_rate' in source_conditions:
+                    total_mdot += source_conditions.refuel_return_rate
 
                 if source.assigned_distributors != None:
                     for distributor_tag in source.assigned_distributors[0]:

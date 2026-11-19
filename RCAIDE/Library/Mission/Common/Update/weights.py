@@ -58,10 +58,10 @@ def weights(segment):
     else:
     
         # --------------------------------------------------------------------------  
-        # update center of gravity  
+        # update fuel mass and center of gravity
         # --------------------------------------------------------------------------  
-        if segment.analyses.weights.settings.run_center_of_gravity_analysis:
-            # loop through battery modules in networks 
+        settings = segment.analyses.weights.settings
+        if settings.run_center_of_gravity_analysis or settings.run_moments_of_inertia_analysis:
             for network in vehicle.networks: 
                 for source in  network.sources: 
                     if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):   
@@ -70,6 +70,7 @@ def weights(segment):
                         m_0_fuel       = conditions.weights.components.mass[fuel.tag][0,0]     
                         conditions.weights.components.mass[fuel.tag][:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten() 
                 
+        if settings.run_center_of_gravity_analysis:
             update_center_of_gravity(segment.state, vehicle)
             
         # --------------------------------------------------------------------------        

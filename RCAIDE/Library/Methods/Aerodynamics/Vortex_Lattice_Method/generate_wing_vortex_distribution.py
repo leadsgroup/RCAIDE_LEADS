@@ -195,7 +195,7 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
                         LE_angle          = cs.deflection  
                         LE_chord_fraction = cs.chord_fraction
                     elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron: 
-                        TE_angle          = -cs.deflection * sym_sign 
+                        TE_angle          = cs.deflection * sym_sign 
                         TE_chord_fraction = cs.chord_fraction 
                     elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder:
                         TE_angle          = cs.deflection * xz_sym_sign

@@ -70,7 +70,6 @@ class Athena_Vortex_Lattice(Aerodynamics):
         settings.flow_symmetry.xz_plane              = 0    # Symmetry across the xz-plane, y=0
         settings.flow_symmetry.xy_parallel           = 0    # Symmetry across the z=z_symmetry_plane plane
         settings.flow_symmetry.z_symmetry_plane      = 0.0
-        settings.vortex_distribution                 = None
          
         settings.number_of_control_surfaces          = 0 
         settings.filenames                           = Data()

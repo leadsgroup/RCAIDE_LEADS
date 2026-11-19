@@ -51,7 +51,6 @@ def initialize_conditions(segment):
             - conditions.freestream.altitude [m]
             - conditions.frames.inertial.time [s]
             - conditions.frames.planet.true_heading [rad]
-            - conditions.frames.planet.true_course [rad]
     
     Notes
     -----
@@ -138,4 +137,3 @@ def initialize_conditions(segment):
     segment.state.conditions.frames.body.velocity_vector[:,1]         = v_body_y 
     segment.state.conditions.frames.inertial.time[:,0]                = time[:,0]
     segment.state.conditions.frames.planet.true_heading[:,0]          = true_course_control_points[:,0]
-    segment.state.conditions.frames.planet.true_course[:,0]           = true_course_control_points[:,0]

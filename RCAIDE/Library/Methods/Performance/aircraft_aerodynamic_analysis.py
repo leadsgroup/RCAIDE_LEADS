@@ -189,7 +189,7 @@ def aircraft_aerodynamic_analysis(analyses                         = None,
     )
     
     if type(state.analyses.aerodynamics) == RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method:
-        results.vortex_distribution =  state.analyses.aerodynamics.settings.vortex_distribution
+        results.vortex_distribution =  state.analyses.aerodynamics.vortex_distribution
         
         
     return results

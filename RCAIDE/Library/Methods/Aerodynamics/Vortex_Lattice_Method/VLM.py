@@ -12,7 +12,7 @@
 from RCAIDE.Framework.Core import Data
 from .compute_wing_induced_velocity      import compute_wing_induced_velocity
 from .generate_vortex_distribution       import generate_vortex_distribution
-from .compute_RHS_matrix                 import compute_RHS_matrix
+from .compute_RHS_matrix                 import compute_RHS_matrix, rotation_in_VORLAX_axes
 
 from scipy.integrate import trapezoid
 import scipy.linalg
@@ -129,31 +129,6 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     # Generate Panelization and Vortex Distribution
     # ------------------ --------------------------------------------------------------------
     VD                                                    = generate_vortex_distribution(conditions,settings,geometry)
-    settings.vortex_distribution.chord_lengths            = VD.chord_lengths[VD.leading_edge_indices].reshape(len(VD.n_sw),np.sum(VD.n_sw[0]))
-    settings.vortex_distribution.n_sw                     = VD.n_sw
-    settings.vortex_distribution.n_cw                     = VD.n_cw
-    settings.vortex_distribution.n_w                      = VD.n_w
-    settings.vortex_distribution.chord_widths             = VD.chord_widths
-    settings.vortex_distribution.leading_edge_sweeps      = VD.leading_edge_sweeps
-    settings.vortex_distribution.XA1                      = VD.XA1
-    settings.vortex_distribution.XA2                      = VD.XA2
-    settings.vortex_distribution.XB1                      = VD.XB1
-    settings.vortex_distribution.XB2                      = VD.XB2
-    settings.vortex_distribution.YA1                      = VD.YA1
-    settings.vortex_distribution.YA2                      = VD.YA2
-    settings.vortex_distribution.YB1                      = VD.YB1
-    settings.vortex_distribution.YB2                      = VD.YB2
-    settings.vortex_distribution.ZA1                      = VD.ZA1
-    settings.vortex_distribution.ZA2                      = VD.ZA2
-    settings.vortex_distribution.ZB1                      = VD.ZB1
-    settings.vortex_distribution.ZB2                      = VD.ZB2
-    settings.vortex_distribution.X                        = VD.X
-    settings.vortex_distribution.Y                        = VD.Y
-    settings.vortex_distribution.Z                        = VD.Z
-    settings.vortex_distribution.XC                       = VD.XC
-    settings.vortex_distribution.YC                       = VD.YC
-    settings.vortex_distribution.ZC                       = VD.ZC
-    settings.vortex_distribution.Y_SW                     = VD.Y_SW
 
     # unpack conditions--------------------------------------------------------------
     K_SPC    = settings.leading_edge_suction_multiplier
@@ -162,10 +137,8 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     len_mach = len(mach)
 
     # VORLAX's angles are all degrees-to-radians via DTR; RCAIDE's are radians/Units.degrees throughout.
-    PSI       = conditions.aerodynamics.angles.beta
+    PSI, ROLLQ, YAWQ = rotation_in_VORLAX_axes(conditions)
     PITCHQ    = conditions.static_stability.pitch_rate
-    ROLLQ     = conditions.static_stability.roll_rate
-    YAWQ      = conditions.static_stability.yaw_rate
     VINF      = conditions.freestream.velocity
 
     #freestream 0 velocity safeguard
@@ -290,7 +263,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     TANB   = TNL *(1. - XIB) + TNT *XIB
 
     # cumsum GANT loop if KTOP > 0 (don't actually need KTOP with vectorized arrays and np.roll)
-    GFX    = VD.chord_lengths
+    GFX    = 1 /CHORD
     GANT   = strip_cumsum(GFX*GAMMA, chord_breaks[0], RNMAX[LE_ind].reshape(dim_1,dim_2)[0]  )
     GANT   = np.roll(GANT,1)
     GANT[LE_ind] = 0
@@ -468,7 +441,7 @@ def VLM(conditions,settings,geometry,induced_velocity_cache=None):
     results.CX                = CX_for
     results.CY                = CY_for
     results.CZ                = -CZ_for
-    results.CL                = CL_mom
+    results.CL                = -CL_mom
     results.CM                = CM_mom
     results.CN                = -CN_mom
     results.spanwise_stations = Y

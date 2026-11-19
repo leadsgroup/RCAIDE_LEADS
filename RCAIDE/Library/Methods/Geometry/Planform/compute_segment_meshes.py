@@ -8,7 +8,6 @@
 
 # package imports 
 import numpy as np  
-from   copy import deepcopy
 import shapely.geometry as geom
 from shapely import Polygon, box 
 import trimesh

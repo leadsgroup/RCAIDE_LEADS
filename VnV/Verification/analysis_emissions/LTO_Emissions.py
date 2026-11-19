@@ -62,7 +62,7 @@ def main():
     LTO_Soot  = Soot_mass_g /design_thrust
 
     # Truth values
-    truth_values = {'LTO_NOx_truth': 19.640678833265977, 'LTO_CO2_truth': 4099.375502848117, 'LTO_H2O_truth': 1595.6429963617672, 'LTO_Soot_truth': 1.5567248744992848}
+    truth_values = {'LTO_NOx_truth': 4.5715551250926225, 'LTO_CO2_truth': 954.168705105197, 'LTO_H2O_truth': 371.40110989854173, 'LTO_Soot_truth': 0.007548803046718283}
 
     diff_LTO_NOx = (LTO_NOx - truth_values['LTO_NOx_truth'])/truth_values['LTO_NOx_truth']
     diff_LTO_CO2 = (LTO_CO2 - truth_values['LTO_CO2_truth'])/truth_values['LTO_CO2_truth']
@@ -75,10 +75,10 @@ def main():
     print('LTO H2O Error: ',diff_LTO_H2O)
     print('LTO Soot Error: ',diff_LTO_Soot)
     
-    assert (diff_LTO_NOx/truth_values['LTO_NOx_truth']) < 1e-5
-    assert (diff_LTO_CO2/truth_values['LTO_CO2_truth']) < 1e-5
-    assert (diff_LTO_H2O/truth_values['LTO_H2O_truth']) < 1e-5
-    assert (diff_LTO_Soot/truth_values['LTO_Soot_truth']) < 1e-5
+    assert abs(diff_LTO_NOx) < 1e-5
+    assert abs(diff_LTO_CO2) < 1e-5
+    assert abs(diff_LTO_H2O) < 1e-5
+    assert abs(diff_LTO_Soot) < 1e-5
              
 
     elapsed_time = time.time() - ti

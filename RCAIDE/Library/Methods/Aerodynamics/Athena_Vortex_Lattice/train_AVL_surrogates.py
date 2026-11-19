@@ -86,8 +86,7 @@ def train_AVL_surrogates(aerodynamics,vehicle):
     training.Clift_alpha          = np.zeros((len_AoA,len_Mach))
     training.Cdrag_induced_alpha  = np.zeros((len_AoA,len_Mach))
     training.CM_alpha             = np.zeros((len_AoA,len_Mach))
-    training.span_efficincy       = np.zeros((len_AoA,len_Mach))
-    training.oswald_efficiency    = np.zeros((len_AoA,len_Mach))
+    training.span_efficiency      = np.zeros((len_AoA,len_Mach))
     training.Clift_spanwise       =  np.zeros((len_AoA,len_Mach,n_sw*n_wings))
     training.dClift_dalpha        = np.zeros((len_AoA,len_Mach))
     training.dCY_dalpha           = np.zeros((len_AoA,len_Mach))
@@ -206,8 +205,7 @@ def train_AVL_surrogates(aerodynamics,vehicle):
         training.Clift_alpha[:,i]          = run_conditions.aerodynamics.coefficients.lift.inviscid.total[:,0]             
         training.Cdrag_induced_alpha[:,i]  = run_conditions.aerodynamics.coefficients.drag.induced.inviscid[:,0]          
         training.CM_alpha[:,i]             = run_conditions.static_stability.coefficients.M[:,0]
-        training.span_efficincy[:,i]       = run_conditions.aerodynamics.coefficients.drag.induced.efficiency_factor[:,0]      
-        training.oswald_efficiency[:,i]    = run_conditions.aerodynamics.oswald_efficiency[:,0]                             
+        training.span_efficiency[:,i]      = run_conditions.aerodynamics.coefficients.drag.induced.span_efficiency[:,0]
         training.Clift_spanwise[:,i]       = run_conditions.aerodynamics.coefficients.lift.spanwise   
         training.dClift_dalpha[:,i]        = run_conditions.static_stability.derivatives.Clift_alpha[:,0]     
         training.dCY_dalpha[:,i]           = run_conditions.static_stability.derivatives.CY_alpha[:,0]       

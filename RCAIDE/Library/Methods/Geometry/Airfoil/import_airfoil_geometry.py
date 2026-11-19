@@ -158,6 +158,12 @@ def _import_airfoil_geometry_cached(airfoil_geometry_file, npoints = 201, surfac
         x_up_surf = x_up_surf[1:]
         y_up_surf = y_up_surf[1:]
 
+    # drop repeated consecutive points (OpenVSP also pads the trailing edge), which the spline fits reject
+    distinct_lo = np.append(True, (np.diff(x_lo_surf) != 0) | (np.diff(y_lo_surf) != 0))
+    distinct_up = np.append(True, (np.diff(x_up_surf) != 0) | (np.diff(y_up_surf) != 0))
+    x_lo_surf, y_lo_surf = x_lo_surf[distinct_lo], y_lo_surf[distinct_lo]
+    x_up_surf, y_up_surf = x_up_surf[distinct_up], y_up_surf[distinct_up]
+
     # create custom spacing for more points and leading and trailing edge
     t            = np.linspace(0,4,npoints-1)
     delta        = 0.25

@@ -30,6 +30,7 @@ class Cabin(Component):
         self.number_of_seats           = 0
         self.segments_bounding_cabin   = []
         self.filled_seats_arrangement  = 'random'
+        self.seat_fill_seed            = 0
         self.type_A_door_length        = 36 * Units.inches
         self.galley_lavatory_length    = 32 * Units.inches
         self.emergency_exit_seat_pitch = 36 * Units.inches

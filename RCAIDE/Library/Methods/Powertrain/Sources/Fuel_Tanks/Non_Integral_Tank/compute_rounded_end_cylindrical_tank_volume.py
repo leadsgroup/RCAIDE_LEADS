@@ -16,7 +16,6 @@ from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  co
 import numpy as np
 from scipy.interpolate import interp1d
 from shapely.geometry import Polygon, Point
-from copy import  deepcopy
 import shapely
 import os
 

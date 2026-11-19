@@ -162,11 +162,11 @@ def update_differentials_altitude(segment):
     
     # get overall time step
     vz = -v[:,2,None] # Inertial velocity is z down
-    dz = alt0 - altf 
+    dz = altf - alt0 # negative in a descent, as is vz, so the segment time is positive
     dt = dz / np.dot(I[-1,:],vz)[-1] # maintain column array
     
     # Integrate vz to get altitudes
-    alt = alt0 - np.dot(I*dt,vz)
+    alt = alt0 + np.dot(I*dt,vz)
 
     # rescale operators
     t = t * dt

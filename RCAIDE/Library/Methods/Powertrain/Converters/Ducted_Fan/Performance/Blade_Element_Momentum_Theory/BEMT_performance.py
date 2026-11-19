@@ -115,7 +115,8 @@ def BEMT_performance(ducted_fan,conditions):
     thrust_prop_frame[:,0] = thrust[:,0]
     thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)
     
-    conditions.energy.converters[ducted_fan.tag] = Data(
+    # write into the ducted fan's conditions, keeping fields set by its propulsor and reusing memory
+    conditions.energy.converters.copy_values({ducted_fan.tag: Data(
             torque                            = torque,
             thrust                            = thrust_vector,  
             power                             = power, 
@@ -133,6 +134,6 @@ def BEMT_performance(ducted_fan,conditions):
             torque_per_blade                  = torque/B,
             figure_of_merit                   = FoM, 
             torque_coefficient                = Cq,
-            power_coefficient                 = Cp)
+            power_coefficient                 = Cp)})
     
     return 

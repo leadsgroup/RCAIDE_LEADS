@@ -141,6 +141,7 @@ def generate_vortex_distribution(conditions,settings,geometry):
     VD_seg.panels_per_strip          = np.atleast_2d(VD_i.panels_per_strip         )
     VD_seg.chordwise_panel_number    = np.atleast_2d(VD_i.chordwise_panel_number   )
     VD_seg.chord_lengths             = np.atleast_2d(VD_i.chord_lengths            )
+    VD_seg.strip_chord_lengths       = np.atleast_2d(VD_i.strip_chord_lengths      )
     VD_seg.chord_widths              = np.atleast_2d(VD_i.chord_widths            )
     VD_seg.tangent_incidence_angle   = np.atleast_2d(VD_i.tangent_incidence_angle  )
     VD_seg.exposed_leading_edge_flag = np.atleast_2d(VD_i.exposed_leading_edge_flag) 

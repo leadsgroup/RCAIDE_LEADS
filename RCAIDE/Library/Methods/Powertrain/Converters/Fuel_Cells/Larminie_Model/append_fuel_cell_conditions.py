@@ -11,8 +11,6 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Common.append_converter_power_conditions import append_converter_power_conditions
 
 # pack imports 
-from copy import  deepcopy
-
 # ----------------------------------------------------------------------------------------------------------------------
 # append_fuel_cell_conditions
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -91,6 +89,6 @@ def reuse_stored_fuel_cell_data(fuel_cell_stack,state,network,stored_converter_t
     '''Reuses results from one converter for identical fuel cells'''
     stored_conditions    = state.conditions.energy.converters[stored_converter_tag]
     fuel_cell_conditions = state.conditions.energy.converters[fuel_cell_stack.tag]
-    fuel_cell_conditions.update(deepcopy(stored_conditions))
+    fuel_cell_conditions.copy_values(stored_conditions)
 
     return fuel_cell_conditions.inputs, fuel_cell_conditions.outputs

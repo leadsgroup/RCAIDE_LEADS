@@ -156,10 +156,9 @@ class Nexus(Data):
     
         self.evaluate(x)
         
-        aliases     = self.optimization_problem.aliases
         objective   = self.optimization_problem.objective
     
-        objective_value  = help_fun.get_values(self,objective,aliases)  
+        objective_value  = self.output_values(objective)  
         scaled_objective = help_fun.scale_obj_values(objective,objective_value)
         
         return scaled_objective.astype(np.double) 
@@ -187,7 +186,6 @@ class Nexus(Data):
         
         self.evaluate(x)
         
-        aliases     = self.optimization_problem.aliases
         constraints = self.optimization_problem.constraints 
         
         # Setup constraints  
@@ -202,7 +200,7 @@ class Nexus(Data):
         else:
 
             # get constaint values 
-            constraint_values = help_fun.get_values(self,iqconstraints,aliases)          
+            constraint_values = self.output_values(iqconstraints)          
             
             # scale bounds 
             scaled_bnd_constraints  = help_fun.scale_const_bnds(iqconstraints)
@@ -241,7 +239,6 @@ class Nexus(Data):
     
         self.evaluate(x)
 
-        aliases     = self.optimization_problem.aliases
         constraints = self.optimization_problem.constraints
         
         # Setup constraints  
@@ -256,7 +253,7 @@ class Nexus(Data):
         if len(eqconstraints) == 0:
             scaled_constraints = []
         else:
-            constraint_values  = help_fun.get_values(self,eqconstraints,aliases)
+            constraint_values  = self.output_values(eqconstraints)
             scaled_constraints = help_fun.scale_const_values(eqconstraints,constraint_values) - help_fun.scale_const_bnds(eqconstraints)
 
         return scaled_constraints   
@@ -302,10 +299,9 @@ class Nexus(Data):
         
         self.evaluate(x)
         
-        aliases     = self.optimization_problem.aliases
         constraints = self.optimization_problem.constraints
     
-        constraint_values  = help_fun.get_values(self,constraints,aliases) 
+        constraint_values  = self.output_values(constraints) 
         scaled_constraints = help_fun.scale_const_values(constraints,constraint_values) 
 
         return scaled_constraints     
@@ -343,9 +339,17 @@ class Nexus(Data):
         converted_values = help_fun.convert_values(inputs)
 
         # Set the dictionary
-        aliases = self.optimization_problem.aliases
-        
-        self    = help_fun.set_values(self,inputs,converted_values,aliases)     
+        self.set_inputs(inputs,converted_values)
+
+    def set_inputs(self,inputs,converted_values):
+        """Writes converted input values to the locations their aliases name; problems that hold their inputs
+        elsewhere override this."""
+        help_fun.set_values(self,inputs,converted_values,self.optimization_problem.aliases)
+
+    def output_values(self,outputs):
+        """Values of the named objectives or constraints, read through their aliases; problems that hold their
+        outputs elsewhere override this."""
+        return help_fun.get_values(self,outputs,self.optimization_problem.aliases)
 
     
     def constraints_individual(self,x = None):

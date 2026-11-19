@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
-from RCAIDE.Framework.Core import DataOrdered
+from RCAIDE.Framework.Core import Data, DataOrdered
 from .Conditions           import Conditions
 from .Unknowns             import Unknowns
 from .Residuals            import Residuals
@@ -80,6 +80,9 @@ class State(Conditions):
              
         # Conditions
         self.conditions                    = Conditions() 
+        self.context                       = Data()   # fixed per-segment data, not expanded or solved for
+        self.context.config                = Data()   # from the vehicle configuration's analyses
+        self.context.config.vortex_distribution = None
 
         
     def expand_rows(self,rows,override=False):

@@ -64,7 +64,6 @@ class Stability(Analysis):
         self.settings.drag_coefficient_increment                         = 0.0
         self.settings.recalculate_total_wetted_area                      = False
         self.settings.oswald_efficiency_factor                           = None
-        self.settings.span_efficiency                                    = None
         self.settings.compute_neutral_point                              = True
 
         # Method used to build the dynamic-stability state-space model.
@@ -82,7 +81,6 @@ class Stability(Analysis):
     
         # Stability derivatives. If these are not user defined, then they will be calculated. 
         self.stability_derivatives                                       = Data()   
-        self.stability_derivatives.M_0                                   = None
         self.stability_derivatives.Clift_alpha                           = None
         self.stability_derivatives.CX_alpha                              = None
         self.stability_derivatives.CX_u                                  = None

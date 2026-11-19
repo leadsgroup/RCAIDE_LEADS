@@ -4,6 +4,7 @@
 # Created:  Jun 2024, M. Clarke  
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
+import numpy as np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_fan_conditions
@@ -39,5 +40,11 @@ def append_fan_conditions(fan,segment):
     segment.state.conditions.energy.converters[fan.tag].inputs                       = Conditions() 
     segment.state.conditions.energy.converters[fan.tag].outputs                      = Conditions()
     segment.state.conditions.energy.converters[fan.tag].rpm                          = 0. * ones_row(1) 
+    conditions       = segment.state.conditions.energy.converters[fan.tag]
+    rows             = ones_row(1).shape[0]
+    for node in (conditions.inputs, conditions.outputs):   # station states, NaN until computed
+        node.stagnation_temperature = np.full((rows, 1), np.nan)
+        node.stagnation_pressure    = np.full((rows, 1), np.nan)
+    conditions.omega = np.full((rows, 1), np.nan)
     
     return 

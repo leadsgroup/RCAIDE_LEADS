@@ -10,7 +10,8 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry 
+from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry,energy
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.set_vehicle_fuel_mass import set_vehicle_fuel_mass
  
 # Pacakge imports 
 import numpy as np  
@@ -113,6 +114,9 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         if segment.analyses.stability != None: 
             segment.analyses.stability.settings.compute_neutral_point = False
 
+    # size powertrain components (e.g. batteries) first, as the mission does, so their mass is in the OEW
+    energy(mission)
+
     # run preliminary mass properties analyss 
     mass_properties(mission) 
    
@@ -124,9 +128,10 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         else:
             payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag)
     
-    # delete aerodynamic surrogates 
-    file_name = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), segment.analyses.vehicle.tag + "_" + segment.analyses.aerodynamics.tag + "_aero_training_data.pkl")
-    os.remove(file_name) 
+    # delete the aerodynamic surrogates written by the segments that trained them
+    for file_name in {getattr(segment.analyses.aerodynamics, 'filename', None) for segment in mission.segments if segment.analyses.aerodynamics is not None}:
+        if file_name and os.path.exists(file_name):
+            os.remove(file_name)
 
     print("\n============== Payload Range Report ==============\n")            
     try:
@@ -245,7 +250,10 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         # Define takeoff weight
         mission.segments[0].analyses.vehicle.mass_properties.takeoff  = TOW[i]
         mission.segments[0].analyses.vehicle.mass_properties.payload  = PLD[i]
-        mission.segments[0].analyses.vehicle.mass_properties.fuel     = FUEL[i]
+
+        # Load each configuration's tanks with this point's fuel so tank conditions match the takeoff weight
+        for mission_segment in mission.segments:
+            set_vehicle_fuel_mass(mission_segment.analyses.vehicle, FUEL[i])
 
 
         # Evaluate mission with current TOW
@@ -267,6 +275,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         tol     = 1.    # fuel convergency tolerance
         err     = 9999. # error to be minimized
         iter    = 0     # iteration count
+        previous_dist, previous_missing = None, None
 
         while abs(err) > tol and iter < maxIter:
             iter = iter + 1
@@ -283,11 +292,17 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             CruiseDist = np.diff( segment.conditions.frames.inertial.position_vector[[0,-1],0] )[0]        # Distance [m]
             CruiseFuel = segment.conditions.weights.vehicle.mass[0,0] - segment.conditions.weights.vehicle.mass[-1,0]    # [kg]
             
-            # Current specific range (m/kg)
-            CruiseSR    = CruiseDist / CruiseFuel        # [m/kg]
-
-            # Estimated distance that will result in total fuel burn = target fuel
-            DeltaDist  =  CruiseSR *  missingFuel
+            # Distance step that zeroes the missing fuel: from the cruise's specific range on the first iteration,
+            # then a secant update on the last two (distance, missing fuel) pairs
+            slope = None
+            if previous_dist is not None and CruiseDist != previous_dist:
+                slope = (missingFuel - previous_missing) / (CruiseDist - previous_dist)   # [kg/m], negative
+            if slope is not None and slope < 0:
+                DeltaDist = -missingFuel / slope
+            else:
+                CruiseSR  = CruiseDist / CruiseFuel        # [m/kg]
+                DeltaDist = CruiseSR * missingFuel
+            previous_dist, previous_missing = CruiseDist, missingFuel
             mission.segments[cruise_segment_tag].distance = (CruiseDist + DeltaDist)
 
             # running mission with new distance

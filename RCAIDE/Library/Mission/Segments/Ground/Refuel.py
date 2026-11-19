@@ -10,17 +10,9 @@ import RCAIDE
 # ----------------------------------------------------------------------------------------------------------------------
 def initialize_conditions(segment):
     """
-    Initializes conditions for a ground refueling segment: holds for
-    ``segment.time``, during which each fuel tank (any Fuel_Tank subtype --
-    Cryogenic_Tank included) fills at ``segment.nominal_fill_rate`` toward
-    ``segment.refuel_target_fill_fraction`` of its fixed design-basis
-    full-liquid mass (``tank.design_full_liquid_mass``, set generically for
-    every tank in ``append_fuel_tank_conditions``; Cryogenic_Tank overwrites
-    it with its own temperature-dependent density calc in
-    ``append_cryogenic_tank_conditions``). The actual fill-and-cutoff
-    integration is tank-type-specific: compute_fuel_tank_performance applies
-    an exact linear cutoff (see its own docstring), while
-    compute_cryogenic_tank_performance uses a terminal IVP event.
+    Initializes a ground refueling segment: a hold of ``segment.time`` during which each fuel tank fills at
+    ``nominal_fill_rate`` toward its target. The tank performance methods cut the fill off once the target
+    or the volume limit is reached.
 
     Parameters
     ----------
@@ -28,14 +20,12 @@ def initialize_conditions(segment):
         The mission segment being analyzed
             - time : float
                 Duration of the ground hold [s]
-            - refuel_target_fill_fraction : float
-                Target liquid fill level, as a fraction of design_full_liquid_mass [-]
+            - refuel_target_fill_fraction : float or None
+                Target as a fraction of the tank's full liquid mass [-]. None targets the tank's mission fuel
+                load (``tank.fuel.mass_properties.mass``), which the mass_properties Pre_Process limits to MTOW.
             - nominal_fill_rate : float or None
-                Constant physical fill rate to run at [kg/s]. None sizes it
-                automatically as 1.2x the rate that would exactly hit the
-                target with zero boil-off, over segment.time -- a margin
-                meant to comfortably absorb the boil-off loss that the naive
-                rate ignores, so the fill still finishes inside the window.
+                Fill rate [kg/s]. None uses 1.2 times the rate that reaches the target over ``time`` without
+                boil-off, leaving margin for the boil-off during the fill.
 
     Returns
     -------
@@ -47,17 +37,7 @@ def initialize_conditions(segment):
 
     Notes
     -----
-    This only sets the *rate* to run at and the *target* to cut off at.
-    compute_cryogenic_tank_performance is what actually detects fuel_mass
-    crossing refuel_target_mass and zeroes the fill from that point on --
-    mirroring Battery_Recharge/cutoff_SOC, rather than back-solving a rate
-    that lands on target only if boil-off happens to match the estimate.
-
-    Incoming fuel is assumed thermally equilibrated with the tank's own bulk
-    liquid (see compute_cryogenic_tank_performance's docstring) -- no
-    chill-down transient. The target uses a fixed design reference mass, not
-    the tank's current (possibly drifted) temperature, the same way a
-    battery's recharge target is a fixed design capacity, not a live reading.
+    Incoming fuel is at the tank's bulk liquid temperature, with no chill-down transient.
     """
     t_initial = segment.state.conditions.frames.inertial.time[0,0]
     t_nondim  = segment.state.numerics.dimensionless.control_points
@@ -70,16 +50,18 @@ def initialize_conditions(segment):
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 tank_conditions = segment.state.conditions.energy.sources[source.tag]
 
-                # append_cryogenic_tank_conditions's own state.initials chaining
-                # hasn't run yet at this point (it's under iterate.initials.energy,
-                # which follows process.initialize), so read the prior segment's
-                # end state directly rather than tank_conditions.fuel_mass[0,0].
+                # Segment chaining runs after initialization, so read the previous segment's end state directly
                 if segment.state.initials.keys():
                     m_l_current = segment.state.initials.conditions.energy.sources[source.tag].fuel_mass[-1,0]
                 else:
                     m_l_current = tank_conditions.fuel_mass[0,0]
 
-                target_mass = segment.refuel_target_fill_fraction * source.design_full_liquid_mass
+                if segment.refuel_target_fill_fraction is not None:
+                    target_mass = segment.refuel_target_fill_fraction * source.design_full_liquid_mass
+                elif source.fuel.mass_properties.mass > 0:
+                    target_mass = min(source.fuel.mass_properties.mass, source.design_full_liquid_mass)
+                else:
+                    target_mass = source.design_full_liquid_mass
 
                 if segment.nominal_fill_rate is not None:
                     fill_rate = segment.nominal_fill_rate

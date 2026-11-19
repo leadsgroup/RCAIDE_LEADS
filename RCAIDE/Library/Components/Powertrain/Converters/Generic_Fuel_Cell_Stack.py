@@ -144,8 +144,8 @@ class Generic_Fuel_Cell_Stack(Converter):
         append_fuel_cell_conditions(self, segment)
         return
 
-    def reuse_stored_data(self, state, network, stored_conveter_tag):
-        inputs, outputs = reuse_stored_fuel_cell_data(self, state, network, stored_conveter_tag)
+    def reuse_stored_data(self, state, network, stored_converter_tag):
+        inputs, outputs = reuse_stored_fuel_cell_data(self, state, network, stored_converter_tag)
         return inputs, outputs
 
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 

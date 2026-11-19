@@ -82,7 +82,7 @@ def plot_lift_distribution(results,
                   'axes.titlesize': ps.title_font_size}
     plt.rcParams.update(parameters)
     
-    VD         = results.segments[0].analyses.aerodynamics.settings.vortex_distribution	 	 
+    VD         = results.segments[0].analyses.aerodynamics.vortex_distribution	 	 
     img_idx    = 1
     seg_idx    = 1
     for segment in results.segments.values():   	

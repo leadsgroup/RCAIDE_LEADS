@@ -16,22 +16,22 @@ import numpy as np
 
 
 def main():
-    test_compute_subsegment_layout()
-    test_hp_decompose_segment_linear_pair()
-    test_hp_decompose_segment_defaults_from_numerics()
-    test_hp_decompose_segment_divide()
-    test_hp_decompose_segment_battery_discharge()
-    test_hp_decompose_segment_dual_spec()
-    test_hp_decompose_segment_cumulative()
-    test_hp_decompose_segment_no_split_needed()
-    test_hp_decompose_segment_unregistered_type_raises()
-    test_hp_decompose_segment_pair_with_none_start_skips()
+    check_compute_subsegment_layout()
+    check_hp_decompose_segment_linear_pair()
+    check_hp_decompose_segment_defaults_from_numerics()
+    check_hp_decompose_segment_divide()
+    check_hp_decompose_segment_battery_discharge()
+    check_hp_decompose_segment_dual_spec()
+    check_hp_decompose_segment_cumulative()
+    check_hp_decompose_segment_no_split_needed()
+    check_hp_decompose_segment_unregistered_type_raises()
+    check_hp_decompose_segment_pair_with_none_start_skips()
 
 
 # ----------------------------------------------------------------------
 #   compute_subsegment_layout
 # ----------------------------------------------------------------------
-def test_compute_subsegment_layout():
+def check_compute_subsegment_layout():
 
     # worked examples from the A.4 design discussion: N=16 points, floor=4.
     # Smallest, not largest: at U=1, three divisors (4,8,16) all clear the
@@ -73,13 +73,13 @@ def test_compute_subsegment_layout():
         raised = True
     assert raised, "expected ValueError when the floor and dimension cap can't both be satisfied"
 
-    print("test_compute_subsegment_layout: PASS")
+    print("check_compute_subsegment_layout: PASS")
 
 
 # ----------------------------------------------------------------------
 #   hp_decompose_segment -- ('pair', start, end) extent
 # ----------------------------------------------------------------------
-def test_hp_decompose_segment_linear_pair():
+def check_hp_decompose_segment_linear_pair():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
     segment = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base)
@@ -113,14 +113,14 @@ def test_hp_decompose_segment_linear_pair():
     for p in pieces:
         assert p.tag.startswith("departure_transition_1_")
 
-    print("test_hp_decompose_segment_linear_pair: PASS")
+    print("check_hp_decompose_segment_linear_pair: PASS")
 
 
 # ----------------------------------------------------------------------
 #   hp_decompose_segment -- max_dimension/min_control_points default from
 #   Numerics.py's hp_decomposition block when not passed explicitly
 # ----------------------------------------------------------------------
-def test_hp_decompose_segment_defaults_from_numerics():
+def check_hp_decompose_segment_defaults_from_numerics():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
     segment = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base)
@@ -158,13 +158,13 @@ def test_hp_decompose_segment_defaults_from_numerics():
         raised = True
     assert raised, "tightened max_dimension must actually be read from the segment, not ignored"
 
-    print("test_hp_decompose_segment_defaults_from_numerics: PASS")
+    print("check_hp_decompose_segment_defaults_from_numerics: PASS")
 
 
 # ----------------------------------------------------------------------
 #   hp_decompose_segment -- ('divide', attr) extent
 # ----------------------------------------------------------------------
-def test_hp_decompose_segment_divide():
+def check_hp_decompose_segment_divide():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
     segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base)
@@ -184,14 +184,14 @@ def test_hp_decompose_segment_divide():
         assert piece.air_speed == segment.air_speed
         assert piece.altitude == segment.altitude
 
-    print("test_hp_decompose_segment_divide: PASS")
+    print("check_hp_decompose_segment_divide: PASS")
 
 
 # ----------------------------------------------------------------------
 #   hp_decompose_segment -- Ground.Battery_Discharge, a second ('divide', ...)
 #   type on a structurally different segment (Ground, not Cruise/Climb)
 # ----------------------------------------------------------------------
-def test_hp_decompose_segment_battery_discharge():
+def check_hp_decompose_segment_battery_discharge():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
     segment = Segments.Ground.Battery_Discharge(base)
@@ -207,13 +207,13 @@ def test_hp_decompose_segment_battery_discharge():
     for piece in pieces:
         assert abs(piece.time - segment.time / k) < 1e-9
 
-    print("test_hp_decompose_segment_battery_discharge: PASS")
+    print("check_hp_decompose_segment_battery_discharge: PASS")
 
 
 # ----------------------------------------------------------------------
 #   hp_decompose_segment -- two specs applied together (lockstep)
 # ----------------------------------------------------------------------
-def test_hp_decompose_segment_dual_spec():
+def check_hp_decompose_segment_dual_spec():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
     segment = Segments.Climb.Constant_Mach_Linear_Altitude(base)
@@ -237,14 +237,14 @@ def test_hp_decompose_segment_dual_spec():
     assert abs(pieces[0].altitude_start - segment.altitude_start) < 1e-9
     assert abs(pieces[-1].altitude_end - segment.altitude_end) < 1e-9
 
-    print("test_hp_decompose_segment_dual_spec: PASS")
+    print("check_hp_decompose_segment_dual_spec: PASS")
 
 
 # ----------------------------------------------------------------------
 #   hp_decompose_segment -- ('cumulative', target, source) extent:
 #   heading continuity for a curved segment
 # ----------------------------------------------------------------------
-def test_hp_decompose_segment_cumulative():
+def check_hp_decompose_segment_cumulative():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
     segment = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude(base)
@@ -276,13 +276,13 @@ def test_hp_decompose_segment_cumulative():
     # the last piece's start + its own turn reaches the original total heading change
     assert abs((pieces[-1].true_course + pieces[-1].turn_angle) - (segment.true_course + segment.turn_angle)) < 1e-9
 
-    print("test_hp_decompose_segment_cumulative: PASS")
+    print("check_hp_decompose_segment_cumulative: PASS")
 
 
 # ----------------------------------------------------------------------
 #   hp_decompose_segment -- already small enough, no-op
 # ----------------------------------------------------------------------
-def test_hp_decompose_segment_no_split_needed():
+def check_hp_decompose_segment_no_split_needed():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
     segment = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base)
@@ -300,13 +300,13 @@ def test_hp_decompose_segment_no_split_needed():
     assert len(pieces) == 1
     assert pieces[0] is segment
 
-    print("test_hp_decompose_segment_no_split_needed: PASS")
+    print("check_hp_decompose_segment_no_split_needed: PASS")
 
 
 # ----------------------------------------------------------------------
 #   hp_decompose_segment -- unregistered segment type
 # ----------------------------------------------------------------------
-def test_hp_decompose_segment_unregistered_type_raises():
+def check_hp_decompose_segment_unregistered_type_raises():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
     # Takeoff is deliberately unregistered: velocity profile and total
@@ -330,7 +330,7 @@ def test_hp_decompose_segment_unregistered_type_raises():
         raised = True
     assert raised, "expected ValueError for an unregistered segment type"
 
-    print("test_hp_decompose_segment_unregistered_type_raises: PASS")
+    print("check_hp_decompose_segment_unregistered_type_raises: PASS")
 
 
 # ----------------------------------------------------------------------
@@ -343,7 +343,7 @@ def test_hp_decompose_segment_unregistered_type_raises():
 #   only setting altitude_end) hit a TypeError from np.linspace(None, ...)
 #   here before this was fixed.
 # ----------------------------------------------------------------------
-def test_hp_decompose_segment_pair_with_none_start_skips():
+def check_hp_decompose_segment_pair_with_none_start_skips():
     Segments = RCAIDE.Framework.Mission.Segments
     base = Segments.Segment()
     segment = Segments.Climb.Constant_Speed_Constant_Rate(base)
@@ -364,7 +364,7 @@ def test_hp_decompose_segment_pair_with_none_start_skips():
     assert pieces[0] is segment
     assert segment.altitude_start is None  # untouched, not guessed at
 
-    print("test_hp_decompose_segment_pair_with_none_start_skips: PASS")
+    print("check_hp_decompose_segment_pair_with_none_start_skips: PASS")
 
 
 if __name__ == '__main__':

@@ -52,6 +52,11 @@ CONTROL_SURFACE_TYPES = [
     (Ruddervator, 'sr', 'ruddervator', 'rudder',   'ruddervator_flag',  'secondary_deflection'),
 ]
 
+# High-lift surfaces whose induced drag is trained as dCDi = p*delta + q*delta^2 + (r0 + r1*delta)*alpha*delta
+# instead of a zero-incidence linear derivative, which misses the wing-lift cross term at high alpha.
+HIGH_LIFT_LETTERS    = ('f', 's')
+HIGH_LIFT_DRAG_TERMS = ('p', 'q', 'r0', 'r1')
+
 def lookup(control_surface):
     """
     Returns every registry row matching a control surface instance's type.

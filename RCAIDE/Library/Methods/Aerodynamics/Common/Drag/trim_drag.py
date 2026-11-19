@@ -8,6 +8,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compute_flap_profile_drag import compute_flap_profile_drag
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -70,14 +71,8 @@ def trim_drag(state,settings,geometry):
 
     where :math:`\\delta_{spoiler}` is the spoiler deflection angle in degrees.
 
-    For flaps, the drag increment follows:
-
-    :math:`\\Delta C_D = c_f \\cdot A \\cdot \\left(\\frac{\\delta_{flap}}{1°}\\right)^B`
-
-    where:
-    - :math:`c_f` is the chord fraction of the flap
-    - :math:`A` and :math:`B` are empirical coefficients that depend on flap type
-    - :math:`\\delta_{flap}` is the flap deflection angle in degrees
+    For flaps, the profile and interference drag increment follows Roskam, Airplane Design Part VI,
+    Eqs. 4.71 and 4.75 (see compute_flap_profile_drag).
 
     The lift and moment effects for spoilers are:
 
@@ -123,5 +118,7 @@ def trim_drag(state,settings,geometry):
                 control_surface_drag += CD_0 * (0.0011 * (cs.deflection / Units.degrees))  
                 state.conditions.aerodynamics.coefficients.lift.total  +=  -0.0075 *(cs.deflection / Units.degrees)  
                 state.conditions.static_stability.coefficients.M       +=  0.0053 *(cs.deflection / Units.degrees)
+            if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap and cs.deflection != 0:
+                control_surface_drag += compute_flap_profile_drag(wing, cs, geometry.reference_area)
     state.conditions.aerodynamics.coefficients.drag.trim.total =  control_surface_drag 
     return  

@@ -243,13 +243,13 @@ def vehicle_setup():
     aileron.chord_fraction        = 0.22 
     wing.append_control_surface(aileron)
         
-    spoiler                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
-    spoiler.tag                   = 'elevator'
-    spoiler.span_fraction_start   = 0.08
-    spoiler.span_fraction_end     = 0.24
-    spoiler.deflection            = 0.0 * Units.degrees
-    spoiler.chord_fraction        = 0.1
-    wing.append_control_surface(spoiler)       
+    elevator                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
+    elevator.tag                   = 'elevator'
+    elevator.span_fraction_start   = 0.08
+    elevator.span_fraction_end     = 0.24
+    elevator.deflection            = 0.0 * Units.degrees
+    elevator.chord_fraction        = 0.1
+    wing.append_control_surface(elevator)       
     
     
     # add to vehicle
@@ -487,21 +487,21 @@ def vehicle_setup():
     inlet_nozzle.tag                              = 'inlet_nozzle' 
     inlet_nozzle.polytropic_efficiency            = 1.0
     inlet_nozzle.pressure_ratio                   = 1.0
-    inlet_nozzle.pressure_recovery                = 0.94 
+    inlet_nozzle.pressure_recovery                = 0.933 # intake pressure ratio 7.3 at Mach 2.0 (Wikipedia, Olympus 593, ref. [21]) over the isentropic 7.82
     outer_right_turbojet.inlet_nozzle             = inlet_nozzle    
           
     #  Low Pressure Compressor      
     lp_compressor                                 = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     lp_compressor.tag                             = 'low_pressure_compressor' 
     lp_compressor.polytropic_efficiency           = 0.88
-    lp_compressor.pressure_ratio                  = 3.1     
+    lp_compressor.pressure_ratio                  = 2.647 # LP x HP = 11.3 at Mach 2 cruise (Wikipedia, Olympus 593, ref. [21]); LP/HP split assumed
     outer_right_turbojet.low_pressure_compressor  = lp_compressor         
         
     # High Pressure Compressor        
     hp_compressor                                 = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     hp_compressor.tag                             = 'high_pressure_compressor' 
     hp_compressor.polytropic_efficiency           = 0.88
-    hp_compressor.pressure_ratio                  = 5.0  
+    hp_compressor.pressure_ratio                  = 4.269
     outer_right_turbojet.high_pressure_compressor = hp_compressor
  
     # Low Pressure Turbine 
@@ -523,7 +523,7 @@ def vehicle_setup():
     combustor.tag                                 = 'combustor' 
     combustor.efficiency                          = 0.96
     combustor.alphac                              = 1.0     
-    combustor.turbine_inlet_temperature           = 1440.
+    combustor.turbine_inlet_temperature           = 1550. # K, calibrated so cruise airflow (82.8 kg/s) matches the 186 kg/s takeoff airflow at cruise inlet conditions
     combustor.pressure_ratio                      = 0.92
     combustor.fuel_data                           = RCAIDE.Library.Attributes.Propellants.Jet_A()     
     outer_right_turbojet.combustor                = combustor
@@ -533,7 +533,7 @@ def vehicle_setup():
     afterburner.tag                               = 'afterburner' 
     afterburner.efficiency                        = 0.95
     afterburner.alphac                            = 1.0     
-    afterburner.turbine_inlet_temperature         = 1500
+    afterburner.turbine_inlet_temperature         = 1254. # K, calibrated to the 38,050 lbf (169.2 kN) reheat takeoff rating (Jane's, via Wikipedia)
     afterburner.pressure_ratio                    = 1.0
     afterburner.fuel_data                         = RCAIDE.Library.Attributes.Propellants.Jet_A()     
     outer_right_turbojet.afterburner              = afterburner   
@@ -620,73 +620,73 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------   
     fuel_tank                                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.tag                                  = 'tank_9'
-    fuel_tank.mass_properties.center_of_gravity    = np.array([[26.5,0,0]])
-    fuel_tank.mass_properties.mass                 = 11096
-    fuel_tank.fuel_flow_split_ratio                  = 1/8
     fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
+    fuel_tank.origin                               = [[26.5,0,0]]
+    fuel_tank.fuel.mass_properties.mass            = 11096  # kg, full tank
+    fuel_tank.volume_properties.net_volume         = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
     fuel_tank.assigned_distributors                = [[fuel_line.tag]]
     net.sources.append(fuel_tank)
     
     fuel_tank                                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.tag                                  = 'tank_10'
-    fuel_tank.mass_properties.center_of_gravity    = np.array([[28.7,0,0]])
-    fuel_tank.mass_properties.mass                 = 11943
-    fuel_tank.fuel_flow_split_ratio                  = 1/8
     fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
+    fuel_tank.origin                               = [[28.7,0,0]]
+    fuel_tank.fuel.mass_properties.mass            = 11943  # kg, full tank
+    fuel_tank.volume_properties.net_volume         = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
     fuel_tank.assigned_distributors                = [[fuel_line.tag]]
     net.sources.append(fuel_tank)
     
     fuel_tank                                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.tag                                  = 'tank_1_and_4'
-    fuel_tank.mass_properties.center_of_gravity    = np.array([[31.0,0,0]])
-    fuel_tank.mass_properties.mass                 = 4198+4198
-    fuel_tank.fuel_flow_split_ratio                  = 1/8
     fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
+    fuel_tank.origin                               = [[31.0,0,0]]
+    fuel_tank.fuel.mass_properties.mass            = 4198+4198  # kg, full tank
+    fuel_tank.volume_properties.net_volume         = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
     fuel_tank.assigned_distributors                = [[fuel_line.tag]]
     net.sources.append(fuel_tank)
     
     fuel_tank                                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.tag                                  = 'tank_5_and_8'
-    fuel_tank.mass_properties.center_of_gravity    = np.array([[32.9,0,0]])
-    fuel_tank.mass_properties.mass                 = 7200+12838
-    fuel_tank.fuel_flow_split_ratio                  = 1/8
     fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
+    fuel_tank.origin                               = [[32.9,0,0]]
+    fuel_tank.fuel.mass_properties.mass            = 7200+12838  # kg, full tank
+    fuel_tank.volume_properties.net_volume         = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
     fuel_tank.assigned_distributors                = [[fuel_line.tag]]
     net.sources.append(fuel_tank)
     
     fuel_tank                                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.tag                                  = 'tank_6_and_7'
-    fuel_tank.mass_properties.center_of_gravity    = np.array([[37.4,0,0]])
-    fuel_tank.mass_properties.mass                 = 11587+7405
-    fuel_tank.fuel_flow_split_ratio                  = 1/8
     fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
+    fuel_tank.origin                               = [[37.4,0,0]]
+    fuel_tank.fuel.mass_properties.mass            = 11587+7405  # kg, full tank
+    fuel_tank.volume_properties.net_volume         = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
     fuel_tank.assigned_distributors                = [[fuel_line.tag]]
     net.sources.append(fuel_tank)
     
     fuel_tank                                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.tag                                  = 'tank_5A_and_7A'
-    fuel_tank.mass_properties.center_of_gravity    = np.array([[40.2,0,0]])
-    fuel_tank.mass_properties.mass                 = 2225+2225
-    fuel_tank.fuel_flow_split_ratio                  = 1/8
     fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
+    fuel_tank.origin                               = [[40.2,0,0]]
+    fuel_tank.fuel.mass_properties.mass            = 2225+2225  # kg, full tank
+    fuel_tank.volume_properties.net_volume         = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
     fuel_tank.assigned_distributors                = [[fuel_line.tag]]
     net.sources.append(fuel_tank)
     
     fuel_tank                                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.tag                                  = 'tank_2_and_3'
-    fuel_tank.mass_properties.center_of_gravity    = np.array([[40.2,0,0]])
-    fuel_tank.mass_properties.mass                 = 4570+4570
-    fuel_tank.fuel_flow_split_ratio                  = 1/8
     fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
+    fuel_tank.origin                               = [[40.2,0,0]]
+    fuel_tank.fuel.mass_properties.mass            = 4570+4570  # kg, full tank
+    fuel_tank.volume_properties.net_volume         = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
     fuel_tank.assigned_distributors                = [[fuel_line.tag]]
     net.sources.append(fuel_tank)
  
     fuel_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
     fuel_tank.tag                                  = 'tank_11'
-    fuel_tank.mass_properties.center_of_gravity    = np.array([[49.8,0,0]])
-    fuel_tank.mass_properties.mass                 = 10415
-    fuel_tank.fuel_flow_split_ratio                  = 1/8
     fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
+    fuel_tank.origin                               = [[49.8,0,0]]
+    fuel_tank.fuel.mass_properties.mass            = 10415  # kg, full tank
+    fuel_tank.volume_properties.net_volume         = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
     fuel_tank.assigned_distributors                = [[fuel_line.tag]]
     net.sources.append(fuel_tank)
      
@@ -781,12 +781,17 @@ def base_analysis(vehicle):
     analyses.vehicle = vehicle 
 
     #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.settings.compute_fuel_volume = False  # tank volumes are set from their fuel loads in vehicle_setup
     analyses.append(geometry)
-    
+
     # ------------------------------------------------------------------
     #  Weights
-    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()  
+    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
+    # Structure calibrated to the published OEW of 78,700 kg; the subsonic transport buildup gives 68,193 kg
+    structural_correction   = 1.3014
+    for component in ['wings', 'empennage', 'fuselage', 'landing_gear', 'nacelle']:
+        weights.settings.weight_correction_factors.empty.structural[component] = structural_correction
     analyses.append(weights)
     
     # ------------------------------------------------------------------
@@ -1032,7 +1037,7 @@ def mission_setup(analyses):
     segment.analyses.extend( analyses.cruise ) 
     segment.altitude                                      = 60000. * Units.ft
     segment.mach_number                                   = 2.02
-    segment.distance                                      = 1635. * Units.nmi  
+    segment.distance                                      = 523. * Units.nmi  # mission totals about 2,990 nmi, London Heathrow to New York JFK great circle (assumed)
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  
@@ -1047,68 +1052,110 @@ def mission_setup(analyses):
     
 
     # ------------------------------------------------------------------
-    #   First Descent Segment
-    # ------------------------------------------------------------------  
-    segment     = Segments.Descent.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag = "descent_2" 
+    #   Descent: 60000 ft to 45000 ft, Mach 1.6 (917.7 KTAS at 52500 ft)
+    # ------------------------------------------------------------------
+    segment     = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "descent_1"
     segment.analyses.extend( analyses.cruise )
-    segment.altitude_end      = 41000. * Units.ft
-    segment.air_speed_end     = 800 *  Units.mph
-    segment.descent_rate      = 1000. * Units['ft/min']  
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                
-    
+    segment.air_speed         = 917.712 * Units.kts
+    segment.altitude_end      = 45000. * Units.ft
+    segment.descent_rate      = 4000. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
     mission.append_segment(segment)
-     
+
     # ------------------------------------------------------------------
-    #   First Descent Segment
-    # ------------------------------------------------------------------    
-      
-    segment = Segments.Descent.Linear_Mach_Constant_Rate(base_segment)
-    segment.tag = "descent_3" 
+    #   Descent: 45000 ft to 35000 ft, Mach 0.95 (544.9 KTAS at 40000 ft); below Mach 1, where the aerodynamics are singular
+    # ------------------------------------------------------------------
+    segment     = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "descent_2"
     segment.analyses.extend( analyses.cruise )
-    segment.altitude_end      = 10000. * Units.ft
-    segment.mach_number_end   = 0.4
-    segment.descent_rate      = 1000. * Units['ft/min']  
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                
-    
-    mission.append_segment(segment)     
-    
+    segment.air_speed         = 544.892 * Units.kts
+    segment.altitude_end      = 35000. * Units.ft
+    segment.descent_rate      = 3000. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    mission.append_segment(segment)
+
     # ------------------------------------------------------------------
-    #   First Descent Segment
-    # ------------------------------------------------------------------     
+    #   Descent: 35000 ft to 10000 ft, 300 KCAS (415.3 KTAS at 22500 ft)
+    # ------------------------------------------------------------------
+    segment     = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "descent_3"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed         = 415.297 * Units.kts
+    segment.altitude_end      = 10000. * Units.ft
+    segment.descent_rate      = 2500. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Descent: 10000 ft to 3000 ft, 250 KCAS (274.3 KTAS at 6500 ft)
+    # ------------------------------------------------------------------
+    segment     = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "descent_4"
+    segment.analyses.extend( analyses.cruise )
+    segment.air_speed         = 274.272 * Units.kts
+    segment.altitude_end      = 3000. * Units.ft
+    segment.descent_rate      = 1500. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Approach: gear down from 3000 ft at 160 kts (assumed approach speed) on a 3 deg glideslope
+    # ------------------------------------------------------------------
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
-    segment.tag = "descent_4" 
+    segment.tag = "approach"
     segment.analyses.extend( analyses.landing )
+    segment.air_speed    = 160. * Units.kts
     segment.altitude_end = 0. * Units.ft
-    segment.descent_rate = 1000. * Units['ft/min']    
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                
-    
-    mission.append_segment(segment)      
-    
+    segment.descent_rate = 850. * Units['ft/min']
+
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                      = True
+    segment.flight_dynamics.force_z                      = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']]
+    segment.assigned_control_variables.pitch_angle.active             = True
+
+    mission.append_segment(segment)
+
     # ------------------------------------------------------------------    
     #   Mission definition complete    
     # ------------------------------------------------------------------

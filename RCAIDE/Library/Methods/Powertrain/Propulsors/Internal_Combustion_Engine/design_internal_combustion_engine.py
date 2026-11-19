@@ -58,6 +58,8 @@ def design_internal_combustion_engine(ICE, number_of_stations=20, solver_name='S
                 Sea level static thrust [N]
             - sealevel_static_power : float
                 Sea level static power [W]
+            - sealevel_static_chemical_power : float
+                Sea level static fuel chemical power [W]
     
     Notes
     -----
@@ -97,4 +99,5 @@ def design_internal_combustion_engine(ICE, number_of_stations=20, solver_name='S
     _,sls_outputs,_,_                 = ICE.compute_performance(operating_state)
     ICE.sealevel_static_thrust        = sls_outputs.thrust[0][0]
     ICE.sealevel_static_power         = sls_outputs.power.propulsive[0][0]
+    ICE.sealevel_static_chemical_power = operating_state.conditions.energy.propulsors[ICE.tag].inputs.power.chemical[0][0]
     return 
