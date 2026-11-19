@@ -364,7 +364,18 @@ def vehicle_setup():
     business_class.seat_width                           = 17 *  Units.inches
     business_class.aisle_width                          = 13  *  Units.inches  
     business_class.galley_lavatory_percent_x_locations  = [0, 0.5, 0.51, 1]       
-    business_class.type_A_exit_percent_x_locations      = [0.02, 0.4, 1]
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'front_exit'
+    cabin_exit.percent_x_location = 0.02
+    business_class.append_exit(cabin_exit)
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'center_exit'
+    cabin_exit.percent_x_location = 0.4
+    business_class.append_exit(cabin_exit)
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'rear_exit'
+    cabin_exit.percent_x_location = 1
+    business_class.append_exit(cabin_exit)
     cabin.append_cabin_class(business_class)  
     fuselage.append_cabin(cabin)          
     

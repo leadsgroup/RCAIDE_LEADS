@@ -83,7 +83,14 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     economy_class.number_of_seats_abrest              = 1
     economy_class.number_of_rows                      = 1
     economy_class.galley_lavatory_percent_x_locations = [0,1.0]       
-    economy_class.type_A_exit_percent_x_locations     = [0, 1.0]
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'front_exit'
+    cabin_exit.percent_x_location = 0
+    economy_class.append_exit(cabin_exit)
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'rear_exit'
+    cabin_exit.percent_x_location = 1.0
+    economy_class.append_exit(cabin_exit)
     cabin.append_cabin_class(economy_class)
     wing.append_cabin(cabin)  
     

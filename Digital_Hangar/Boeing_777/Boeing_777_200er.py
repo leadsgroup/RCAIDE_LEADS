@@ -562,7 +562,14 @@ def vehicle_setup():
     first_class.seat_pitch                          = 50 *  Units.inches
     first_class.aisle_width                          = 18  *  Units.inches  
     first_class.galley_lavatory_percent_x_locations = [0, 1]       
-    first_class.type_A_exit_percent_x_locations     = [0, 1]
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'front_exit'
+    cabin_exit.percent_x_location = 0
+    first_class.append_exit(cabin_exit)
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'rear_exit'
+    cabin_exit.percent_x_location = 1
+    first_class.append_exit(cabin_exit)
     cabin.append_cabin_class(first_class) 
 
     business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
@@ -577,7 +584,18 @@ def vehicle_setup():
     economy_class.number_of_seats_abrest              = 10
     economy_class.number_of_rows                      = 32
     economy_class.galley_lavatory_percent_x_locations = [0,0.65, 1.0]       
-    economy_class.type_A_exit_percent_x_locations     = [0,0.65, 1.0]
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'front_exit'
+    cabin_exit.percent_x_location = 0
+    economy_class.append_exit(cabin_exit)
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'center_exit'
+    cabin_exit.percent_x_location = 0.65
+    economy_class.append_exit(cabin_exit)
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'rear_exit'
+    cabin_exit.percent_x_location = 1.0
+    economy_class.append_exit(cabin_exit)
     cabin.append_cabin_class(economy_class)
 
     fuselage.append_cabin(cabin)      

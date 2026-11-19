@@ -423,8 +423,14 @@ def vehicle_setup():
     economy_class.number_of_seats_abrest              = 4
     economy_class.number_of_rows                      = 18
     economy_class.galley_lavatory_percent_x_locations = [0, 9]  
-    economy_class.emergency_exit_percent_x_locations  = []      
-    economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'front_exit'
+    cabin_exit.percent_x_location = 0.01
+    economy_class.append_exit(cabin_exit)
+    cabin_exit                    = RCAIDE.Library.Components.Fuselages.Cabins.Exits.Type_A()
+    cabin_exit.tag                = 'rear_exit'
+    cabin_exit.percent_x_location = 1
+    economy_class.append_exit(cabin_exit)
     economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
     cabin.append_cabin_class(economy_class)
     fuselage.append_cabin(cabin)

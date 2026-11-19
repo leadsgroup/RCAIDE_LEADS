@@ -204,8 +204,6 @@ def vehicle_setup(cell_chemistry, btms_type):
     economy_class.number_of_seats_abrest              = 2
     economy_class.number_of_rows                      = 10
     economy_class.galley_lavatory_percent_x_locations = []  
-    economy_class.emergency_exit_percent_x_locations  = []      
-    economy_class.type_A_exit_percent_x_locations     = [] 
     cabin.append_cabin_class(economy_class)
     fuselage.append_cabin(cabin) 
         
