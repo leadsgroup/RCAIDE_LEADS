@@ -22,34 +22,38 @@ def compute_layout_of_passenger_accommodations(fuselage):
     
     # lopa of entire vehicle 
     LOPA = np.empty(( 0, 14))
-    lopa_origin_x = []
-    lopa_origin_y = []
-    lopa_origin_z = []
     
     if len(fuselage.cabins) > 0: 
         # instantiate dimension of LOPA container 
-        #  [ x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, seat, emergency-row flag, galley/lav flag, type-A exit flag]
+        #  [n_rows, n_seats_y, x, y, z, length, width, first-cl flag, business-cl flag, economy-cl flag, seat, emergency-row flag, galley/lav flag, type-A exit flag]
         
         side_cabin_offset = 0
         for cabin in fuselage.cabins:
 
-            # create empty data structures
-            cabin_LOPA            = np.empty(( 0, 14))
-            cabin_number_of_seats = 0
-            cabin_class_origin    = [0, 0, 0]
-            total_cabin_length    = 0
-
-            # loop through cabin classes
+            # lay out every class in the cabin frame first, so the cabin length is known before a side cabin is tapered
+            class_data         = []
+            class_offsets      = []
+            cabin_class_origin = [0, 0, 0]
+            total_cabin_length = 0
             for cabin_class in cabin.classes:
+                seat_data, cabin_class_origin, total_cabin_length = create_class_seating_map_layout(cabin, cabin_class, cabin_class_origin, total_cabin_length)
+                class_data.append(seat_data)
 
-                # compute LOPA
-                seat_data ,cabin_class_origin,cabin_number_of_seats,total_cabin_length  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset,cabin_number_of_seats,total_cabin_length)
-
-                # determine offset if a side cabin (i.e. for a BWB) is defined
+                # lateral offset of a side-cabin class, updated after every class
+                class_offsets.append(side_cabin_offset)
                 side_cabin_offset = cabin.width / 2
 
-                # append to cabin LOPA data structure
-                cabin_LOPA = np.vstack((cabin_LOPA,seat_data))
+            # side cabins: taper against the front and aft ends of the whole cabin, move outboard and mirror to port
+            if type(cabin) == RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin:
+                class_data = [place_side_cabin_class(seat_data, cabin, cabin_class, offset, total_cabin_length)
+                              for seat_data, cabin_class, offset in zip(class_data, cabin.classes, class_offsets)]
+
+            # seat counts after the taper has removed seats
+            cabin_number_of_seats = 0
+            for seat_data, cabin_class in zip(class_data, cabin.classes):
+                cabin_class.number_of_seats = int(np.sum(seat_data[:, 10]))
+                cabin_number_of_seats      += cabin_class.number_of_seats
+            cabin_LOPA = np.vstack([np.empty((0, 14))] + class_data)
 
             # apply cabin origin offset to seat coordinates (x, y, z)
             if len(cabin_LOPA) > 0:
@@ -68,7 +72,7 @@ def compute_layout_of_passenger_accommodations(fuselage):
             cabin.length          = total_cabin_length
             cabin.number_of_seats = cabin_number_of_seats
 
-        # determine offset of LOPA from reference point on aircraft (nose)
+        # fraction of the cabin length taken by each class
         for cabin in fuselage.cabins:
             for cabin_class in cabin.classes:
                 cabin_class.percentage = cabin_class.length/cabin.length
@@ -137,9 +141,12 @@ def compute_lopa_properties(fuselage, LOPA):
     
     return
 
-def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_cabin_offset,cabin_number_of_seats,cabin_length):
-    s_y_coord, cabin_class_origin = get_seat_y_coords(cabin, cabin_class,cabin_class_origin)
-    s_x_coord,object_type, cabin_class_origin,cabin_length = get_seat_x_coords(cabin, cabin_class,cabin_class_origin,cabin_length)
+def create_class_seating_map_layout(cabin, cabin_class, cabin_class_origin, cabin_length):
+    '''
+    Seats, galleys and exits of one cabin class in the cabin frame (x from the cabin front, y about the class centerline)
+    '''
+    s_y_coord, cabin_class_origin = get_seat_y_coords(cabin, cabin_class, cabin_class_origin)
+    s_x_coord, object_type, cabin_class_origin, cabin_length = get_seat_x_coords(cabin, cabin_class, cabin_class_origin, cabin_length)
     # concatenate arrays
     length   =  cabin_class.seat_length * np.ones_like(s_x_coord)
     length[object_type[:,2] == 1] = cabin.galley_lavatory_length
@@ -164,14 +171,18 @@ def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_c
         E_c  =  np.ones_like(Z_coords)
     # [n_rows , n_seats_y, x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, [seat, emergency-row flag, galley/lav flag, type-A exit flag]]
     seat_data = np.hstack((n_rows , n_seats_y, X_coords,Y_coords, Z_coords, length ,width,F_c,B_c,E_c,object_vec))
-    if type(cabin) == RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin:
-        seat_data[:, 3] += cabin.width / 2
-        seat_data  = update_seat_map_layout_using_cabin_taper(seat_data,cabin)
-        seat_data[:, 3] += side_cabin_offset  +  cabin_class.y_offset_distance
-        # make copy about center
-        seat_data_        = deepcopy(seat_data)
-        seat_data_[:, 3] *= -1
-        seat_data         = np.vstack((seat_data,seat_data_))
-    cabin_class.number_of_seats = int(np.sum(seat_data[:,10]))
-    cabin_number_of_seats       += int(cabin_class.number_of_seats)
-    return seat_data ,cabin_class_origin,cabin_number_of_seats,cabin_length
+    return seat_data, cabin_class_origin, cabin_length
+
+def place_side_cabin_class(seat_data, cabin, cabin_class, side_cabin_offset, cabin_length):
+    '''
+    Tapers one side-cabin class, moves it outboard of the main cabin and mirrors it to port
+    '''
+    class_width       = cabin_class.cabin_class_width
+    seat_data         = deepcopy(seat_data)
+    seat_data[:, 3]  += class_width / 2   # y measured from the inboard edge of the side cabin
+    seat_data         = update_seat_map_layout_using_cabin_taper(seat_data, cabin, class_width, cabin_length)
+    seat_data[:, 3]  += side_cabin_offset + cabin_class.y_offset_distance
+    # make copy about center
+    seat_data_        = deepcopy(seat_data)
+    seat_data_[:, 3] *= -1
+    return np.vstack((seat_data, seat_data_))
