@@ -21,7 +21,8 @@ def compute_layout_of_passenger_accommodations(fuselage):
     '''
     
     # lopa of entire vehicle 
-    LOPA = np.empty(( 0, 14))
+    LOPA          = np.empty(( 0, 14))
+    vehicle_exits = []
     
     if len(fuselage.cabins) > 0: 
         # instantiate dimension of LOPA container 
@@ -33,11 +34,13 @@ def compute_layout_of_passenger_accommodations(fuselage):
             # lay out every class in the cabin frame first, so the cabin length is known before a side cabin is tapered
             class_data         = []
             class_offsets      = []
+            exit_stations      = []
             cabin_class_origin = [0, 0, 0]
             total_cabin_length = 0
             for cabin_class in cabin.classes:
-                seat_data, cabin_class_origin, total_cabin_length = create_class_seating_map_layout(cabin, cabin_class, cabin_class_origin, total_cabin_length)
+                seat_data, class_exits, cabin_class_origin, total_cabin_length = create_class_seating_map_layout(cabin, cabin_class, cabin_class_origin, total_cabin_length)
                 class_data.append(seat_data)
+                exit_stations += class_exits
 
                 # lateral offset of a side-cabin class, updated after every class
                 class_offsets.append(side_cabin_offset)
@@ -64,9 +67,23 @@ def compute_layout_of_passenger_accommodations(fuselage):
             # append to entire vehicle LOPA data structure
             LOPA = np.vstack((LOPA, cabin_LOPA))
 
+            # exit pairs of the cabin at their stations in the aircraft frame
+            cabin_exits = []
+            for cabin_exit, x in exit_stations:
+                station                  = Data()
+                station.tag              = cabin_exit.tag
+                station.exit_type        = type(cabin_exit).__name__
+                station.passenger_rating = cabin_exit.passenger_rating
+                station.floor_level      = cabin_exit.floor_level
+                station.cabin            = cabin.tag
+                station.x                = x + cabin.origin[0][0]
+                cabin_exits.append(station)
+            vehicle_exits += cabin_exits
+
             # store cabin LOPA onto cabin data structure
             cabin.layout_of_passenger_accommodations                     = Data()
             cabin.layout_of_passenger_accommodations.object_coordinates  = cabin_LOPA
+            cabin.layout_of_passenger_accommodations.exits               = cabin_exits
 
             # store cabin properties
             cabin.length          = total_cabin_length
@@ -82,6 +99,7 @@ def compute_layout_of_passenger_accommodations(fuselage):
         fuselage.layout_of_passenger_accommodations                     = Data()
         fuselage.layout_of_passenger_accommodations.object_coordinates  = LOPA
         fuselage.layout_of_passenger_accommodations.origin              = [[0, 0, 0]]
+        fuselage.layout_of_passenger_accommodations.exits               = vehicle_exits
         compute_lopa_properties(fuselage, LOPA)    
         
     return 
@@ -150,7 +168,7 @@ def create_class_seating_map_layout(cabin, cabin_class, cabin_class_origin, cabi
     # concatenate arrays
     length   =  cabin_class.seat_length * np.ones_like(s_x_coord)
     length[object_type[:,2] == 1] = cabin.galley_lavatory_length
-    length[object_type[:,3] == 1] = cabin.type_A_door_length
+    length[object_type[:,3] == 1] = cabin.floor_level_exit_length
     X_coords   = np.atleast_2d((np.tile(s_x_coord[:,None], (1, len(s_y_coord)))).flatten()).T
     Y_coords   = np.atleast_2d((np.tile(s_y_coord[None,:], (len(s_x_coord), 1))).flatten()).T
     Z_coords   = np.atleast_2d((np.zeros_like(Y_coords)).flatten()).T
@@ -171,7 +189,8 @@ def create_class_seating_map_layout(cabin, cabin_class, cabin_class_origin, cabi
         E_c  =  np.ones_like(Z_coords)
     # [n_rows , n_seats_y, x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, [seat, emergency-row flag, galley/lav flag, type-A exit flag]]
     seat_data = np.hstack((n_rows , n_seats_y, X_coords,Y_coords, Z_coords, length ,width,F_c,B_c,E_c,object_vec))
-    return seat_data, cabin_class_origin, cabin_length
+    exit_stations = get_exit_stations(cabin_class, s_x_coord, object_type)
+    return seat_data, exit_stations, cabin_class_origin, cabin_length
 
 def place_side_cabin_class(seat_data, cabin, cabin_class, side_cabin_offset, cabin_length):
     '''

@@ -53,6 +53,7 @@ modules = [
     'Verification/geometry/fuselage_planform_compute.py',
     'Verification/geometry/populate_control_sections_test.py',
     'Verification/geometry/test_lopa_cabin_taper.py',
+    'Verification/geometry/test_cabin_exits.py',
     'Verification/future_capability_coverage/coverage_test.py', 
     'Verification/network_vtol/vtol_aircraft_test.py',     
     'Verification/network_electric/battery_electric_aircraft_test.py',
