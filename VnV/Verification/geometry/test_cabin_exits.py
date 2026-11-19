@@ -30,6 +30,7 @@ def main():
     check_exit_stations()
     check_exit_rows_in_layout()
     check_passenger_rating()
+    check_shared_station_counts_once()
     return
 
 
@@ -60,13 +61,32 @@ def check_passenger_rating():
     return
 
 
+def check_shared_station_counts_once():
+    """A main and a side cabin with exits at the same stations share each cross-aisle: the rating counts once."""
+    fuselage = layout(side_cabin=True)
+    assert len(fuselage.layout_of_passenger_accommodations.exits) == 4
+    assert compute_exit_passenger_rating(fuselage) == RATING
+    return
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  HELPERS
 # ----------------------------------------------------------------------------------------------------------------------
-def layout():
-    """Fuselage with one economy class, a Type III pair at mid cabin and a Type C pair at the rear."""
+def layout(side_cabin=False):
+    """Fuselage with one economy class, a Type III pair at mid cabin and a Type C pair at the rear; optionally a side
+    cabin with the same class and exits."""
     fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
-    cabin    = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabins   = [RCAIDE.Library.Components.Fuselages.Cabins.Cabin()]
+    if side_cabin:
+        cabins.append(RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin())
+    for cabin in cabins:
+        fuselage.append_cabin(cabin_with_exits(cabin))
+    compute_layout_of_passenger_accommodations(fuselage)
+    return fuselage
+
+
+def cabin_with_exits(cabin):
+    """One economy class of 10 rows, 6 abreast, with a Type III pair at mid cabin and a Type C pair at the rear."""
     economy  = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy()
     economy.number_of_seats_abrest = 6
     economy.number_of_rows         = 10
@@ -82,9 +102,7 @@ def layout():
     economy.append_exit(overwing)
 
     cabin.append_cabin_class(economy)
-    fuselage.append_cabin(cabin)
-    compute_layout_of_passenger_accommodations(fuselage)
-    return fuselage
+    return cabin
 
 
 if __name__ == '__main__':
