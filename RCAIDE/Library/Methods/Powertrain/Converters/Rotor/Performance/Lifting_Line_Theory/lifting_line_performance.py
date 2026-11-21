@@ -104,7 +104,13 @@ def build_rotor_wake_inputs(rotor, conditions, wing_vortex_distribution=None):
         wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # paramter to delay the growth rate till certain wake age 
         wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from               
         wake_inputs.tol                          = 1e-4
-        wake_inputs.relax_0_Gammab                = 0.1
+        # Anderson-mixing damping factor (toy comparison, 2026-11-21: plain damped relaxation at
+        # 0.1 needed 2469-3000+ iterations on a representative stiff case vs. 40-178 for Aitken/
+        # Anderson and 3-4 for Newton; Anderson depth=5 was the best risk/payoff tradeoff -- see
+        # evaluate_bound_vortex_circulation.py's inner Gamma_b loop). 1.0 is a full, undamped
+        # Anderson step; this knob is no longer a plain-relaxation factor.
+        wake_inputs.relax_0_Gammab                = 1.0
+        wake_inputs.anderson_depth                = 5
         wake_inputs.relax_0_CT                    = 0.2
         wake_inputs.max_iter_Gammab_0            = 1000
         wake_inputs.max_iter_CT_0                = 100
@@ -114,11 +120,18 @@ def build_rotor_wake_inputs(rotor, conditions, wing_vortex_distribution=None):
     else:
         wake_inputs = rotor.wake_inputs
 
-    # Always start CT from the known-good initial guess rather than carrying over the previous
+    # Always start CT from a flight-condition-aware seed rather than carrying over the previous
     # call's converged value -- simpler and safer than trying to judge whether a carried-over
     # value is still trustworthy (no risk of a diverged/extreme trial point's CT contaminating
-    # the next call, and no shape mismatch across calls with different ctrl_pts).
-    wake_inputs.thrust_coeff_initial_guess = 0.00654
+    # the next call, and no shape mismatch across calls with different ctrl_pts). This replaces
+    # the old fixed 0.00654 (hover-tuned) default with a disk-loading estimate from the rotor's
+    # own cruise design thrust (actuator-disk momentum theory's CT definition, T/(rho*A*
+    # (Omega*R)^2)), evaluated at THIS call's actual density/omega -- climb_1's first, cold-start
+    # evaluation had to walk CT from 0.00654 across 6 outer CT-relaxation iterations, re-solving
+    # the expensive Gamma_b inner loop at a new wake shape each step (453 total Gamma_b
+    # iterations measured, 2026-11-20) -- a seed closer to the true CT cuts that walk down.
+    A = np.pi * R**2
+    wake_inputs.thrust_coeff_initial_guess = rotor.cruise.design_thrust / (conditions.freestream.density * A * (omega * R)**2)
 
     # Populate remaining wake_inputs fields from conditions
     wake_inputs.V_thrust      = V_thrust

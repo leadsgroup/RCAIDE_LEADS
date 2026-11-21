@@ -786,20 +786,9 @@ def configs_setup(vehicle):
     vector_angle                                      = 75.0  * Units.degrees
     config.tag                                        = 'transition_setting_2'
     for network in  config.networks:
-        # Force BEMT here too (2026-11-09) -- see 'cruise' config's rationale above. This
-        # config is used by departure_transition_2 (root_finder, cheap either way) AND
-        # Departure_Pattern_Curve/Approach_Pattern_Curve (optimize-type, 3 free controls x 16
-        # ctrl pts) -- confirmed directly: Departure_Pattern_Curve under LL coupling ran 3.45+
-        # hours with zero progress (same multi-day trajectory as climb_1 before its fix). 90kts
-        # in a banked turn is fast enough that wake-wake interaction is still likely weak, same
-        # reasoning as the straight-flight cruise-family configs.
-        network.wing_on_rotor_coupling  = False
-        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.5
-            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
-                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
 
     # ------------------------------------------------------------------
@@ -822,19 +811,9 @@ def configs_setup(vehicle):
     vector_angle                                      = 70.0  * Units.degrees
     config.tag                                        = 'low_speed_transition'
     for network in  config.networks:
-        # Force BEMT here too (2026-11-09) -- see 'cruise'/'transition_setting_2' configs
-        # above. Used by arriving_transition_1 (90kts->35mph) and arriving_transition_2
-        # (35mph->10kts), both optimize-type with 3 free controls. NOTE: arriving_transition_2
-        # ends at 10kts, noticeably slower/closer to hover than anything else scoped to BEMT so
-        # far -- this is the least-confident of these overrides; revisit if arriving_transition_2
-        # results look physically off.
-        network.wing_on_rotor_coupling  = False
-        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.3
-            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
-                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
     
 
@@ -888,29 +867,9 @@ def configs_setup(vehicle):
     config.tag                                        = 'cruise'
     vector_angle                                      = 0.0 * Units.degrees
     for network in  config.networks:
-        # Also clear the coupling flags, not just fidelity -- these were copied from the
-        # global toggle's vehicle-level settings. Leaving rotor_on_rotor_coupling/
-        # wing_on_rotor_coupling=True here would still route BEMT rotors through
-        # compute_rotor_to_rotor_interaction() with wing downwash added to their inflow --
-        # a real, different physics model from a clean standalone BEMT run, not just a
-        # fidelity relabeling (confirmed: this exact case ~doubled climb_1's SOC draw vs. the
-        # standalone BEMT reference before this fix).
-        network.wing_on_rotor_coupling  = False
-        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command   = propulsor.rotor.cruise.design_blade_pitch_command
-            # Force BEMT on this config regardless of the global LL-coupled fidelity toggle
-            # (2026-11-09): climb_1/climb_2/cruise/descent_1-3 all use this config, at full
-            # forward flight (0deg tilt, 90kts-170mph+) -- high advance ratio, wake swept
-            # downstream fast, rotors effectively isolated from each other. That's exactly
-            # where rotor-rotor/wing-rotor LL coupling matters least AND where its O(n_rot^2)
-            # Biot-Savart + free-wake cost is least justified (~800s/eval measured, vs BEMT's
-            # ~2.8s/eval for the same segment). LL coupled stays on vertical_flight/
-            # transition_setting_*/low_speed_transition configs, where hover/low-speed wake
-            # interaction is real.
-            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
-                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
 
     # ------------------------------------------------------------------
@@ -929,14 +888,9 @@ def configs_setup(vehicle):
     config.tag                                        = 'descent_cruise'
     vector_angle                                      = 0.0 * Units.degrees
     for network in  config.networks:
-        network.wing_on_rotor_coupling  = False   # see 'cruise' config above
-        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.9
-            # Force BEMT here too -- see 'cruise' config above for the full rationale.
-            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
-                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
 
     # ------------------------------------------------------------------
@@ -950,14 +904,9 @@ def configs_setup(vehicle):
     config.tag                                        = 'descent_cruise_slow'
     vector_angle                                      = 0.0 * Units.degrees
     for network in  config.networks:
-        network.wing_on_rotor_coupling  = False   # see 'cruise' config above
-        network.rotor_on_rotor_coupling = False
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
             propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.8
-            # Force BEMT here too -- see 'cruise' config above for the full rationale.
-            if propulsor.rotor.fidelity == 'Lifting_Line_Theory':
-                propulsor.rotor.fidelity = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     configs.append(config)
 
 
