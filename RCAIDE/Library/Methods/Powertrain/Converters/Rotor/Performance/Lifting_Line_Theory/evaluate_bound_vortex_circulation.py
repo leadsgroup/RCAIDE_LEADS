@@ -15,6 +15,15 @@ from RCAIDE.Framework.Core                           import Data
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import compute_airfoil_aerodynamics
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, contract_influence_tensor, initialize_wake_geometry, free_wake
 
+# One module-level ThreadPoolExecutor, created on first use and reused across every
+# evaluate_bound_vortex_circulation() call for the rest of the process -- same rationale as
+# free_wake.py's module-level pool (this function used to create and shutdown() a fresh pool
+# on every call, paying thread-creation/teardown cost on top of the actual K_bound/K_wake
+# dispatch every single time). Both callers (lifting_line_performance.py,
+# compute_rotor_to_rotor_interaction.py) invoke this function single-threaded, never
+# concurrently with itself, so one shared pool is safe with no locking.
+_executor = ThreadPoolExecutor()
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_lifting_line_inflow_and_tip_loss
 # ----------------------------------------------------------------------------------------------------------------------
@@ -209,7 +218,6 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     #  change); this is the loop that made LL-coupled runs blow up relative to uncoupled
     #  (n_rot^2 scaling -- 36x more _influence calls for 6 rotors than for 1).
     # ------------------------------------------------------------------------------------------------------------------
-    _executor = ThreadPoolExecutor()
     pairs   = [(i, j) for i in range(n_rot) for j in range(n_rot)]
     K_bound_flat = list(_executor.map(
         lambda p: _influence(S[p[0]].P_colloc, S[p[1]].A_bound, S[p[1]].B_bound, S[p[1]].rCb_flat, S[p[1]].vc_correction),
@@ -225,204 +233,201 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     anderson_depth   = int(wake_inputs_list[0].get('anderson_depth', 5))
     anderson_damping = float(np.asarray(wake_inputs_list[0].relax_0_Gammab).reshape(-1)[0])
 
-    try:
-      for it in range(n_outer):
+    for it in range(n_outer):
 
-        # -- K_wake[i][j]: wake of rotor j acting on rotor i. Rebuilt each outer iteration (wake
-        #    geometry changes with CT); in simple mode there is a single outer pass so it's built once --
-        K_wake = [[None]*n_rot for _ in range(n_rot)]
-        wake_jobs = []
-        for j, sj in enumerate(S):
-            if not sj.include_wake:
-                continue
-            A_wake, B_wake, rCvf_flat = _wake_filaments(sj)
-            for i, si in enumerate(S):
-                wake_jobs.append((i, j, si.P_colloc, A_wake, B_wake, rCvf_flat, sj.vc_correction))
+      # -- K_wake[i][j]: wake of rotor j acting on rotor i. Rebuilt each outer iteration (wake
+      #    geometry changes with CT); in simple mode there is a single outer pass so it's built once --
+      K_wake = [[None]*n_rot for _ in range(n_rot)]
+      wake_jobs = []
+      for j, sj in enumerate(S):
+          if not sj.include_wake:
+              continue
+          A_wake, B_wake, rCvf_flat = _wake_filaments(sj)
+          for i, si in enumerate(S):
+              wake_jobs.append((i, j, si.P_colloc, A_wake, B_wake, rCvf_flat, sj.vc_correction))
 
-        def _build_wake_K(job):
-            i, j, P, A, B, rc, vc = job
-            return i, j, _influence(P, A, B, rc, vc)
+      def _build_wake_K(job):
+          i, j, P, A, B, rc, vc = job
+          return i, j, _influence(P, A, B, rc, vc)
 
-        for i, j, K in _executor.map(_build_wake_K, wake_jobs):
-            K_wake[i][j] = K
+      for i, j, K in _executor.map(_build_wake_K, wake_jobs):
+          K_wake[i][j] = K
 
-        # -- Inner Gamma_b loop, all rotors together --
-        # Anderson mixing is done per control point: control points are independent problems
-        # (no physical coupling between them, only a shared batch axis), while rotors AT THE SAME
-        # control point are genuinely coupled via Biot-Savart -- so each control point's history
-        # concatenates every rotor that still considers it valid at this outer iteration.
-        active_rotors_by_cp = [[i for i, s in enumerate(S) if s.valid_cp[cp]] for cp in range(ctrl_pts)]
-        cp_history = [{'x': [], 'g': []} for _ in range(ctrl_pts)]
+      # -- Inner Gamma_b loop, all rotors together --
+      # Anderson mixing is done per control point: control points are independent problems
+      # (no physical coupling between them, only a shared batch axis), while rotors AT THE SAME
+      # control point are genuinely coupled via Biot-Savart -- so each control point's history
+      # concatenates every rotor that still considers it valid at this outer iteration.
+      active_rotors_by_cp = [[i for i, s in enumerate(S) if s.valid_cp[cp]] for cp in range(ctrl_pts)]
+      cp_history = [{'x': [], 'g': []} for _ in range(ctrl_pts)]
 
-        conv1    = False
-        diverged = False
-        stalled  = False
-        # Stall detection: some control points (a specific blade/radial station operating near a
-        # local Ut/induced-velocity cancellation) never reach tol -- their residual plateaus,
-        # bouncing in a bounded band instead of diverging or converging, which otherwise burns
-        # every remaining inner iteration up to max_inner for no further progress (confirmed via
-        # scratchpad/diag_cp4_stations_multiCT.log, 2026-11-23: residual bounces in [0.002, 0.03]
-        # for 150+ iterations after the real convergence has already happened). Exiting once no
-        # NEW best (overall max-across-rotors) residual has been found for STALL_PATIENCE
-        # iterations avoids this waste without touching the physics/Anderson-mixing math at all --
-        # purely a stopping-criterion change, inert for any cp/rotor that actually converges
-        # (those always hit the tol check below first).
-        STALL_MIN_IT   = 30
-        STALL_PATIENCE = 30
-        best_residual  = float('inf')
-        best_it        = -1
-        for it1 in range(max_inner):
+      conv1    = False
+      diverged = False
+      stalled  = False
+      # Stall detection: some control points (a specific blade/radial station operating near a
+      # local Ut/induced-velocity cancellation) never reach tol -- their residual plateaus,
+      # bouncing in a bounded band instead of diverging or converging, which otherwise burns
+      # every remaining inner iteration up to max_inner for no further progress (confirmed via
+      # scratchpad/diag_cp4_stations_multiCT.log, 2026-11-23: residual bounces in [0.002, 0.03]
+      # for 150+ iterations after the real convergence has already happened). Exiting once no
+      # NEW best (overall max-across-rotors) residual has been found for STALL_PATIENCE
+      # iterations avoids this waste without touching the physics/Anderson-mixing math at all --
+      # purely a stopping-criterion change, inert for any cp/rotor that actually converges
+      # (those always hit the tol check below first).
+      STALL_MIN_IT   = 30
+      STALL_PATIENCE = 30
+      best_residual  = float('inf')
+      best_it        = -1
+      for it1 in range(max_inner):
 
-            # Source strengths from the current Gamma_b of every rotor
-            Gamma_bound_flat = [s.Gamma_b.reshape(s.ctrl_pts, (s.Nr-1)*s.B) for s in S]
-            Gamma_wake_flat  = [None]*n_rot
-            for j, sj in enumerate(S):
-                if sj.include_wake:
-                    # Use max Gamma_b instead of shed station value (same simplification as the
-                    # single-rotor path)
-                    Gamma_wake         = np.max(sj.Gamma_b, axis=1, keepdims=True) * np.ones((sj.ctrl_pts, sj.N_wake, sj.B))
-                    Gamma_wake_flat[j] = Gamma_wake.reshape(sj.ctrl_pts, sj.N_wake*sj.B)
+          # Source strengths from the current Gamma_b of every rotor
+          Gamma_bound_flat = [s.Gamma_b.reshape(s.ctrl_pts, (s.Nr-1)*s.B) for s in S]
+          Gamma_wake_flat  = [None]*n_rot
+          for j, sj in enumerate(S):
+              if sj.include_wake:
+                  # Use max Gamma_b instead of shed station value (same simplification as the
+                  # single-rotor path)
+                  Gamma_wake         = np.max(sj.Gamma_b, axis=1, keepdims=True) * np.ones((sj.ctrl_pts, sj.N_wake, sj.B))
+                  Gamma_wake_flat[j] = Gamma_wake.reshape(sj.ctrl_pts, sj.N_wake*sj.B)
 
-            # Bound + wake induction from every rotor, at every rotor
-            v_by = [[None]*n_rot for _ in range(n_rot)]
-            for i, si in enumerate(S):
-                for j, sj in enumerate(S):
-                    # K_bound/K_wake are built once (K_bound for the whole call, K_wake per
-                    # outer CT iteration) and re-contracted with a NEW Gamma on every single
-                    # Gamma_b inner iteration (up to max_inner times) -- contract_influence_tensor
-                    # is a bit-identical, Numba-accelerated replacement for this exact
-                    # np.einsum('cmnk,cn->cmk', ...) pattern, ~16x faster at realistic sizes
-                    # (verified in scratchpad/verify_numba_einsum_contraction.py, 2026-10-29).
-                    v_ij = contract_influence_tensor(K_bound[i][j], Gamma_bound_flat[j])
-                    if sj.include_wake:
-                        v_ij = v_ij + contract_influence_tensor(K_wake[i][j], Gamma_wake_flat[j])
-                    v_by[i][j] = sj.sigma * v_ij.reshape(si.ctrl_pts, si.Nr-1, si.B, 3)
+          # Bound + wake induction from every rotor, at every rotor
+          v_by = [[None]*n_rot for _ in range(n_rot)]
+          for i, si in enumerate(S):
+              for j, sj in enumerate(S):
+                  # K_bound/K_wake are built once (K_bound for the whole call, K_wake per
+                  # outer CT iteration) and re-contracted with a NEW Gamma on every single
+                  # Gamma_b inner iteration (up to max_inner times) -- contract_influence_tensor
+                  # is a bit-identical, Numba-accelerated replacement for this exact
+                  # np.einsum('cmnk,cn->cmk', ...) pattern, ~16x faster at realistic sizes
+                  # (verified in scratchpad/verify_numba_einsum_contraction.py, 2026-10-29).
+                  v_ij = contract_influence_tensor(K_bound[i][j], Gamma_bound_flat[j])
+                  if sj.include_wake:
+                      v_ij = v_ij + contract_influence_tensor(K_wake[i][j], Gamma_wake_flat[j])
+                  v_by[i][j] = sj.sigma * v_ij.reshape(si.ctrl_pts, si.Nr-1, si.B, 3)
 
-            bad = False
-            for i, si in enumerate(S):
-                v_eff_body = sum(v_by[i])
-                _blade_aero(si, v_eff_body, T)
+          bad = False
+          for i, si in enumerate(S):
+              v_eff_body = sum(v_by[i])
+              _blade_aero(si, v_eff_body, T)
 
-                bad_cp = si.valid_cp & ~np.all(np.isfinite(si.Gamma_b_new) & (np.abs(si.Gamma_b_new) < 1e4), axis=(1, 2))
-                if np.any(bad_cp):
-                    print(f"{si.tag}: Gamma_b diverged at control point(s) {np.where(bad_cp)[0].tolist()} "
-                          f"at inner iteration {it1+1}. Stopping.")
-                    bad = True
-                    break
+              bad_cp = si.valid_cp & ~np.all(np.isfinite(si.Gamma_b_new) & (np.abs(si.Gamma_b_new) < 1e4), axis=(1, 2))
+              if np.any(bad_cp):
+                  print(f"{si.tag}: Gamma_b diverged at control point(s) {np.where(bad_cp)[0].tolist()} "
+                        f"at inner iteration {it1+1}. Stopping.")
+                  bad = True
+                  break
 
-                residual_Gamma_b    = np.max(np.abs(si.Gamma_b_new - si.Gamma_b)[si.valid_cp]) if np.any(si.valid_cp) else 0.0
-                si.residual_Gamma_b = residual_Gamma_b
-                si.v_by             = v_by[i]
+              residual_Gamma_b    = np.max(np.abs(si.Gamma_b_new - si.Gamma_b)[si.valid_cp]) if np.any(si.valid_cp) else 0.0
+              si.residual_Gamma_b = residual_Gamma_b
+              si.v_by             = v_by[i]
 
-            if bad:
-                diverged = True
-                break
+          if bad:
+              diverged = True
+              break
 
-            # -- Anderson-mixed update, per control point (rotors at the same control point are
-            #    coupled via Biot-Savart and mixed together; different control points are
-            #    independent problems, so each gets its own history) --
-            for cp in range(ctrl_pts):
-                active = active_rotors_by_cp[cp]
-                if not active:
-                    continue
-                x_cp  = np.concatenate([S[i].Gamma_b[cp].ravel()                         for i in active])
-                g_cp  = np.concatenate([(S[i].Gamma_b_new[cp] - S[i].Gamma_b[cp]).ravel() for i in active])
-                x_new = _anderson_mix(x_cp, g_cp, cp_history[cp], anderson_depth, anderson_damping)
-                offset = 0
-                for i in active:
-                    si   = S[i]
-                    size = (si.Nr - 1) * si.B
-                    si.Gamma_b[cp] = x_new[offset:offset + size].reshape(si.Nr - 1, si.B)
-                    offset += size
+          # -- Anderson-mixed update, per control point (rotors at the same control point are
+          #    coupled via Biot-Savart and mixed together; different control points are
+          #    independent problems, so each gets its own history) --
+          for cp in range(ctrl_pts):
+              active = active_rotors_by_cp[cp]
+              if not active:
+                  continue
+              x_cp  = np.concatenate([S[i].Gamma_b[cp].ravel()                         for i in active])
+              g_cp  = np.concatenate([(S[i].Gamma_b_new[cp] - S[i].Gamma_b[cp]).ravel() for i in active])
+              x_new = _anderson_mix(x_cp, g_cp, cp_history[cp], anderson_depth, anderson_damping)
+              offset = 0
+              for i in active:
+                  si   = S[i]
+                  size = (si.Nr - 1) * si.B
+                  si.Gamma_b[cp] = x_new[offset:offset + size].reshape(si.Nr - 1, si.B)
+                  offset += size
 
-            if all(s.residual_Gamma_b < s.tol for s in S):
-                conv1 = True
-                break
+          if all(s.residual_Gamma_b < s.tol for s in S):
+              conv1 = True
+              break
 
-            overall_residual = max(s.residual_Gamma_b for s in S)
-            if overall_residual < best_residual * 0.9:
-                best_residual = overall_residual
-                best_it       = it1
-            elif it1 >= STALL_MIN_IT and it1 - best_it >= STALL_PATIENCE:
-                stalled = True
-                break
+          overall_residual = max(s.residual_Gamma_b for s in S)
+          if overall_residual < best_residual * 0.9:
+              best_residual = overall_residual
+              best_it       = it1
+          elif it1 >= STALL_MIN_IT and it1 - best_it >= STALL_PATIENCE:
+              stalled = True
+              break
 
-        if diverged:
-            break   # stop the outer CT loop too -- no point continuing once it has blown up
+      if diverged:
+          break   # stop the outer CT loop too -- no point continuing once it has blown up
 
-        if conv1:
-            for s in S:
-                print(f"{s.tag}: Gamma_b converged in {it1+1} iteration(s), residual = {s.residual_Gamma_b:.3e}")
-        else:
-            for s in S:
-                if stalled:
-                    print(f"{s.tag}: Gamma_b stalled (no improvement in {STALL_PATIENCE} iterations) after "
-                          f"{it1+1} iteration(s). Residual =", s.residual_Gamma_b)
-                else:
-                    print(f"{s.tag}: Gamma_b did NOT converge after {max_inner} iteration(s). Residual =", s.residual_Gamma_b)
+      if conv1:
+          for s in S:
+              print(f"{s.tag}: Gamma_b converged in {it1+1} iteration(s), residual = {s.residual_Gamma_b:.3e}")
+      else:
+          for s in S:
+              if stalled:
+                  print(f"{s.tag}: Gamma_b stalled (no improvement in {STALL_PATIENCE} iterations) after "
+                        f"{it1+1} iteration(s). Residual =", s.residual_Gamma_b)
+              else:
+                  print(f"{s.tag}: Gamma_b did NOT converge after {max_inner} iteration(s). Residual =", s.residual_Gamma_b)
 
-        # -- CT check (CT_iter mode only) --
-        if CT_iter:
-            all_conv = True
-            for s in S:
-                if not s.CT_iter:
-                    continue
-                epsilon                     = s.Cd / (s.Cl + 1e-300)
-                epsilon[np.abs(s.Cl) <= 1e-6] = 10.0 * np.sign(s.Cl[np.abs(s.Cl) <= 1e-6])
+      # -- CT check (CT_iter mode only) --
+      if CT_iter:
+          all_conv = True
+          for s in S:
+              if not s.CT_iter:
+                  continue
+              epsilon                     = s.Cd / (s.Cl + 1e-300)
+              epsilon[np.abs(s.Cl) <= 1e-6] = 10.0 * np.sign(s.Cl[np.abs(s.Cl) <= 1e-6])
 
-                blade_T_distribution = s.rho[:, :, None] * (s.Gamma_b_new*(s.Wt - epsilon*s.Wa)) * s.deltar_3d
-                thrust                = np.sum(blade_T_distribution, axis=(1, 2))[:, None]   # (ctrl_pts, 1)
-                s.Ct_rotor_new        = thrust / (s.rho_0 * s.A * s.omegar_sq)
+              blade_T_distribution = s.rho[:, :, None] * (s.Gamma_b_new*(s.Wt - epsilon*s.Wa)) * s.deltar_3d
+              thrust                = np.sum(blade_T_distribution, axis=(1, 2))[:, None]   # (ctrl_pts, 1)
+              s.Ct_rotor_new        = thrust / (s.rho_0 * s.A * s.omegar_sq)
 
-                bad_cp_ct = s.valid_cp & ~np.isfinite(s.Ct_rotor_new[:, 0])
-                if np.any(bad_cp_ct):
-                    print(f"{s.tag}: CT diverged to NaN at control point(s) {np.where(bad_cp_ct)[0].tolist()} "
-                          f"at outer iteration {it+1}. Stopping.")
-                    all_conv = False
-                    continue
+              bad_cp_ct = s.valid_cp & ~np.isfinite(s.Ct_rotor_new[:, 0])
+              if np.any(bad_cp_ct):
+                  print(f"{s.tag}: CT diverged to NaN at control point(s) {np.where(bad_cp_ct)[0].tolist()} "
+                        f"at outer iteration {it+1}. Stopping.")
+                  all_conv = False
+                  continue
 
-                s.residual_CT = np.max(np.abs(s.Ct_rotor_new - s.wake_inputs.thrust_coeff_initial_guess)[s.valid_cp]) if np.any(s.valid_cp) else 0.0
-                all_conv &= s.residual_CT < s.tol_CT
+              s.residual_CT = np.max(np.abs(s.Ct_rotor_new - s.wake_inputs.thrust_coeff_initial_guess)[s.valid_cp]) if np.any(s.valid_cp) else 0.0
+              all_conv &= s.residual_CT < s.tol_CT
 
-            if all_conv:
-                conv = True
-                for s in S:
-                    if s.CT_iter:
-                        print(f"{s.tag}: CT converged in {it+1} outer iteration(s), residual = {s.residual_CT:.3e}")
-                break
+          if all_conv:
+              conv = True
+              for s in S:
+                  if s.CT_iter:
+                      print(f"{s.tag}: CT converged in {it+1} outer iteration(s), residual = {s.residual_CT:.3e}")
+              break
 
-            for s in S:
-                if s.CT_iter and np.any(s.valid_cp):
-                    old_CT           = np.broadcast_to(np.asarray(s.wake_inputs.thrust_coeff_initial_guess, dtype=float), s.Ct_rotor_new.shape).copy()
-                    new_CT           = old_CT.copy()
-                    new_CT[s.valid_cp] = old_CT[s.valid_cp] + s.relax_CT[s.valid_cp]*(s.Ct_rotor_new[s.valid_cp] - old_CT[s.valid_cp])
-                    s.wake_inputs.thrust_coeff_initial_guess = new_CT
+          for s in S:
+              if s.CT_iter and np.any(s.valid_cp):
+                  old_CT           = np.broadcast_to(np.asarray(s.wake_inputs.thrust_coeff_initial_guess, dtype=float), s.Ct_rotor_new.shape).copy()
+                  new_CT           = old_CT.copy()
+                  new_CT[s.valid_cp] = old_CT[s.valid_cp] + s.relax_CT[s.valid_cp]*(s.Ct_rotor_new[s.valid_cp] - old_CT[s.valid_cp])
+                  s.wake_inputs.thrust_coeff_initial_guess = new_CT
 
-            # Regenerate prescribed wake geometry for every rotor that includes a wake -- the
-            # fallback shape if nothing wants free_wake, and the starting shape free_wake
-            # further relaxes otherwise. bound.gamma is set for every source rotor (not just
-            # the ones being relaxed), since free_wake uses every rotor's current bound
-            # circulation as a fixed source for the others -- see that function's docstring.
-            wake_rotors      = [s.rotor       for s in S if s.include_wake]
-            wake_wake_inputs = [s.wake_inputs for s in S if s.include_wake]
-            for s in S:
-                if s.include_wake:
-                    s.rotor.blades.bound.gamma = s.Gamma_b
-            if wake_rotors:
-                initialize_wake_geometry(wake_rotors, wake_wake_inputs, conditions)
-                # regeneration resets wake.gamma to zero -- restore it, or the next outer
-                # iteration's/free_wake's K_wake rebuild would see these wakes with no strength
-                for s in S:
-                    if s.include_wake:
-                        Gamma_wake = np.max(s.Gamma_b, axis=1, keepdims=True)   # (ctrl_pts, 1, B)
-                        s.rotor.blades.wake.gamma = Gamma_wake * np.ones((s.ctrl_pts, s.N_wake, s.B))
+          # Regenerate prescribed wake geometry for every rotor that includes a wake -- the
+          # fallback shape if nothing wants free_wake, and the starting shape free_wake
+          # further relaxes otherwise. bound.gamma is set for every source rotor (not just
+          # the ones being relaxed), since free_wake uses every rotor's current bound
+          # circulation as a fixed source for the others -- see that function's docstring.
+          wake_rotors      = [s.rotor       for s in S if s.include_wake]
+          wake_wake_inputs = [s.wake_inputs for s in S if s.include_wake]
+          for s in S:
+              if s.include_wake:
+                  s.rotor.blades.bound.gamma = s.Gamma_b
+          if wake_rotors:
+              initialize_wake_geometry(wake_rotors, wake_wake_inputs, conditions)
+              # regeneration resets wake.gamma to zero -- restore it, or the next outer
+              # iteration's/free_wake's K_wake rebuild would see these wakes with no strength
+              for s in S:
+                  if s.include_wake:
+                      Gamma_wake = np.max(s.Gamma_b, axis=1, keepdims=True)   # (ctrl_pts, 1, B)
+                      s.rotor.blades.wake.gamma = Gamma_wake * np.ones((s.ctrl_pts, s.N_wake, s.B))
 
-                if any(wi.free_wake for wi in wake_wake_inputs):
-                    free_wake(wake_rotors, wake_wake_inputs, conditions)
-        else:
-            conv = True   # simple mode always exits after one outer pass
-    finally:
-        _executor.shutdown()
+              if any(wi.free_wake for wi in wake_wake_inputs):
+                  free_wake(wake_rotors, wake_wake_inputs, conditions)
+      else:
+          conv = True   # simple mode always exits after one outer pass
 
     if not conv and CT_iter:
         for s in S:
