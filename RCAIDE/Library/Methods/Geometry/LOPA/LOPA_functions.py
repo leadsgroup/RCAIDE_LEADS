@@ -123,14 +123,14 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin,cabin_length):
     n_r     = cabin_class.number_of_rows
     s_p     = cabin_class.seat_pitch
     gl_l    = cabin.galley_lavatory_length
-    A_l     = cabin.type_A_door_length
+    A_l     = cabin.floor_level_exit_length
     ex_p    = cabin.emergency_exit_seat_pitch
     gl_loc  = cabin_class.galley_lavatory_percent_x_locations
-    ex_loc  = cabin_class.emergency_exit_percent_x_locations
-    A_loc   = cabin_class.type_A_exit_percent_x_locations
     if not isinstance(gl_loc, (list, np.ndarray)): gl_loc  = []
-    if not isinstance(ex_loc, (list, np.ndarray)): ex_loc  = []
-    if not isinstance(A_loc,  (list, np.ndarray)): A_loc   = []
+
+    # floor-level exits are placed as door rows, the others at emergency-exit seat rows
+    A_loc   = [cabin_exit.percent_x_location for cabin_exit in cabin_class.exits if cabin_exit.floor_level]
+    ex_loc  = [cabin_exit.percent_x_location for cabin_exit in cabin_class.exits if not cabin_exit.floor_level]
     
     # place seats
     s_x_coord = np.arange(0, n_r) * (s_p)
@@ -204,45 +204,46 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin,cabin_length):
     
     return s_x_coord , object_type, cabin_class_origin,cabin_length
 # ----------------------------------------------------------------------------------------------------------------------
+#  get_exit_stations
+# ----------------------------------------------------------------------------------------------------------------------
+def get_exit_stations(cabin_class, s_x_coord, object_type):
+    '''
+    Longitudinal station of every exit pair of a cabin class: floor-level exits at the door rows and the others at the
+    emergency-exit seat rows, matched in order of their percent x location
+    '''
+    stations = []
+    for floor_level, rows in [(True, object_type[:, 3] == 1), (False, object_type[:, 1] == 1)]:
+        exits = sorted([cabin_exit for cabin_exit in cabin_class.exits if cabin_exit.floor_level == floor_level],
+                       key=lambda cabin_exit: cabin_exit.percent_x_location)
+        x_rows = np.sort(s_x_coord[rows])
+        if len(exits) != len(x_rows):
+            raise ValueError(f'{cabin_class.tag}: {len(exits)} exits were placed at {len(x_rows)} rows; give each exit its own location')
+        for cabin_exit, x in zip(exits, x_rows):
+            stations.append((cabin_exit, x))
+    return stations
+
+# ----------------------------------------------------------------------------------------------------------------------
 #  update_seat_map_layout_using_cabin_taper
 # ----------------------------------------------------------------------------------------------------------------------
-def update_seat_map_layout_using_cabin_taper(seat_data,cabin):
-    cabin_width = cabin.width
-    n_fr        = cabin.nose.fineness_ratio
-    nose_length = cabin.width * n_fr
-    t_fr        = cabin.tail.fineness_ratio
-    tail_length = cabin.width * t_fr
-    
-    # remove components that fall outside of tapered nose region
-    theta1 = np.arctan(cabin_width/nose_length)
-    n_idxs =  np.where(nose_length > seat_data[:,2])[0]
-    removed_indexes =  []
-    for n_i in  range(len(n_idxs)):
-        x0    = seat_data[n_i,2] - seat_data[n_i,5]/2
-        x1    = seat_data[n_i,2] + seat_data[n_i,5]/2
-        y0    = seat_data[n_i,3] - seat_data[n_i,6]/2
-        y1    = seat_data[n_i,3] + seat_data[n_i,6]/2
-        x_pts = np.array([x0, x1])
-        y_pts = np.array([y0, y1])
-        y_border = max(x_pts * np.tan(theta1))
-        if np.any( y_pts > y_border):
-            removed_indexes.append(n_idxs[n_i])
-    seat_data = np.delete(seat_data,(removed_indexes), axis=0)
-    
-    # remove components that fall outside of tapered tail region
-    theta2     = np.arctan(cabin_width/tail_length)
-    tail_start = seat_data[-1,2] -  tail_length
-    t_idxs     = np.where(tail_start < seat_data[:,2])[0]
-    removed_indexes =  []
-    for t_i in  range(len(t_idxs)):
-        x0    = seat_data[t_i,2] - seat_data[t_i,5]/2
-        x1    = seat_data[t_i,2] + seat_data[t_i,5]/2
-        y0    = seat_data[t_i,3] - seat_data[t_i,6]/2
-        y1    = seat_data[t_i,3] + seat_data[t_i,6]/2
-        x_pts = np.array([x0, x1])
-        y_pts = np.array([y0, y1])
-        y_border = max(x_pts * np.tan(theta2))
-        if np.any( y_pts > y_border): # or remove_feature == True:
-            removed_indexes.append(t_idxs[t_i])
-    seat_data = np.delete(seat_data,(removed_indexes), axis=0)
-    return seat_data
+def update_seat_map_layout_using_cabin_taper(seat_data, cabin, cabin_width, cabin_length):
+    '''
+    Removes objects outside the nose and tail wedges of a side cabin. Each wedge runs from the inboard edge at the cabin
+    end to the outboard edge one fineness ratio times the cabin width along the cabin.
+    '''
+    x0   = seat_data[:, 2] - seat_data[:, 5] / 2   # object front
+    x1   = seat_data[:, 2] + seat_data[:, 5] / 2   # object back
+    y1   = seat_data[:, 3] + seat_data[:, 6] / 2   # object outboard edge
+    keep = np.ones(len(seat_data), dtype=bool)
+
+    # nose wedge, measured from the cabin front (x = 0)
+    nose_length = cabin_width * cabin.nose.fineness_ratio
+    if nose_length > 0:
+        y_border = np.maximum(x0, x1) * cabin_width / nose_length
+        keep    &= ~((seat_data[:, 2] < nose_length) & (y1 > y_border))
+
+    # tail wedge, measured from the cabin aft end (x = cabin_length)
+    tail_length = cabin_width * cabin.tail.fineness_ratio
+    if tail_length > 0:
+        y_border = np.maximum(cabin_length - x0, cabin_length - x1) * cabin_width / tail_length
+        keep    &= ~((seat_data[:, 2] > cabin_length - tail_length) & (y1 > y_border))
+    return seat_data[keep]

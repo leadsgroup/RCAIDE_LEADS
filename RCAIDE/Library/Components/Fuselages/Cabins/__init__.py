@@ -7,4 +7,5 @@
 
 from .Cabin          import Cabin
 from .Side_Cabin     import Side_Cabin
-from .               import Classes 
+from .               import Classes
+from .               import Exits 

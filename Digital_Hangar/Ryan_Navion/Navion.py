@@ -227,8 +227,6 @@ def vehicle_setup():
     economy_class.number_of_rows                      = 1
     economy_class.aisle_width                         = 0 *  Units.inches         
     economy_class.galley_lavatory_percent_x_locations = []  
-    economy_class.emergency_exit_percent_x_locations  = []      
-    economy_class.type_A_exit_percent_x_locations     = []
     economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
     cabin.append_cabin_class(economy_class)
     fuselage.append_cabin(cabin) 
