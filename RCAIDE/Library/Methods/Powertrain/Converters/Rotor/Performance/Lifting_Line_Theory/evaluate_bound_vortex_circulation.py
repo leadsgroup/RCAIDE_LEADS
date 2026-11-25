@@ -233,6 +233,11 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     anderson_depth   = int(wake_inputs_list[0].get('anderson_depth', 5))
     anderson_damping = float(np.asarray(wake_inputs_list[0].relax_0_Gammab).reshape(-1)[0])
 
+    # valid_cp is fixed once per call (set in _setup_rotor from mu/mu_max, never reassigned), so
+    # which rotors are active at each control point doesn't change across outer CT iterations --
+    # hoisted out of the loop below instead of rebuilt every outer pass.
+    active_rotors_by_cp = [[i for i, s in enumerate(S) if s.valid_cp[cp]] for cp in range(ctrl_pts)]
+
     for it in range(n_outer):
 
       # -- K_wake[i][j]: wake of rotor j acting on rotor i. Rebuilt each outer iteration (wake
@@ -258,7 +263,6 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
       # (no physical coupling between them, only a shared batch axis), while rotors AT THE SAME
       # control point are genuinely coupled via Biot-Savart -- so each control point's history
       # concatenates every rotor that still considers it valid at this outer iteration.
-      active_rotors_by_cp = [[i for i, s in enumerate(S) if s.valid_cp[cp]] for cp in range(ctrl_pts)]
       cp_history = [{'x': [], 'g': []} for _ in range(ctrl_pts)]
 
       conv1    = False
@@ -630,7 +634,15 @@ def _blade_aero(s, v_eff_body, T):
     ctrl_pts, Nr, B, R = s.ctrl_pts, s.Nr, s.B, s.R
     beta, c, r, a_sound, nu = s.beta, s.c, s.r, s.a_sound, s.nu
 
-    v_eff_thrust = np.einsum('cij,crbj->crbi', s.T_body2thrust, v_eff_body)
+    # np.matmul instead of einsum('cij,crbj->crbi', ...) -- same batched (3,3)@(3,n) contraction
+    # as free_wake.py's to_frame() (via T_body2thrust's transpose, since matmul contracts
+    # v_eff_body's last axis against Mt's second-to-last), ~9x faster at this codebase's real
+    # (ctrl_pts, Nr-1, B, 3) shapes -- einsum's generic path doesn't dispatch this small-batched-
+    # matrix shape to BLAS as well as matmul does. Max abs difference ~9e-16 (reassociation-level,
+    # same class already accepted for to_frame's identical pattern). Called every Gamma_b inner
+    # iteration per rotor, same frequency class as the contract_influence_tensor hot path.
+    Mt           = np.transpose(s.T_body2thrust, (0, 2, 1))
+    v_eff_thrust = np.matmul(v_eff_body.reshape(ctrl_pts, -1, 3), Mt).reshape(v_eff_body.shape)
 
     ua_ind = v_eff_thrust[:,:,:,0]
     ut_ind = (v_eff_thrust[:,:,:,1]*s.tang_hat_thrust_y +
