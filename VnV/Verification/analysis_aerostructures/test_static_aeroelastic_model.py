@@ -43,6 +43,7 @@ def main():
     check_coupled_matches_the_coupled_iteration(model)
     check_fuel_enters_by_tank(model)
     check_feedback_vanishes_without_dynamic_pressure(model)
+    check_vertical_wings_are_left_out(model)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -113,10 +114,10 @@ def dynamic_pressure():
 # ----------------------------------------------------------------------------------------------------------------------
 def check_one_way_matches_the_beam_solve(model):
     # without feedback the model is the beam solve under rigid loads, structure, engines, fuel and the battery
-    # modules spread along the wing box, on every wing
+    # modules spread along the wing box, on every wing that is not vertical
     direct = direct_solve(coupled=False)
     result = solve_static_aeroelastic_model(model, MACH, dynamic_pressure(), ALPHA, fuel_masses=FUEL_MASSES, coupled=False)
-    for tag in model.wings.keys():
+    for tag in ('main_wing', 'horizontal_stabilizer'):
         scale = np.max(np.abs(direct[tag].deflection[0]))
         error = np.max(np.abs(result[tag].deflection - direct[tag].deflection[0])) / scale
         assert error < 1e-6, (tag, error)
@@ -181,6 +182,15 @@ def check_feedback_vanishes_without_dynamic_pressure(model):
     one_way = solve_static_aeroelastic_model(model, MACH, 0.0, ALPHA, fuel_masses=FUEL_MASSES, coupled=False)
     assert np.allclose(coupled.main_wing.deflection, one_way.main_wing.deflection, rtol=0, atol=1e-14)
     assert coupled.main_wing.deflection[-1, 2] < 0.0        # the wing sags under its own weight, engines and fuel
+    return
+
+
+def check_vertical_wings_are_left_out(model):
+    # the 737 has a vertical tail. The beam discretization measures span along y, which is zero on a vertical wing,
+    # so its beam is not valid: it has no results, and it does not decide whether the point is within range
+    results = solve_static_aeroelastic_model(model, MACH, dynamic_pressure(), ALPHA, fuel_masses=FUEL_MASSES)
+    assert 'vertical_stabilizer' in model.wings and 'vertical_stabilizer' not in results
+    assert results.main_wing.tip_deflection_ratio < 0.10 and results.within_validated_range
     return
 
 

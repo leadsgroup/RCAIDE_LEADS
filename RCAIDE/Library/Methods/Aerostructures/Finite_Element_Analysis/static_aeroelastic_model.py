@@ -40,7 +40,8 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
 
     Q is built from the vortex lattice method by displacing the wing at a set of spanwise stations, one degree of
     freedom at a time, and taking the change in the forces on the structure. Only feedback_components are fed back
-    to the aerodynamics. Vertical wings are not fed back. The force on a panel is its pressure, which grows with
+    to the aerodynamics. Vertical wings are not modeled: the beam discretization lays a wing along y, so their
+    beams are not valid, and no results are returned for them. The force on a panel is its pressure, which grows with
     angle of attack, along its rotated normal, so Q varies linearly with angle of attack. It is built at the two
     feedback_angles_of_attack and interpolated between them.
 
@@ -203,7 +204,9 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
     u_0    = {}
     load_0 = {}
     G      = {}
-    for tag, w in model.wings.items():
+    modeled = [tag for tag, w in model.wings.items() if not w.wing.vertical]
+    for tag in modeled:
+        w             = model.wings[tag]
         u_inertial    = w.u_fixed.copy()
         load_inertial = w.load_fixed.copy()
         for tank_tag in w.u_fuel:
@@ -229,7 +232,8 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
 
     results     = Data()
     results.eta = eta if coupled else eta_0
-    for tag, w in model.wings.items():
+    for tag in modeled:
+        w                             = model.wings[tag]
         u                             = u_0[tag] + q * G[tag] @ eta
         w_x, w_y, w_z, t_y            = load_0[tag] + q * feedback_at_mach_and_alpha(w.load_G) @ eta
         normal_stress, shear_stress, margin_of_safety = recover_stresses(w.wing, w.node_data, w.beam, u, w_x, w_y, w_z, t_y)
@@ -243,7 +247,7 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
         results[tag].margin_of_safety = margin_of_safety
         results[tag].tip_deflection_ratio = np.linalg.norm(results[tag].deflection[-1]) / w.node_data.total_span
     results.divergence_determinant = np.linalg.det(system) if coupled else 1.0
-    largest_ratio                  = max(results[tag].tip_deflection_ratio for tag in model.wings.keys())
+    largest_ratio                  = max(results[tag].tip_deflection_ratio for tag in modeled)
     results.within_validated_range = bool((results.divergence_determinant > 0) & (largest_ratio <= VALIDATED_TIP_DEFLECTION_RATIO))
     results.CLift = at_mach_and_alpha(model.CLift_rigid) + feedback_at_mach_and_alpha(model.dCLift_deta) @ eta
     results.CM    = at_mach_and_alpha(model.CM_rigid)    + feedback_at_mach_and_alpha(model.dCM_deta)    @ eta
