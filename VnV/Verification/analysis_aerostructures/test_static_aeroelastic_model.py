@@ -31,6 +31,9 @@ ALPHA      = 3.0 * Units.degrees
 # fuel [kg] in the two wing tanks; different so a mix-up between tanks shows
 FUEL_MASSES = {'integral_tank': 5000.0, 'integral_tank2': 2000.0}
 
+# battery module [kg] spread along each half of the wing box
+BATTERY_MODULE_MASS = 1500.0
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Main
 # ----------------------------------------------------------------------------------------------------------------------
@@ -54,6 +57,19 @@ def build_analyses(coupled):
                 source.fuel                      = deepcopy(source.fuel)
                 source.fuel.tag                  = source.tag + '_fuel'
                 source.fuel.mass_properties.mass = FUEL_MASSES[source.tag]
+
+    # a battery module filling the starboard wing box from 30% to 60% span, and its mirror image
+    network = list(vehicle.networks.values())[0]
+    pack    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    for tag, y in [('starboard_module', 7.0), ('port_module', -7.0)]:
+        module                      = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
+        module.tag                  = tag
+        module.origin               = [[16.0, y, -0.5]]
+        module.wing_tag             = 'main_wing'
+        module.percent_span_bounds  = [0.3, 0.6]
+        module.mass_properties.mass = BATTERY_MODULE_MASS
+        pack.append_module(module)
+    network.sources.append(pack)
     configs = configs_setup(vehicle)
 
     analyses         = RCAIDE.Framework.Analyses.Vehicle()
@@ -96,7 +112,8 @@ def dynamic_pressure():
 #  Tests
 # ----------------------------------------------------------------------------------------------------------------------
 def check_one_way_matches_the_beam_solve(model):
-    # without feedback the model is the beam solve under rigid loads, structure, engines and fuel, on every wing
+    # without feedback the model is the beam solve under rigid loads, structure, engines, fuel and the battery
+    # modules spread along the wing box, on every wing
     direct = direct_solve(coupled=False)
     result = solve_static_aeroelastic_model(model, MACH, dynamic_pressure(), ALPHA, fuel_masses=FUEL_MASSES, coupled=False)
     for tag in model.wings.keys():

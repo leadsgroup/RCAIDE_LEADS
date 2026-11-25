@@ -105,8 +105,10 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
                 w_z = settings.verification_pressure * beam.w_box * np.cos(node_data.sweep_mid_elems)
                 t_y = np.zeros_like(beam.w_box)
 
-            # Structure, ribs, and fuel spread along integral tanks at this control point
+            # Structure, ribs, masses spread along the wing box, and fuel spread along integral tanks at this control point
             w_z_distributed = self_weight_load(wing, node_data, beam) * n
+            for (mass, element_fraction) in masses.spread_masses:
+                w_z_distributed -= mass * element_fraction / node_data.Le * g_n
             for (fuel_tag, tank_mass, share, element_fraction, tank_tag) in masses.fuel_spread:
                 fuel_mass = (conditions.weights.components.mass[fuel_tag][ti, 0] + tank_mass) * share
                 w_z_distributed -= fuel_mass * element_fraction / node_data.Le * g_n

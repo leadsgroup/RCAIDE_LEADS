@@ -27,6 +27,7 @@ def main():
     check_components_on_the_other_half_are_skipped()
     check_tail_carries_no_main_wing_components()
     check_symmetric_wing_tank_is_shared_between_the_halves()
+    check_battery_module_is_spread_between_its_span_bounds()
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -117,6 +118,30 @@ def check_symmetric_wing_tank_is_shared_between_the_halves():
         assert tank_tag == 'wing_pod_tank' and tank_mass == 400.0
         assert share == expected_share, (flag, share)
         assert np.allclose(point, [15.5, 5.0, -0.5])
+    return
+
+
+def check_battery_module_is_spread_between_its_span_bounds():
+    # the starboard module of build_vehicle, first as a point mass and then filling the box from 30% to 60% span
+    vehicle       = build_vehicle()
+    masses, nodes = masses_on(vehicle, 'main_wing')
+    assert len(masses.point_masses) == 2 and len(masses.spread_masses) == 0      # the starboard engine and the starboard module
+
+    vehicle       = build_vehicle()
+    module        = list(vehicle.networks.values())[0].sources.battery_pack.modules.starboard_module
+    module.mass_properties.mass = 800.0
+    module.percent_span_bounds  = [0.3, 0.6]
+    masses, nodes = masses_on(vehicle, 'main_wing')
+    assert len(masses.point_masses) == 1 and len(masses.spread_masses) == 1      # the module is no longer a point mass
+    mass, fraction = masses.spread_masses[0]
+    assert mass == 800.0
+    assert abs(np.sum(fraction) - 1.0) < 1e-12
+    outside = (nodes.Y_elems < 0.3 * nodes.total_span) | (nodes.Y_elems > 0.6 * nodes.total_span)
+    assert np.all(fraction[outside] == 0.0) and np.all(fraction[~outside] > 0.0)
+
+    # the section tapers, so more of the module sits in the inboard half of its bay
+    inboard = nodes.Y_elems < 0.45 * nodes.total_span
+    assert np.sum(fraction[inboard]) > 0.5
     return
 
 

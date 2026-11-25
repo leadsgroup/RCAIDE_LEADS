@@ -51,6 +51,10 @@ class Generic_Battery_Module(Source):
         Tag of the wing this module is mounted in/on, or None if not wing-mounted
         (default: None)
 
+    percent_span_bounds : list
+        Inboard and outboard fractions of the wing semi-span between which a wing-mounted
+        module fills the wing box, or None for a module carried at one point (default: None)
+
     cell : Data
         Container for cell-specific attributes
             - chemistry : str
@@ -119,6 +123,7 @@ class Generic_Battery_Module(Source):
         self.orientation_euler_angles                          = [0.,0.,0.]  # vector of angles defining default orientation of rotor
         self.heat_acquisition_system                           = None
         self.wing_tag                                          = None
+        self.percent_span_bounds                               = None
 
 
         self.cell                                              = Data()

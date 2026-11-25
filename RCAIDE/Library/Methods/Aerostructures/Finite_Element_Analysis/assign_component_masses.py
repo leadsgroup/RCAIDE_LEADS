@@ -27,9 +27,14 @@ def assign_component_masses(geometry, wing, node_data):
     are point masses at their centre of gravity. A tank with xz_plane_symmetric set stands for the left and right
     tanks together, with their combined mass, so each half of a symmetric wing carries half of it.
 
+    A battery module with percent_span_bounds set fills the wing box between those span fractions and is spread
+    over the elements there in proportion to the local section area, like the fuel of an integral tank. Without
+    them it is a point mass at its centre of gravity.
+
     Returns:
         Data with
           point_pts, point_masses : constant point masses [m], [kg]
+          spread_masses           : list of (mass, element_fraction) of constant masses spread along the span
           fuel_points             : list of (point, fuel_tag, tank_mass, share, tank_tag)
           fuel_spread             : list of (fuel_tag, tank_mass, share, element_fraction, tank_tag)
     """
@@ -40,6 +45,7 @@ def assign_component_masses(geometry, wing, node_data):
     point_masses = []
     fuel_points  = []
     fuel_spread  = []
+    spread_masses = []
 
     for network in geometry.networks:
         for source in network.sources:
@@ -63,8 +69,13 @@ def assign_component_masses(geometry, wing, node_data):
                         continue
                     point = (np.array(battery_module.origin[0]) + np.array(battery_module.mass_properties.center_of_gravity)).reshape(3)
                     if on_this_half(point, symmetric, y_origin):
-                        point_pts.append(point)
-                        point_masses.append(battery_module.mass_properties.mass)
+                        if battery_module.percent_span_bounds is None:
+                            point_pts.append(point)
+                            point_masses.append(battery_module.mass_properties.mass)
+                        else:
+                            y_inner, y_outer = np.array(battery_module.percent_span_bounds) * node_data.total_span
+                            spread_masses.append((battery_module.mass_properties.mass,
+                                                  wing_box_element_fraction(node_data, y_inner, y_outer, battery_module.tag, wing.tag)))
 
         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
             for propulsor in network.propulsors:
@@ -78,7 +89,8 @@ def assign_component_masses(geometry, wing, node_data):
     return Data(point_pts    = np.array(point_pts).reshape(-1, 3),
                 point_masses = np.array(point_masses, dtype=float),
                 fuel_points  = fuel_points,
-                fuel_spread  = fuel_spread)
+                fuel_spread  = fuel_spread,
+                spread_masses = spread_masses)
 
 
 def on_this_half(point, symmetric, y_origin):
@@ -94,8 +106,16 @@ def integral_tank_element_fraction(fuel_tank, wing, node_data):
     inner_tag, outer_tag = fuel_tank.segments_bounding_tank[0], fuel_tank.segments_bounding_tank[-1]
     y_inner  = wing.segments[inner_tag].percent_span_location * node_data.total_span
     y_outer  = wing.segments[outer_tag].percent_span_location * node_data.total_span
+    return wing_box_element_fraction(node_data, y_inner, y_outer, fuel_tank.tag, wing.tag)
+
+
+def wing_box_element_fraction(node_data, y_inner, y_outer, component_tag, wing_tag):
+    """
+    Fraction of a mass filling the wing box between spanwise stations y_inner and y_outer [m] in each element,
+    weighted by section area (chord times depth) times element length.
+    """
     inside   = (node_data.Y_elems >= y_inner) & (node_data.Y_elems <= y_outer)
     if not np.any(inside):
-        raise ValueError(f"Integral tank '{fuel_tank.tag}' covers no elements of wing '{wing.tag}'")
+        raise ValueError(f"'{component_tag}' covers no elements of wing '{wing_tag}'")
     weight   = np.where(inside, node_data.chord_elems * node_data.t_elems * node_data.Le, 0.0)
     return weight / np.sum(weight)

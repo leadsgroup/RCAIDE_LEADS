@@ -289,8 +289,8 @@ def bracket(table, value, hold_ends):
 
 def inertial_responses(wing, node_data, beam, masses):
     """
-    Beam response at one g to the masses that do not change in flight (structure, ribs, point masses, empty
-    tanks), and to one kilogram of fuel in each tank.
+    Beam response at one g to the masses that do not change in flight (structure, ribs, point masses, masses
+    spread along the wing box, empty tanks), and to one kilogram of fuel in each tank.
     """
     g = STANDARD_GRAVITY
 
@@ -313,7 +313,10 @@ def inertial_responses(wing, node_data, beam, masses):
         load_fuel[tank_tag] = element_loads(-share * element_fraction / node_data.Le * g, [], [])
         tank_mass[tank_tag] = mass
 
-    load_fixed = element_loads(self_weight_load(wing, node_data, beam), masses.point_pts, masses.point_masses)
+    w_z_fixed = self_weight_load(wing, node_data, beam)
+    for (mass, element_fraction) in masses.spread_masses:
+        w_z_fixed = w_z_fixed - mass * element_fraction / node_data.Le * g
+    load_fixed = element_loads(w_z_fixed, masses.point_pts, masses.point_masses)
     for tank_tag in load_fuel:
         load_fixed += tank_mass[tank_tag] * load_fuel[tank_tag]
 
