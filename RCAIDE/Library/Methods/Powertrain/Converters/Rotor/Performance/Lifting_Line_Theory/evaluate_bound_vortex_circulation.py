@@ -256,6 +256,21 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
         conv1    = False
         diverged = False
+        stalled  = False
+        # Stall detection: some control points (a specific blade/radial station operating near a
+        # local Ut/induced-velocity cancellation) never reach tol -- their residual plateaus,
+        # bouncing in a bounded band instead of diverging or converging, which otherwise burns
+        # every remaining inner iteration up to max_inner for no further progress (confirmed via
+        # scratchpad/diag_cp4_stations_multiCT.log, 2026-11-23: residual bounces in [0.002, 0.03]
+        # for 150+ iterations after the real convergence has already happened). Exiting once no
+        # NEW best (overall max-across-rotors) residual has been found for STALL_PATIENCE
+        # iterations avoids this waste without touching the physics/Anderson-mixing math at all --
+        # purely a stopping-criterion change, inert for any cp/rotor that actually converges
+        # (those always hit the tol check below first).
+        STALL_MIN_IT   = 30
+        STALL_PATIENCE = 30
+        best_residual  = float('inf')
+        best_it        = -1
         for it1 in range(max_inner):
 
             # Source strengths from the current Gamma_b of every rotor
@@ -324,6 +339,14 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                 conv1 = True
                 break
 
+            overall_residual = max(s.residual_Gamma_b for s in S)
+            if overall_residual < best_residual * 0.9:
+                best_residual = overall_residual
+                best_it       = it1
+            elif it1 >= STALL_MIN_IT and it1 - best_it >= STALL_PATIENCE:
+                stalled = True
+                break
+
         if diverged:
             break   # stop the outer CT loop too -- no point continuing once it has blown up
 
@@ -332,7 +355,11 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                 print(f"{s.tag}: Gamma_b converged in {it1+1} iteration(s), residual = {s.residual_Gamma_b:.3e}")
         else:
             for s in S:
-                print(f"{s.tag}: Gamma_b did NOT converge after {max_inner} iteration(s). Residual =", s.residual_Gamma_b)
+                if stalled:
+                    print(f"{s.tag}: Gamma_b stalled (no improvement in {STALL_PATIENCE} iterations) after "
+                          f"{it1+1} iteration(s). Residual =", s.residual_Gamma_b)
+                else:
+                    print(f"{s.tag}: Gamma_b did NOT converge after {max_inner} iteration(s). Residual =", s.residual_Gamma_b)
 
         # -- CT check (CT_iter mode only) --
         if CT_iter:
