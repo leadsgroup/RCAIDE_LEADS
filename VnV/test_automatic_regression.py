@@ -27,6 +27,7 @@ modules = [
     'Verification/network_turbofan/test_turbofan_offtake.py',
     'Verification/powertrain/test_compute_battery_properties.py',
     'Verification/powertrain/test_compute_reformer_performance.py',
+    'Verification/powertrain/test_design_optimal_motor.py',
     'Verification/aircraft_performance/landing_field_length_test.py',
     'Verification/aircraft_performance/payload_range_test.py',
     'Verification/aircraft_performance/take_off_field_length_test.py',
