@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_3d_wing_points
 # ----------------------------------------------------------------------------------------------------------------------   
-def generate_3d_wing_points(wing, n_points,plot_centerline = False):
+def generate_3d_wing_points(wing, n_points,plot_centerline = False, mirrored = False):
     """
     Generates 3D coordinate points that define a wing surface.
 
@@ -29,9 +29,12 @@ def generate_3d_wing_points(wing, n_points,plot_centerline = False):
         
     dim : int
         Number of wing segments plus one
-
     plot_centerline : bool, optional
         Include the root centerline cap section in the output, default False
+
+    mirrored : bool, optional
+        True when the points are for the mirrored side of a symmetric wing, on which ailerons
+        and the secondary deflection of compound surfaces are reversed, default False
 
     Returns
     -------
@@ -154,6 +157,15 @@ def generate_3d_wing_points(wing, n_points,plot_centerline = False):
  
     mat     = translation + np.matmul(section_twist ,pts)
 
+    # trailing-edge control surfaces, each rotated about its hinge line
+    span_fractions  = [segments[key].percent_span_location for key in segments.keys()]
+    sections        = deflect_control_surfaces(mat[1:n_segments+1,:,:,0], geometry.x_coordinates, span_fractions, wing, mirrored)
+    if len(sections) != n_segments:
+        tip_cap         = mat[n_segments+1,:,:,0]
+        if not np.allclose(sections[-1], mat[n_segments,:,:,0]):
+            tip_cap     = (sections[-1] + sections[-1][::-1]) / 2
+        mat             = np.concatenate((mat[0:1,:,:,0], sections, tip_cap[None,:,:]))[:,:,:,None]
+
     if not plot_centerline:
         mat = mat[1:, :, :, :]
 
@@ -185,3 +197,112 @@ def generate_3d_wing_points(wing, n_points,plot_centerline = False):
      
 
 
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  deflect_control_surfaces
+# ----------------------------------------------------------------------------------------------------------------------
+def deflect_control_surfaces(sections, chord_fractions, span_fractions, wing, mirrored):
+    """
+    Wing sections with each deflected trailing-edge control surface rotated about its hinge line.
+
+    Parameters
+    ----------
+    sections : ndarray
+        Points of the wing sections from root to tip, shape (number of sections, number of points, 3)
+    chord_fractions : ndarray
+        Chordwise position x/c of each point of a section, from the trailing edge along the lower
+        surface to the leading edge and back along the upper surface
+    span_fractions : list
+        Span fraction of each section
+    wing : RCAIDE.Library.Components.Wings.Wing
+        Wing whose control surfaces are drawn
+    mirrored : bool
+        True for the mirrored side of a symmetric wing
+
+    Returns
+    -------
+    sections : ndarray
+        Sections with, for each deflected surface, an undeflected and a deflected section at both of
+        its ends, so that the surface is drawn with a clean break from the wing
+
+    Notes
+    -----
+    A surface is a plain flap: the part of each section aft of the hinge, at x/c = 1 - chord_fraction,
+    rotates rigidly about the hinge line by the deflection. The hinge point of a section is midway
+    between its upper and lower surfaces, and the hinge line runs between the hinge points at the two
+    ends of the surface. A positive deflection follows the right-hand rule about the hinge line
+    pointing outboard, as in the vortex lattice method (trailing edge down on the right wing).
+    Slotted flaps are drawn as plain flaps. Slats and spoilers are not drawn deflected.
+
+    **Major Assumptions**
+        * Control surfaces do not overlap along the span
+    """
+    Surfaces       = RCAIDE.Library.Components.Wings.Control_Surfaces
+    sections       = np.array(sections)
+    span_fractions = np.array(span_fractions, dtype=float)
+    side           = -1.0 if mirrored else 1.0
+
+    for control_surface in wing.control_surfaces:
+        if isinstance(control_surface, (Surfaces.Slat, Surfaces.Spoiler)):
+            continue
+        if isinstance(control_surface, Surfaces.Aileron):
+            deflection = control_surface.deflection * side
+        elif isinstance(control_surface, (Surfaces.Flaperon, Surfaces.Elevon, Surfaces.Ruddervator)):
+            deflection = control_surface.deflection + control_surface.secondary_deflection * side
+        else:
+            deflection = control_surface.deflection
+        if deflection == 0:
+            continue
+
+        start = max(control_surface.span_fraction_start, span_fractions[0])
+        end   = min(control_surface.span_fraction_end,   span_fractions[-1])
+        if end <= start:
+            continue
+
+        # sections of the surface: its two ends and the wing sections between them
+        inside         = (span_fractions > start) & (span_fractions < end)
+        surface_spans  = np.concatenate(([start], span_fractions[inside], [end]))
+        surface        = np.array([section_at(sections, span_fractions, span) for span in surface_spans])
+
+        # hinge line between the hinge points of the two ends, pointing outboard
+        hinge_fraction = 1.0 - control_surface.chord_fraction
+        hinges         = np.array([hinge_point(section, chord_fractions, hinge_fraction) for section in surface])
+        axis           = (hinges[-1] - hinges[0]) / np.linalg.norm(hinges[-1] - hinges[0])
+        aft            = chord_fractions > hinge_fraction
+        deflected      = surface.copy()
+        for k in range(len(surface)):
+            deflected[k, aft] = rotate_about_axis(surface[k, aft] - hinges[k], axis, deflection) + hinges[k]
+
+        inboard        = span_fractions < start
+        outboard       = span_fractions > end
+        sections       = np.concatenate((sections[inboard], surface[0:1], deflected, surface[-1:], sections[outboard]))
+        span_fractions = np.concatenate((span_fractions[inboard], [start], surface_spans, [end], span_fractions[outboard]))
+    return sections
+
+
+def section_at(sections, span_fractions, span_fraction):
+    """Section at a span fraction, interpolated linearly between the two sections around it, as the surface
+    between them is drawn."""
+    upper  = int(np.clip(np.searchsorted(span_fractions, span_fraction, side='right'), 1, len(span_fractions) - 1))
+    lower  = upper - 1
+    width  = span_fractions[upper] - span_fractions[lower]
+    weight = 0.0 if width == 0 else (span_fraction - span_fractions[lower]) / width
+    return (1 - weight) * sections[lower] + weight * sections[upper]
+
+
+def hinge_point(section, chord_fractions, hinge_fraction):
+    """Point midway between the lower and upper surfaces of a section at the hinge's chord fraction."""
+    leading_edge = int(np.argmin(chord_fractions))
+    lower_x, lower_points = chord_fractions[:leading_edge + 1][::-1], section[:leading_edge + 1][::-1]
+    upper_x, upper_points = chord_fractions[leading_edge:],           section[leading_edge:]
+    lower = np.array([np.interp(hinge_fraction, lower_x, lower_points[:, i]) for i in range(3)])
+    upper = np.array([np.interp(hinge_fraction, upper_x, upper_points[:, i]) for i in range(3)])
+    return (lower + upper) / 2
+
+
+def rotate_about_axis(vectors, axis, angle):
+    """Vectors rotated by angle about a unit axis, by Rodrigues' rotation formula."""
+    return (vectors * np.cos(angle) + np.cross(axis, vectors) * np.sin(angle)
+            + np.outer(vectors @ axis, axis) * (1 - np.cos(angle)))

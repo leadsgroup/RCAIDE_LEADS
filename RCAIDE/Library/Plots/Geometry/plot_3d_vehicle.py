@@ -224,7 +224,12 @@ def plot_3d_vehicle(vehicle,
             GEOM.PTS[:, :, 0] = -GEOM.PTS[:, :, 0]
             plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=wing_rgb_color, opacity=wing_opacity)
         if wing.xz_plane_symmetric:
-            GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
+            # the mirrored side is generated again, since ailerons deflect the other way on it
+            mirrored_points = generate_3d_wing_points(wing, number_of_airfoil_points, plot_centerline=False, mirrored=True).PTS
+            if wing.yz_plane_symmetric:
+                mirrored_points[:, :, 0] = -mirrored_points[:, :, 0]
+            mirrored_points[:, :, 1] = -mirrored_points[:, :, 1]
+            GEOM.PTS = mirrored_points
             plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=wing_rgb_color, opacity=wing_opacity)
         if wing.xy_plane_symmetric:
             GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]
