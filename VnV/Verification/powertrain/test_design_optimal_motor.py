@@ -73,13 +73,17 @@ def check_megawatt_motor():
 
 def check_unattainable_efficiency():
     # the no-load current alone loses more than a 0.98 efficiency allows: 0.02 of 20.9 A is 0.42 A.
-    # The motor must still meet its design torque and speed, at the efficiency of a motor with no resistance
-    # loss, 1 - no-load current / current, to within the small loss of the minimum resistance
-    motor = sized_motor(voltage=400.0, torque=130.0, angular_velocity=63.0, efficiency=0.98, no_load_current=5.0)
+    # The motor must still meet its design torque and speed, and the design point must be its most efficient:
+    # at the nominal voltage the efficiency is lower at currents 5% below and above the design current
+    motor            = sized_motor(voltage=400.0, torque=130.0, angular_velocity=63.0, efficiency=0.98, no_load_current=5.0)
     reached          = motor.design_torque * motor.design_angular_velocity / (motor.nominal_voltage * motor.design_current)
     motor.efficiency = reached
     check_design_point(motor)
-    assert reached < 0.98 and abs(reached - (1 - 5.0 / motor.design_current)) < 1e-3
+    assert reached < 0.98 and abs(reached - (1 - 5.0 / motor.design_current)**2) < 1e-12
+
+    def efficiency(current):
+        return (1 - motor.no_load_current / current) * (1 - current * motor.resistance / motor.nominal_voltage)
+    assert efficiency(0.95 * motor.design_current) < reached and efficiency(1.05 * motor.design_current) < reached
     return
 
 
@@ -87,7 +91,7 @@ def check_zero_design_torque():
     # a motor sized before its load is known spins at the design speed on its no-load current
     motor = sized_motor(voltage=400.0, torque=0.0, angular_velocity=63.0, efficiency=0.98)
     assert np.isfinite(motor.speed_constant) and motor.speed_constant > 0 and motor.design_current == 1.0
-    assert abs((motor.nominal_voltage - motor.resistance * motor.design_current) * motor.speed_constant - 63.0) < 1e-9
+    assert abs(motor.nominal_voltage * motor.speed_constant - 63.0) < 1e-9
     return
 
 
