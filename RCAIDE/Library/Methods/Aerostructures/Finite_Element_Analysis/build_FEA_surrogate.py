@@ -29,6 +29,7 @@ def build_FEA_surrogates(aerostructures, vehicle):
             .deflection_v[wing.tag]                           shape (n_AoA, n_Mach, n_nodes)
             .deflection_w[wing.tag]                           shape (n_AoA, n_Mach, n_nodes)
             .elastic_twist[wing.tag]                          shape (n_AoA, n_Mach, n_nodes)
+            .rotation_x, .rotation_y, .rotation_z[wing.tag]   shape (n_AoA, n_Mach, n_nodes)
     """
     surrogates = aerostructures.surrogates
     training   = aerostructures.training
@@ -61,6 +62,9 @@ def build_surrogate(aerostructures, training, vehicle):
     surrogates.deflection_v  = Data()
     surrogates.deflection_w  = Data()
     surrogates.elastic_twist = Data()
+    surrogates.rotation_x    = Data()
+    surrogates.rotation_y    = Data()
+    surrogates.rotation_z    = Data()
 
     for wing in vehicle.wings:
         if wing.tag not in training.deflection_w:
@@ -80,10 +84,15 @@ def build_surrogate(aerostructures, training, vehicle):
         surrogates.elastic_twist[wing.tag] = RegularGridInterpolator(
             (AoA_data, mach_data, node_idx), training.elastic_twist[wing.tag],
             method='linear', bounds_error=False, fill_value=None)
+        for field in ('rotation_x', 'rotation_y', 'rotation_z'):
+            surrogates[field][wing.tag] = RegularGridInterpolator(
+                (AoA_data, mach_data, node_idx), training[field][wing.tag],
+                method='linear', bounds_error=False, fill_value=None)
 
     # Control-surface structural derivatives (Mach x node_idx, no AoA axis).
     for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
-        for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_'):
+        for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_',
+                      'drotation_x_ddelta_', 'drotation_y_ddelta_', 'drotation_z_ddelta_'):
             key = field + letter
             if key not in training:
                 continue
@@ -109,10 +118,16 @@ def no_surrogate(vehicle):
     surrogates.deflection_v  = Data()
     surrogates.deflection_w  = Data()
     surrogates.elastic_twist = Data()
+    surrogates.rotation_x    = Data()
+    surrogates.rotation_y    = Data()
+    surrogates.rotation_z    = Data()
 
     for wing in vehicle.wings:
         if wing.vertical:
             continue
+        surrogates.rotation_x[wing.tag]    = None
+        surrogates.rotation_y[wing.tag]    = None
+        surrogates.rotation_z[wing.tag]    = None
         surrogates.deflection_u[wing.tag]  = None
         surrogates.deflection_v[wing.tag]  = None
         surrogates.deflection_w[wing.tag]  = None

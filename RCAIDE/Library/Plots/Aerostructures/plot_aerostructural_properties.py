@@ -55,7 +55,7 @@ def plot_aerostructural_properties(results,
 
         tip_def_z_mm  =  struct.deflection[:, -1, 2] * 1e3
         tip_def_x_mm  =  struct.deflection[:, -1, 0] * 1e3
-        tip_twist_deg =  np.degrees(struct.elastic_twist[:, -1, 0])
+        tip_twist_deg =  np.degrees(struct.rotation[:, -1, 1])       # rotation about y: the streamwise twist
         max_def_mm    =  np.max(np.abs(struct.deflection[:, :, 2]), axis=1) * 1e3
 
         axis_1.plot(time, tip_def_z_mm,  color=line_colors[i], marker=ps.markers[0],
@@ -70,7 +70,7 @@ def plot_aerostructural_properties(results,
     axis_1.set_ylabel(r'Tip Z-Deflection (mm)')
     set_axes(axis_1)
 
-    axis_2.set_ylabel(r'Tip Elastic Twist (deg)')
+    axis_2.set_ylabel(r'Tip Streamwise Twist (deg)')
     set_axes(axis_2)
 
     axis_3.set_xlabel('Time (mins)')

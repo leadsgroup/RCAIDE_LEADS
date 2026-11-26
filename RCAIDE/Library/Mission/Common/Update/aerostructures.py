@@ -20,6 +20,7 @@ def aerostructures(segment):
     Outputs:
         conditions.aerostructures[wing_tag].deflection    (n_cpt × n_nodes × 3)
         conditions.aerostructures[wing_tag].elastic_twist (n_cpt × n_nodes × 1)
+        conditions.aerostructures[wing_tag].rotation      (n_cpt × n_nodes × 3)
     """
 
     aerostructures_model = segment.analyses.aerostructures

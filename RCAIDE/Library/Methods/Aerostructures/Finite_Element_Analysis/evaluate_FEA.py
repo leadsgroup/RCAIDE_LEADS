@@ -57,6 +57,7 @@ def evaluate_surrogate(state, settings, vehicle):
         conditions.aerostructures[wing.tag]               = Data()
         conditions.aerostructures[wing.tag].deflection    = np.zeros((n_cpts, n_nodes, 3))
         conditions.aerostructures[wing.tag].elastic_twist = np.zeros((n_cpts, n_nodes, 1))
+        conditions.aerostructures[wing.tag].rotation      = np.zeros((n_cpts, n_nodes, 3))   # about global x, y, z; about y is the streamwise twist
 
         for ti in range(n_cpts):
             aoa_ti  = AoA[ti]
@@ -87,6 +88,11 @@ def evaluate_surrogate(state, settings, vehicle):
                 sub_sur.elastic_twist[wing.tag], trans_sur.elastic_twist[wing.tag],
                 sup_sur.elastic_twist[wing.tag], h_sub, h_sup, mach_ti, node_pts)
 
+            for axis, field in ((0, 'rotation_x'), (1, 'rotation_y'), (2, 'rotation_z')):
+                conditions.aerostructures[wing.tag].rotation[ti, :, axis] = q_dyn_ti * blend_structural(
+                    sub_sur[field][wing.tag], trans_sur[field][wing.tag],
+                    sup_sur[field][wing.tag], h_sub, h_sup, mach_ti, node_pts)
+
             # Control-surface correction, same pattern as evaluate_VLM.py.
             mach_node_pts = node_pts[:, 1:]  # (Mach, node_idx), no AoA axis
             for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
@@ -105,6 +111,19 @@ def evaluate_surrogate(state, settings, vehicle):
                     trans_d = getattr(trans_sur, key, None)
                     sup_d   = getattr(sup_sur,   key, None)
                     conditions.aerostructures[wing.tag].deflection[ti, :, axis] += q_dyn_ti * deflection * blend_structural(
+                        sub_d[wing.tag],
+                        trans_d[wing.tag] if trans_d is not None and wing.tag in trans_d else None,
+                        sup_d[wing.tag]   if sup_d   is not None and wing.tag in sup_d   else None,
+                        h_sub, h_sup, mach_ti, mach_node_pts)
+
+                for axis, field in ((0, 'drotation_x_ddelta_'), (1, 'drotation_y_ddelta_'), (2, 'drotation_z_ddelta_')):
+                    key   = field + letter
+                    sub_d = getattr(sub_sur, key, None)
+                    if sub_d is None or wing.tag not in sub_d:
+                        continue
+                    trans_d = getattr(trans_sur, key, None)
+                    sup_d   = getattr(sup_sur,   key, None)
+                    conditions.aerostructures[wing.tag].rotation[ti, :, axis] += q_dyn_ti * deflection * blend_structural(
                         sub_d[wing.tag],
                         trans_d[wing.tag] if trans_d is not None and wing.tag in trans_d else None,
                         sup_d[wing.tag]   if sup_d   is not None and wing.tag in sup_d   else None,

@@ -43,6 +43,7 @@ modules = [
     'Verification/analysis_aerostructures/test_component_masses.py',
     'Verification/analysis_aerostructures/test_spar_cutouts.py',
     'Verification/analysis_aerostructures/test_surrogate_training_fuel.py',
+    'Verification/analysis_aerostructures/test_structural_surrogate.py',
     'Verification/analysis_aerostructures/test_static_aeroelastic_model.py',
     'Verification/analysis_aerostructures/test_static_aeroelastic_divergence.py',
     'Verification/analysis_emissions/emissions_test.py',

@@ -102,12 +102,16 @@ class Finite_Element_Analysis(Aerostructures):
         dst_sub.deflection_v         = src_sub.deflection_v
         dst_sub.deflection_w         = src_sub.deflection_w
         dst_sub.elastic_twist        = src_sub.elastic_twist
+        dst_sub.rotation_x           = src_sub.rotation_x
+        dst_sub.rotation_y           = src_sub.rotation_y
+        dst_sub.rotation_z           = src_sub.rotation_z
 
         # Control-surface structural derivatives, if any were trained.
         from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.control_surface_registry import CONTROL_SURFACE_TYPES
         for cls, letter, name, channel, flag, deflection_attr in CONTROL_SURFACE_TYPES:
             if getattr(aerodynamics, flag, False):
-                for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_'):
+                for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_',
+                              'drotation_x_ddelta_', 'drotation_y_ddelta_', 'drotation_z_ddelta_'):
                     key = field + letter
                     if key in src_sub:
                         dst_sub[key] = src_sub[key]

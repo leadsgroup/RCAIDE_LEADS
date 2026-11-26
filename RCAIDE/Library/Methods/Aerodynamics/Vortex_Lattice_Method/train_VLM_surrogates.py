@@ -198,6 +198,9 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
         training.deflection_v  = Data()
         training.deflection_w  = Data()
         training.elastic_twist = Data()
+        training.rotation_x    = Data()
+        training.rotation_y    = Data()
+        training.rotation_z    = Data()
         for wing in clean_wing_vehicle.wings:
             if wing.tag not in FEA_results:
                 continue
@@ -206,6 +209,10 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
             training.deflection_v[wing.tag]  = (FEA_results[wing.tag].deflection[:, :, 1] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
             training.deflection_w[wing.tag]  = (FEA_results[wing.tag].deflection[:, :, 2] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
             training.elastic_twist[wing.tag] = (FEA_results[wing.tag].elastic_twist[:, :, 0] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+            # nodal rotations about the global axes; rotation about y is the streamwise twist
+            training.rotation_x[wing.tag]    = (FEA_results[wing.tag].rotation[:, :, 0] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+            training.rotation_y[wing.tag]    = (FEA_results[wing.tag].rotation[:, :, 1] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+            training.rotation_z[wing.tag]    = (FEA_results[wing.tag].rotation[:, :, 2] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
 
     Clift_res        = VLM_results.CLift
     Cdrag_res        = VLM_results.CDrag_induced
@@ -270,7 +277,8 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
                 # structural derivatives per unit dynamic pressure; gravity loads cancel in the difference
                 if aerostructural_analyses is not None:
                     structural_d = FEA(control_surface_structural_conditions(Mach, a0, rho0, vehicle), VLM_results, VLM_results.VD, settings_str, vehicle)
-                    for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_'):
+                    for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_',
+                                  'drotation_x_ddelta_', 'drotation_y_ddelta_', 'drotation_z_ddelta_'):
                         training[field + letter] = Data()
                     for wing2 in vehicle.wings:
                         if wing2.tag not in structural_d:
@@ -281,6 +289,10 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
                         training['ddeflection_v_ddelta_'  + letter][wing2.tag] = d_deflection[:, :, 1] / delta
                         training['ddeflection_w_ddelta_'  + letter][wing2.tag] = d_deflection[:, :, 2] / delta
                         training['delastic_twist_ddelta_' + letter][wing2.tag] = d_twist[:, :, 0]      / delta
+                        d_rotation   = (structural_d[wing2.tag].rotation      - structural_ref[wing2.tag].rotation     ) / q_dyn_cs[:, :, None]
+                        training['drotation_x_ddelta_'    + letter][wing2.tag] = d_rotation[:, :, 0]   / delta
+                        training['drotation_y_ddelta_'    + letter][wing2.tag] = d_rotation[:, :, 1]   / delta
+                        training['drotation_z_ddelta_'    + letter][wing2.tag] = d_rotation[:, :, 2]   / delta
                 # reset to 0, not the real deflection, so later surfaces train in isolation
                 setattr(control_surface, deflection_attr, 0)
 
