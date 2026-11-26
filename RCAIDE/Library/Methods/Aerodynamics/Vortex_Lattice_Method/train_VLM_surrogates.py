@@ -273,6 +273,8 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
                     for field in ('ddeflection_u_ddelta_', 'ddeflection_v_ddelta_', 'ddeflection_w_ddelta_', 'delastic_twist_ddelta_'):
                         training[field + letter] = Data()
                     for wing2 in vehicle.wings:
+                        if wing2.tag not in structural_d:
+                            continue
                         d_deflection = (structural_d[wing2.tag].deflection    - structural_ref[wing2.tag].deflection   ) / q_dyn_cs[:, :, None]
                         d_twist      = (structural_d[wing2.tag].elastic_twist - structural_ref[wing2.tag].elastic_twist) / q_dyn_cs[:, :, None]
                         training['ddeflection_u_ddelta_'  + letter][wing2.tag] = d_deflection[:, :, 0] / delta
