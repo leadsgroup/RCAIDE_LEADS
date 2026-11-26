@@ -9,7 +9,8 @@ import RCAIDE
 from RCAIDE.Framework.Core                                                                   import Units
 from RCAIDE.Library.Methods.Performance                                                      import aircraft_aerostructural_analysis
 from RCAIDE.Library.Mission.Common.Pre_Process                                               import geometry_preprocess_routine
-from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.static_aeroelastic_model  import build_static_aeroelastic_model, solve_static_aeroelastic_model
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.static_aeroelastic_model  import build_static_aeroelastic_model, solve_static_aeroelastic_model, aerodynamic_conditions
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM                           import VLM
 
 from copy import deepcopy
 import numpy as np
@@ -44,6 +45,7 @@ def main():
     check_fuel_enters_by_tank(model)
     check_feedback_vanishes_without_dynamic_pressure(model)
     check_vertical_wings_are_left_out(model)
+    check_lift_of_each_wing(model)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -191,6 +193,25 @@ def check_vertical_wings_are_left_out(model):
     results = solve_static_aeroelastic_model(model, MACH, dynamic_pressure(), ALPHA, fuel_masses=FUEL_MASSES)
     assert 'vertical_stabilizer' in model.wings and 'vertical_stabilizer' not in results
     assert results.main_wing.tip_deflection_ratio < 0.10 and results.within_validated_range
+    return
+
+
+def check_lift_of_each_wing(model):
+    # the lift of the wing and of the horizontal tail add up to the lift of the aircraft, with and without the
+    # feedback, and the wing carries most of it
+    for coupled in (True, False):
+        results = solve_static_aeroelastic_model(model, MACH, dynamic_pressure(), ALPHA, fuel_masses=FUEL_MASSES, coupled=coupled)
+        total   = results.main_wing.CLift + results.horizontal_stabilizer.CLift
+        assert abs(total - results.CLift) < 1e-3 * abs(results.CLift), (total, results.CLift)
+        assert 0.5 * results.CLift < results.main_wing.CLift < 1.2 * results.CLift
+    # without the feedback the wing's lift is that of the vortex lattice on the undeformed aircraft
+    analyses = build_analyses(coupled=False)
+    geometry_preprocess_routine(analyses)
+    rigid    = VLM(aerodynamic_conditions(MACH, ALPHA), analyses.aerodynamics.settings, analyses.vehicle)
+    one_way  = solve_static_aeroelastic_model(model, MACH, dynamic_pressure(), ALPHA, fuel_masses=FUEL_MASSES, coupled=False)
+    for tag in ('main_wing', 'horizontal_stabilizer'):
+        reference = rigid.CLift_wings[tag][0, 0] * analyses.vehicle.wings[tag].areas.reference / analyses.vehicle.reference_area
+        assert abs(one_way[tag].CLift - reference) < 0.01 * abs(rigid.CLift[0, 0]), (tag, one_way[tag].CLift, reference)
     return
 
 

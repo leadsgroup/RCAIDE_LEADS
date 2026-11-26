@@ -107,6 +107,8 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
         w.u_rigid    = np.zeros((n_mach, n_alpha, w.beam.total_dof))
         w.load_G     = np.zeros((n_mach, 2, 4, n_elements, n_stations))    # unit displacement of each station
         w.G          = np.zeros((n_mach, 2, w.beam.total_dof, n_stations))
+        w.CLift_rigid = np.zeros((n_mach, n_alpha))                        # this wing's lift, on the reference area
+        w.dCLift_deta = np.zeros((n_mach, 2, n_stations))
 
     dCLift_deta = np.zeros((n_mach, 2, n_stations))
     dCM_deta    = np.zeros((n_mach, 2, n_stations))
@@ -121,6 +123,7 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
             for tag, w in wings.items():
                 w.load_rigid[m, a] = loads[tag]
                 w.u_rigid[m, a]    = beam_response(w, loads[tag])
+                w.CLift_rigid[m, a] = wing_lift_coefficient(results, vehicle, tag)
             CLift_rigid[m, a] = results.CLift[0, 0]
             CM_rigid[m, a]    = results.CM[0, 0]
 
@@ -133,6 +136,7 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
                 for tag, w in wings.items():
                     w.load_G[m, r, :, :, k] = (loads_plus[tag] - loads_minus[tag]) / (2 * step)
                     w.G[m, r, :, k]         = beam_response(w, w.load_G[m, r, :, :, k])
+                    w.dCLift_deta[m, r, k]  = (wing_lift_coefficient(results_plus, vehicle, tag) - wing_lift_coefficient(results_minus, vehicle, tag)) / (2 * step)
                 dCLift_deta[m, r, k] = (results_plus.CLift[0, 0] - results_minus.CLift[0, 0]) / (2 * step)
                 dCM_deta[m, r, k]    = (results_plus.CM[0, 0]    - results_minus.CM[0, 0])    / (2 * step)
 
@@ -246,6 +250,7 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
         results[tag].shear_stress     = shear_stress
         results[tag].margin_of_safety = margin_of_safety
         results[tag].tip_deflection_ratio = np.linalg.norm(results[tag].deflection[-1]) / w.node_data.total_span
+        results[tag].CLift            = at_mach_and_alpha(w.CLift_rigid) + feedback_at_mach_and_alpha(w.dCLift_deta) @ eta
     results.divergence_determinant = np.linalg.det(system) if coupled else 1.0
     largest_ratio                  = max(results[tag].tip_deflection_ratio for tag in modeled)
     results.within_validated_range = bool((results.divergence_determinant > 0) & (largest_ratio <= VALIDATED_TIP_DEFLECTION_RATIO))
@@ -364,6 +369,12 @@ def deformed_mesh(jig_VD, vehicle, wings, station_tag, station_k, component, ste
     else:
         deformation[station_tag].rotation[0, :, component - 3] = shape
     return deform_vortex_distribution(jig_VD, vehicle, deformation, ti=0)
+
+
+def wing_lift_coefficient(results, vehicle, tag):
+    """Lift coefficient of one wing on the vehicle's reference area. The vortex lattice method reports it on the
+    wing's own reference area."""
+    return results.CLift_wings[tag][0, 0] * vehicle.wings[tag].areas.reference / vehicle.reference_area
 
 
 def aerodynamic_conditions(mach, alpha):
