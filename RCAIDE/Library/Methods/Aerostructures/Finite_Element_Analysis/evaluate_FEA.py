@@ -148,12 +148,12 @@ def evaluate_surrogate(state, settings, vehicle):
 def evaluate_no_surrogate(state, settings, vehicle):
     """Evaluate aerostructural response directly by calling VLM then FEA.
 
-    VD (vortex distribution) must already be stored in
-    state.analyses.aerodynamics.vortex_distribution after the VLM analysis setup.
+    The vortex lattice is solved with the settings of the aerodynamics analysis of the segment, and the beam
+    with the loads on that lattice.
 
     Args:
         state    : mission segment state
-        settings : analysis settings
+        settings : aerostructures analysis settings
         vehicle  : vehicle configuration
 
     Returns:
@@ -161,10 +161,9 @@ def evaluate_no_surrogate(state, settings, vehicle):
     """
     conditions = state.conditions
 
-    VLM_results = VLM(conditions, settings, vehicle)
-    VD          = state.analyses.aerodynamics.vortex_distribution
+    VLM_results = VLM(conditions, state.analyses.aerodynamics.settings, vehicle)
 
-    conditions.aerostructures = FEA(conditions, VLM_results, VD, settings, vehicle)
+    conditions.aerostructures = FEA(conditions, VLM_results, VLM_results.VD, settings, vehicle)
     return
 
 

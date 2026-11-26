@@ -9,7 +9,9 @@ import RCAIDE
 from RCAIDE.Framework.Core                                                       import Data, Units
 from RCAIDE.Library.Methods.Performance                                          import aircraft_aerostructural_analysis
 from RCAIDE.Library.Mission.Common.Pre_Process                                   import geometry_preprocess_routine
-from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.evaluate_FEA  import evaluate_surrogate
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.evaluate_FEA  import evaluate_surrogate, evaluate_no_surrogate
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.static_aeroelastic_model import aerodynamic_conditions
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates import full_fuel_masses
 
 import numpy as np
 import sys
@@ -38,6 +40,7 @@ def main():
     check_surrogate_reproduces_the_direct_solve(analyses, direct)
     check_vertical_wings_are_left_out(analyses)
     check_streamwise_twist_is_continuous(direct)
+    check_direct_evaluation_in_a_segment(analyses, direct)
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -128,6 +131,31 @@ def check_streamwise_twist_is_continuous(direct):
     streamwise_step = np.max(np.abs(np.diff(wing.rotation[0, :, 1])))
     projected_step  = np.max(np.abs(np.diff(wing.elastic_twist[0, :, 0])))
     assert streamwise_step < 0.1 * projected_step, (streamwise_step, projected_step)
+    return
+
+
+def check_direct_evaluation_in_a_segment(analyses, direct):
+    # without the surrogate a segment solves the lattice and the beam at its control points; at the same
+    # condition this is the direct solve
+    altitude   = analyses.aerodynamics.training.altitude
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976().compute_values(altitude)
+    velocity   = MACH * atmosphere.speed_of_sound[0, 0]
+    conditions = aerodynamic_conditions(MACH, ALPHA)
+    conditions.freestream.velocity                   = np.array([[velocity]])
+    conditions.freestream.density                    = np.array([[atmosphere.density[0, 0]]])
+    conditions.freestream.dynamic_pressure           = np.array([[0.5 * atmosphere.density[0, 0] * velocity**2]])
+    conditions.freestream.gravitational_acceleration = np.array([[9.80665]])
+    for tag, mass in full_fuel_masses(analyses.vehicle, 1).items():
+        conditions.weights.components.mass[tag] = mass
+    conditions.aerostructures = Data()
+    state            = Data()
+    state.conditions = conditions
+    state.analyses   = analyses
+    evaluate_no_surrogate(state, analyses.aerostructures.settings, analyses.vehicle)
+    for tag in WINGS:
+        for field in ('deflection', 'rotation'):
+            error = np.max(np.abs(state.conditions.aerostructures[tag][field][0] - direct[tag][field][0]))
+            assert error < 1e-6 * np.max(np.abs(direct[tag][field][0])), (tag, field, error)
     return
 
 
