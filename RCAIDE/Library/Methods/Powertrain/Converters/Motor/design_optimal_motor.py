@@ -70,9 +70,13 @@ def design_optimal_motor(motor):
     R the resistance, I₀ the no-load current, Q the torque and η the efficiency.
     
     This solution exists only if the no-load current is below :math:`(1 - \\eta) I`, since the no-load
-    loss alone must be smaller than the total loss the efficiency allows. Otherwise the motor is given
-    the minimum resistance and the speed constant that still meets the design torque,
-    :math:`R Q Kv^2 - (V - R I_0) Kv + \\omega = 0`, which is the highest efficiency it can reach.
+    loss alone must be smaller than the total loss the efficiency allows. Otherwise the motor is sized so
+    that the design point is its most efficient one. From Eq. (5) of [1], the efficiency at a given voltage
+    peaks where :math:`I^2 R = I_0 V`, and is then :math:`(1 - I_0/I)^2`. With the design torque this gives
+    :math:`(I - I_0)^2 = (Q\\omega/V) I`, then :math:`R = I_0 V/I^2` and :math:`Kv = (I - I_0)/Q`.
+    
+    A motor with no design torque is given a speed constant that reaches the design speed at the nominal
+    voltage, and the minimum resistance.
     
     References
     ----------
@@ -92,20 +96,21 @@ def design_optimal_motor(motor):
     Q      = motor.design_torque
     
     current = Q * omega / (etam * v)
-    if io < (1 - etam) * current:
+    if Q == 0:
+        motor.speed_constant = omega / v
+        motor.resistance     = minimum_resistance
+        current              = io
+    elif io < (1 - etam) * current:
         motor.speed_constant = (current - io) / Q
         motor.resistance     = (v - omega / motor.speed_constant) / current
     else:
-        # the efficiency cannot be met: keep the design torque at the minimum resistance
-        motor.resistance     = minimum_resistance
-        if Q == 0:
-            motor.speed_constant = omega / (v - motor.resistance * io)
-        else:
-            b                    = v - motor.resistance * io
-            motor.speed_constant = (b - np.sqrt(b**2 - 4 * motor.resistance * Q * omega)) / (2 * motor.resistance * Q)
-        current              = Q * motor.speed_constant + io
+        # the efficiency cannot be met: make the design point the motor's most efficient one
+        c                    = Q * omega / v
+        current              = ((2 * io + c) + np.sqrt((2 * io + c)**2 - 4 * io**2)) / 2
+        motor.resistance     = io * v / current**2
+        motor.speed_constant = (current - io) / Q
         print('\n Motor ' + motor.tag + ' cannot reach an efficiency of ' + str(etam) + ' with a no-load current of ' + str(io)
-              + ' A. Sized for the design torque at an efficiency of ' + str(Q * omega / (v * current)))
+              + ' A. Sized for its peak efficiency of ' + str((1 - io / current)**2) + ' at the design point')
     
     motor.design_current   = current
     return motor  
