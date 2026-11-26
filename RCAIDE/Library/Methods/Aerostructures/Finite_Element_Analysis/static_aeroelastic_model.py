@@ -51,7 +51,7 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
     Args:
         vehicle               : vehicle, with its geometry already preprocessed
         aerodynamics_settings : vortex lattice settings
-        structural_settings   : aerostructures settings (discretiation, spar_cutouts)
+        structural_settings   : aerostructures settings (discretization, spar_cutouts)
         mach_numbers          : 1D array of Mach numbers, increasing
         angles_of_attack      : 1D array of angles of attack [rad], increasing
         number_of_stations    : spanwise stations on each wing
@@ -74,7 +74,7 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
     # beam, component masses and inertial responses of each wing
     wings = Data()
     for wing in vehicle.wings.values():
-        node_data = discretize_wing(wing, structural_settings.discretiation)
+        node_data = discretize_wing(wing, structural_settings.discretization)
         beam      = assemble_beam(wing, node_data, structural_settings)
         masses    = assign_component_masses(vehicle, wing, node_data)
 

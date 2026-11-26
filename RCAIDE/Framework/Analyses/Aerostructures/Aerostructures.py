@@ -47,7 +47,7 @@ class Aerostructures(Analysis):
         """           
         self.tag                    = 'aerostructures'   
         self.settings               = Data() 
-        self.settings.discretiation         = 400
+        self.settings.discretization         = 400
         self.settings.load_factor           = 1.0
         # Uniform pressure [Pa] override for beam-solver verification; None in production.
         self.settings.verification_pressure = None

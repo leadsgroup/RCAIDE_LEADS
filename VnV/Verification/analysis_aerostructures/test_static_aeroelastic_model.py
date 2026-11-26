@@ -82,7 +82,7 @@ def build_analyses(coupled):
     analyses.append(geometry)
     analyses.append(RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method())
     aerostructures = RCAIDE.Framework.Analyses.Aerostructures.Finite_Element_Analysis()
-    aerostructures.settings.discretiation        = 100
+    aerostructures.settings.discretization        = 100
     aerostructures.settings.aeroelastic_coupling = 'coupled' if coupled else 'decoupled'
     analyses.append(aerostructures)
     analyses.append(RCAIDE.Framework.Analyses.Planets.Earth())

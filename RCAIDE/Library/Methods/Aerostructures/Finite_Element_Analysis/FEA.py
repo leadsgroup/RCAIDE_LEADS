@@ -40,7 +40,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     n_cpts = len(VLM_results.CLift)
 
     # Discretize Geometry
-    num_elements       = settings.discretiation
+    num_elements       = settings.discretization
     num_nodes          = num_elements + 1
 
     # generate structural node distribution
