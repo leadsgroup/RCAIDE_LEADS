@@ -428,6 +428,10 @@ def deform_vortex_distribution(VD, geometry, structural_results, ti=0):
 
     vd_idx = 0
     for wing in geometry.wings.values():
+        if wing.tag not in structural_results:
+            # a wing without structural results (a vertical wing) keeps its jig shape
+            vd_idx += 2 if wing.xz_plane_symmetric else 1
+            continue
         sr = structural_results[wing.tag]
         node = sr.structural_node_data
         # discretize_wing nodes are relative to the wing origin

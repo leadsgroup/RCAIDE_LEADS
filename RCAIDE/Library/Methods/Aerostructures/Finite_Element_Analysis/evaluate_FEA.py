@@ -50,6 +50,8 @@ def evaluate_surrogate(state, settings, vehicle):
 
     # Per-wing structural deflection and twist surrogates (3D: AoA × Mach × node_idx)
     for wing in vehicle.wings:
+        if wing.tag not in sub_sur.deflection_w:
+            continue
         n_nodes = sub_sur.deflection_w[wing.tag].grid[2].shape[0]
 
         conditions.aerostructures[wing.tag]               = Data()

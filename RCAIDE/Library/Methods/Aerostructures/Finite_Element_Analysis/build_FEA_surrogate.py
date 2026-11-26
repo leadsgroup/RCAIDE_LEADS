@@ -63,6 +63,8 @@ def build_surrogate(aerostructures, training, vehicle):
     surrogates.elastic_twist = Data()
 
     for wing in vehicle.wings:
+        if wing.tag not in training.deflection_w:
+            continue
         n_nodes  = training.deflection_w[wing.tag].shape[2]
         node_idx = np.arange(n_nodes, dtype=float)
 
@@ -109,6 +111,8 @@ def no_surrogate(vehicle):
     surrogates.elastic_twist = Data()
 
     for wing in vehicle.wings:
+        if wing.vertical:
+            continue
         surrogates.deflection_u[wing.tag]  = None
         surrogates.deflection_v[wing.tag]  = None
         surrogates.deflection_w[wing.tag]  = None

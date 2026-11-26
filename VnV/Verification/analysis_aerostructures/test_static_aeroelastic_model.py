@@ -193,6 +193,12 @@ def check_vertical_wings_are_left_out(model):
     results = solve_static_aeroelastic_model(model, MACH, dynamic_pressure(), ALPHA, fuel_masses=FUEL_MASSES)
     assert 'vertical_stabilizer' in model.wings and 'vertical_stabilizer' not in results
     assert results.main_wing.tip_deflection_ratio < 0.10 and results.within_validated_range
+
+    # the direct solve leaves it out as well, and its results for the other wings are finite
+    direct = direct_solve(coupled=True)
+    assert 'vertical_stabilizer' not in direct
+    for tag in ('main_wing', 'horizontal_stabilizer'):
+        assert np.all(np.isfinite(direct[tag].deflection)) and np.all(np.isfinite(direct[tag].margin_of_safety))
     return
 
 

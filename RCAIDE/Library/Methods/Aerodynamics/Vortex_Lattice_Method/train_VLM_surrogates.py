@@ -199,6 +199,8 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
         training.deflection_w  = Data()
         training.elastic_twist = Data()
         for wing in clean_wing_vehicle.wings:
+            if wing.tag not in FEA_results:
+                continue
             n_nodes = FEA_results[wing.tag].deflection.shape[1]
             training.deflection_u[wing.tag]  = (FEA_results[wing.tag].deflection[:, :, 0] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
             training.deflection_v[wing.tag]  = (FEA_results[wing.tag].deflection[:, :, 1] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)

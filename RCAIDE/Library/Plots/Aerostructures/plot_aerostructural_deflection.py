@@ -26,10 +26,12 @@ def plot_aerostructural_deflection(vehicle,structural_results, cpt = 0, scale=1.
         'title_font_size': 16
     } 
     
-    for wing in vehicle.wings:  
+    # wings without structural results (vertical wings) are not drawn
+    wings = [wing for wing in vehicle.wings if wing.tag in structural_results]
+    for wing in wings:  
         max_def = np.maximum(max_def,np.max(structural_results[wing.tag].deflection[cpt,:,2]))
 
-    for wing in vehicle.wings:
+    for wing in wings:
         plot_wing_deflection(plot,cmap,min_def,max_def,structural_results,wing,cpt,scale) 
     
     # Cartesian reference grid

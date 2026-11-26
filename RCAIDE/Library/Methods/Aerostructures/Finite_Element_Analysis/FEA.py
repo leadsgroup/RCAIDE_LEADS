@@ -33,6 +33,9 @@ pv.global_theme.font.title_size         = 16
 def FEA(conditions,VLM_results,VD,settings,geometry):
     """
     Main Aero-Structural integration bridge.
+
+    Vertical wings are left out: the beam discretization measures span along y, which is zero on a vertical wing,
+    so they have no entry in the results.
     """
     q_dyn         = conditions.freestream.dynamic_pressure
     n             = settings.load_factor
@@ -46,6 +49,8 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     # generate structural node distribution
     structural_results = conditions.aerostructures
     for wing in geometry.wings.values():
+        if wing.vertical:
+            continue
         structural_results[wing.tag]                      = Data()
         structural_results[wing.tag].structural_node_data = discretize_wing(wing, num_elements)
         structural_results[wing.tag].load                 = np.zeros((n_cpts,num_nodes,3))   # load x,y,z (formally w_z_load)
@@ -61,6 +66,8 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     beams            = Data()
     component_masses = Data()
     for wing in geometry.wings.values():
+        if wing.vertical:
+            continue
         node_data                  = structural_results[wing.tag].structural_node_data
         beams[wing.tag]            = assemble_beam(wing, node_data, settings)
         component_masses[wing.tag] = assign_component_masses(geometry, wing, node_data)
@@ -75,6 +82,10 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         vd_idx = 0
 
         for wing in geometry.wings.values():
+            if wing.vertical:
+                # its panels are stepped over
+                vd_idx += 2 if wing.xz_plane_symmetric else 1
+                continue
             node_data = structural_results[wing.tag].structural_node_data
             beam      = beams[wing.tag]
             masses    = component_masses[wing.tag]
