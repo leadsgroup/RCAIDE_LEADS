@@ -26,6 +26,7 @@ def main():
     check_tip_force()
     check_uniform_load()
     check_tip_torque()
+    check_torsion_constant()
     check_chordwise_tip_force()
     check_root_bending_stress()
     check_swept_beam()
@@ -96,6 +97,20 @@ def check_uniform_load():
     zeros             = np.zeros_like(nodes.Le)
     u                 = solve_beam(beam, nodal_force_vector(beam, nodes, zeros, zeros, w_0 + zeros, zeros))
     assert np.allclose(u[2::6], w_0 * s**2 * (6 * L**2 - 4 * L * s + s**2) / (24 * EI), rtol=1e-9, atol=1e-12)
+    return
+
+
+def check_torsion_constant():
+    # Bredt-Batho for a rectangular cell of width w and height h: J = 4 (w h)^2 / (sum of side length over wall
+    # thickness). The walls are the two skins and the two spar webs; the smeared stringers carry no shear flow
+    wing, node_data, beam = build_beam()
+    structure = wing.structural
+    assert structure.stringer_smeared_thickness > 0
+    w = beam.w_box[0]
+    h = CHORD * 0.15
+    J = 4 * (w * h)**2 / (w / structure.top_skin_thickness + w / structure.bottom_skin_thickness
+                          + h / structure.front_spar.t_web + h / structure.rear_spar.t_web)
+    assert np.allclose(beam.J, J, rtol=1e-12)
     return
 
 

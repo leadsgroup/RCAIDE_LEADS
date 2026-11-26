@@ -91,9 +91,11 @@ def section_properties(wing, h_arr, w_box_arr, cut_front=0.0, cut_rear=0.0, eta_
     Izz_total = I_skins_chordwise + I_fs_yy + I_rs_yy
 
     # 6. Torsion (J) - Bredt-Batho Closed Cell
+    # The shear flow is carried by the skins and the spar webs. The stringers carry direct stress only, so their
+    # smeared thickness is left out here, while it is counted in the area and the bending inertias above.
     Am = w_box_arr * h_arr
-    integral_ds_t = (w_box_arr / skin_t_top) + \
-                    (w_box_arr / skin_t_bot) + \
+    integral_ds_t = (w_box_arr / wing.structural.top_skin_thickness) + \
+                    (w_box_arr / wing.structural.bottom_skin_thickness) + \
                     (h_arr / (eta_front * wing.structural.front_spar.t_web)) + \
                     (h_arr / (eta_rear  * wing.structural.rear_spar.t_web))
 

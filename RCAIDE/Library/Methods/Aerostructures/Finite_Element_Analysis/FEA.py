@@ -333,10 +333,8 @@ def recover_stresses(wing, node_data, beam, u_full, w_x, w_y, w_z, t_y):
     # Conservative: assumes the worst bending corner coincides with peak axial stress.
     normal_stress = np.abs(sigma_axial) + sigma_bend_x + sigma_bend_z
 
-    # Bredt-Batho: uniform shear flow, so peak stress is at the thinnest wall.
-    skin_t_top = wing.structural.top_skin_thickness    + wing.structural.stringer_smeared_thickness
-    skin_t_bot = wing.structural.bottom_skin_thickness + wing.structural.stringer_smeared_thickness
-    t_min = np.minimum(np.minimum(skin_t_top, skin_t_bot),
+    # Bredt-Batho: uniform shear flow, so peak stress is at the thinnest wall. The stringers do not carry it.
+    t_min = np.minimum(np.minimum(wing.structural.top_skin_thickness, wing.structural.bottom_skin_thickness),
                         np.minimum(wing.structural.front_spar.t_web, wing.structural.rear_spar.t_web))
     Am_enclosed  = beam.w_box * h_arr
     shear_stress = np.abs(M_torsion) / (2.0 * Am_enclosed * t_min)
