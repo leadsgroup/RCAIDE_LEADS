@@ -176,7 +176,8 @@ def assemble_beam(wing, node_data, settings):
     E            = wing.structural.material.youngs_modulus
     G            = wing.structural.material.shear_modulus
 
-    A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr = compute_wingbox_properties(wing, node_data, settings.spar_cutouts)
+    section = compute_wingbox_properties(wing, node_data, settings.spar_cutouts)
+    A_arr, Ixx_arr, Izz_arr, J_arr = section.A, section.Ixx, section.Izz, section.J
 
     T_all         = compute_3d_transformation_matrix(node_data.sweep_mid_elems, node_data.dihedral_elems, node_data.twist_elems, num_elements)
     K_local       = compute_element_stiffness_arrays(E, G, A_arr, J_arr, Ixx_arr, Izz_arr, node_data.Le, num_elements)
@@ -208,7 +209,9 @@ def assemble_beam(wing, node_data, settings):
     beam.Ixx            = Ixx_arr
     beam.Izz            = Izz_arr
     beam.J              = J_arr
-    beam.w_box          = w_box_arr
+    beam.w_box          = section.w_box
+    beam.fiber_distance = section.fiber_distance
+    beam.enclosed_area  = section.enclosed_area
     beam.T              = T_all
     beam.K_local        = K_local
     beam.global_indices = global_indices
@@ -326,9 +329,8 @@ def recover_stresses(wing, node_data, beam, u_full, w_x, w_y, w_z, t_y):
     M_bend_z  = q_local[:, 5]  # bending moment about local z -> chordwise (Izz) bending
     M_torsion = q_local[:, 4]  # torsion moment about local spanwise axis
 
-    h_arr = node_data.chord_elems * node_data.t_c_elems  # wingbox height, matches compute_wingbox_properties
     sigma_axial  = N_axial / beam.A
-    sigma_bend_x = np.abs(M_bend_x) * (h_arr / 2.0) / beam.Ixx
+    sigma_bend_x = np.abs(M_bend_x) * beam.fiber_distance / beam.Ixx
     sigma_bend_z = np.abs(M_bend_z) * (beam.w_box / 2.0) / beam.Izz
     # Conservative: assumes the worst bending corner coincides with peak axial stress.
     normal_stress = np.abs(sigma_axial) + sigma_bend_x + sigma_bend_z
@@ -336,8 +338,7 @@ def recover_stresses(wing, node_data, beam, u_full, w_x, w_y, w_z, t_y):
     # Bredt-Batho: uniform shear flow, so peak stress is at the thinnest wall. The stringers do not carry it.
     t_min = np.minimum(np.minimum(wing.structural.top_skin_thickness, wing.structural.bottom_skin_thickness),
                         np.minimum(wing.structural.front_spar.t_web, wing.structural.rear_spar.t_web))
-    Am_enclosed  = beam.w_box * h_arr
-    shear_stress = np.abs(M_torsion) / (2.0 * Am_enclosed * t_min)
+    shear_stress = np.abs(M_torsion) / (2.0 * beam.enclosed_area * t_min)
 
     margin_normal = wing.structural.material.yield_tensile_strength / np.maximum(normal_stress, 1e-6) - 1.0
     margin_shear  = wing.structural.material.yield_shear_strength   / np.maximum(shear_stress,  1e-6) - 1.0

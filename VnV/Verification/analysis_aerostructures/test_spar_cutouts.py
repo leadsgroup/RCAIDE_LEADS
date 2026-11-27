@@ -9,9 +9,13 @@ import RCAIDE
 from RCAIDE.Framework.Core                                                                   import Data
 from RCAIDE.Library.Methods.Geometry.Planform                                                import wing_planform
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.discretize_wing           import discretize_wing
-from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_wingbox_properties import compute_wingbox_properties, section_properties, kuhn_shear_stiffness_factor
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_wingbox_properties import compute_wingbox_properties, section_properties, wingbox_shape, kuhn_shear_stiffness_factor
 import numpy as np
 from scipy.integrate import quad
+
+# front spar hole and the rib bay that holds it [m]; the web is 0.234 m deep
+DIAMETER   = 0.14
+BAY_LENGTH = 0.234
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Main
@@ -29,7 +33,7 @@ def main():
 # ----------------------------------------------------------------------------------------------------------------------
 def build_wing():
     """Rectangular, unswept wing: 10 m semi-span, 2 m chord, 15% thick, spars at 10% and 60% chord, so the
-    wingbox is 0.3 m deep and 1.0 m wide everywhere."""
+    wingbox is 1.0 m wide everywhere and, with the NACA four-digit section, 0.234 m deep at the front spar."""
     wing                        = RCAIDE.Library.Components.Wings.Main_Wing()
     wing.tag                    = 'main_wing'
     wing.spans.projected        = 20.0
@@ -54,15 +58,21 @@ def build_wing():
     wing.structural.rear_spar.t_web  = 0.004
 
     # front spar hole: D/h = 0.6 and D/b = 0.6, inside Kuhn's tested range
-    wing.structural.spar_cutouts = [Data(spar='front', percent_span_location=0.5, diameter=0.18, bay_length=0.30)]
+    wing.structural.spar_cutouts = [Data(spar='front', percent_span_location=0.5, diameter=DIAMETER, bay_length=BAY_LENGTH)]
     return wing
+
+
+def box_at_mid_span(wing):
+    """Shape of the wing box section, the same along this wing: chordwise points and surface heights [m]."""
+    x, z_upper, z_lower = wingbox_shape(wing, [5.0], [2.0], [0.1], [0.6], 10.0)
+    return x[0], z_upper[0], z_lower[0]
 
 
 def vertical_flexibility(wing, n_elem):
     """Integral of 1/Ixx along the span [1/m^3], summed over the elements of an n_elem mesh."""
     geom = discretize_wing(wing, n_elem)
-    A, Ixx, Izz, J, w_box = compute_wingbox_properties(wing, geom, spar_cutouts=True)
-    return np.sum(geom.Le / Ixx)
+    section = compute_wingbox_properties(wing, geom, spar_cutouts=True)
+    return np.sum(geom.Le / section.Ixx)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Tests
@@ -82,19 +92,19 @@ def check_toggle_off_is_unchanged():
     with_holes  = compute_wingbox_properties(wing, geom, spar_cutouts=False)
     wing.structural.spar_cutouts = []
     no_holes    = compute_wingbox_properties(wing, geom, spar_cutouts=True)
-    for off, empty in zip(with_holes, no_holes):
-        assert np.array_equal(off, empty)
+    for key in ('A', 'Ixx', 'Izz', 'J', 'w_box', 'fiber_distance', 'enclosed_area'):
+        assert np.array_equal(with_holes[key], no_holes[key])
     return
 
 
 def check_flexibility_is_mesh_independent():
     wing  = build_wing()
-    h, w  = 0.3, 1.0
-    D, yc = 0.18, 5.0
+    D, yc = DIAMETER, 5.0
     t     = wing.structural.front_spar.t_web
 
-    # independent reference: integrate 1/Ixx(y) across the hole, where the web loses a centred cut of height c(y)
-    Ixx_full = section_properties(wing, h, w)[1]
+    # independent reference: integrate 1/Ixx(y) across the hole, where the web loses a centred cut of height c(y).
+    # The section is symmetric, so the cut is centred on its centroid
+    Ixx_full = section_properties(wing, *box_at_mid_span(wing)).Ixx
     def inverse_Ixx(y):
         c = D * np.sqrt(max(0.0, 1.0 - ((y - yc) / (D / 2))**2))
         return 1.0 / (Ixx_full - t * c**3 / 12)
@@ -110,18 +120,20 @@ def check_flexibility_is_mesh_independent():
 def check_bay_uses_kuhn_thickness_in_torsion():
     wing  = build_wing()
     geom  = discretize_wing(wing, 1000)
-    A, Ixx, Izz, J, w_box = compute_wingbox_properties(wing, geom, spar_cutouts=True)
+    section = compute_wingbox_properties(wing, geom, spar_cutouts=True)
+    box     = box_at_mid_span(wing)
+    h_front = box[1][0] - box[2][0]
 
     # an element inside the bay but outside the hole keeps its full web for bending and Kuhn's thickness for torsion
-    e   = int(np.argmin(np.abs(geom.Y_elems - 5.12)))
-    eta = kuhn_shear_stiffness_factor(0.18, 0.30, 0.3)
-    J_expected = section_properties(wing, 0.3, 1.0, eta_front=eta)[3]
-    assert abs(J[e] - J_expected) / J_expected < 1e-10, (J[e], J_expected)
-    assert abs(Ixx[e] - section_properties(wing, 0.3, 1.0)[1]) < 1e-14
+    e   = int(np.argmin(np.abs(geom.Y_elems - (5.0 + 0.4 * BAY_LENGTH))))
+    eta = kuhn_shear_stiffness_factor(DIAMETER, BAY_LENGTH, h_front)
+    J_expected = section_properties(wing, *box, eta_front=eta).J
+    assert abs(section.J[e] - J_expected) / J_expected < 1e-10, (section.J[e], J_expected)
+    assert abs(section.Ixx[e] - section_properties(wing, *box).Ixx) < 1e-12
 
     # outside the bay the section is untouched
     e_far = int(np.argmin(np.abs(geom.Y_elems - 8.0)))
-    assert np.isclose(J[e_far], section_properties(wing, 0.3, 1.0)[3], rtol=1e-14)
+    assert np.isclose(section.J[e_far], section_properties(wing, *box).J, rtol=1e-12)
     return
 
 

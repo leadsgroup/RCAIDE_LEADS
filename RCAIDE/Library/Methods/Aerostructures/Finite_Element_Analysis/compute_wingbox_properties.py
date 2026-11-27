@@ -6,6 +6,10 @@
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
+import RCAIDE
+from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry, compute_naca_4series
+
 import numpy as np
 import warnings
 
@@ -16,100 +20,185 @@ KUHN_D_OVER_B_RANGE = (0.43, 0.64)
 # sample points per element when integrating a cutout along the span
 CUTOUT_SAMPLES = 32
 
+# points along each skin between the spars, and points on each surface of the airfoil they are read from
+BOX_POINTS     = 21
+AIRFOIL_POINTS = 201
+
 # ----------------------------------------------------------------------
 #  Wingbox Assembly Function
 # ----------------------------------------------------------------------
 def compute_wingbox_properties(wing, discretized_params, spar_cutouts=False):
     """
-    Assembles the wingbox from components at every element.
+    Section properties of the wingbox at every element. The box lies inside the wing: its skins follow the upper
+    and lower surfaces of the section between the spars, and its webs are as deep as the section is at each spar.
 
     With spar_cutouts True, each hole in wing.structural.spar_cutouts reduces the section properties of the
     elements it crosses, without adding nodes (see apply_spar_cutouts).
+
+    Returns:
+        Data with, for each element,
+          A, Ixx, Izz, J   : area [m^2], vertical and chordwise bending inertia and torsion constant [m^4]
+          w_box            : width between the spars [m]
+          fiber_distance   : largest vertical distance from the centroid to a skin [m]
+          enclosed_area    : area enclosed by the skins and the webs [m^2]
     """
-    # 1. Extract the element arrays
-    chord_arr   = discretized_params.chord_elems
-    t_c_arr     = discretized_params.t_c_elems
-    spar_f_loc  = discretized_params.spar_f_elems
-    spar_r_loc  = discretized_params.spar_r_elems
+    x, z_upper, z_lower = wingbox_shape(wing, discretized_params.Y_elems, discretized_params.chord_elems,
+                                        discretized_params.spar_f_elems, discretized_params.spar_r_elems, discretized_params.total_span)
 
-    # 2. Geometry Arrays
-    h_arr       = chord_arr * t_c_arr
-    w_box_arr   = chord_arr * (spar_r_loc - spar_f_loc)
-
-    A_total, Ixx_total, Izz_total, J_total = section_properties(wing, h_arr, w_box_arr)
+    section       = section_properties(wing, x, z_upper, z_lower)
+    section.w_box = x[:, -1] - x[:, 0]
 
     if spar_cutouts and len(wing.structural.spar_cutouts) > 0:
-        A_total, Ixx_total, Izz_total, J_total = apply_spar_cutouts(wing, discretized_params, h_arr, w_box_arr,
-                                                                    A_total, Ixx_total, Izz_total, J_total)
+        apply_spar_cutouts(wing, discretized_params, x, z_upper, z_lower, section)
 
-    return A_total, Ixx_total, Izz_total, J_total, w_box_arr
+    return section
 
 
-def section_properties(wing, h_arr, w_box_arr, cut_front=0.0, cut_rear=0.0, eta_front=1.0, eta_rear=1.0):
+def wingbox_shape(wing, y, chord, front_spar, rear_spar, semi_span):
     """
-    Area, vertical and chordwise bending inertia, and torsion constant of the wingbox section.
+    Upper and lower surface of the wing between the spars at spanwise stations y [m], where the chord and the
+    spar positions (fractions of chord) are given.
+
+    Each wing segment gives the surface at its station: its airfoil if it has one, and otherwise the NACA
+    four-digit symmetric section of its thickness-to-chord ratio, the same rule as the geometry plots. The
+    surface heights, as fractions of chord, are interpolated linearly along the span between segments.
+
+    Returns:
+        x       : chordwise position of BOX_POINTS points from the front to the rear spar, from the leading edge [m]
+        z_upper : height of the upper surface at those points, from the chord line [m]
+        z_lower : height of the lower surface [m]
+        each of shape (len(y), BOX_POINTS)
+    """
+    fraction      = np.linspace(0.0, 1.0, BOX_POINTS)
+    segments      = list(wing.segments)
+    stations      = np.array([segment.percent_span_location for segment in segments]) * semi_span
+    upper_station = np.zeros((len(segments), BOX_POINTS))
+    lower_station = np.zeros((len(segments), BOX_POINTS))
+    for k, segment in enumerate(segments):
+        front, rear      = segment.structural.front_spar_percent_chord, segment.structural.rear_spar_percent_chord
+        x_over_c         = front + fraction * (rear - front)
+        upper_station[k], lower_station[k] = segment_surfaces(wing, segment, x_over_c)
+
+    y        = np.abs(np.atleast_1d(y))
+    upper    = np.array([np.interp(y, stations, upper_station[:, j]) for j in range(BOX_POINTS)]).T
+    lower    = np.array([np.interp(y, stations, lower_station[:, j]) for j in range(BOX_POINTS)]).T
+    chord    = np.atleast_1d(chord)[:, None]
+    x        = (np.atleast_1d(front_spar)[:, None] + fraction[None, :] * (np.atleast_1d(rear_spar) - np.atleast_1d(front_spar))[:, None]) * chord
+    return x, upper * chord, lower * chord
+
+
+def segment_surfaces(wing, segment, x_over_c):
+    """Heights of the upper and lower surface of a segment's section at chord fractions x_over_c, as fractions of chord."""
+    airfoil = segment.airfoil
+    if airfoil is None:
+        # NACA four-digit thickness distribution, which is linear in the thickness-to-chord ratio
+        t_c      = segment.thickness_to_chord if segment.thickness_to_chord > 0 else wing.thickness_to_chord
+        geometry = compute_naca_4series('0010', AIRFOIL_POINTS)
+        scale    = t_c / 0.10
+    elif isinstance(airfoil, RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil):
+        geometry = compute_naca_4series(airfoil.NACA_4_Series_code, AIRFOIL_POINTS, thickness_multiplier=airfoil.thickness_multiplier)
+        scale    = 1.0
+    else:
+        geometry = import_airfoil_geometry(airfoil.coordinate_file, AIRFOIL_POINTS, thickness_multiplier=airfoil.thickness_multiplier)
+        scale    = 1.0
+    x_u, z_u = np.ravel(geometry.x_upper_surface), np.ravel(geometry.y_upper_surface)
+    x_l, z_l = np.ravel(geometry.x_lower_surface), np.ravel(geometry.y_lower_surface)
+    return scale * np.interp(x_over_c, x_u, z_u), scale * np.interp(x_over_c, x_l, z_l)
+
+
+def section_properties(wing, x, z_upper, z_lower, cut_front=0.0, cut_rear=0.0, eta_front=1.0, eta_rear=1.0):
+    """
+    Area, vertical and chordwise bending inertia, and torsion constant of a wingbox section whose skins are the
+    polylines (x, z_upper) and (x, z_lower) and whose webs join their ends. The last axis of x, z_upper and
+    z_lower runs from the front to the rear spar; a rectangle is x = [0, w], z_upper = [h/2, h/2],
+    z_lower = [-h/2, -h/2].
+
+    The vertical inertia is taken about the centroid of the section. The stringers are smeared into the skin
+    thickness for the area and the bending inertias. The skin thickness is laid on the surface, not inside it.
 
     cut_front/cut_rear are the heights of a centred hole in each spar web, which remove web material from
     the area and inertias. eta_front/eta_rear scale each web's thickness in the torsion constant (Kuhn's
-    effective thickness, see kuhn_shear_stiffness_factor). All arguments broadcast together.
+    effective thickness, see kuhn_shear_stiffness_factor). They broadcast against the leading axes.
     """
-    skin_t_top  = wing.structural.top_skin_thickness    + wing.structural.stringer_smeared_thickness
-    skin_t_bot  = wing.structural.bottom_skin_thickness + wing.structural.stringer_smeared_thickness
+    structure   = wing.structural
+    skin_t_top  = structure.top_skin_thickness    + structure.stringer_smeared_thickness
+    skin_t_bot  = structure.bottom_skin_thickness + structure.stringer_smeared_thickness
 
-    # 1. Front Spar (Get Ixx and Iyy)
-    A_fs, I_fs_xx, I_fs_yy = get_spar_properties(wing.structural.front_spar.type,
-                                                h_arr,
-                                                wing.structural.front_spar.t_web,
-                                                wing.structural.front_spar.w_cap ,
-                                                wing.structural.front_spar.t_cap,
-                                                cut_front)
+    x, z_upper, z_lower = np.asarray(x, dtype=float), np.asarray(z_upper, dtype=float), np.asarray(z_lower, dtype=float)
+    h_front     = z_upper[..., 0]  - z_lower[..., 0]
+    h_rear      = z_upper[..., -1] - z_lower[..., -1]
+    z_front     = 0.5 * (z_upper[..., 0]  + z_lower[..., 0])
+    z_rear      = 0.5 * (z_upper[..., -1] + z_lower[..., -1])
+    x_mid       = 0.5 * (x[..., 0] + x[..., -1])
 
-    # 2. Rear Spar (Get Ixx and Iyy)
-    A_rs, I_rs_xx, I_rs_yy = get_spar_properties(wing.structural.rear_spar.type,
-                                                h_arr,
-                                                wing.structural.rear_spar.t_web,
-                                                wing.structural.rear_spar.w_cap,
-                                                wing.structural.rear_spar.t_cap,
-                                                cut_rear)
+    # 1. Spars: area, vertical inertia about their own mid-height, lateral inertia about their own thickness
+    A_fs, I_fs_xx, I_fs_yy = get_spar_properties(structure.front_spar.type, h_front, structure.front_spar.t_web,
+                                                 structure.front_spar.w_cap, structure.front_spar.t_cap, cut_front)
+    A_rs, I_rs_xx, I_rs_yy = get_spar_properties(structure.rear_spar.type, h_rear, structure.rear_spar.t_web,
+                                                 structure.rear_spar.w_cap, structure.rear_spar.t_cap, cut_rear)
 
-    # 3. Skins
-    # Top Skin
-    A_sk_top, I_sk_top_xx = get_skin_properties(w_box_arr, skin_t_top, h_arr/2)
-    # Bottom Skin
-    A_sk_bot, I_sk_bot_xx = get_skin_properties(w_box_arr, skin_t_bot, h_arr/2)
+    # 2. Skins, as straight strips between the points of each surface, with their moments about z = 0
+    A_top, L_top, Q_top, I_top, I_top_zz = skin_strips(x, z_upper, skin_t_top, x_mid)
+    A_bot, L_bot, Q_bot, I_bot, I_bot_zz = skin_strips(x, z_lower, skin_t_bot, x_mid)
 
-    # 4. Total Vertical Stiffness (Ixx) -> Resists Lift
-    Ixx_total = I_fs_xx + I_rs_xx + I_sk_top_xx + I_sk_bot_xx
+    # 3. Area and centroid height
+    A_total = A_fs + A_rs + A_top + A_bot
+    z_c     = (A_fs * z_front + A_rs * z_rear + Q_top + Q_bot) / A_total
 
-    # 5. Total Chordwise Stiffness (Izz) -> Resists Drag
-    # Plus the "Lateral Bending" (Iyy) of the Spars
+    # 4. Vertical stiffness (Ixx) about the centroid -> resists lift (skins moved from z = 0 by the parallel axis theorem)
+    I_skins   = (I_top + I_bot) - 2 * z_c * (Q_top + Q_bot) + z_c**2 * (A_top + A_bot)
+    Ixx_total = I_fs_xx + A_fs * (z_front - z_c)**2 + I_rs_xx + A_rs * (z_rear - z_c)**2 + I_skins
 
-    # Skin contribution (Deep Beam approximation: 2 * t * w^3 / 12)
-    I_skins_chordwise = (skin_t_top * w_box_arr**3 / 12) + (skin_t_bot * w_box_arr**3 / 12)
+    # 5. Chordwise stiffness (Izz) -> resists drag: the skins about the middle of the box, and the lateral
+    #    bending of each spar about its own thickness
+    Izz_total = I_top_zz + I_bot_zz + I_fs_yy + I_rs_yy
 
-    # Total Izz (Note: Spar local Iyy acts in the Global Chordwise direction)
-    Izz_total = I_skins_chordwise + I_fs_yy + I_rs_yy
-
-    # 6. Torsion (J) - Bredt-Batho Closed Cell
+    # 6. Torsion (J) - Bredt-Batho closed cell
     # The shear flow is carried by the skins and the spar webs. The stringers carry direct stress only, so their
     # smeared thickness is left out here, while it is counted in the area and the bending inertias above.
-    Am = w_box_arr * h_arr
-    integral_ds_t = (w_box_arr / wing.structural.top_skin_thickness) + \
-                    (w_box_arr / wing.structural.bottom_skin_thickness) + \
-                    (h_arr / (eta_front * wing.structural.front_spar.t_web)) + \
-                    (h_arr / (eta_rear  * wing.structural.rear_spar.t_web))
+    Am            = np.sum(0.5 * ((z_upper - z_lower)[..., 1:] + (z_upper - z_lower)[..., :-1]) * np.diff(x, axis=-1), axis=-1)
+    integral_ds_t = L_top / structure.top_skin_thickness + L_bot / structure.bottom_skin_thickness \
+                  + h_front / (eta_front * structure.front_spar.t_web) + h_rear / (eta_rear * structure.rear_spar.t_web)
+    J_total       = 4 * Am**2 / integral_ds_t
 
-    J_total = 4 * Am**2 / integral_ds_t
+    section = Data()
+    section.A              = A_total
+    section.Ixx            = Ixx_total
+    section.Izz            = Izz_total
+    section.J              = J_total
+    section.fiber_distance = np.maximum(np.max(z_upper, axis=-1) - z_c, z_c - np.min(z_lower, axis=-1))
+    section.enclosed_area  = Am
+    return section
 
-    # 7. Total Area
-    A_total = A_fs + A_rs + A_sk_top + A_sk_bot
 
-    return A_total, Ixx_total, Izz_total, J_total
-
-
-def apply_spar_cutouts(wing, discretized_params, h_arr, w_box_arr, A_total, Ixx_total, Izz_total, J_total):
+def skin_strips(x, z, thickness, x_mid):
     """
-    Section properties of the elements crossed by circular spar web holes, on the existing nodes.
+    A skin of the given thickness along the polyline (x, z), whose points run along the last axis. Each strip
+    between two points is straight, and its moments are exact.
+
+    Returns the area, the length, the first and second moments of area about z = 0, and the second moment about
+    the chordwise position x_mid.
+    """
+    x_1, x_2 = x[..., :-1], x[..., 1:]
+    z_1, z_2 = z[..., :-1], z[..., 1:]
+    ds       = np.sqrt((x_2 - x_1)**2 + (z_2 - z_1)**2)
+    dA       = thickness * ds
+    # strip thickness about its own midline, for the part of the strip that lies along x
+    local    = thickness**3 * (x_2 - x_1)**2 / np.maximum(ds, 1e-12) / 12
+    a, b     = x_1 - x_mid[..., None], x_2 - x_mid[..., None]
+
+    area            = np.sum(dA, axis=-1)
+    length          = np.sum(ds, axis=-1)
+    first_moment_z  = np.sum(dA * 0.5 * (z_1 + z_2), axis=-1)
+    second_moment_z = np.sum(dA * (z_1**2 + z_1 * z_2 + z_2**2) / 3 + local, axis=-1)
+    second_moment_x = np.sum(dA * (a**2 + a * b + b**2) / 3, axis=-1)
+    return area, length, first_moment_z, second_moment_z, second_moment_x
+
+
+def apply_spar_cutouts(wing, discretized_params, x, z_upper, z_lower, section):
+    """
+    Section properties of the elements crossed by circular spar web holes, on the existing nodes. x, z_upper
+    and z_lower are the box shape of each element (see wingbox_shape), and section is updated in place.
 
     Each cutout is a Data with spar ('front' or 'rear'), percent_span_location (hole centre, fraction of the
     semi-span), diameter [m] and bay_length [m], the rib bay that contains the hole (Kuhn's hole spacing b).
@@ -126,7 +215,8 @@ def apply_spar_cutouts(wing, discretized_params, h_arr, w_box_arr, A_total, Ixx_
     Y_nodes   = discretized_params.Y_nodes
     Y_left    = np.minimum(Y_nodes[:-1], Y_nodes[1:])
     Y_right   = np.maximum(Y_nodes[:-1], Y_nodes[1:])
-    n_elem    = len(h_arr)
+    n_elem    = len(Y_left)
+    web_depth = {'front': z_upper[:, 0] - z_lower[:, 0], 'rear': z_upper[:, -1] - z_lower[:, -1]}
 
     # spanwise sample stations in each element, midpoint rule
     fractions = (np.arange(CUTOUT_SAMPLES) + 0.5) / CUTOUT_SAMPLES
@@ -142,7 +232,7 @@ def apply_spar_cutouts(wing, discretized_params, h_arr, w_box_arr, A_total, Ixx_
 
         # web depth at the hole centre, from the element containing it
         e_c = int(np.clip(np.searchsorted(Y_right, y_c), 0, n_elem - 1))
-        h_c = h_arr[e_c]
+        h_c = web_depth[cutout.spar][e_c]
         eta_c = kuhn_shear_stiffness_factor(cutout.diameter, cutout.bay_length, h_c)
 
         # hole height across the span: the chord of the circle at each station
@@ -156,22 +246,20 @@ def apply_spar_cutouts(wing, discretized_params, h_arr, w_box_arr, A_total, Ixx_
     affected = np.any(cut['front'] > 0, axis=1) | np.any(cut['rear'] > 0, axis=1) | \
                np.any(eta['front'] < 1, axis=1) | np.any(eta['rear'] < 1, axis=1)
     if not np.any(affected):
-        return A_total, Ixx_total, Izz_total, J_total
+        return
 
-    if np.any(cut['front'][affected] >= h_arr[affected, None]) or np.any(cut['rear'][affected] >= h_arr[affected, None]):
+    if np.any(cut['front'][affected] >= web_depth['front'][affected, None]) or np.any(cut['rear'][affected] >= web_depth['rear'][affected, None]):
         raise ValueError("A spar cutout reaches the full web depth; a severed spar needs a reinforcement model")
 
-    h_s = np.repeat(h_arr[affected, None], CUTOUT_SAMPLES, axis=1)
-    w_s = np.repeat(w_box_arr[affected, None], CUTOUT_SAMPLES, axis=1)
-    A_s, Ixx_s, Izz_s, J_s = section_properties(wing, h_s, w_s, cut['front'][affected], cut['rear'][affected],
-                                                eta['front'][affected], eta['rear'][affected])
+    # the box shape of each affected element at every sample along it
+    sampled = section_properties(wing, x[affected, None, :], z_upper[affected, None, :], z_lower[affected, None, :],
+                                 cut['front'][affected], cut['rear'][affected], eta['front'][affected], eta['rear'][affected])
 
-    A_total, Ixx_total, Izz_total, J_total = A_total.copy(), Ixx_total.copy(), Izz_total.copy(), J_total.copy()
-    A_total[affected]   = np.mean(A_s, axis=1)
-    Ixx_total[affected] = 1.0 / np.mean(1.0 / Ixx_s, axis=1)
-    Izz_total[affected] = 1.0 / np.mean(1.0 / Izz_s, axis=1)
-    J_total[affected]   = 1.0 / np.mean(1.0 / J_s, axis=1)
-    return A_total, Ixx_total, Izz_total, J_total
+    section.A[affected]   = np.mean(sampled.A, axis=1)
+    section.Ixx[affected] = 1.0 / np.mean(1.0 / sampled.Ixx, axis=1)
+    section.Izz[affected] = 1.0 / np.mean(1.0 / sampled.Izz, axis=1)
+    section.J[affected]   = 1.0 / np.mean(1.0 / sampled.J, axis=1)
+    return
 
 
 def kuhn_shear_stiffness_factor(D, b, h):

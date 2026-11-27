@@ -1,3 +1,5 @@
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_wingbox_properties import wingbox_shape
+
 import numpy as np
 import pyvista as pv
 
@@ -220,42 +222,41 @@ def build_components(structural_results,wing,cpt, scale=1.0, undeformed=False):
 
     
 def get_cross_section_corners(res,wing,cpt, scale=1.0, undeformed=False):
-    y_loc  = res.structural_node_data.y_local 
-    c      = res.structural_node_data.chord_nodes 
-    X0     = res.structural_node_data.X_nodes + wing.origin[0][0]
-    Y0     = res.structural_node_data.Y_nodes + wing.origin[0][1]
-    Z0     = res.structural_node_data.Z_nodes + wing.origin[0][2]
-    Tw_geo = res.structural_node_data.twist_nodes
-    spar_f = res.structural_node_data.spar_f_nodes
-    spar_r = res.structural_node_data.spar_r_nodes
-    t_c    = res.structural_node_data.t_c_nodes
-     
+    """Four corners of the wing box at each node: the upper and lower surface of the section at the two spars."""
+    node_data = res.structural_node_data
+    c      = node_data.chord_nodes
+    X0     = node_data.X_nodes + wing.origin[0][0]
+    Y0     = node_data.Y_nodes + wing.origin[0][1]
+    Z0     = node_data.Z_nodes + wing.origin[0][2]
+    Tw_geo = node_data.twist_nodes
+
+    # box shape at the nodes, measured from the middle of the box along the chord
+    x, z_upper, z_lower = wingbox_shape(wing, node_data.Y_nodes, c, node_data.spar_f_nodes, node_data.spar_r_nodes, node_data.total_span)
+    x_mid  = 0.5 * (x[:, 0] + x[:, -1])
+
     if undeformed:
         W         = np.zeros_like(res.deflection[cpt,:,2])
         Tw_elas   = np.zeros_like(res.elastic_twist[cpt,:,0])
     else:
         W         = res.deflection[cpt, :, 2]
         Tw_elas   = res.elastic_twist[cpt,:,0]
-          
-    n = len(y_loc)
+
+    n = len(c)
     corners = np.zeros((4, n, 3))
-    
+
     for i in range(n):
-        h = c[i] * t_c[i]
-        w = c[i] * (spar_r[i] - spar_f[i])
-        
-        local_x = np.array([-w/2,  w/2,  w/2, -w/2])
-        local_z = np.array([ h/2,  h/2, -h/2, -h/2])
-        
+        local_x = np.array([x[i, 0] - x_mid[i], x[i, -1] - x_mid[i], x[i, -1] - x_mid[i], x[i, 0] - x_mid[i]])
+        local_z = np.array([z_upper[i, 0], z_upper[i, -1], z_lower[i, -1], z_lower[i, 0]])
+
         theta = Tw_geo[i] + (Tw_elas[i] * scale)
         co, si = np.cos(theta), np.sin(theta)
-        
+
         rot_x = local_x * co + local_z * si
         rot_z = -local_x * si + local_z * co
-        
+
         corners[:, i, 0] = X0[i] + rot_x
         corners[:, i, 1] = Y0[i]
         corners[:, i, 2] = Z0[i] + rot_z + (W[i] * scale)
-        
+
     return corners
 
