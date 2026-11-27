@@ -28,6 +28,7 @@ def main():
     check_uniform_load()
     check_tip_torque()
     check_rectangular_section()
+    check_unequal_webs()
     check_tapered_section()
     check_box_lies_inside_the_wing()
     check_chordwise_tip_force()
@@ -115,9 +116,30 @@ def check_rectangular_section():
     section   = section_properties(wing, [0, w], [h / 2, h / 2], [-h / 2, -h / 2])
     assert np.isclose(section.A,   2 * w * t_s + 2 * h * t_w, rtol=1e-12)
     assert np.isclose(section.Ixx, 2 * (w * t_s**3 / 12 + w * t_s * (h / 2)**2) + 2 * t_w * h**3 / 12, rtol=1e-12)
-    assert np.isclose(section.Izz, 2 * t_s * w**3 / 12 + 2 * h * t_w**3 / 12, rtol=1e-12)
+    # chordwise: the skins about the middle of the box, and each web's own thickness plus its area at w/2
+    assert np.isclose(section.Izz, 2 * t_s * w**3 / 12 + 2 * (h * t_w**3 / 12 + h * t_w * (w / 2)**2), rtol=1e-12)
+    assert np.isclose(section.fiber_distance_chordwise, w / 2, rtol=1e-12)
     assert np.isclose(section.J,   4 * (w * h)**2 / (2 * w / structure.top_skin_thickness + 2 * h / t_w), rtol=1e-12)
     assert np.isclose(section.fiber_distance, h / 2, rtol=1e-12) and np.isclose(section.enclosed_area, w * h, rtol=1e-12)
+    return
+
+
+def check_unequal_webs():
+    # a front web twice as thick as the rear one moves the centroid forward of the middle of the box. With web areas
+    # A_f and A_r at x = 0 and x = w and skins of area A_s centred at w/2, the centroid is at
+    # x_c = (A_r w + A_s w/2) / A, and the chordwise inertia about it follows from the parallel axis theorem
+    wing      = RCAIDE.Library.Components.Wings.Main_Wing()
+    structure = wing.structural
+    structure.front_spar.t_web = 2 * structure.rear_spar.t_web
+    t_s, t_f, t_r = structure.top_skin_thickness + structure.stringer_smeared_thickness, structure.front_spar.t_web, structure.rear_spar.t_web
+    w, h      = 1.0, 0.3
+    A_f, A_r, A_s = h * t_f, h * t_r, 2 * w * t_s
+    x_c       = (A_r * w + A_s * w / 2) / (A_f + A_r + A_s)
+    Izz       = h * t_f**3 / 12 + A_f * x_c**2 + h * t_r**3 / 12 + A_r * (w - x_c)**2 + 2 * t_s * w**3 / 12 + A_s * (w / 2 - x_c)**2
+    section   = section_properties(wing, [0, w], [h / 2, h / 2], [-h / 2, -h / 2])
+    assert x_c < w / 2
+    assert np.isclose(section.Izz, Izz, rtol=1e-12)
+    assert np.isclose(section.fiber_distance_chordwise, w - x_c, rtol=1e-12)
     return
 
 

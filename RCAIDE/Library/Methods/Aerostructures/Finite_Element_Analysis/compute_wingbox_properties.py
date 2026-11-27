@@ -40,6 +40,7 @@ def compute_wingbox_properties(wing, discretized_params, spar_cutouts=False):
           A, Ixx, Izz, J   : area [m^2], vertical and chordwise bending inertia and torsion constant [m^4]
           w_box            : width between the spars [m]
           fiber_distance   : largest vertical distance from the centroid to a skin [m]
+          fiber_distance_chordwise : largest chordwise distance from the centroid to a spar [m]
           enclosed_area    : area enclosed by the skins and the webs [m^2]
     """
     x, z_upper, z_lower = wingbox_shape(wing, discretized_params.Y_elems, discretized_params.chord_elems,
@@ -113,7 +114,7 @@ def section_properties(wing, x, z_upper, z_lower, cut_front=0.0, cut_rear=0.0, e
     z_lower runs from the front to the rear spar; a rectangle is x = [0, w], z_upper = [h/2, h/2],
     z_lower = [-h/2, -h/2].
 
-    The vertical inertia is taken about the centroid of the section. The stringers are smeared into the skin
+    Both inertias are taken about the centroid of the section. The stringers are smeared into the skin
     thickness for the area and the bending inertias. The skin thickness is laid on the surface, not inside it.
 
     cut_front/cut_rear are the heights of a centred hole in each spar web, which remove web material from
@@ -129,7 +130,8 @@ def section_properties(wing, x, z_upper, z_lower, cut_front=0.0, cut_rear=0.0, e
     h_rear      = z_upper[..., -1] - z_lower[..., -1]
     z_front     = 0.5 * (z_upper[..., 0]  + z_lower[..., 0])
     z_rear      = 0.5 * (z_upper[..., -1] + z_lower[..., -1])
-    x_mid       = 0.5 * (x[..., 0] + x[..., -1])
+    x_front     = x[..., 0]
+    x_rear      = x[..., -1]
 
     # 1. Spars: area, vertical inertia about their own mid-height, lateral inertia about their own thickness
     A_fs, I_fs_xx, I_fs_yy = get_spar_properties(structure.front_spar.type, h_front, structure.front_spar.t_web,
@@ -137,27 +139,30 @@ def section_properties(wing, x, z_upper, z_lower, cut_front=0.0, cut_rear=0.0, e
     A_rs, I_rs_xx, I_rs_yy = get_spar_properties(structure.rear_spar.type, h_rear, structure.rear_spar.t_web,
                                                  structure.rear_spar.w_cap, structure.rear_spar.t_cap, cut_rear)
 
-    # 2. Skins, as straight strips between the points of each surface, with their moments about z = 0
-    A_top, L_top, Q_top, I_top, I_top_zz = skin_strips(x, z_upper, skin_t_top, x_mid)
-    A_bot, L_bot, Q_bot, I_bot, I_bot_zz = skin_strips(x, z_lower, skin_t_bot, x_mid)
+    # 2. Skins, as straight strips between the points of each surface, with their moments about x = 0 and z = 0
+    top     = skin_strips(x, z_upper, skin_t_top)
+    bottom  = skin_strips(x, z_lower, skin_t_bot)
+    A_skins = top.area + bottom.area
 
-    # 3. Area and centroid height
-    A_total = A_fs + A_rs + A_top + A_bot
-    z_c     = (A_fs * z_front + A_rs * z_rear + Q_top + Q_bot) / A_total
+    # 3. Area and centroid
+    A_total = A_fs + A_rs + A_skins
+    z_c     = (A_fs * z_front + A_rs * z_rear + top.first_moment_z + bottom.first_moment_z) / A_total
+    x_c     = (A_fs * x_front + A_rs * x_rear + top.first_moment_x + bottom.first_moment_x) / A_total
 
     # 4. Vertical stiffness (Ixx) about the centroid -> resists lift (skins moved from z = 0 by the parallel axis theorem)
-    I_skins   = (I_top + I_bot) - 2 * z_c * (Q_top + Q_bot) + z_c**2 * (A_top + A_bot)
+    I_skins   = top.second_moment_z + bottom.second_moment_z - 2 * z_c * (top.first_moment_z + bottom.first_moment_z) + z_c**2 * A_skins
     Ixx_total = I_fs_xx + A_fs * (z_front - z_c)**2 + I_rs_xx + A_rs * (z_rear - z_c)**2 + I_skins
 
-    # 5. Chordwise stiffness (Izz) -> resists drag: the skins about the middle of the box, and the lateral
-    #    bending of each spar about its own thickness
-    Izz_total = I_top_zz + I_bot_zz + I_fs_yy + I_rs_yy
+    # 5. Chordwise stiffness (Izz) about the centroid -> resists drag: the skins, and each spar's lateral bending
+    #    about its own thickness plus its area at its distance from the centroid
+    I_skins   = top.second_moment_x + bottom.second_moment_x - 2 * x_c * (top.first_moment_x + bottom.first_moment_x) + x_c**2 * A_skins
+    Izz_total = I_fs_yy + A_fs * (x_front - x_c)**2 + I_rs_yy + A_rs * (x_rear - x_c)**2 + I_skins
 
     # 6. Torsion (J) - Bredt-Batho closed cell
     # The shear flow is carried by the skins and the spar webs. The stringers carry direct stress only, so their
     # smeared thickness is left out here, while it is counted in the area and the bending inertias above.
     Am            = np.sum(0.5 * ((z_upper - z_lower)[..., 1:] + (z_upper - z_lower)[..., :-1]) * np.diff(x, axis=-1), axis=-1)
-    integral_ds_t = L_top / structure.top_skin_thickness + L_bot / structure.bottom_skin_thickness \
+    integral_ds_t = top.length / structure.top_skin_thickness + bottom.length / structure.bottom_skin_thickness \
                   + h_front / (eta_front * structure.front_spar.t_web) + h_rear / (eta_rear * structure.rear_spar.t_web)
     J_total       = 4 * Am**2 / integral_ds_t
 
@@ -167,17 +172,17 @@ def section_properties(wing, x, z_upper, z_lower, cut_front=0.0, cut_rear=0.0, e
     section.Izz            = Izz_total
     section.J              = J_total
     section.fiber_distance = np.maximum(np.max(z_upper, axis=-1) - z_c, z_c - np.min(z_lower, axis=-1))
+    section.fiber_distance_chordwise = np.maximum(x_rear - x_c, x_c - x_front)
     section.enclosed_area  = Am
     return section
 
 
-def skin_strips(x, z, thickness, x_mid):
+def skin_strips(x, z, thickness):
     """
     A skin of the given thickness along the polyline (x, z), whose points run along the last axis. Each strip
     between two points is straight, and its moments are exact.
 
-    Returns the area, the length, the first and second moments of area about z = 0, and the second moment about
-    the chordwise position x_mid.
+    Returns a Data with the area, the length, and the first and second moments of area about x = 0 and z = 0.
     """
     x_1, x_2 = x[..., :-1], x[..., 1:]
     z_1, z_2 = z[..., :-1], z[..., 1:]
@@ -185,14 +190,15 @@ def skin_strips(x, z, thickness, x_mid):
     dA       = thickness * ds
     # strip thickness about its own midline, for the part of the strip that lies along x
     local    = thickness**3 * (x_2 - x_1)**2 / np.maximum(ds, 1e-12) / 12
-    a, b     = x_1 - x_mid[..., None], x_2 - x_mid[..., None]
 
-    area            = np.sum(dA, axis=-1)
-    length          = np.sum(ds, axis=-1)
-    first_moment_z  = np.sum(dA * 0.5 * (z_1 + z_2), axis=-1)
-    second_moment_z = np.sum(dA * (z_1**2 + z_1 * z_2 + z_2**2) / 3 + local, axis=-1)
-    second_moment_x = np.sum(dA * (a**2 + a * b + b**2) / 3, axis=-1)
-    return area, length, first_moment_z, second_moment_z, second_moment_x
+    strips = Data()
+    strips.area            = np.sum(dA, axis=-1)
+    strips.length          = np.sum(ds, axis=-1)
+    strips.first_moment_z  = np.sum(dA * 0.5 * (z_1 + z_2), axis=-1)
+    strips.first_moment_x  = np.sum(dA * 0.5 * (x_1 + x_2), axis=-1)
+    strips.second_moment_z = np.sum(dA * (z_1**2 + z_1 * z_2 + z_2**2) / 3 + local, axis=-1)
+    strips.second_moment_x = np.sum(dA * (x_1**2 + x_1 * x_2 + x_2**2) / 3, axis=-1)
+    return strips
 
 
 def apply_spar_cutouts(wing, discretized_params, x, z_upper, z_lower, section):

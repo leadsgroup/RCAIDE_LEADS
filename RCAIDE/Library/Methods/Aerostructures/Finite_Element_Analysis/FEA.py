@@ -211,6 +211,7 @@ def assemble_beam(wing, node_data, settings):
     beam.J              = J_arr
     beam.w_box          = section.w_box
     beam.fiber_distance = section.fiber_distance
+    beam.fiber_distance_chordwise = section.fiber_distance_chordwise
     beam.enclosed_area  = section.enclosed_area
     beam.T              = T_all
     beam.K_local        = K_local
@@ -331,7 +332,7 @@ def recover_stresses(wing, node_data, beam, u_full, w_x, w_y, w_z, t_y):
 
     sigma_axial  = N_axial / beam.A
     sigma_bend_x = np.abs(M_bend_x) * beam.fiber_distance / beam.Ixx
-    sigma_bend_z = np.abs(M_bend_z) * (beam.w_box / 2.0) / beam.Izz
+    sigma_bend_z = np.abs(M_bend_z) * beam.fiber_distance_chordwise / beam.Izz
     # Conservative: assumes the worst bending corner coincides with peak axial stress.
     normal_stress = np.abs(sigma_axial) + sigma_bend_x + sigma_bend_z
 
