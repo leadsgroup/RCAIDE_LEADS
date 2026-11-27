@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Aerodynamics/__init__.py
+# RCAIDE/Library/Methods/Aerostructures/__init__.py
 # 
 
 

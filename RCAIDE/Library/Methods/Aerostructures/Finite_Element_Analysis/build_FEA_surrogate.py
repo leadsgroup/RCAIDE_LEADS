@@ -12,12 +12,12 @@ from scipy.interpolate import RegularGridInterpolator
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  build_FEA_surrogates  (entry point called from train_FEA_surrogate.py)
+#  build_FEA_surrogates
 # ----------------------------------------------------------------------------------------------------------------------
 def build_FEA_surrogates(aerostructures, vehicle):
     """Wrap training data into interpolator objects for all Mach regimes.
 
-    Expected training data structure (populated by train_FEA_surrogate.py):
+    Expected training data structure (computed by train_VLM_surrogates and copied by Finite_Element_Analysis.initialize):
         aerostructures.training.Mach                          shape (n_Mach,)
         aerostructures.training.angle_of_attack               shape (n_AoA,)
         aerostructures.training.subsonic / .supersonic / .transonic

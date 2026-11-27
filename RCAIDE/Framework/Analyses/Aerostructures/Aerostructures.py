@@ -15,10 +15,10 @@ from RCAIDE.Framework.Analyses import Analysis
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Aerodynamics
+#  Aerostructures
 # ---------------------------------------------------------------------------------------------------------------------- 
 class Aerostructures(Analysis):
-    """This is the base class for aerodynamics analyses. It contains functions
+    """This is the base class for aerostructures analyses. It contains functions
     that are built into the default class.
     
     Assumptions:
