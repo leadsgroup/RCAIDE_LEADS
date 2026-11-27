@@ -17,8 +17,8 @@ import numpy as np
 
 STANDARD_GRAVITY = 9.81   # [m/s^2] used by self_weight_load
 
-# Tip deflection over semi-span up to which the model's tip deflection, tip twist and lift coefficient are within
-# about 1% of the coupled iteration that rebuilds the mesh. Measured on a straight wing and on the uCRM wing
+# Tip deflection over semi-span up to which the model's tip deflection and lift coefficient are within about 1%, and
+# its tip twist within about 2%, of the coupled iteration that rebuilds the mesh. Measured on a straight wing and on the uCRM wing
 # (RCAIDE_DEV_NOTES/aerostructural_surrogate_physics_and_numerics.md, section 14); twist is the first to degrade.
 VALIDATED_TIP_DEFLECTION_RATIO = 0.10
 
@@ -163,7 +163,7 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
     The model is linear in the deformation, and it always returns the linear solution. Two measures say how far
     to trust it, and both are smooth, so an optimizer can constrain them:
       tip_deflection_ratio   : tip deflection over semi-span of each wing. Up to VALIDATED_TIP_DEFLECTION_RATIO
-                               the model is within about 1% of the coupled iteration that rebuilds the mesh.
+                               the model is within about 1% (tip twist 2%) of the coupled iteration that rebuilds the mesh.
       divergence_determinant : det(I - q S G), one at zero dynamic pressure, zero at the divergence dynamic
                                pressure and negative just above it, where the solution has no physical meaning.
     within_validated_range combines the two.
