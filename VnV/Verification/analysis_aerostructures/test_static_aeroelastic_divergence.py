@@ -11,7 +11,7 @@ from RCAIDE.Library.Methods.Geometry.Planform                                   
 from RCAIDE.Library.Mission.Common.Pre_Process                                                  import geometry_preprocess_routine
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.train_VLM_surrogates             import _converge_aeroelastic
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_vortex_distribution     import generate_vortex_distribution
-from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.static_aeroelastic_model     import build_static_aeroelastic_model, solve_static_aeroelastic_model, divergence_dynamic_pressure, aerodynamic_conditions, VALIDATED_TIP_DEFLECTION_RATIO
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.static_aeroelastic_model     import build_static_aeroelastic_model, solve_static_aeroelastic_model, divergence_dynamic_pressure, aerodynamic_conditions
 
 import numpy as np
 
@@ -147,7 +147,7 @@ def check_solve_flags_dynamic_pressures_above_divergence(model, q_D):
     # below divergence, a deflection past the validated ratio is flagged too, and the solution is still returned
     large = solve_static_aeroelastic_model(model, MACH, 0.3 * q_D, 4.0 * Units.degrees, load_factor=0.0)
     assert large.divergence_determinant > 0.0
-    assert large.main_wing.tip_deflection_ratio > VALIDATED_TIP_DEFLECTION_RATIO and not large.within_validated_range
+    assert large.main_wing.tip_deflection_ratio > 0.10 and not large.within_validated_range
     assert np.all(np.isfinite(large.main_wing.deflection))
     return
 

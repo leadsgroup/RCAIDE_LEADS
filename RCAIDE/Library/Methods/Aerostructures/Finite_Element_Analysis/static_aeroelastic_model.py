@@ -15,20 +15,13 @@ from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.assign_compon
 
 import numpy as np
 
-STANDARD_GRAVITY = 9.81   # [m/s^2] used by self_weight_load
-
-# Tip deflection over semi-span up to which the model's tip deflection and lift coefficient are within about 1.5%, and
-# its tip twist within about 3%, of the coupled iteration that rebuilds the mesh. Measured on a straight wing and on the uCRM wing
-# (RCAIDE_DEV_NOTES/aerostructural_surrogate_physics_and_numerics.md, section 14); twist is the first to degrade.
-VALIDATED_TIP_DEFLECTION_RATIO = 0.10
-
 # ----------------------------------------------------------------------
 #  build_static_aeroelastic_model
 # ----------------------------------------------------------------------
 def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_settings, mach_numbers,
                                    angles_of_attack=np.linspace(-8.0, 12.0, 6)*np.pi/180, number_of_stations=16,
                                    feedback_components=(0, 1, 2, 3, 4, 5), feedback_angles_of_attack=np.array([0.0, 8.0])*np.pi/180,
-                                   rotation_step=0.5*np.pi/180, translation_step=0.05):
+                                   rotation_step=0.5*np.pi/180, translation_step=0.05, reference_gravity=9.81):
     """
     Static aeroelastic model of the vehicle's wings,
 
@@ -57,6 +50,7 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
         number_of_stations    : spanwise stations on each wing
         feedback_components   : nodal degrees of freedom fed back to the aerodynamics at each station
                                 (0, 1, 2 translations in x, y, z; 3, 4, 5 rotations about x, y, z)
+        reference_gravity     : gravity of the stored one-g inertial responses [m/s^2], that of self_weight_load
 
     Returns:
         model : Data used by solve_static_aeroelastic_model
@@ -83,7 +77,7 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
         w.node_data     = node_data
         w.beam          = beam
         w.station_nodes = np.zeros(0, dtype=int)
-        w.u_fixed, w.u_fuel, w.load_fixed, w.load_fuel = inertial_responses(wing, node_data, beam, masses)
+        w.u_fixed, w.u_fuel, w.load_fixed, w.load_fuel = inertial_responses(wing, node_data, beam, masses, reference_gravity)
         wings[wing.tag] = w
 
     # stations: (wing tag, station, degree of freedom), and the shape of each station's unit displacement along its wing
@@ -142,6 +136,7 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
 
     model             = Data()
     model.mach        = mach_numbers
+    model.reference_gravity = reference_gravity
     model.alpha       = angles_of_attack
     model.feedback_alpha = np.array(feedback_angles_of_attack, dtype=float)
     model.wings       = wings
@@ -156,14 +151,17 @@ def build_static_aeroelastic_model(vehicle, aerodynamics_settings, structural_se
 # ----------------------------------------------------------------------
 #  solve_static_aeroelastic_model
 # ----------------------------------------------------------------------
-def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_factor=1.0, gravity=STANDARD_GRAVITY, fuel_masses=None, coupled=True):
+def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_factor=1.0, gravity=9.81, fuel_masses=None, coupled=True,
+                                   validated_tip_deflection_ratio=0.10):
     """
     Deformation of the wings at one flight condition.
 
     The model is linear in the deformation, and it always returns the linear solution. Two measures say how far
     to trust it, and both are smooth, so an optimizer can constrain them:
-      tip_deflection_ratio   : tip deflection over semi-span of each wing. Up to VALIDATED_TIP_DEFLECTION_RATIO
-                               the model is within about 1% (tip twist 2%) of the coupled iteration that rebuilds the mesh.
+      tip_deflection_ratio   : tip deflection over semi-span of each wing. Up to validated_tip_deflection_ratio
+                               (0.10) the model's tip deflection and lift coefficient are within about 1.5%, and
+                               its tip twist within about 3%, of the coupled iteration that rebuilds the mesh,
+                               measured on a straight wing and on the uCRM wing. Twist is the first to degrade.
       divergence_determinant : det(I - q S G), one at zero dynamic pressure, zero at the divergence dynamic
                                pressure and negative just above it, where the solution has no physical meaning.
     within_validated_range combines the two.
@@ -204,7 +202,7 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
         return (1 - f_w) * at_m[0] + f_w * at_m[1]
 
     # one-way response of each wing
-    inertial_scale = load_factor * gravity / STANDARD_GRAVITY
+    inertial_scale = load_factor * gravity / model.reference_gravity
     u_0    = {}
     load_0 = {}
     G      = {}
@@ -253,7 +251,7 @@ def solve_static_aeroelastic_model(model, mach, dynamic_pressure, alpha, load_fa
         results[tag].CLift            = at_mach_and_alpha(w.CLift_rigid) + feedback_at_mach_and_alpha(w.dCLift_deta) @ eta
     results.divergence_determinant = np.linalg.det(system) if coupled else 1.0
     largest_ratio                  = max(results[tag].tip_deflection_ratio for tag in modeled)
-    results.within_validated_range = bool((results.divergence_determinant > 0) & (largest_ratio <= VALIDATED_TIP_DEFLECTION_RATIO))
+    results.within_validated_range = bool((results.divergence_determinant > 0) & (largest_ratio <= validated_tip_deflection_ratio))
     results.CLift = at_mach_and_alpha(model.CLift_rigid) + feedback_at_mach_and_alpha(model.dCLift_deta) @ eta
     results.CM    = at_mach_and_alpha(model.CM_rigid)    + feedback_at_mach_and_alpha(model.dCM_deta)    @ eta
     return results
@@ -296,12 +294,12 @@ def bracket(table, value, hold_ends):
     return lo, hi, weight
 
 
-def inertial_responses(wing, node_data, beam, masses):
+def inertial_responses(wing, node_data, beam, masses, gravity):
     """
     Beam response at one g to the masses that do not change in flight (structure, ribs, point masses, masses
     spread along the wing box, empty tanks), and to one kilogram of fuel in each tank.
     """
-    g = STANDARD_GRAVITY
+    g = gravity
 
     def element_loads(w_z, point_pts, point_masses):
         zeros = np.zeros_like(node_data.Le)

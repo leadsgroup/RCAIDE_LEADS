@@ -13,17 +13,6 @@ from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry, com
 import numpy as np
 import warnings
 
-# Kuhn's tested ranges for the shear stiffness factor (NACA WR L-323, Table 1)
-KUHN_D_OVER_H_RANGE = (0.45, 0.75)
-KUHN_D_OVER_B_RANGE = (0.43, 0.64)
-
-# sample points per element when integrating a cutout along the span
-CUTOUT_SAMPLES = 32
-
-# points along each skin between the spars, and points on each surface of the airfoil they are read from
-BOX_POINTS     = 21
-AIRFOIL_POINTS = 201
-
 # ----------------------------------------------------------------------
 #  Wingbox Assembly Function
 # ----------------------------------------------------------------------
@@ -55,7 +44,7 @@ def compute_wingbox_properties(wing, discretized_params, spar_cutouts=False):
     return section
 
 
-def wingbox_shape(wing, y, chord, front_spar, rear_spar, semi_span):
+def wingbox_shape(wing, y, chord, front_spar, rear_spar, semi_span, box_points=21, airfoil_points=201):
     """
     Upper and lower surface of the wing between the spars at spanwise stations y [m], where the chord and the
     spar positions (fractions of chord) are given.
@@ -64,43 +53,46 @@ def wingbox_shape(wing, y, chord, front_spar, rear_spar, semi_span):
     four-digit symmetric section of its thickness-to-chord ratio, the same rule as the geometry plots. The
     surface heights, as fractions of chord, are interpolated linearly along the span between segments.
 
+    box_points is the number of points along each skin between the spars, and airfoil_points the number of
+    points on each surface of the airfoil they are read from.
+
     Returns:
-        x       : chordwise position of BOX_POINTS points from the front to the rear spar, from the leading edge [m]
+        x       : chordwise position of box_points points from the front to the rear spar, from the leading edge [m]
         z_upper : height of the upper surface at those points, from the chord line [m]
         z_lower : height of the lower surface [m]
-        each of shape (len(y), BOX_POINTS)
+        each of shape (len(y), box_points)
     """
-    fraction      = np.linspace(0.0, 1.0, BOX_POINTS)
+    fraction      = np.linspace(0.0, 1.0, box_points)
     segments      = list(wing.segments)
     stations      = np.array([segment.percent_span_location for segment in segments]) * semi_span
-    upper_station = np.zeros((len(segments), BOX_POINTS))
-    lower_station = np.zeros((len(segments), BOX_POINTS))
+    upper_station = np.zeros((len(segments), box_points))
+    lower_station = np.zeros((len(segments), box_points))
     for k, segment in enumerate(segments):
         front, rear      = segment.structural.front_spar_percent_chord, segment.structural.rear_spar_percent_chord
         x_over_c         = front + fraction * (rear - front)
-        upper_station[k], lower_station[k] = segment_surfaces(wing, segment, x_over_c)
+        upper_station[k], lower_station[k] = segment_surfaces(wing, segment, x_over_c, airfoil_points)
 
     y        = np.abs(np.atleast_1d(y))
-    upper    = np.array([np.interp(y, stations, upper_station[:, j]) for j in range(BOX_POINTS)]).T
-    lower    = np.array([np.interp(y, stations, lower_station[:, j]) for j in range(BOX_POINTS)]).T
+    upper    = np.array([np.interp(y, stations, upper_station[:, j]) for j in range(box_points)]).T
+    lower    = np.array([np.interp(y, stations, lower_station[:, j]) for j in range(box_points)]).T
     chord    = np.atleast_1d(chord)[:, None]
     x        = (np.atleast_1d(front_spar)[:, None] + fraction[None, :] * (np.atleast_1d(rear_spar) - np.atleast_1d(front_spar))[:, None]) * chord
     return x, upper * chord, lower * chord
 
 
-def segment_surfaces(wing, segment, x_over_c):
+def segment_surfaces(wing, segment, x_over_c, airfoil_points=201):
     """Heights of the upper and lower surface of a segment's section at chord fractions x_over_c, as fractions of chord."""
     airfoil = segment.airfoil
     if airfoil is None:
         # NACA four-digit thickness distribution, which is linear in the thickness-to-chord ratio
         t_c      = segment.thickness_to_chord if segment.thickness_to_chord > 0 else wing.thickness_to_chord
-        geometry = compute_naca_4series('0010', AIRFOIL_POINTS)
+        geometry = compute_naca_4series('0010', airfoil_points)
         scale    = t_c / 0.10
     elif isinstance(airfoil, RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil):
-        geometry = compute_naca_4series(airfoil.NACA_4_Series_code, AIRFOIL_POINTS, thickness_multiplier=airfoil.thickness_multiplier)
+        geometry = compute_naca_4series(airfoil.NACA_4_Series_code, airfoil_points, thickness_multiplier=airfoil.thickness_multiplier)
         scale    = 1.0
     else:
-        geometry = import_airfoil_geometry(airfoil.coordinate_file, AIRFOIL_POINTS, thickness_multiplier=airfoil.thickness_multiplier)
+        geometry = import_airfoil_geometry(airfoil.coordinate_file, airfoil_points, thickness_multiplier=airfoil.thickness_multiplier)
         scale    = 1.0
     x_u, z_u = np.ravel(geometry.x_upper_surface), np.ravel(geometry.y_upper_surface)
     x_l, z_l = np.ravel(geometry.x_lower_surface), np.ravel(geometry.y_lower_surface)
@@ -201,7 +193,7 @@ def skin_strips(x, z, thickness):
     return strips
 
 
-def apply_spar_cutouts(wing, discretized_params, x, z_upper, z_lower, section):
+def apply_spar_cutouts(wing, discretized_params, x, z_upper, z_lower, section, cutout_samples=32):
     """
     Section properties of the elements crossed by circular spar web holes, on the existing nodes. x, z_upper
     and z_lower are the box shape of each element (see wingbox_shape), and section is updated in place.
@@ -211,7 +203,7 @@ def apply_spar_cutouts(wing, discretized_params, x, z_upper, z_lower, section):
     The hole is centred on the web depth. Its projected spanwise extent equals its diameter, as for a hole
     cut by a chordwise cylinder.
 
-    Each crossed element is sampled along its span. Inside the hole, the web keeps only the material above
+    Each crossed element is sampled at cutout_samples points along its span. Inside the hole, the web keeps only the material above
     and below it, which reduces the area and inertias. Over the bay, the web thickness in the torsion
     constant is scaled by Kuhn's factor. The element takes the mean area (mass) and the harmonic mean of
     each inertia and the torsion constant, since flexibilities add in series along the element; this is
@@ -225,11 +217,11 @@ def apply_spar_cutouts(wing, discretized_params, x, z_upper, z_lower, section):
     web_depth = {'front': z_upper[:, 0] - z_lower[:, 0], 'rear': z_upper[:, -1] - z_lower[:, -1]}
 
     # spanwise sample stations in each element, midpoint rule
-    fractions = (np.arange(CUTOUT_SAMPLES) + 0.5) / CUTOUT_SAMPLES
+    fractions = (np.arange(cutout_samples) + 0.5) / cutout_samples
     Y_samples = Y_left[:, None] + fractions[None, :] * (Y_right - Y_left)[:, None]
 
-    cut   = {'front': np.zeros((n_elem, CUTOUT_SAMPLES)), 'rear': np.zeros((n_elem, CUTOUT_SAMPLES))}
-    eta   = {'front': np.ones((n_elem, CUTOUT_SAMPLES)),  'rear': np.ones((n_elem, CUTOUT_SAMPLES))}
+    cut   = {'front': np.zeros((n_elem, cutout_samples)), 'rear': np.zeros((n_elem, cutout_samples))}
+    eta   = {'front': np.ones((n_elem, cutout_samples)),  'rear': np.ones((n_elem, cutout_samples))}
     for cutout in wing.structural.spar_cutouts:
         if cutout.spar not in cut:
             raise ValueError(f"Spar cutout spar must be 'front' or 'rear', not '{cutout.spar}'")
@@ -282,9 +274,9 @@ def kuhn_shear_stiffness_factor(D, b, h):
         raise ValueError(f"Spar cutout diameter {D:.3f} m must be smaller than its bay length {b:.3f} m")
     if D >= h:
         raise ValueError("A spar cutout reaches the full web depth; a severed spar needs a reinforcement model")
-    if not (KUHN_D_OVER_H_RANGE[0] <= D / h <= KUHN_D_OVER_H_RANGE[1]) or not (KUHN_D_OVER_B_RANGE[0] <= D / b <= KUHN_D_OVER_B_RANGE[1]):
+    if not (0.45 <= D / h <= 0.75) or not (0.43 <= D / b <= 0.64):
         warnings.warn(f"Spar cutout D/h = {D/h:.2f}, D/b = {D/b:.2f} is outside Kuhn's tested range "
-                      f"D/h {KUHN_D_OVER_H_RANGE}, D/b {KUHN_D_OVER_B_RANGE}")
+                      f"D/h 0.45 to 0.75, D/b 0.43 to 0.64")
     return (1.0 - D / b) * (1.0 - (D / h)**3)
 
 
