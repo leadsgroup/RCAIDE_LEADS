@@ -8,12 +8,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
 
-minimum_resistance = 0.001   # [ohm]
-
 # ----------------------------------------------------------------------------------------------------------------------
 #  design motor 
 # ----------------------------------------------------------------------------------------------------------------------     
-def design_optimal_motor(motor):
+def design_optimal_motor(motor, minimum_resistance=0.001):
     """
     Sizes a DC motor: the speed constant and resistance that give the design torque at the design
     angular velocity and nominal voltage with the specified efficiency.
@@ -36,6 +34,8 @@ def design_optimal_motor(motor):
                 Gearbox component
                     - gear_ratio : float
                         Gear ratio [unitless]
+    minimum_resistance : float, optional
+        Resistance given to a motor sized without a design load [ohms]. Default is 0.001.
     
     Returns
     -------

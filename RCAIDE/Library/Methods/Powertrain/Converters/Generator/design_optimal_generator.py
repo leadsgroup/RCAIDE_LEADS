@@ -10,12 +10,10 @@ import RCAIDE
 # python imports  
 import numpy as np
 
-minimum_resistance = 0.001   # [ohm]
-
 # ----------------------------------------------------------------------------------------------------------------------
 #  design generator 
 # ----------------------------------------------------------------------------------------------------------------------     
-def design_optimal_generator(generator):
+def design_optimal_generator(generator, minimum_resistance=0.001):
     """
     Sizes a generator: the speed constant and resistance that give the design power at the design
     angular velocity and nominal voltage with the specified efficiency.
@@ -42,6 +40,8 @@ def design_optimal_generator(generator):
                 Design angular velocity [radians/s]
             - design_power : float
                 Design power [W]
+    minimum_resistance : float, optional
+        Resistance given to a generator sized without a design load [ohms]. Default is 0.001.
     
     Returns
     -------
