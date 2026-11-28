@@ -8,15 +8,15 @@
 import RCAIDE
 
 # python imports  
-from scipy.optimize import minimize 
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  design generator 
 # ----------------------------------------------------------------------------------------------------------------------     
-def design_optimal_generator(generator):
+def design_optimal_generator(generator, minimum_resistance=0.001):
     """
-    Sizes a generator to obtain the best combination of speed constant and resistance values
-    by sizing the generator for a design RPM value.
+    Sizes a generator: the speed constant and resistance that give the design power at the design
+    angular velocity and nominal voltage with the specified efficiency.
     
     Parameters
     ----------
@@ -40,6 +40,8 @@ def design_optimal_generator(generator):
                 Design angular velocity [radians/s]
             - design_power : float
                 Design power [W]
+    minimum_resistance : float, optional
+        Resistance given to a generator sized without a design load [ohms]. Default is 0.001.
     
     Returns
     -------
@@ -52,40 +54,38 @@ def design_optimal_generator(generator):
     
     Notes
     -----
-    This function uses numerical optimization to find the optimal values of speed constant
-    and resistance that satisfy the generator's design requirements. It attempts to solve
-    the optimization problem with hard constraints first, and if that fails, it uses slack
-    constraints.
-    
-    The optimization process follows these steps:
-        1. Extract generator design parameters (voltage, angular velocity, efficiency, power)
-        2. Define optimization bounds for speed constant and resistance
-        3. Set up hard constraints for efficiency and power
-        4. Attempt optimization with hard constraints
-        5. If optimization fails, retry with slack constraints
-        6. Update the generator with the optimized parameters
-    
-    The objective function maximizes the current output for a given voltage and angular velocity.
+    The two design conditions fix the two unknowns, so the solution is direct.
     
     **Major Assumptions**
         * The generator follows a DC generator model
-        * The optimization bounds are appropriate for the generator size
-        * If hard constraints cannot be satisfied, slack constraints are acceptable
     
     **Theory**
-    The generator model uses the following relationships:
-        - Current: :math:`I = (V - \\omega/Kv)/R - I₀`
-        - Efficiency: :math:`\\eta = (1 - (I₀\\cdot R)/(V - \\omega/Kv))\\cdot(\\omega/(V\\cdot Kv))`
-        - Power: :math:`P = \\omega\\cdot I/Kv`
+    The generator model uses the relationships of Drela's DC machine model [1]:
+        - Current: :math:`I = (V - \\omega/Kv)/R`
+        - Power: :math:`P = \\omega\\cdot (I - I_0)/Kv`
+        - Efficiency: :math:`\\eta = (1 - I_0/I)\\cdot(\\omega/(V\\cdot Kv)) = P/(V I)`
     
-    where:
-        - V is the nominal voltage
-        - ω is the angular velocity
-        - Kv is the speed constant
-        - R is the resistance
-        - I₀ is the no-load current
-        - η is the efficiency
-        - P is the power
+    so that
+        - :math:`I = P/(\\eta V)`
+        - :math:`Kv = \\omega (I - I_0)/P`
+        - :math:`R = (V - \\omega/Kv)/I`
+    
+    where V is the nominal voltage, ω the angular velocity of the generator, Kv the speed constant,
+    R the resistance, I₀ the no-load current, P the power and η the efficiency.
+    
+    This solution exists only if the no-load current is below :math:`(1 - \\eta) I`, since the no-load
+    loss alone must be smaller than the total loss the efficiency allows. Otherwise the generator is sized
+    so that the design point is its most efficient one. From Eq. (5) of [1], the efficiency at a given
+    voltage peaks where :math:`I^2 R = I_0 V`, and is then :math:`(1 - I_0/I)^2`. With the design power this
+    gives :math:`(I - I_0)^2 = (P/V) I`, then :math:`R = I_0 V/I^2` and :math:`Kv = \\omega (I - I_0)/P`.
+    
+    A generator with no design power, or a negative one, is given a speed constant that reaches the design
+    speed at the nominal voltage, and the minimum resistance.
+    
+    References
+    ----------
+    [1] Drela, M., "DC Motor / Propeller Matching," Lab 5 Lecture Notes, MIT, 3 Mar. 2005.
+        https://web.mit.edu/drela/Public/web/qprop/motorprop.pdf
     
     See Also
     --------
@@ -103,50 +103,20 @@ def design_optimal_generator(generator):
     etam   = generator.efficiency 
     P      = generator.design_power
     
-    # define optimizer bounds 
-    KV_lower_bound  = 0.01
-    KV_upper_bound  = 100
-    Res_lower_bound = 0.001
-    Res_upper_bound = 10
-    
-    args       = (v , omega,  etam , P , io ) 
-    hard_cons  = [{'type':'eq', 'fun': hard_constraint_1,'args': args},{'type':'eq', 'fun': hard_constraint_2,'args': args}] 
-    slack_cons = [{'type':'eq', 'fun': slack_constraint_1,'args': args},{'type':'eq', 'fun': slack_constraint_2,'args': args}]  
-    bnds       = ((KV_lower_bound, KV_upper_bound), (Res_lower_bound , Res_upper_bound)) 
-    
-    # try hard constraints to find optimum generator parameters
-    sol = minimize(objective, [0.5, 0.1], args=(v , omega,  etam , P , io) , method='SLSQP', bounds=bnds, tol=1e-6, constraints=hard_cons) 
-    
-    if sol.success == False:
-        # use slack constraints if optimizer fails and generator parameters cannot be found 
-        print('\n Optimum generator design failed. Using slack constraints')
-        sol = minimize(objective, [0.5, 0.1], args=(v , omega,  etam , P , io) , method='SLSQP', bounds=bnds, tol=1e-6, constraints=slack_cons) 
-        if sol.success == False:
-            assert('\n Slack contraints failed')  
-    
-    generator.speed_constant   = sol.x[0]
-    generator.resistance       = sol.x[1]    
+    current = P / (etam * v)
+    if P <= 0:
+        generator.speed_constant = omega / v
+        generator.resistance     = minimum_resistance
+    elif io < (1 - etam) * current:
+        generator.speed_constant = omega * (current - io) / P
+        generator.resistance     = (v - omega / generator.speed_constant) / current
+    else:
+        # the efficiency cannot be met: make the design point the generator's most efficient one
+        c                        = P / v
+        current                  = ((2 * io + c) + np.sqrt((2 * io + c)**2 - 4 * io**2)) / 2
+        generator.resistance     = io * v / current**2
+        generator.speed_constant = omega * (current - io) / P
+        print('\n Generator ' + generator.tag + ' cannot reach an efficiency of ' + str(etam) + ' with a no-load current of ' + str(io)
+              + ' A. Sized for its peak efficiency of ' + str((1 - io / current)**2) + ' at the design point')
     
     return generator  
-  
-# objective function
-def objective(x, v , omega,  etam , P , io ): 
-    return (v - omega/x[0])/x[1]   
-
-# hard efficiency constraint
-def hard_constraint_1(x, v , omega,  etam , P , io ): 
-    return etam - (1- (io*x[1])/(v - omega/x[0]))*(omega/(v*x[0]))   
-
-# hard torque equality constraint
-def hard_constraint_2(x, v , omega,  etam , P , io ): 
-    P_guess = omega * ((v - omega/x[0])/x[1] - io)/x[0]
-    return P_guess - P  
-
-# slack efficiency constraint 
-def slack_constraint_1(x, v , omega,  etam , P , io ): 
-    return abs(etam - (1- (io*x[1])/(v - omega/x[0]))*(omega/(v*x[0]))) - 0.2
-
-# slack torque equality constraint 
-def slack_constraint_2(x, v , omega,  etam , P , io ): 
-    P_guess = omega * ((v - omega/x[0])/x[1] - io)/x[0] 
-    return  abs(P_guess - P) - 200 

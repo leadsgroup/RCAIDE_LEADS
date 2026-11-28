@@ -111,7 +111,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         segment.analyses.aerodynamics.settings.use_surrogate       = True
         
         # if stability analysis is defined and neutral point already computed
-        if segment.analyses.stability != None: 
+        if segment.analyses.stability != None and segment.analyses.vehicle.neutral_point is not None:
             segment.analyses.stability.settings.compute_neutral_point = False
 
     # size powertrain components (e.g. batteries) first, as the mission does, so their mass is in the OEW

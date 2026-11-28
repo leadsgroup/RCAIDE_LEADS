@@ -45,7 +45,7 @@ def main():
 def forward_mode_model():
 
     generator_type    = ['DC_Generator', 'PMSM_Generator'] 
-    current_truth = [11.733611216369859,111.3693277099695] 
+    current_truth = [-60.386310731510186,111.3693277099695] 
     voltage_truth = [420 , 420] 
 
     for i in range(len(generator_type)):
@@ -87,8 +87,8 @@ def forward_mode_model():
 def inverse_mode_model():
 
     generator_type    = ['DC_Generator', 'PMSM_Generator']
-    omega_truth   = [89.67260012714557,14.399999999999999]
-    torque_truth  = [223.1932139491046,1.646090249033937] 
+    omega_truth   = [112.91568043767545,14.399999999999999]
+    torque_truth  = [264.7158633926393,1.646090249033937] 
 
     for i in range(len(generator_type)):
         generator = design_test_generator( generator_type[i])

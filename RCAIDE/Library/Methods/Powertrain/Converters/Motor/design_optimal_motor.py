@@ -6,18 +6,15 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-import RCAIDE
-
-# python imports  
-from scipy.optimize import minimize 
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  design motor 
 # ----------------------------------------------------------------------------------------------------------------------     
-def design_optimal_motor(motor):
+def design_optimal_motor(motor, minimum_resistance=0.001):
     """
-    Sizes a DC motor to obtain the best combination of speed constant and resistance values
-    by sizing the motor for a design RPM value.
+    Sizes a DC motor: the speed constant and resistance that give the design torque at the design
+    angular velocity and nominal voltage with the specified efficiency.
     
     Parameters
     ----------
@@ -37,13 +34,15 @@ def design_optimal_motor(motor):
                 Gearbox component
                     - gear_ratio : float
                         Gear ratio [unitless]
+    minimum_resistance : float, optional
+        Resistance given to a motor sized without a design load [ohms]. Default is 0.001.
     
     Returns
     -------
     motor : RCAIDE.Library.Components.Powertrain.Converters.DC_Motor
         Motor with updated attributes:
             - speed_constant : float
-                Speed constant [unitless]
+                Speed constant [rad/s/V]
             - resistance : float
                 Resistance [ohms]
             - design_current : float
@@ -51,41 +50,38 @@ def design_optimal_motor(motor):
     
     Notes
     -----
-    This function uses numerical optimization to find the optimal values of speed constant
-    and resistance that satisfy the motor's design requirements. It attempts to solve
-    the optimization problem with hard constraints first, and if that fails, it uses slack
-    constraints.
-    
-    The optimization process follows these steps:
-        1. Extract motor design parameters (voltage, angular velocity, efficiency, torque)
-        2. Define optimization bounds for speed constant and resistance
-        3. Set up hard constraints for efficiency and torque
-        4. Attempt optimization with hard constraints
-        5. If optimization fails, retry with slack constraints
-        6. Update the motor with the optimized parameters
-    
-    The objective function minimizes the current draw for a given voltage, angular velocity,
-    and torque requirement.
+    The two design conditions fix the two unknowns, so the solution is direct.
     
     **Major Assumptions**
         * The motor follows a DC motor model
-        * The optimization bounds are appropriate for the motor size
-        * If hard constraints cannot be satisfied, slack constraints are acceptable
     
     **Theory**
-    The motor model uses the following relationships:
+    The motor model is that of Drela [1], Eqs. (1), (2), (5) and (6):
         - Current: :math:`I = (V - \\omega/Kv)/R`
-        - Torque: :math:`T = (I - I₀)/Kv`
-        - Efficiency: :math:`\\eta = (1 - (I₀\\cdot R)/(V - \\omega/Kv))\\cdot(\\omega/(V\\cdot Kv))`
+        - Torque: :math:`Q = (I - I_0)/Kv`
+        - Efficiency: :math:`\\eta = (1 - I_0/I)\\cdot(\\omega/(V\\cdot Kv)) = Q\\omega/(V I)`
     
-    where:
-        - V is the nominal voltage
-        - ω is the angular velocity
-        - Kv is the speed constant
-        - R is the resistance
-        - I₀ is the no-load current
-        - T is the torque
-        - η is the efficiency
+    so that
+        - :math:`I = Q\\omega/(\\eta V)`
+        - :math:`Kv = (I - I_0)/Q`
+        - :math:`R = (V - \\omega/Kv)/I`
+    
+    where V is the nominal voltage, ω the angular velocity of the motor, Kv the speed constant,
+    R the resistance, I₀ the no-load current, Q the torque and η the efficiency.
+    
+    This solution exists only if the no-load current is below :math:`(1 - \\eta) I`, since the no-load
+    loss alone must be smaller than the total loss the efficiency allows. Otherwise the motor is sized so
+    that the design point is its most efficient one. From Eq. (5) of [1], the efficiency at a given voltage
+    peaks where :math:`I^2 R = I_0 V`, and is then :math:`(1 - I_0/I)^2`. With the design torque this gives
+    :math:`(I - I_0)^2 = (Q\\omega/V) I`, then :math:`R = I_0 V/I^2` and :math:`Kv = (I - I_0)/Q`.
+    
+    A motor with no design torque, or a negative one (a rotor design that did not converge can return one),
+    is given a speed constant that reaches the design speed at the nominal voltage, and the minimum resistance.
+    
+    References
+    ----------
+    [1] Drela, M., "DC Motor / Propeller Matching," Lab 5 Lecture Notes, MIT, 3 Mar. 2005.
+        https://web.mit.edu/drela/Public/web/qprop/motorprop.pdf
     
     See Also
     --------
@@ -95,58 +91,26 @@ def design_optimal_motor(motor):
     io     = motor.no_load_current
     v      = motor.nominal_voltage
     G      = motor.gearbox.gear_ratio      
-    omega  = motor.design_angular_velocity 
+    omega  = motor.design_angular_velocity * G
     etam   = motor.efficiency 
     Q      = motor.design_torque
     
-    # define optimizer bounds 
-    KV_lower_bound  = 0.01
-    KV_upper_bound  = 100
-    Res_lower_bound = 0.001
-    Res_upper_bound = 10
+    current = Q * omega / (etam * v)
+    if Q <= 0:
+        motor.speed_constant = omega / v
+        motor.resistance     = minimum_resistance
+        current              = io
+    elif io < (1 - etam) * current:
+        motor.speed_constant = (current - io) / Q
+        motor.resistance     = (v - omega / motor.speed_constant) / current
+    else:
+        # the efficiency cannot be met: make the design point the motor's most efficient one
+        c                    = Q * omega / v
+        current              = ((2 * io + c) + np.sqrt((2 * io + c)**2 - 4 * io**2)) / 2
+        motor.resistance     = io * v / current**2
+        motor.speed_constant = (current - io) / Q
+        print('\n Motor ' + motor.tag + ' cannot reach an efficiency of ' + str(etam) + ' with a no-load current of ' + str(io)
+              + ' A. Sized for its peak efficiency of ' + str((1 - io / current)**2) + ' at the design point')
     
-    args       = (v , omega,  etam , Q , io,G ) 
-    hard_cons  = [{'type':'eq', 'fun': hard_constraint_1,'args': args},{'type':'eq', 'fun': hard_constraint_2,'args': args}] 
-    slack_cons = [{'type':'eq', 'fun': slack_constraint_1,'args': args},{'type':'eq', 'fun': slack_constraint_2,'args': args}]  
-    bnds       = ((KV_lower_bound, KV_upper_bound), (Res_lower_bound , Res_upper_bound))  
-
-    # try hard constraints to find optimum motor parameters
-    sol = minimize(objective, [0.5, 0.1], args=(v , omega,  etam , Q , io,G) , method='SLSQP', bounds=bnds, tol=1e-6, constraints=hard_cons)
-    
-    if sol.success == False:
-        # use slack constraints if optimizer fails and motor parameters cannot be found 
-        print('\n Optimum motor design failed. Using slack constraints')
-        sol = minimize(objective, [0.5, 0.1], args=(v , omega,  etam , Q , io,G) , method='SLSQP', bounds=bnds, tol=1e-6, constraints=slack_cons) 
-        if sol.success == False:
-            assert('\n Slack contraints failed')  
-    
-    motor.speed_constant   = sol.x[0]
-    motor.resistance       = sol.x[1]
-    internal_omega         = omega * G
-    motor.design_current   = (v-(internal_omega)/motor.speed_constant)/motor.resistance  
+    motor.design_current   = current
     return motor  
-  
-# objective function
-def objective(x, v , omega,  etam , Q , io,G ): 
-    internal_omega = omega * G    
-    return (v - internal_omega/x[0])/x[1]   
-
-# hard efficiency constraint
-def hard_constraint_1(x, v , omega,  etam , Q , io,G ): 
-    internal_omega = omega * G    
-    return etam - (1- (io*x[1])/(v - internal_omega/x[0]))*(internal_omega/(v*x[0]))   
-
-# hard torque equality constraint
-def hard_constraint_2(x, v , omega,  etam , Q , io,G ): 
-    internal_omega = omega * G    
-    return ((v - internal_omega/x[0])/x[1] - io)/x[0] - Q  
-
-# slack efficiency constraint 
-def slack_constraint_1(x, v , omega,  etam , Q , io,G ): 
-    internal_omega = omega * G   
-    return abs(etam - (1- (io*x[1])/(v - internal_omega/x[0]))*(internal_omega/(v*x[0]))) - 0.2
-
-# slack torque equality constraint 
-def slack_constraint_2(x, v , omega,  etam , Q , io,G ): 
-    internal_omega = omega * G   
-    return  abs(((v - internal_omega/x[0])/x[1] - io)/x[0] - Q) - 200 
