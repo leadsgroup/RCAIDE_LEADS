@@ -17,8 +17,8 @@ import numpy as np
 
 STANDARD_GRAVITY = 9.81   # [m/s^2] used by self_weight_load
 
-# Tip deflection over semi-span up to which the model's tip deflection and lift coefficient are within about 1%, and
-# its tip twist within about 2%, of the coupled iteration that rebuilds the mesh. Measured on a straight wing and on the uCRM wing
+# Tip deflection over semi-span up to which the model's tip deflection and lift coefficient are within about 1.5%, and
+# its tip twist within about 3%, of the coupled iteration that rebuilds the mesh. Measured on a straight wing and on the uCRM wing
 # (RCAIDE_DEV_NOTES/aerostructural_surrogate_physics_and_numerics.md, section 14); twist is the first to degrade.
 VALIDATED_TIP_DEFLECTION_RATIO = 0.10
 
