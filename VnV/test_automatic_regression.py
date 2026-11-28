@@ -58,6 +58,7 @@ modules = [
     'Verification/analysis_weights/operating_empty_weight_test.py',
     'Verification/analysis_weights/cg_and_moi_test.py',
     'Verification/geometry/airfoil_import_test.py',
+    'Verification/external_interfaces/test_openvsp_import_scaling.py',
     'Verification/geometry/airfoil_interpolation_test.py',
     'Verification/geometry/fuselage_planform_compute.py',
     'Verification/geometry/populate_control_sections_test.py',

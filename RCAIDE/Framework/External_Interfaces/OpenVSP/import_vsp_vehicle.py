@@ -75,7 +75,8 @@ def import_vsp_vehicle(tag,
                                    Required alongside network_type to import rotors/nacelles.
     blended_wing_body      <bool>  set True for blended wing body configurations (default False)
     units_type             <str>   'SI' (default), 'imperial', or 'inches'
-    use_scaling            <bool>  apply VSP scaling factor (default True)
+    use_scaling            <bool>  retained for compatibility. Wing and fuselage dimensions
+                                   already include their saved OpenVSP scale.
     calculate_wetted_area  <bool>  compute wetted areas via OpenVSP (default True)
 
     Outputs:
@@ -221,7 +222,8 @@ def import_vsp_vehicle(tag,
             num_fus  = 1 
             sym_flag = [1] 
         for fux_idx in range(num_fus):	# loop through fuselages on aircraft 
-            fuselage = read_vsp_fuselage(fuselage_id,fux_idx,sym_flag[fux_idx],units_type,use_scaling)
+            fuselage = read_vsp_fuselage(fuselage_id, fux_idx, sym_flag[fux_idx],
+                                        units_type=units_type, use_scaling=use_scaling)
             
             if calculate_wetted_area:
                 fuselage.areas.wetted = measurements[vsp.GetGeomName(fuselage_id)] * (units_factor**2)
@@ -232,7 +234,9 @@ def import_vsp_vehicle(tag,
     # Read Wings
     # ------------------------------------------------------------------
     for wing_id in vsp_wings:
-        wing = read_vsp_wing(wing_id, main_wing_tag, blended_wing_body, last_blended_wing_body_center_body_section_index, units_type, use_scaling)
+        wing = read_vsp_wing(wing_id, main_wing_tag, blended_wing_body,
+                             last_blended_wing_body_center_body_section_index,
+                             units_type=units_type, use_scaling=use_scaling)
         if calculate_wetted_area:
             wing.areas.wetted = measurements[vsp.GetGeomName(wing_id)] * (units_factor**2)
         vehicle.append_component(wing)
