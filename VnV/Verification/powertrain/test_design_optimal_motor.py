@@ -21,6 +21,7 @@ def main():
     check_megawatt_motor()
     check_unattainable_efficiency()
     check_zero_design_torque()
+    check_negative_design_torque()
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -92,6 +93,16 @@ def check_zero_design_torque():
     motor = sized_motor(voltage=400.0, torque=0.0, angular_velocity=63.0, efficiency=0.98)
     assert np.isfinite(motor.speed_constant) and motor.speed_constant > 0 and motor.design_current == 1.0
     assert abs(motor.nominal_voltage * motor.speed_constant - 63.0) < 1e-9
+    return
+
+
+def check_negative_design_torque():
+    # an unconverged rotor design can return a negative torque (-13.06 N m from the Tiltrotor regression rotor);
+    # the motor is then sized as one without a load, not from a negative current
+    motor    = sized_motor(voltage=756.0, torque=-13.06, angular_velocity=49.09, efficiency=0.98, no_load_current=0.01)
+    unloaded = sized_motor(voltage=756.0, torque=0.0,    angular_velocity=49.09, efficiency=0.98, no_load_current=0.01)
+    assert motor.speed_constant == unloaded.speed_constant and motor.resistance == unloaded.resistance
+    assert motor.speed_constant > 0 and motor.resistance > 0 and motor.design_current == 0.01
     return
 
 

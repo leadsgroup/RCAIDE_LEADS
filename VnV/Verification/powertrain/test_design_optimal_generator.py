@@ -20,6 +20,7 @@ def main():
     check_megawatt_generator()
     check_unattainable_efficiency()
     check_zero_design_power()
+    check_negative_design_power()
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -83,6 +84,15 @@ def check_zero_design_power():
     generator = sized_generator(voltage=400.0, power=0.0, angular_velocity=100.0, efficiency=0.98)
     assert np.isfinite(generator.speed_constant) and abs(400.0 * generator.speed_constant - 100.0) < 1e-9
     assert generator.resistance > 0
+    return
+
+
+def check_negative_design_power():
+    # a negative design power is not a generator's design point: sized as one without a load
+    generator = sized_generator(voltage=400.0, power=-9000.0, angular_velocity=100.0, efficiency=0.98)
+    unloaded  = sized_generator(voltage=400.0, power=0.0,     angular_velocity=100.0, efficiency=0.98)
+    assert generator.speed_constant == unloaded.speed_constant and generator.resistance == unloaded.resistance
+    assert generator.speed_constant > 0 and generator.resistance > 0
     return
 
 

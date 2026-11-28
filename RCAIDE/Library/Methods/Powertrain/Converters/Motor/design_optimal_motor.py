@@ -75,8 +75,8 @@ def design_optimal_motor(motor):
     peaks where :math:`I^2 R = I_0 V`, and is then :math:`(1 - I_0/I)^2`. With the design torque this gives
     :math:`(I - I_0)^2 = (Q\\omega/V) I`, then :math:`R = I_0 V/I^2` and :math:`Kv = (I - I_0)/Q`.
     
-    A motor with no design torque is given a speed constant that reaches the design speed at the nominal
-    voltage, and the minimum resistance.
+    A motor with no design torque, or a negative one (a rotor design that did not converge can return one),
+    is given a speed constant that reaches the design speed at the nominal voltage, and the minimum resistance.
     
     References
     ----------
@@ -96,7 +96,7 @@ def design_optimal_motor(motor):
     Q      = motor.design_torque
     
     current = Q * omega / (etam * v)
-    if Q == 0:
+    if Q <= 0:
         motor.speed_constant = omega / v
         motor.resistance     = minimum_resistance
         current              = io

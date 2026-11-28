@@ -79,8 +79,8 @@ def design_optimal_generator(generator):
     voltage peaks where :math:`I^2 R = I_0 V`, and is then :math:`(1 - I_0/I)^2`. With the design power this
     gives :math:`(I - I_0)^2 = (P/V) I`, then :math:`R = I_0 V/I^2` and :math:`Kv = \\omega (I - I_0)/P`.
     
-    A generator with no design power is given a speed constant that reaches the design speed at the nominal
-    voltage, and the minimum resistance.
+    A generator with no design power, or a negative one, is given a speed constant that reaches the design
+    speed at the nominal voltage, and the minimum resistance.
     
     References
     ----------
@@ -104,7 +104,7 @@ def design_optimal_generator(generator):
     P      = generator.design_power
     
     current = P / (etam * v)
-    if P == 0:
+    if P <= 0:
         generator.speed_constant = omega / v
         generator.resistance     = minimum_resistance
     elif io < (1 - etam) * current:
